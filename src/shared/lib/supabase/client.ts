@@ -1,4 +1,5 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 type SupabaseConfig = {
   url: string;
@@ -20,15 +21,15 @@ function getSupabaseConfig(): SupabaseConfig {
   return { url, publishableKey };
 }
 
-export function createSupabaseClient(): SupabaseClient {
+export function createSupabaseBrowserClient(): SupabaseClient {
   const { url, publishableKey } = getSupabaseConfig();
 
-  return createClient(url, publishableKey);
+  return createBrowserClient(url, publishableKey);
 }
 
 export function getSupabaseBrowserClient(): SupabaseClient {
   if (!browserClient) {
-    browserClient = createSupabaseClient();
+    browserClient = createSupabaseBrowserClient();
   }
 
   return browserClient;
