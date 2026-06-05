@@ -21,7 +21,6 @@ build
 .env
 .env.local
 .env.*.local
-!.env.example
 
 # Editor
 .vscode
@@ -37,3 +36,5 @@ build
 Thumbs.db
 .vercel
 .env*
+!.env.example
+!.env.local.example
