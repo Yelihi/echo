@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
+import "./globals.css";
+
 // font
 import { Noto_Sans_KR } from "next/font/google";
-import "./globals.css";
 import { QueryProvider } from "./providers/QueryProvider";
 
 const notoSansKR = Noto_Sans_KR({
