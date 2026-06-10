@@ -10,7 +10,7 @@ export function LoginButton({ children, provider }: LoginButtonProps) {
   const router = useRouter();
 
   const requestLogin = () => {
-    router.push(`/loading?provider=${provider}&next=/home`);
+    router.push(`/callback?provider=${provider}&next=/home`);
   };
 
   return (
