@@ -10,5 +10,9 @@ import type { LogoutButtonProps } from "@/features/logout/models/interface";
 export function LogoutButton({ children }: LogoutButtonProps) {
   const { handleLogout } = useLogoutSupabaseInClient();
 
-  return <Button onClick={handleLogout}>{children}</Button>;
+  return (
+    <Button size="lg" onClick={handleLogout}>
+      {children}
+    </Button>
+  );
 }

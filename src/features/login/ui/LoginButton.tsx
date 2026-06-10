@@ -10,5 +10,9 @@ import type { LoginButtonProps } from "@/features/login/models/interface";
 export function LoginButton({ children, provider }: LoginButtonProps) {
   const { handleAuthWithSupabase } = useAuthWithSupabase();
 
-  return <Button onClick={() => handleAuthWithSupabase(provider)}>{children}</Button>;
+  return (
+    <Button size="lg" onClick={() => handleAuthWithSupabase(provider)}>
+      {children}
+    </Button>
+  );
 }
