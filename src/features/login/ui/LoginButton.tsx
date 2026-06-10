@@ -1,17 +1,20 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 // shared
 import { Button } from "@/shared/components";
 
-// feature
-import { useAuthWithSupabase } from "@/features/login/services/query/useAuthWithSupabase";
 import type { LoginButtonProps } from "@/features/login/models/interface";
 
 export function LoginButton({ children, provider }: LoginButtonProps) {
-  const { handleAuthWithSupabase } = useAuthWithSupabase();
+  const router = useRouter();
+
+  const requestLogin = () => {
+    router.push(`/loading?provider=${provider}&next=/home`);
+  };
 
   return (
-    <Button size="lg" onClick={() => handleAuthWithSupabase(provider)}>
+    <Button size="lg" className="w-full" onClick={requestLogin}>
       {children}
     </Button>
   );

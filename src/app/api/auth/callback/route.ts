@@ -18,5 +18,5 @@ export async function GET(request: Request) {
   }
 
   // 에러 발생 시 메인 페이지나 에러 페이지로 리다이렉트
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  return NextResponse.redirect(`${origin}/login`);
 }

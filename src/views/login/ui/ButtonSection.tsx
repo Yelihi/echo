@@ -6,7 +6,7 @@ export function ButtonSection() {
     <section className="bg-white rounded-4 p-10 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex flex-col justify-center items-center">
         <LoginButton provider="google">
-          <Google /> Google 로 시작하기
+          <Google className="size-20" /> Google 로 시작하기
         </LoginButton>
       </div>
     </section>

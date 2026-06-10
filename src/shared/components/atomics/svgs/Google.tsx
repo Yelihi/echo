@@ -1,4 +1,4 @@
-export function Google() {
+export function Google(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       width="24px"
@@ -8,6 +8,7 @@ export function Google() {
       data-name="24x24/On Light/Google"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
+      {...props}
     >
       <defs>
         <clipPath id="clip-path">
