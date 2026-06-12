@@ -28,6 +28,72 @@ export type Database = {
   };
   public: {
     Tables: {
+      accepted_recordings: {
+        Row: {
+          accepted_at: string;
+          bucket_id: string;
+          created_at: string;
+          duration_ms: number | null;
+          id: string;
+          memorization_sentence_id: string | null;
+          memorization_session_id: string | null;
+          mime_type: string;
+          object_path: string;
+          roleplay_line_id: string | null;
+          roleplay_session_id: string | null;
+          size_bytes: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          accepted_at?: string;
+          bucket_id: string;
+          created_at?: string;
+          duration_ms?: number | null;
+          id?: string;
+          memorization_sentence_id?: string | null;
+          memorization_session_id?: string | null;
+          mime_type: string;
+          object_path: string;
+          roleplay_line_id?: string | null;
+          roleplay_session_id?: string | null;
+          size_bytes: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          accepted_at?: string;
+          bucket_id?: string;
+          created_at?: string;
+          duration_ms?: number | null;
+          id?: string;
+          memorization_sentence_id?: string | null;
+          memorization_session_id?: string | null;
+          mime_type?: string;
+          object_path?: string;
+          roleplay_line_id?: string | null;
+          roleplay_session_id?: string | null;
+          size_bytes?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "accepted_recordings_memorization_sentence_id_memorization__fkey";
+            columns: ["memorization_sentence_id", "memorization_session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_session_sentences";
+            referencedColumns: ["id", "session_id", "user_id"];
+          },
+          {
+            foreignKeyName: "accepted_recordings_roleplay_line_id_roleplay_session_id_u_fkey";
+            columns: ["roleplay_line_id", "roleplay_session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_session_lines";
+            referencedColumns: ["id", "session_id", "user_id"];
+          },
+        ];
+      };
       analysis_jobs: {
         Row: {
           completed_at: string | null;
@@ -35,9 +101,10 @@ export type Database = {
           error_message: string | null;
           failed_at: string | null;
           id: string;
+          memorization_session_id: string | null;
           provider: string;
           queued_at: string;
-          recording_file_id: string;
+          roleplay_session_id: string | null;
           started_at: string | null;
           status: Database["public"]["Enums"]["analysis_job_status"];
           updated_at: string;
@@ -49,9 +116,10 @@ export type Database = {
           error_message?: string | null;
           failed_at?: string | null;
           id?: string;
+          memorization_session_id?: string | null;
           provider?: string;
           queued_at?: string;
-          recording_file_id: string;
+          roleplay_session_id?: string | null;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["analysis_job_status"];
           updated_at?: string;
@@ -63,9 +131,10 @@ export type Database = {
           error_message?: string | null;
           failed_at?: string | null;
           id?: string;
+          memorization_session_id?: string | null;
           provider?: string;
           queued_at?: string;
-          recording_file_id?: string;
+          roleplay_session_id?: string | null;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["analysis_job_status"];
           updated_at?: string;
@@ -73,117 +142,233 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "analysis_jobs_recording_file_id_user_id_fkey";
-            columns: ["recording_file_id", "user_id"];
+            foreignKeyName: "analysis_jobs_memorization_session_id_user_id_fkey";
+            columns: ["memorization_session_id", "user_id"];
             isOneToOne: false;
-            referencedRelation: "recording_files";
+            referencedRelation: "memorization_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "analysis_jobs_roleplay_session_id_user_id_fkey";
+            columns: ["roleplay_session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_sessions";
             referencedColumns: ["id", "user_id"];
           },
         ];
       };
-      analysis_results: {
-        Row: {
-          analysis_job_id: string;
-          created_at: string;
-          deleted_at: string | null;
-          feedback: Json;
-          id: string;
-          recording_file_id: string;
-          score: number | null;
-          status: Database["public"]["Enums"]["analysis_result_status"];
-          transcript: string;
-          updated_at: string;
-          user_id: string;
-        };
-        Insert: {
-          analysis_job_id: string;
-          created_at?: string;
-          deleted_at?: string | null;
-          feedback: Json;
-          id?: string;
-          recording_file_id: string;
-          score?: number | null;
-          status?: Database["public"]["Enums"]["analysis_result_status"];
-          transcript: string;
-          updated_at?: string;
-          user_id: string;
-        };
-        Update: {
-          analysis_job_id?: string;
-          created_at?: string;
-          deleted_at?: string | null;
-          feedback?: Json;
-          id?: string;
-          recording_file_id?: string;
-          score?: number | null;
-          status?: Database["public"]["Enums"]["analysis_result_status"];
-          transcript?: string;
-          updated_at?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "analysis_results_analysis_job_id_user_id_recording_file_id_fkey";
-            columns: ["analysis_job_id", "user_id", "recording_file_id"];
-            isOneToOne: false;
-            referencedRelation: "analysis_jobs";
-            referencedColumns: ["id", "user_id", "recording_file_id"];
-          },
-          {
-            foreignKeyName: "analysis_results_recording_file_id_user_id_fkey";
-            columns: ["recording_file_id", "user_id"];
-            isOneToOne: false;
-            referencedRelation: "recording_files";
-            referencedColumns: ["id", "user_id"];
-          },
-        ];
-      };
-      file_cleanup_logs: {
+      cleanup_failure_logs: {
         Row: {
           attempted_at: string;
           bucket_id: string;
-          completed_at: string | null;
           created_at: string;
-          error_message: string | null;
+          duration_ms: number | null;
+          error_message: string;
           id: string;
+          mime_type: string;
           object_path: string;
-          recording_file_id: string | null;
-          status: Database["public"]["Enums"]["cleanup_status"];
-          updated_at: string;
+          size_bytes: number;
+          source: Database["public"]["Enums"]["cleanup_failure_source"];
           user_id: string;
         };
         Insert: {
           attempted_at?: string;
           bucket_id: string;
-          completed_at?: string | null;
           created_at?: string;
-          error_message?: string | null;
+          duration_ms?: number | null;
+          error_message: string;
           id?: string;
+          mime_type: string;
           object_path: string;
-          recording_file_id?: string | null;
-          status?: Database["public"]["Enums"]["cleanup_status"];
-          updated_at?: string;
+          size_bytes: number;
+          source: Database["public"]["Enums"]["cleanup_failure_source"];
           user_id: string;
         };
         Update: {
           attempted_at?: string;
           bucket_id?: string;
-          completed_at?: string | null;
           created_at?: string;
-          error_message?: string | null;
+          duration_ms?: number | null;
+          error_message?: string;
           id?: string;
+          mime_type?: string;
           object_path?: string;
-          recording_file_id?: string | null;
-          status?: Database["public"]["Enums"]["cleanup_status"];
+          size_bytes?: number;
+          source?: Database["public"]["Enums"]["cleanup_failure_source"];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      draft_recordings: {
+        Row: {
+          bucket_id: string;
+          created_at: string;
+          duration_ms: number | null;
+          id: string;
+          memorization_sentence_id: string | null;
+          memorization_session_id: string | null;
+          mime_type: string;
+          object_path: string;
+          roleplay_line_id: string | null;
+          roleplay_session_id: string | null;
+          size_bytes: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          bucket_id: string;
+          created_at?: string;
+          duration_ms?: number | null;
+          id?: string;
+          memorization_sentence_id?: string | null;
+          memorization_session_id?: string | null;
+          mime_type: string;
+          object_path: string;
+          roleplay_line_id?: string | null;
+          roleplay_session_id?: string | null;
+          size_bytes: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          bucket_id?: string;
+          created_at?: string;
+          duration_ms?: number | null;
+          id?: string;
+          memorization_sentence_id?: string | null;
+          memorization_session_id?: string | null;
+          mime_type?: string;
+          object_path?: string;
+          roleplay_line_id?: string | null;
+          roleplay_session_id?: string | null;
+          size_bytes?: number;
           updated_at?: string;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "file_cleanup_logs_recording_file_id_user_id_fkey";
-            columns: ["recording_file_id", "user_id"];
+            foreignKeyName: "draft_recordings_memorization_sentence_id_memorization_ses_fkey";
+            columns: ["memorization_sentence_id", "memorization_session_id", "user_id"];
             isOneToOne: false;
-            referencedRelation: "recording_files";
+            referencedRelation: "memorization_session_sentences";
+            referencedColumns: ["id", "session_id", "user_id"];
+          },
+          {
+            foreignKeyName: "draft_recordings_roleplay_line_id_roleplay_session_id_user_fkey";
+            columns: ["roleplay_line_id", "roleplay_session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_session_lines";
+            referencedColumns: ["id", "session_id", "user_id"];
+          },
+        ];
+      };
+      memorization_material_paragraphs: {
+        Row: {
+          created_at: string;
+          id: string;
+          material_id: string;
+          paragraph_order: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          material_id: string;
+          paragraph_order: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          material_id?: string;
+          paragraph_order?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memorization_material_paragraphs_material_id_user_id_fkey";
+            columns: ["material_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_materials";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      memorization_material_sentences: {
+        Row: {
+          created_at: string;
+          id: string;
+          material_id: string;
+          paragraph_id: string;
+          sentence_order: number;
+          text: string;
+          translation: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          material_id: string;
+          paragraph_id: string;
+          sentence_order: number;
+          text: string;
+          translation?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          material_id?: string;
+          paragraph_id?: string;
+          sentence_order?: number;
+          text?: string;
+          translation?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memorization_material_sentenc_paragraph_id_material_id_use_fkey";
+            columns: ["paragraph_id", "material_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_material_paragraphs";
+            referencedColumns: ["id", "material_id", "user_id"];
+          },
+        ];
+      };
+      memorization_material_tags: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          material_id: string;
+          normalized_name: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          material_id: string;
+          normalized_name: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          material_id?: string;
+          normalized_name?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memorization_material_tags_material_id_user_id_fkey";
+            columns: ["material_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_materials";
             referencedColumns: ["id", "user_id"];
           },
         ];
@@ -193,11 +378,8 @@ export type Database = {
           created_at: string;
           deleted_at: string | null;
           id: string;
-          paragraphs: Json;
           status: Database["public"]["Enums"]["material_status"];
-          tags: string[];
           title: string;
-          translation: Json | null;
           updated_at: string;
           user_id: string;
         };
@@ -205,11 +387,8 @@ export type Database = {
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
-          paragraphs: Json;
           status?: Database["public"]["Enums"]["material_status"];
-          tags?: string[];
           title: string;
-          translation?: Json | null;
           updated_at?: string;
           user_id: string;
         };
@@ -217,56 +396,158 @@ export type Database = {
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
-          paragraphs?: Json;
           status?: Database["public"]["Enums"]["material_status"];
-          tags?: string[];
           title?: string;
-          translation?: Json | null;
           updated_at?: string;
           user_id?: string;
         };
         Relationships: [];
       };
+      memorization_session_paragraphs: {
+        Row: {
+          created_at: string;
+          id: string;
+          paragraph_order: number;
+          session_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          paragraph_order: number;
+          session_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          paragraph_order?: number;
+          session_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memorization_session_paragraphs_session_id_user_id_fkey";
+            columns: ["session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      memorization_session_sentences: {
+        Row: {
+          created_at: string;
+          id: string;
+          paragraph_id: string;
+          sentence_order: number;
+          session_id: string;
+          text_snapshot: string;
+          translation_snapshot: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          paragraph_id: string;
+          sentence_order: number;
+          session_id: string;
+          text_snapshot: string;
+          translation_snapshot?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          paragraph_id?: string;
+          sentence_order?: number;
+          session_id?: string;
+          text_snapshot?: string;
+          translation_snapshot?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memorization_session_sentence_paragraph_id_session_id_user_fkey";
+            columns: ["paragraph_id", "session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_session_paragraphs";
+            referencedColumns: ["id", "session_id", "user_id"];
+          },
+        ];
+      };
+      memorization_session_tags: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          normalized_name: string;
+          session_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          normalized_name: string;
+          session_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          normalized_name?: string;
+          session_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memorization_session_tags_session_id_user_id_fkey";
+            columns: ["session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
       memorization_sessions: {
         Row: {
           completed_at: string | null;
           created_at: string;
+          current_paragraph_order: number;
+          current_sentence_order: number;
           deleted_at: string | null;
           id: string;
           material_id: string | null;
           material_title_snapshot: string;
-          paragraphs_snapshot: Json;
           started_at: string | null;
           status: Database["public"]["Enums"]["practice_session_status"];
-          translation_snapshot: Json | null;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           completed_at?: string | null;
           created_at?: string;
+          current_paragraph_order?: number;
+          current_sentence_order?: number;
           deleted_at?: string | null;
           id?: string;
           material_id?: string | null;
           material_title_snapshot: string;
-          paragraphs_snapshot: Json;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
-          translation_snapshot?: Json | null;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           completed_at?: string | null;
           created_at?: string;
+          current_paragraph_order?: number;
+          current_sentence_order?: number;
           deleted_at?: string | null;
           id?: string;
           material_id?: string | null;
           material_title_snapshot?: string;
-          paragraphs_snapshot?: Json;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
-          translation_snapshot?: Json | null;
           updated_at?: string;
           user_id?: string;
         };
@@ -280,65 +561,63 @@ export type Database = {
           },
         ];
       };
-      recording_files: {
+      practice_target_analysis_results: {
         Row: {
-          bucket_id: string;
+          analysis_job_id: string;
           created_at: string;
-          deleted_at: string | null;
-          duration_ms: number | null;
+          feedback: Json;
           id: string;
-          memorization_session_id: string | null;
-          mime_type: string;
-          object_path: string;
-          roleplay_session_id: string | null;
-          size_bytes: number;
-          status: Database["public"]["Enums"]["recording_file_status"];
+          memorization_sentence_id: string | null;
+          roleplay_line_id: string | null;
+          score: number | null;
+          transcript: string;
           updated_at: string;
           user_id: string;
         };
         Insert: {
-          bucket_id: string;
+          analysis_job_id: string;
           created_at?: string;
-          deleted_at?: string | null;
-          duration_ms?: number | null;
+          feedback: Json;
           id?: string;
-          memorization_session_id?: string | null;
-          mime_type: string;
-          object_path: string;
-          roleplay_session_id?: string | null;
-          size_bytes: number;
-          status?: Database["public"]["Enums"]["recording_file_status"];
+          memorization_sentence_id?: string | null;
+          roleplay_line_id?: string | null;
+          score?: number | null;
+          transcript: string;
           updated_at?: string;
           user_id: string;
         };
         Update: {
-          bucket_id?: string;
+          analysis_job_id?: string;
           created_at?: string;
-          deleted_at?: string | null;
-          duration_ms?: number | null;
+          feedback?: Json;
           id?: string;
-          memorization_session_id?: string | null;
-          mime_type?: string;
-          object_path?: string;
-          roleplay_session_id?: string | null;
-          size_bytes?: number;
-          status?: Database["public"]["Enums"]["recording_file_status"];
+          memorization_sentence_id?: string | null;
+          roleplay_line_id?: string | null;
+          score?: number | null;
+          transcript?: string;
           updated_at?: string;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "recording_files_memorization_session_id_user_id_fkey";
-            columns: ["memorization_session_id", "user_id"];
+            foreignKeyName: "practice_target_analysis_resu_memorization_sentence_id_use_fkey";
+            columns: ["memorization_sentence_id", "user_id"];
             isOneToOne: false;
-            referencedRelation: "memorization_sessions";
+            referencedRelation: "memorization_session_sentences";
             referencedColumns: ["id", "user_id"];
           },
           {
-            foreignKeyName: "recording_files_roleplay_session_id_user_id_fkey";
-            columns: ["roleplay_session_id", "user_id"];
+            foreignKeyName: "practice_target_analysis_results_analysis_job_id_user_id_fkey";
+            columns: ["analysis_job_id", "user_id"];
             isOneToOne: false;
-            referencedRelation: "roleplay_sessions";
+            referencedRelation: "analysis_jobs";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "practice_target_analysis_results_roleplay_line_id_user_id_fkey";
+            columns: ["roleplay_line_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_session_lines";
             referencedColumns: ["id", "user_id"];
           },
         ];
@@ -349,7 +628,7 @@ export type Database = {
           id: string;
           line_order: number;
           material_id: string;
-          speaker: string;
+          speaker_order: number;
           text: string;
           translation: string | null;
           updated_at: string;
@@ -360,7 +639,7 @@ export type Database = {
           id?: string;
           line_order: number;
           material_id: string;
-          speaker: string;
+          speaker_order: number;
           text: string;
           translation?: string | null;
           updated_at?: string;
@@ -371,7 +650,7 @@ export type Database = {
           id?: string;
           line_order?: number;
           material_id?: string;
-          speaker?: string;
+          speaker_order?: number;
           text?: string;
           translation?: string | null;
           updated_at?: string;
@@ -387,14 +666,47 @@ export type Database = {
           },
         ];
       };
+      roleplay_material_tags: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          material_id: string;
+          normalized_name: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          material_id: string;
+          normalized_name: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          material_id?: string;
+          normalized_name?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "roleplay_material_tags_material_id_user_id_fkey";
+            columns: ["material_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_materials";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
       roleplay_materials: {
         Row: {
           created_at: string;
           deleted_at: string | null;
           id: string;
           situation: string;
+          speaker_one_name: string;
+          speaker_two_name: string;
           status: Database["public"]["Enums"]["material_status"];
-          tags: string[];
           title: string;
           updated_at: string;
           user_id: string;
@@ -404,8 +716,9 @@ export type Database = {
           deleted_at?: string | null;
           id?: string;
           situation: string;
+          speaker_one_name: string;
+          speaker_two_name: string;
           status?: Database["public"]["Enums"]["material_status"];
-          tags?: string[];
           title: string;
           updated_at?: string;
           user_id: string;
@@ -415,8 +728,9 @@ export type Database = {
           deleted_at?: string | null;
           id?: string;
           situation?: string;
+          speaker_one_name?: string;
+          speaker_two_name?: string;
           status?: Database["public"]["Enums"]["material_status"];
-          tags?: string[];
           title?: string;
           updated_at?: string;
           user_id?: string;
@@ -429,7 +743,7 @@ export type Database = {
           id: string;
           line_order: number;
           session_id: string;
-          speaker_snapshot: string;
+          speaker_order: number;
           text_snapshot: string;
           translation_snapshot: string | null;
           user_id: string;
@@ -439,7 +753,7 @@ export type Database = {
           id?: string;
           line_order: number;
           session_id: string;
-          speaker_snapshot: string;
+          speaker_order: number;
           text_snapshot: string;
           translation_snapshot?: string | null;
           user_id: string;
@@ -449,7 +763,7 @@ export type Database = {
           id?: string;
           line_order?: number;
           session_id?: string;
-          speaker_snapshot?: string;
+          speaker_order?: number;
           text_snapshot?: string;
           translation_snapshot?: string | null;
           user_id?: string;
@@ -464,15 +778,51 @@ export type Database = {
           },
         ];
       };
+      roleplay_session_tags: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          normalized_name: string;
+          session_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          normalized_name: string;
+          session_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          normalized_name?: string;
+          session_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "roleplay_session_tags_session_id_user_id_fkey";
+            columns: ["session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
       roleplay_sessions: {
         Row: {
           completed_at: string | null;
           created_at: string;
+          current_line_order: number;
           deleted_at: string | null;
           id: string;
           material_id: string | null;
           material_title_snapshot: string;
+          selected_learner_speaker_order: number;
           situation_snapshot: string;
+          speaker_one_name_snapshot: string;
+          speaker_two_name_snapshot: string;
           started_at: string | null;
           status: Database["public"]["Enums"]["practice_session_status"];
           updated_at: string;
@@ -481,11 +831,15 @@ export type Database = {
         Insert: {
           completed_at?: string | null;
           created_at?: string;
+          current_line_order?: number;
           deleted_at?: string | null;
           id?: string;
           material_id?: string | null;
           material_title_snapshot: string;
+          selected_learner_speaker_order: number;
           situation_snapshot: string;
+          speaker_one_name_snapshot: string;
+          speaker_two_name_snapshot: string;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
           updated_at?: string;
@@ -494,11 +848,15 @@ export type Database = {
         Update: {
           completed_at?: string | null;
           created_at?: string;
+          current_line_order?: number;
           deleted_at?: string | null;
           id?: string;
           material_id?: string | null;
           material_title_snapshot?: string;
+          selected_learner_speaker_order?: number;
           situation_snapshot?: string;
+          speaker_one_name_snapshot?: string;
+          speaker_two_name_snapshot?: string;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
           updated_at?: string;
@@ -514,6 +872,85 @@ export type Database = {
           },
         ];
       };
+      session_analysis_summaries: {
+        Row: {
+          analysis_job_id: string;
+          created_at: string;
+          id: string;
+          memorization_session_id: string | null;
+          roleplay_session_id: string | null;
+          score: number | null;
+          summary: Json;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          analysis_job_id: string;
+          created_at?: string;
+          id?: string;
+          memorization_session_id?: string | null;
+          roleplay_session_id?: string | null;
+          score?: number | null;
+          summary: Json;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          analysis_job_id?: string;
+          created_at?: string;
+          id?: string;
+          memorization_session_id?: string | null;
+          roleplay_session_id?: string | null;
+          score?: number | null;
+          summary?: Json;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "session_analysis_summaries_analysis_job_id_user_id_fkey";
+            columns: ["analysis_job_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "analysis_jobs";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "session_analysis_summaries_memorization_session_id_user_id_fkey";
+            columns: ["memorization_session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "memorization_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "session_analysis_summaries_roleplay_session_id_user_id_fkey";
+            columns: ["roleplay_session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_sessions";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      user_profiles: {
+        Row: {
+          created_at: string;
+          display_name: string | null;
+          id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name?: string | null;
+          id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string | null;
+          id?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -523,11 +960,9 @@ export type Database = {
     };
     Enums: {
       analysis_job_status: "queued" | "processing" | "completed" | "failed" | "canceled";
-      analysis_result_status: "available" | "deleted";
-      cleanup_status: "pending" | "completed" | "failed";
+      cleanup_failure_source: "draft_recording" | "accepted_recording" | "session_delete";
       material_status: "active" | "deleted";
-      practice_session_status: "ready" | "practicing" | "completed" | "abandoned" | "deleted";
-      recording_file_status: "stored" | "cleanup_pending" | "deleted";
+      practice_session_status: "ready" | "in_progress" | "completed" | "deleted";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -657,11 +1092,9 @@ export const Constants = {
   public: {
     Enums: {
       analysis_job_status: ["queued", "processing", "completed", "failed", "canceled"],
-      analysis_result_status: ["available", "deleted"],
-      cleanup_status: ["pending", "completed", "failed"],
+      cleanup_failure_source: ["draft_recording", "accepted_recording", "session_delete"],
       material_status: ["active", "deleted"],
-      practice_session_status: ["ready", "practicing", "completed", "abandoned", "deleted"],
-      recording_file_status: ["stored", "cleanup_pending", "deleted"],
+      practice_session_status: ["ready", "in_progress", "completed", "deleted"],
     },
   },
 } as const;
