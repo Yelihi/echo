@@ -5,7 +5,7 @@ import type {
   SessionId,
   TagValue,
   UserId,
-} from "@/shared/domain/value-objects";
+} from "@/entities/value-object";
 
 import type { SessionState } from "./enums";
 

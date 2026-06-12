@@ -1,5 +1,5 @@
 import type { RoleplayMaterial } from "@/entities/roleplay-material";
-import type { MaterialId, SpeakerId, UserId } from "@/shared/domain/value-objects";
+import type { MaterialId, SpeakerId, UserId } from "@/entities/value-object";
 
 import type { RoleplaySession } from "../entity";
 

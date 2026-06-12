@@ -1,4 +1,4 @@
-import type { UserId } from "@/shared/domain/value-objects";
+import type { UserId } from "@/entities/value-object";
 
 export interface EchoUserProfile {
   readonly id: UserId;

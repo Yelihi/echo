@@ -1,5 +1,5 @@
 import type { PracticeTarget } from "@/entities/practice-target";
-import type { RecordingAudio, RecordingId, UserId } from "@/shared/domain/value-objects";
+import type { RecordingAudio, RecordingId, UserId } from "@/entities/value-object";
 
 export interface AcceptedRecording {
   readonly id: RecordingId;

@@ -1,4 +1,4 @@
-import type { SessionId } from "@/shared/domain/value-objects";
+import type { SessionId } from "@/entities/value-object";
 
 export interface AcceptDraftRecordingInput {
   readonly sessionId: SessionId;

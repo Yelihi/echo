@@ -1,4 +1,4 @@
-import type { RecordingAudio, UserId } from "@/shared/domain/value-objects";
+import type { RecordingAudio, UserId } from "@/entities/value-object";
 
 import type { CleanupFailureSource } from "./enums";
 

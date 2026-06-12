@@ -4,7 +4,7 @@ import type {
   SentenceId,
   TagValue,
   UserId,
-} from "@/shared/domain/value-objects";
+} from "@/entities/value-object";
 
 import type { MaterialState } from "./enums";
 

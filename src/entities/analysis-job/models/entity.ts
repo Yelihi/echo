@@ -1,5 +1,5 @@
 import type { PracticeTarget, PracticeType } from "@/entities/practice-target";
-import type { AnalysisJobId, SessionId, UserId } from "@/shared/domain/value-objects";
+import type { AnalysisJobId, SessionId, UserId } from "@/entities/value-object";
 
 import type { AnalysisJobState } from "./enums";
 

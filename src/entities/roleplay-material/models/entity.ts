@@ -1,10 +1,4 @@
-import type {
-  LineId,
-  MaterialId,
-  SpeakerId,
-  TagValue,
-  UserId,
-} from "@/shared/domain/value-objects";
+import type { LineId, MaterialId, SpeakerId, TagValue, UserId } from "@/entities/value-object";
 
 import type { MaterialState } from "./enums";
 

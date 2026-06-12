@@ -1,4 +1,4 @@
-import type { LineId, SentenceId, SessionId } from "@/shared/domain/value-objects";
+import type { LineId, SentenceId, SessionId } from "@/entities/value-object";
 
 import type { PracticeType } from "./enums";
 
