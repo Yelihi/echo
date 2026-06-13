@@ -1,0 +1,11 @@
+import type { PracticeTarget } from "@/entities/practice-target";
+import type { RecordingAudio, RecordingId, UserId } from "@/entities/value-object";
+
+export interface DraftRecording {
+  readonly id: RecordingId;
+  readonly ownerId: UserId;
+  readonly target: PracticeTarget;
+  readonly audio: RecordingAudio;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+}

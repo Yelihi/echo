@@ -11,6 +11,16 @@ description: FSD(Feature-Sliced Design)내 entities(Models) rules
 
 ## Step 1. Entity 유형 판단
 
+### Entity slice 경계
+
+- `src/entities/{entity-name}`의 `{entity-name}`은 **루트 어그리게이트 또는 루트 엔티티**를 기준으로 정한다.
+- bounded context, 기능 묶음, 화면 묶음, DB 테이블 묶음 이름을 entity slice 이름으로 사용하지 않는다.
+- 여러 루트 어그리게이트를 `practice`, `learning`, `domain` 같은 넓은 이름 하나로 합치지 않는다.
+- 다른 aggregate가 참조해야 하는 공통 value object는 `src/entities/value-object/` 단일 slice에 모은다.
+- value object 외 공통 유틸리티, 프레임워크 helper, UI helper는 `entities`가 아니라 `shared`에 둔다.
+- 다른 slice에서 import할 때는 각 aggregate의 public API인 `@/entities/{entity-name}`를 우선 사용한다.
+- aggregate 내부 파일을 직접 import하는 것은 같은 slice 내부로 제한한다.
+
 | 유형                   | 조건                                                   | 생성 파일                                                        |
 | ---------------------- | ------------------------------------------------------ | ---------------------------------------------------------------- |
 | **A. 데이터 모델만**   | HTTP 호출 없음, 다른 entity의 DTO에서 참조만 됨        | `models/dtos.ts`, `models/enums.ts`                              |

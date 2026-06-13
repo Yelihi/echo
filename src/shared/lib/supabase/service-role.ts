@@ -2,12 +2,14 @@ import "server-only";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import type { Database } from "./database.types";
+
 type SupabaseServiceRoleConfig = {
   url: string;
   serviceRoleKey: string;
 };
 
-let serviceRoleClient: SupabaseClient | null = null;
+let serviceRoleClient: SupabaseClient<Database> | null = null;
 
 function getSupabaseServiceRoleConfig(): SupabaseServiceRoleConfig {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -22,11 +24,11 @@ function getSupabaseServiceRoleConfig(): SupabaseServiceRoleConfig {
   return { url, serviceRoleKey };
 }
 
-export function getSupabaseServiceRoleClient(): SupabaseClient {
+export function getSupabaseServiceRoleClient(): SupabaseClient<Database> {
   if (!serviceRoleClient) {
     const { url, serviceRoleKey } = getSupabaseServiceRoleConfig();
 
-    serviceRoleClient = createClient(url, serviceRoleKey, {
+    serviceRoleClient = createClient<Database>(url, serviceRoleKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,

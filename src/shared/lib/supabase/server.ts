@@ -4,6 +4,8 @@ import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
+import type { Database } from "./database.types";
+
 type SupabaseServerConfig = {
   url: string;
   publishableKey: string;
@@ -22,11 +24,11 @@ function getSupabaseServerConfig(): SupabaseServerConfig {
   return { url, publishableKey };
 }
 
-export async function createSupabaseServerClient(): Promise<SupabaseClient> {
+export async function createSupabaseServerClient(): Promise<SupabaseClient<Database>> {
   const { url, publishableKey } = getSupabaseServerConfig();
   const cookieStore = await cookies();
 
-  return createServerClient(url, publishableKey, {
+  return createServerClient<Database>(url, publishableKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
