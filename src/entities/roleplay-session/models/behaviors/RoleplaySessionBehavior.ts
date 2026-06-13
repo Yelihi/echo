@@ -1,7 +1,7 @@
 import type { RoleplayMaterial } from "@/entities/roleplay-material";
 import type { MaterialId, SpeakerId, UserId } from "@/entities/value-object";
 
-import type { RoleplaySession } from "../entity";
+import type { RoleplaySession } from "@/entities/roleplay-session/models/entity";
 
 export interface CreateRoleplaySessionInput {
   readonly ownerId: UserId;

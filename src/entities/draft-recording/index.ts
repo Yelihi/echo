@@ -1,5 +1,12 @@
 export type {
   AcceptDraftRecordingInput,
   DraftRecordingBehaviorStructure,
-} from "./models/behaviors/DraftRecordingBehavior";
-export type { DraftRecording } from "./models/entity";
+} from "@/entities/draft-recording/models/behaviors/DraftRecordingBehavior";
+export type { DraftRecording } from "@/entities/draft-recording/models/entity";
+export { mapDraftRecordingRowToEntity } from "@/entities/draft-recording/models/mapper";
+export type { DraftRecordingRow } from "@/entities/draft-recording/models/mapper";
+export type { DraftRecordingRepositoryPort } from "@/entities/draft-recording/models/repository";
+export {
+  DraftRecordingRepository,
+  createDraftRecordingRepository,
+} from "@/entities/draft-recording/infrastructure/DraftRecordingRepository";

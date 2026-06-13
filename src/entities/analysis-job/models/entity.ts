@@ -1,7 +1,7 @@
 import type { PracticeTarget, PracticeType } from "@/entities/practice-target";
 import type { AnalysisJobId, SessionId, UserId } from "@/entities/value-object";
 
-import type { AnalysisJobState } from "./enums";
+import type { AnalysisJobState } from "@/entities/analysis-job/models/enums";
 
 export interface AnalysisJob {
   readonly id: AnalysisJobId;

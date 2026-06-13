@@ -7,7 +7,7 @@ import type {
   UserId,
 } from "@/entities/value-object";
 
-import type { SessionState } from "./enums";
+import type { SessionState } from "@/entities/memorization-session/models/enums";
 
 export interface MemorizationSentenceSnapshot {
   readonly id: SentenceId;
