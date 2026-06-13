@@ -568,7 +568,9 @@ export type Database = {
           feedback: Json;
           id: string;
           memorization_sentence_id: string | null;
+          memorization_session_id: string | null;
           roleplay_line_id: string | null;
+          roleplay_session_id: string | null;
           score: number | null;
           transcript: string;
           updated_at: string;
@@ -580,7 +582,9 @@ export type Database = {
           feedback: Json;
           id?: string;
           memorization_sentence_id?: string | null;
+          memorization_session_id?: string | null;
           roleplay_line_id?: string | null;
+          roleplay_session_id?: string | null;
           score?: number | null;
           transcript: string;
           updated_at?: string;
@@ -592,7 +596,9 @@ export type Database = {
           feedback?: Json;
           id?: string;
           memorization_sentence_id?: string | null;
+          memorization_session_id?: string | null;
           roleplay_line_id?: string | null;
+          roleplay_session_id?: string | null;
           score?: number | null;
           transcript?: string;
           updated_at?: string;
@@ -600,24 +606,38 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "practice_target_analysis_resu_memorization_sentence_id_use_fkey";
-            columns: ["memorization_sentence_id", "user_id"];
+            foreignKeyName: "practice_target_analysis_resu_analysis_job_id_user_id_memo_fkey";
+            columns: ["analysis_job_id", "user_id", "memorization_session_id"];
+            isOneToOne: false;
+            referencedRelation: "analysis_jobs";
+            referencedColumns: ["id", "user_id", "memorization_session_id"];
+          },
+          {
+            foreignKeyName: "practice_target_analysis_resu_analysis_job_id_user_id_role_fkey";
+            columns: ["analysis_job_id", "user_id", "roleplay_session_id"];
+            isOneToOne: false;
+            referencedRelation: "analysis_jobs";
+            referencedColumns: ["id", "user_id", "roleplay_session_id"];
+          },
+          {
+            foreignKeyName: "practice_target_analysis_resu_memorization_sentence_id_mem_fkey";
+            columns: ["memorization_sentence_id", "memorization_session_id", "user_id"];
             isOneToOne: false;
             referencedRelation: "memorization_session_sentences";
-            referencedColumns: ["id", "user_id"];
+            referencedColumns: ["id", "session_id", "user_id"];
+          },
+          {
+            foreignKeyName: "practice_target_analysis_resu_roleplay_line_id_roleplay_se_fkey";
+            columns: ["roleplay_line_id", "roleplay_session_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "roleplay_session_lines";
+            referencedColumns: ["id", "session_id", "user_id"];
           },
           {
             foreignKeyName: "practice_target_analysis_results_analysis_job_id_user_id_fkey";
             columns: ["analysis_job_id", "user_id"];
             isOneToOne: false;
             referencedRelation: "analysis_jobs";
-            referencedColumns: ["id", "user_id"];
-          },
-          {
-            foreignKeyName: "practice_target_analysis_results_roleplay_line_id_user_id_fkey";
-            columns: ["roleplay_line_id", "user_id"];
-            isOneToOne: false;
-            referencedRelation: "roleplay_session_lines";
             referencedColumns: ["id", "user_id"];
           },
         ];
@@ -913,6 +933,20 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "analysis_jobs";
             referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "session_analysis_summaries_analysis_job_id_user_id_memoriz_fkey";
+            columns: ["analysis_job_id", "user_id", "memorization_session_id"];
+            isOneToOne: false;
+            referencedRelation: "analysis_jobs";
+            referencedColumns: ["id", "user_id", "memorization_session_id"];
+          },
+          {
+            foreignKeyName: "session_analysis_summaries_analysis_job_id_user_id_rolepla_fkey";
+            columns: ["analysis_job_id", "user_id", "roleplay_session_id"];
+            isOneToOne: false;
+            referencedRelation: "analysis_jobs";
+            referencedColumns: ["id", "user_id", "roleplay_session_id"];
           },
           {
             foreignKeyName: "session_analysis_summaries_memorization_session_id_user_id_fkey";

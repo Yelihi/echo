@@ -366,6 +366,8 @@ create table public.analysis_jobs (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (id, user_id),
+  unique (id, user_id, roleplay_session_id),
+  unique (id, user_id, memorization_session_id),
   check ((roleplay_session_id is not null)::integer + (memorization_session_id is not null)::integer = 1),
   check (started_at is null or started_at >= queued_at),
   check (completed_at is null or completed_at >= queued_at),
@@ -402,7 +404,9 @@ create table public.practice_target_analysis_results (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   analysis_job_id uuid not null,
+  roleplay_session_id uuid,
   roleplay_line_id uuid,
+  memorization_session_id uuid,
   memorization_sentence_id uuid,
   transcript text not null check (char_length(trim(transcript)) > 0),
   feedback jsonb not null check (jsonb_typeof(feedback) = 'object'),
@@ -410,12 +414,35 @@ create table public.practice_target_analysis_results (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (id, user_id),
-  unique (analysis_job_id, roleplay_line_id),
-  unique (analysis_job_id, memorization_sentence_id),
-  check ((roleplay_line_id is not null)::integer + (memorization_sentence_id is not null)::integer = 1),
+  unique (analysis_job_id, roleplay_session_id, roleplay_line_id),
+  unique (analysis_job_id, memorization_session_id, memorization_sentence_id),
+  check (
+    (
+      roleplay_session_id is not null
+      and roleplay_line_id is not null
+      and memorization_session_id is null
+      and memorization_sentence_id is null
+    )
+    or (
+      roleplay_session_id is null
+      and roleplay_line_id is null
+      and memorization_session_id is not null
+      and memorization_sentence_id is not null
+    )
+  ),
   foreign key (analysis_job_id, user_id) references public.analysis_jobs(id, user_id) on delete cascade,
-  foreign key (roleplay_line_id, user_id) references public.roleplay_session_lines(id, user_id) on delete cascade,
-  foreign key (memorization_sentence_id, user_id) references public.memorization_session_sentences(id, user_id) on delete cascade
+  foreign key (analysis_job_id, user_id, roleplay_session_id)
+    references public.analysis_jobs(id, user_id, roleplay_session_id)
+    on delete cascade,
+  foreign key (analysis_job_id, user_id, memorization_session_id)
+    references public.analysis_jobs(id, user_id, memorization_session_id)
+    on delete cascade,
+  foreign key (roleplay_line_id, roleplay_session_id, user_id)
+    references public.roleplay_session_lines(id, session_id, user_id)
+    on delete cascade,
+  foreign key (memorization_sentence_id, memorization_session_id, user_id)
+    references public.memorization_session_sentences(id, session_id, user_id)
+    on delete cascade
 );
 
 create table public.session_analysis_summaries (
@@ -432,6 +459,12 @@ create table public.session_analysis_summaries (
   unique (analysis_job_id),
   check ((roleplay_session_id is not null)::integer + (memorization_session_id is not null)::integer = 1),
   foreign key (analysis_job_id, user_id) references public.analysis_jobs(id, user_id) on delete cascade,
+  foreign key (analysis_job_id, user_id, roleplay_session_id)
+    references public.analysis_jobs(id, user_id, roleplay_session_id)
+    on delete cascade,
+  foreign key (analysis_job_id, user_id, memorization_session_id)
+    references public.analysis_jobs(id, user_id, memorization_session_id)
+    on delete cascade,
   foreign key (roleplay_session_id, user_id) references public.roleplay_sessions(id, user_id) on delete cascade,
   foreign key (memorization_session_id, user_id) references public.memorization_sessions(id, user_id) on delete cascade
 );
