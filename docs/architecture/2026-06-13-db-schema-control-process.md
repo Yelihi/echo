@@ -2,29 +2,33 @@
 
 ## Decision
 
-Echo uses Drizzle as the TypeScript source of truth for table-level database schema.
-Supabase migration files remain the deployment unit.
+Echo manages database schema changes directly with Supabase SQL migrations.
 
-This is a hybrid process:
+Drizzle is not used in the current MVP stage. The priority is to understand and control SQL, Supabase migrations, RLS policies, auth references, storage cleanup, triggers, and generated Supabase types directly.
 
-- Drizzle controls table, column, enum, FK, check constraint, unique constraint, and index definitions.
-- Supabase migrations apply database changes.
-- Supabase-specific SQL such as RLS policies, triggers, extensions, and storage setup remains in migration SQL.
-- Zod is not introduced for DDL control.
+## Why No Drizzle For Now
 
-## Why Drizzle Only
+Supabase projects inevitably require SQL that is not just table DDL:
 
-Drizzle solves the current problem: TypeScript-based schema definition and SQL migration generation.
+- RLS policies
+- auth schema references
+- storage setup
+- triggers
+- functions
+- extensions
+- operational cleanup tables and policies
 
-Zod solves a different problem: runtime input validation. It does not own table DDL.
+Drizzle can help generate table-level SQL, but it does not remove the need to understand and review Supabase-specific SQL. Introducing Drizzle now would add another control surface:
 
-For the current MVP, introducing both would create three schema surfaces:
+```text
+Domain Entity
+Drizzle Schema
+Supabase Migration SQL
+Generated Supabase Types
+Mapper
+```
 
-- domain entity interfaces
-- Drizzle table schema
-- Zod runtime schema
-
-The project will first stabilize the database control flow with Drizzle. Zod can be introduced later for form, API payload, or mapper validation if needed.
+For the current project stage, this is more process overhead than benefit. Drizzle can be reconsidered later if SQL migration repetition becomes a real maintenance cost.
 
 ## Schema Surfaces
 
@@ -45,21 +49,67 @@ Purpose:
 
 Domain entity interfaces do not generate database DDL directly.
 
-### Drizzle Schema
+### Repository Port
 
 Location:
 
 ```text
-src/shared/lib/db/schema.ts
-drizzle.config.ts
+src/entities/{root-aggregate}/models/repository.ts
 ```
 
 Purpose:
 
-- TypeScript source of truth for table-level DDL.
-- Defines table names, columns, enums, FK, unique constraints, check constraints, and indexes.
-- Used to generate or review SQL changes before writing final Supabase migration files.
-- Does not own Supabase-managed tables such as `auth.users`.
+- Defines what the domain/application layer needs from persistence.
+- Does not import Supabase client.
+- Does not expose raw Supabase row types to callers.
+
+### Mapper
+
+Location:
+
+```text
+src/entities/{root-aggregate}/models/mapper.ts
+src/entities/{root-aggregate}/models/__tests__/mapper.test.ts
+```
+
+Purpose:
+
+- Converts Supabase generated row types to domain entities.
+- Converts domain command data to insert/update shapes when needed.
+- Catches mismatch between SQL tables and TypeScript entities.
+
+### Infrastructure Repository
+
+Location:
+
+```text
+src/entities/{root-aggregate}/infrastructure/supabase{Aggregate}Repository.ts
+```
+
+Purpose:
+
+- Implements the repository port.
+- Uses Supabase client and generated database types.
+- Calls mapper before returning domain entities.
+- Owns aggregate-specific persistence details.
+
+### Supabase Client Setup
+
+Location:
+
+```text
+src/shared/lib/supabase/client.ts
+src/shared/lib/supabase/server.ts
+src/shared/lib/supabase/service-role.ts
+src/shared/lib/supabase/database.types.ts
+```
+
+Purpose:
+
+- Creates Supabase clients.
+- Owns environment variable wiring.
+- Provides generated DB types.
+- Does not own aggregate-specific persistence behavior.
 
 ### Supabase Migration
 
@@ -72,9 +122,10 @@ supabase/migrations/*.sql
 Purpose:
 
 - Actual deployable database migration history.
-- Includes generated/reviewed table DDL.
-- Includes Supabase-specific SQL: RLS, policies, triggers, extensions, and storage setup.
-- Owns references to Supabase-managed schemas such as `auth.users`.
+- Owns table DDL, enum DDL, FK, constraints, indexes, triggers, functions, RLS policies, and Supabase-specific SQL.
+- Is global because migration order is global and one migration can affect multiple aggregates.
+
+Do not place migration SQL inside `src/entities/*`. Even when a migration is closely related to one aggregate, it is still deployment history, not domain code.
 
 ### Generated Supabase Types
 
@@ -88,26 +139,28 @@ Purpose:
 
 - TypeScript view of the applied Supabase database schema.
 - Generated from the local or remote database after migration is applied.
-- Used by Supabase clients and mapper tests.
+- Used by Supabase clients, infrastructure repositories, and mapper tests.
 
 ## Change Flow
 
 ```text
 Domain model change
   ↓
-Update src/entities/{root-aggregate}
+Update src/entities/{root-aggregate}/models/entity.ts
   ↓
-Update src/shared/lib/db/schema.ts
+Update or add repository port
   ↓
-Generate or inspect Drizzle SQL
+Create Supabase migration file
   ↓
-Write final Supabase migration SQL
+Write SQL migration directly
   ↓
 Apply to local Supabase DB
   ↓
 Regenerate Supabase database.types.ts
   ↓
-Run mapper/type/test checks
+Update mapper and mapper tests
+  ↓
+Run type/lint/test checks
   ↓
 Open PR
   ↓
@@ -125,22 +178,6 @@ npm run supabase -- migration new add_example_table
 ```
 
 Do not create migration filenames manually.
-
-### Check Drizzle Schema
-
-```bash
-npm run db:schema:check
-```
-
-### Generate Drizzle SQL Draft
-
-```bash
-npm run db:schema:generate
-```
-
-Generated Drizzle SQL is a draft. Review it before copying or adapting it into `supabase/migrations`.
-
-The committed `drizzle/0000_baseline_core_domain.sql` is a Drizzle baseline snapshot for future diffs. It is not the production deployment unit. The deployable migration remains under `supabase/migrations`.
 
 ### Apply and Verify Locally
 
@@ -167,7 +204,7 @@ Supabase Row type
 Domain Entity type
 ```
 
-Each aggregate that reads from Supabase should eventually have:
+Each aggregate that reads from Supabase should have:
 
 ```text
 src/entities/{root-aggregate}/models/mapper.ts
@@ -176,21 +213,50 @@ src/entities/{root-aggregate}/models/__tests__/mapper.test.ts
 
 Mapper tests should import row types from `src/shared/lib/supabase/database.types.ts`.
 
+## Folder Rule
+
+Recommended aggregate structure:
+
+```text
+src/entities/{root-aggregate}/
+  index.ts
+  models/
+    entity.ts
+    enums.ts
+    repository.ts
+    mapper.ts
+    __tests__/
+      mapper.test.ts
+    behaviors/
+      {Aggregate}Behavior.ts
+  infrastructure/
+    supabase{Aggregate}Repository.ts
+```
+
+Keep these boundaries:
+
+- `models/entity.ts` is pure domain shape.
+- `models/repository.ts` is the persistence port.
+- `models/mapper.ts` maps database types and domain types.
+- `infrastructure/*Repository.ts` talks to Supabase.
+- `shared/lib/supabase/*` creates clients and exposes generated DB types.
+- `supabase/migrations/*` owns deployable SQL history.
+
 ## PR Gate
 
 Every DB shape PR should include:
 
 - Domain entity change, if the domain model changed.
-- Drizzle schema change.
 - Supabase migration SQL.
 - Regenerated `database.types.ts`.
+- Repository port changes, if persistence behavior changed.
+- Infrastructure repository changes, if a table is read or written.
 - Mapper tests when a table maps to a domain entity.
 - Verification command output.
 
 Required checks:
 
 ```bash
-npm run db:schema:check
 npm run supabase -- db reset
 npm run supabase -- db lint --local
 npm run typecheck
@@ -231,3 +297,14 @@ manual approval
   ↓
 db push to production
 ```
+
+## When To Reconsider Drizzle
+
+Reconsider Drizzle only when one of these becomes a real cost:
+
+- SQL table DDL is repetitive enough to slow development.
+- Multiple developers frequently edit table schema concurrently.
+- Manual SQL review repeatedly misses column/type/index drift.
+- The team wants a TypeScript schema DSL as a primary DB design tool.
+
+Until then, SQL-first Supabase migrations are the control system.
