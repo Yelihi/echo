@@ -1,4 +1,6 @@
-export { createTagValue } from "./models/value-objects";
+export { createTagValue } from "@/entities/value-object/models/value-objects";
+export { mapRecordingAudioFields } from "@/entities/value-object/models/mapper";
+export type { RecordingAudioFields } from "@/entities/value-object/models/mapper";
 export type {
   AnalysisJobId,
   Brand,
@@ -12,4 +14,4 @@ export type {
   SpeakerId,
   TagValue,
   UserId,
-} from "./models/value-objects";
+} from "@/entities/value-object/models/value-objects";

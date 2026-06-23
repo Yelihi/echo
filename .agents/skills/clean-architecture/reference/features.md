@@ -353,18 +353,21 @@ import { useSuspenseLikeQuery } from '@/shared/lib/https/useSuspenseLikeQuery';
 import { wrapperSentry } from '@/shared/lib/errors/wrapperSentry';
 import { SENTRY_OP_GUIDE } from '@/shared/lib/errors/const';
 import { ServerCustomError, UnknownError } from '@/shared/lib/errors/customError';
-import { {entity}Repository } from '@/entities/{entity}/services/{Entity}RepositoryImpl';
+import type { {Entity}RepositoryPort } from '@/entities/{entity}';
 import { Get{Entity}sRequestDto, Get{Entity}sResponseDto } from '@/entities/{entity}/models/dtos';
 import { {Feature}QueryKeys } from '../config/query-keys';
 
-export const useFilter{Entity}s = (filter: Get{Entity}sRequestDto) => {
+export const useFilter{Entity}s = (
+  repository: {Entity}RepositoryPort,
+  filter: Get{Entity}sRequestDto,
+) => {
   const queryClient = useQueryClient();
 
   const data = useSuspenseLikeQuery<Get{Entity}sResponseDto, ServerCustomError | UnknownError>({
     ...{Feature}QueryKeys.{entity}_list.lists(filter),
     queryFn: () =>
       wrapperSentry(
-        async () => {entity}Repository.get{Entity}s(filter),
+        async () => repository.get{Entity}s(filter),
         'useFilter{Entity}s',
         SENTRY_OP_GUIDE.QUERY
       ),
@@ -393,7 +396,7 @@ export const useFilter{Entity}s = (filter: Get{Entity}sRequestDto) => {
 ### `services/prefetch/prefetch{Entity}s.ts`
 
 ```typescript
-import { {entity}Repository } from '@/entities/{entity}/services/{Entity}RepositoryImpl';
+import type { {Entity}RepositoryPort } from '@/entities/{entity}';
 import { parsingErrorCapture } from '@/shared/lib/errors/parsingErrorCapture';
 import { Get{Entity}sRequestDto } from '@/entities/{entity}/models/dtos';
 
@@ -403,7 +406,10 @@ const initialFilter: Get{Entity}sRequestDto = {
   // 기본 필터값
 };
 
-export const prefetch{Entity}s = async (session: string) => {
+export const prefetch{Entity}s = async (
+  repository: {Entity}RepositoryPort,
+  session: string,
+) => {
   const options = {
     headers: {
       'Content-Type': 'application/json',
@@ -412,7 +418,7 @@ export const prefetch{Entity}s = async (session: string) => {
   };
 
   try {
-    return await {entity}Repository.get{Entity}s(initialFilter, options);
+    return await repository.get{Entity}s(initialFilter, options);
   } catch (error) {
     const customError = parsingErrorCapture.capture(error);
     throw customError;

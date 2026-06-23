@@ -1,6 +1,6 @@
 import type { LineId, SentenceId, SessionId } from "@/entities/value-object";
 
-import type { PracticeType } from "./enums";
+import type { PracticeType } from "@/entities/practice-target/models/enums";
 
 export type PracticeTarget =
   | {

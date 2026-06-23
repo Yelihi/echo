@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { createTagValue } from "../value-objects";
+import { createTagValue } from "@/entities/value-object/models/value-objects";
 
 describe("createTagValue", () => {
   it("trims display name and creates a lowercase normalized name", () => {

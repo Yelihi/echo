@@ -21,12 +21,12 @@ description: FSD(Feature-Sliced Design)내 entities(Models) rules
 - 다른 slice에서 import할 때는 각 aggregate의 public API인 `@/entities/{entity-name}`를 우선 사용한다.
 - aggregate 내부 파일을 직접 import하는 것은 같은 slice 내부로 제한한다.
 
-| 유형                   | 조건                                                   | 생성 파일                                                        |
-| ---------------------- | ------------------------------------------------------ | ---------------------------------------------------------------- |
-| **A. 데이터 모델만**   | HTTP 호출 없음, 다른 entity의 DTO에서 참조만 됨        | `models/dtos.ts`, `models/enums.ts`                              |
-| **B. Repository 포함** | features 레이어에서 직접 API 호출 필요                 | A + `models/repository.ts`, `services/{Entity}RepositoryImpl.ts` |
-| **C. Behavior 포함**   | enum → 표시 텍스트 변환, 타입 가드 등 도메인 로직 필요 | A + `models/behaviors/{Entity}Behavior.ts`                       |
-| **D. 풀 슬라이스**     | Repository + Behavior 모두 필요                        | A + B + C                                                        |
+| 유형                   | 조건                                             | 생성 파일                                                          |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------ |
+| **A. 데이터 모델만**   | 외부 데이터 접근 없음, 다른 entity에서 참조만 됨 | `models/entity.ts`, `models/enums.ts`                              |
+| **B. Repository 포함** | DB/API 등 외부 데이터 소스와 연결해야 함         | A + `models/repository.ts`, `infrastructure/{Entity}Repository.ts` |
+| **C. Behavior 포함**   | entity 기반 순수 도메인 로직이 필요함            | A + `models/behaviors/{Entity}Behavior.ts`                         |
+| **D. 풀 슬라이스**     | Repository + Mapper + Behavior가 모두 필요함     | A + B + `models/mapper.ts`, `models/__tests__/mapper.test.ts`, C   |
 
 ---
 
@@ -54,11 +54,11 @@ description: FSD(Feature-Sliced Design)내 entities(Models) rules
 ```
 {entity}/
 ├── models/
-│   ├── dtos.ts
+│   ├── entity.ts
 │   ├── enums.ts
 │   └── repository.ts
-└── services/
-    └── {Entity}RepositoryImpl.ts
+└── infrastructure/
+    └── {Entity}Repository.ts
 ```
 
 ### C. Behavior 포함
@@ -77,13 +77,16 @@ description: FSD(Feature-Sliced Design)내 entities(Models) rules
 ```
 {entity}/
 ├── models/
-│   ├── dtos.ts
+│   ├── entity.ts
 │   ├── enums.ts
 │   ├── repository.ts
+│   ├── mapper.ts
+│   ├── __tests__/
+│   │   └── mapper.test.ts
 │   └── behaviors/
 │       └── {Entity}Behavior.ts
-└── services/
-    └── {Entity}RepositoryImpl.ts
+└── infrastructure/
+    └── {Entity}Repository.ts
 ```
 
 ---
@@ -251,152 +254,66 @@ export const { {Entity}BehaviorStructure } from './behaviors/{Entity}Behavior';
 ### `models/repository.ts`
 
 ```typescript
-import {
-  {Action}{Entity}RequestDto,
-  Get{Entity}sRequestDto,
-  Get{Entity}RequestDto,
-  Get{Entity}sResponseDto,
-  {Action}{Entity}ResponseDto,
-} from './dtos';
+import type { {Entity} } from '@/entities/{entity-name}/models/entity';
 
-export interface {Entity}Repository {
-  // 목록 조회
-  get{Entity}s: (
-    request: Get{Entity}sRequestDto,
-    options?: RequestInit
-  ) => Promise<Get{Entity}sResponseDto>;
-
-  // 단건 조회
-  get{Entity}: (
-    request: Get{Entity}RequestDto,
-    options?: RequestInit
-  ) => Promise<{Entity}Dto>;
-
-  // 생성
-  create{Entity}: (
-    request: Create{Entity}RequestDto,
-    options?: RequestInit
-  ) => Promise<{Action}{Entity}ResponseDto>;
-
-  // 수정
-  patch{Entity}: (
-    request: Patch{Entity}RequestDto,
-    id: string,
-    options?: RequestInit
-  ) => Promise<{Action}{Entity}ResponseDto>;
-
-  // 삭제
-  delete{Entity}: (
-    request: Delete{Entity}RequestDto,
-    options?: RequestInit
-  ) => Promise<unknown>;
+export interface {Entity}RepositoryPort {
+  findById(id: string): Promise<{Entity} | null>;
 }
 ```
 
 **규칙:**
 
 - 필요한 메서드만 선언 (없는 기능은 제외)
-- `options?: RequestInit` 는 SSR prefetch에서 헤더 주입을 위해 항상 포함
+- interface 이름은 `{Entity}RepositoryPort`로 정의한다.
+- Supabase, HTTP client, RequestInit 등 외부 기술 타입을 노출하지 않는다.
+- repository는 raw DB row가 아니라 domain entity를 반환한다.
 - 반환 타입은 `Promise<T>` 형태로 명시
 
 ---
 
-### `services/{Entity}RepositoryImpl.ts`
+### `infrastructure/{Entity}Repository.ts`
 
 ```typescript
-import { httpAdaptor } from '@/shared/lib/https/HttpAdapter';
-import { {Entity}Repository } from '../models/repository';
-import {
-  Get{Entity}sRequestDto,
-  Get{Entity}sResponseDto,
-  Create{Entity}RequestDto,
-  {Action}{Entity}ResponseDto,
-} from '../models/dtos';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-class {Entity}RepositoryImpl implements {Entity}Repository {
-  constructor(private readonly httpAdaptor: typeof httpAdaptor) {}
+import type { {Entity} } from '@/entities/{entity-name}/models/entity';
+import { map{Entity}RowToEntity } from '@/entities/{entity-name}/models/mapper';
+import type { {Entity}RepositoryPort } from '@/entities/{entity-name}/models/repository';
+import type { Database } from '@/shared/lib/supabase';
 
-  // ── GET 목록 ──────────────────────────────────────────
-  public get{Entity}s = async (
-    request: Get{Entity}sRequestDto,
-    options?: RequestInit
-  ): Promise<Get{Entity}sResponseDto> => {
-    // 쿼리스트링 직접 조합 (URLSearchParams 미사용 — 기존 패턴 유지)
-    let url = `back-office/{endpoint}?`;
-    if (request.periodType) url += `periodType=${request.periodType}&`;
-    if (request.baseDate)   url += `baseDate=${request.baseDate}&`;
-    url += `page=${request.page}&size=${request.size}`;
+export class {Entity}Repository implements {Entity}RepositoryPort {
+  constructor(private readonly supabase: SupabaseClient<Database>) {}
 
-    const response = await this.httpAdaptor.get<Get{Entity}sResponseDto>(url, {
-      credentials: 'include',
-      ...options,
-    });
-    return response.data;
-  };
+  async findById(id: string): Promise<{Entity} | null> {
+    const { data, error } = await this.supabase
+      .from('{table_name}')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
 
-  // ── POST 생성 ──────────────────────────────────────────
-  public create{Entity} = async (
-    request: Create{Entity}RequestDto,
-    options?: RequestInit
-  ): Promise<{Action}{Entity}ResponseDto> => {
-    const response = await this.httpAdaptor.post<{Action}{Entity}ResponseDto>(
-      `back-office/{endpoint}`,
-      request,
-      {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        ...options,
-      }
-    );
-    return response.data;
-  };
+    if (error) {
+      throw new Error(`Failed to fetch {entity-name}: ${error.message}`);
+    }
 
-  // ── PATCH 수정 ──────────────────────────────────────────
-  public patch{Entity} = async (
-    request: Patch{Entity}RequestDto,
-    id: string,
-    options?: RequestInit
-  ): Promise<{Action}{Entity}ResponseDto> => {
-    const response = await this.httpAdaptor.patch<{Action}{Entity}ResponseDto>(
-      `back-office/{endpoint}/${id}`,
-      request,
-      {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        ...options,
-      }
-    );
-    return response.data;
-  };
-
-  // ── DELETE ──────────────────────────────────────────────
-  public delete{Entity} = async (
-    request: Delete{Entity}RequestDto,
-    options?: RequestInit
-  ): Promise<unknown> => {
-    const response = await this.httpAdaptor.delete<unknown>(
-      `back-office/{endpoint}/${request.id}`,
-      {
-        credentials: 'include',
-        ...options,
-      }
-    );
-    return response.data;
-  };
+    return data ? map{Entity}RowToEntity(data) : null;
+  }
 }
 
-// 싱글톤 export
-export const {entity}Repository = new {Entity}RepositoryImpl(httpAdaptor);
+export function create{Entity}Repository(
+  supabase: SupabaseClient<Database>,
+): {Entity}RepositoryPort {
+  return new {Entity}Repository(supabase);
+}
 ```
 
 **규칙:**
 
-- 클래스는 `private`으로 정의하고 싱글톤 인스턴스만 `export`
-- `Object.freeze()` 는 불변 보장이 필요한 경우에만 추가
-- GET 목록은 쿼리스트링 직접 조합 (기존 프로젝트 패턴)
-- 모든 HTTP 옵션에 `credentials: 'include'` 포함
-- `...options` spread로 SSR 헤더 주입 허용
-- `response.data` 로 실제 데이터만 반환
+- 파일명과 클래스명은 `{Entity}Repository`이며 첫 문자는 대문자로 시작한다.
+- `Supabase`를 클래스명이나 파일명 접두사로 붙이지 않는다.
+- Supabase client는 생성자에서 주입받고 aggregate 내부에서 생성하지 않는다.
+- import/export 경로는 `@/` 절대 경로를 사용한다.
+- raw row는 mapper를 거쳐 domain entity로 변환한다.
+- factory 함수는 `create{Entity}Repository`로 정의한다.
 
 ---
 
