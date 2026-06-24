@@ -14,7 +14,12 @@ export function LoginButton({ children, provider }: LoginButtonProps) {
   };
 
   return (
-    <Button size="lg" className="w-full" onClick={requestLogin}>
+    <Button
+      size="lg"
+      className="w-full px-[2.6rem] py-[1.6rem] rounded-[15px] text-[17px] font-semibold tracking-tight shadow-sm"
+      variant="outline"
+      onClick={requestLogin}
+    >
       {children}
     </Button>
   );
