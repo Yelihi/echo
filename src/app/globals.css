@@ -101,7 +101,7 @@
   --fg-neutral-alternative: rgba(55, 56, 60, 0.61);
   --fg-neutral-assistive: rgba(55, 56, 60, 0.28);
   --fg-neutral-disable: rgba(55, 56, 60, 0.16);
-  --fg-accent-primary: #0066ff;
+  --fg-accent-primary: #5b9bd5;
   --fg-accent-hover: #005eeb;
   --fg-accent-press: #0054d1;
   --fg-status-negative: #ff4242;
@@ -111,13 +111,14 @@
   --fg-static-white: #ffffff;
   --fg-static-black: #000000;
 
+  --bg-neutral-gray: #f2f4f6;
   --bg-neutral-primary: #ffffff;
   --bg-neutral-secondary: #f7f7f8;
   --bg-neutral-tertiary: #f4f4f5;
   --bg-neutral-elevated: #ffffff;
   --bg-neutral-inverse: #17171a;
   --bg-neutral-dim: rgba(0, 0, 0, 0.5);
-  --bg-accent-primary: #0066ff;
+  --bg-accent-primary: #5b9bd5;
   --bg-accent-primary-hover: #005eeb;
   --bg-accent-primary-press: #0054d1;
   --bg-accent-subtle: #eaf2fe;
@@ -140,8 +141,6 @@
 
   --material-dimmer: rgba(0, 0, 0, 0.5);
   --material-thick: rgba(247, 247, 248, 0.85);
-
-  --font-sans: var(--font-noto-sans-kr), -apple-system, BlinkMacSystemFont, "system-ui";
 
   --type-display-1-size: 56px;
   --type-display-1-lh: 1.286;
@@ -345,7 +344,7 @@
   --color-fg-static-white: var(--fg-static-white);
   --color-fg-static-black: var(--fg-static-black);
 
-  --color-bg-neutral-primary: var(--bg-neutral-primary);
+  --color-neutral-gray: var(--bg-neutral-gray);
   --color-bg-neutral-secondary: var(--bg-neutral-secondary);
   --color-bg-neutral-tertiary: var(--bg-neutral-tertiary);
   --color-bg-neutral-elevated: var(--bg-neutral-elevated);
@@ -498,6 +497,21 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --animate-login-ring: login-ring var(--duration, 4.2s) ease-in-out var(--delay, 0s) infinite;
+
+  @keyframes login-ring {
+    0%,
+    100% {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+
+    50% {
+      opacity: 0.5;
+      transform: scale(1.02);
+    }
+  }
 }
 
 [data-theme="dark"] {
@@ -508,6 +522,7 @@
   --fg-neutral-alternative: rgba(247, 247, 248, 0.61);
   --fg-neutral-assistive: rgba(247, 247, 248, 0.28);
   --fg-neutral-disable: rgba(247, 247, 248, 0.16);
+  --bg-neutral-gray: #1f2023;
   --bg-neutral-primary: #17171a;
   --bg-neutral-secondary: #1b1c1e;
   --bg-neutral-tertiary: #212225;
@@ -523,133 +538,11 @@
 html,
 body {
   min-height: 100%;
-  font-family: var(--font-sans);
-  color: var(--fg-neutral-primary);
-  background: var(--bg-neutral-primary);
 }
 
 body {
-  font-size: var(--type-body-2-size);
-  line-height: var(--type-body-2-lh);
-  letter-spacing: var(--type-body-2-track);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-}
-
-h1,
-.w-title-1 {
-  margin: 0;
-  color: var(--fg-neutral-strong);
-  font-family: var(--font-sans);
-  font-size: var(--type-title-1-size);
-  font-weight: var(--weight-bold);
-  line-height: var(--type-title-1-lh);
-  letter-spacing: var(--type-title-1-track);
-}
-
-h2,
-.w-title-2 {
-  margin: 0;
-  color: var(--fg-neutral-strong);
-  font-size: var(--type-title-2-size);
-  font-weight: var(--weight-bold);
-  line-height: var(--type-title-2-lh);
-  letter-spacing: var(--type-title-2-track);
-}
-
-h3,
-.w-title-3 {
-  margin: 0;
-  color: var(--fg-neutral-strong);
-  font-size: var(--type-title-3-size);
-  font-weight: var(--weight-bold);
-  line-height: var(--type-title-3-lh);
-  letter-spacing: var(--type-title-3-track);
-}
-
-h4,
-.w-heading-1 {
-  margin: 0;
-  font-size: var(--type-heading-1-size);
-  font-weight: var(--weight-bold);
-  line-height: var(--type-heading-1-lh);
-  letter-spacing: var(--type-heading-1-track);
-}
-
-h5,
-.w-heading-2 {
-  margin: 0;
-  font-size: var(--type-heading-2-size);
-  font-weight: var(--weight-semibold);
-  line-height: var(--type-heading-2-lh);
-  letter-spacing: var(--type-heading-2-track);
-}
-
-.w-display-1 {
-  font-family: var(--font-display);
-  font-size: var(--type-display-1-size);
-  font-weight: var(--weight-bold);
-  line-height: var(--type-display-1-lh);
-  letter-spacing: var(--type-display-1-track);
-}
-
-.w-display-2 {
-  font-family: var(--font-display);
-  font-size: var(--type-display-2-size);
-  font-weight: var(--weight-bold);
-  line-height: var(--type-display-2-lh);
-  letter-spacing: var(--type-display-2-track);
-}
-
-.w-body-1 {
-  font-size: var(--type-body-1-size);
-  font-weight: var(--weight-medium);
-  line-height: var(--type-body-1-lh);
-  letter-spacing: var(--type-body-1-track);
-}
-
-.w-body-2 {
-  font-size: var(--type-body-2-size);
-  font-weight: var(--weight-medium);
-  line-height: var(--type-body-2-lh);
-  letter-spacing: var(--type-body-2-track);
-}
-
-.w-body-3 {
-  font-size: var(--type-body-3-size);
-  font-weight: var(--weight-medium);
-  line-height: var(--type-body-3-lh);
-  letter-spacing: var(--type-body-3-track);
-}
-
-.w-label-1 {
-  font-size: var(--type-label-1-size);
-  font-weight: var(--weight-semibold);
-  line-height: var(--type-label-1-lh);
-  letter-spacing: var(--type-label-1-track);
-}
-
-.w-label-2 {
-  font-size: var(--type-label-2-size);
-  font-weight: var(--weight-semibold);
-  line-height: var(--type-label-2-lh);
-  letter-spacing: var(--type-label-2-track);
-}
-
-.w-caption-1 {
-  color: var(--fg-neutral-alternative);
-  font-size: var(--type-caption-1-size);
-  font-weight: var(--weight-medium);
-  line-height: var(--type-caption-1-lh);
-  letter-spacing: var(--type-caption-1-track);
-}
-
-.w-caption-2 {
-  color: var(--fg-neutral-alternative);
-  font-size: var(--type-caption-2-size);
-  font-weight: var(--weight-medium);
-  line-height: var(--type-caption-2-lh);
-  letter-spacing: var(--type-caption-2-track);
 }
 
 code,
