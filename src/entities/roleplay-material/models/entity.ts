@@ -1,6 +1,6 @@
 import type { LineId, MaterialId, SpeakerId, TagValue, UserId } from "@/entities/value-object";
 
-import type { MaterialState } from "./enums";
+import type { MaterialState } from "@/entities/roleplay-material/models/enums";
 
 export interface RoleplaySpeaker {
   readonly id: SpeakerId;

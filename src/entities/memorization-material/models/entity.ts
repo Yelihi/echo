@@ -6,7 +6,7 @@ import type {
   UserId,
 } from "@/entities/value-object";
 
-import type { MaterialState } from "./enums";
+import type { MaterialState } from "@/entities/memorization-material/models/enums";
 
 export interface MemorizationSentence {
   readonly id: SentenceId;

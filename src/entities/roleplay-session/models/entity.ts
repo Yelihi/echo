@@ -7,7 +7,7 @@ import type {
   UserId,
 } from "@/entities/value-object";
 
-import type { SessionState } from "./enums";
+import type { SessionState } from "@/entities/roleplay-session/models/enums";
 
 export interface RoleplaySpeakerSnapshot {
   readonly id: SpeakerId;

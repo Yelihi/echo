@@ -1,6 +1,6 @@
 import type { RecordingAudio, UserId } from "@/entities/value-object";
 
-import type { CleanupFailureSource } from "./enums";
+import type { CleanupFailureSource } from "@/entities/cleanup-failure-log/models/enums";
 
 export interface CleanupFailureLog {
   readonly id: string;

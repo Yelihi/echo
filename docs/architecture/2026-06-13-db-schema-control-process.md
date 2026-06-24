@@ -83,7 +83,7 @@ Purpose:
 Location:
 
 ```text
-src/entities/{root-aggregate}/infrastructure/supabase{Aggregate}Repository.ts
+src/entities/{root-aggregate}/infrastructure/{Aggregate}Repository.ts
 ```
 
 Purpose:
@@ -213,6 +213,14 @@ src/entities/{root-aggregate}/models/__tests__/mapper.test.ts
 
 Mapper tests should import row types from `src/shared/lib/supabase/database.types.ts`.
 
+Aggregates with multi-table assembly, filters, ordering, or other non-trivial query behavior should also have:
+
+```text
+src/entities/{root-aggregate}/infrastructure/__tests__/{Aggregate}Repository.test.ts
+```
+
+Repository tests should verify the relevant table names, query filters, child-row assembly, not-found behavior, and Supabase error propagation.
+
 ## Folder Rule
 
 Recommended aggregate structure:
@@ -230,13 +238,15 @@ src/entities/{root-aggregate}/
     behaviors/
       {Aggregate}Behavior.ts
   infrastructure/
-    supabase{Aggregate}Repository.ts
+    {Aggregate}Repository.ts
+    __tests__/                       # when query behavior is non-trivial
+      {Aggregate}Repository.test.ts
 ```
 
 Keep these boundaries:
 
 - `models/entity.ts` is pure domain shape.
-- `models/repository.ts` is the persistence port.
+- `models/repository.ts` defines the `{Aggregate}RepositoryPort`.
 - `models/mapper.ts` maps database types and domain types.
 - `infrastructure/*Repository.ts` talks to Supabase.
 - `shared/lib/supabase/*` creates clients and exposes generated DB types.
@@ -252,6 +262,7 @@ Every DB shape PR should include:
 - Repository port changes, if persistence behavior changed.
 - Infrastructure repository changes, if a table is read or written.
 - Mapper tests when a table maps to a domain entity.
+- Infrastructure repository tests when query behavior or aggregate assembly changes.
 - Verification command output.
 
 Required checks:

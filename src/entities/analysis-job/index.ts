@@ -1,6 +1,21 @@
-export { AnalysisJobState } from "./models/enums";
+export { AnalysisJobState } from "@/entities/analysis-job/models/enums";
 export type {
   AnalysisJob,
   PracticeTargetAnalysisResult,
   SessionAnalysisSummary,
-} from "./models/entity";
+} from "@/entities/analysis-job/models/entity";
+export {
+  mapAnalysisJobRowToEntity,
+  mapPracticeTargetAnalysisResultRowToEntity,
+  mapSessionAnalysisSummaryRowToEntity,
+} from "@/entities/analysis-job/models/mapper";
+export type {
+  AnalysisJobRow,
+  PracticeTargetAnalysisResultRow,
+  SessionAnalysisSummaryRow,
+} from "@/entities/analysis-job/models/mapper";
+export type { AnalysisJobRepositoryPort } from "@/entities/analysis-job/models/repository";
+export {
+  AnalysisJobRepository,
+  createAnalysisJobRepository,
+} from "@/entities/analysis-job/infrastructure/AnalysisJobRepository";
