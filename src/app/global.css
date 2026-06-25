@@ -1,0 +1,87 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /** color */
+  --color-black-primary: #222222;
+  --color-black-secondary: #4c545e;
+  --color-black-tertiary: #2d3a4b;
+
+  --color-red-primary: #ff5252;
+  --color-red-secondary: #feecec;
+
+  --color-gray-background: #f2f4f6;
+  --color-gray-background-element: #2d3a4b0e;
+  --color-gray-text: #37383c9c;
+  --color-gray-text-secondary: #37383c47;
+  --color-gray-border: #2d3a4b29;
+
+  --color-depp-blue-primary: #243040;
+  --color-deep-blue-secondary: #eef1f5;
+
+  --color-blue-primary: #5b9bd5;
+  --color-blue-focus-title: #2f6196;
+  --color-blue-sub-paragraph: #4585c4;
+  --color-blue-secondary: #eff6fc;
+  --color-blue-border: #a7d0eb;
+  --color-blue-hover: #244b75;
+  --color-blue-step: #8fc6f2;
+
+  --color-green-primary: #009632;
+  --color-green-secondary: #d9ffe6;
+
+  --color-yellow-primary: #9a5b00;
+  --color-yellow-secondary: #fef4e6;
+
+  --color-white-secondary: #ffffffa6;
+
+  /** font size */
+  --text-heading-lg: 32px;
+  --text-heading-md: 27px;
+  --text-heading-sm: 20px;
+  --text-heading-xs: 18px;
+
+  --text-subtitle-lg: 14px;
+  --text-subtitle-md: 13px;
+  --text-subtitle-sm: 12px;
+
+  --text-body-1: 12px;
+  --text-body-2: 13px;
+  --text-body-3: 14px;
+  --text-body-4: 15px;
+  --text-body-5: 16px;
+  --text-body-6: 30px;
+
+  /** animation */
+
+  --animate-login-ring: login-ring var(--duration, 4.2s) ease-in-out var(--delay, 0s) infinite;
+
+  @keyframes login-ring {
+    0%,
+    100% {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+
+    50% {
+      opacity: 0.5;
+      transform: scale(1.02);
+    }
+  }
+}
+
+[data-theme="dark"] {
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
