@@ -20,10 +20,6 @@ const defaultClock: AudioClock = {
 
 const DEFAULT_STOP_TIMEOUT_MS = 5000;
 
-function getBrowserMediaRecorder(): typeof MediaRecorder | null {
-  return typeof MediaRecorder === "undefined" ? null : MediaRecorder;
-}
-
 const defaultGetUserMedia: GetUserMedia = (constraints) => {
   if (!navigator.mediaDevices?.getUserMedia) {
     return Promise.reject(
@@ -33,10 +29,6 @@ const defaultGetUserMedia: GetUserMedia = (constraints) => {
 
   return navigator.mediaDevices.getUserMedia(constraints);
 };
-
-function stopStreamTracks(stream: MediaStream | null): void {
-  stream?.getTracks().forEach((track) => track.stop());
-}
 
 export class AudioCapture {
   private readonly getUserMedia: GetUserMedia;
@@ -52,7 +44,7 @@ export class AudioCapture {
   private chunks: Blob[] = [];
 
   constructor(options: AudioCaptureOptions = {}) {
-    const BrowserMediaRecorder = getBrowserMediaRecorder();
+    const BrowserMediaRecorder = typeof MediaRecorder === "undefined" ? null : MediaRecorder;
 
     this.getUserMedia = options.getUserMedia ?? defaultGetUserMedia;
     this.createRecorder =
@@ -108,7 +100,7 @@ export class AudioCapture {
       this.recorder.start();
       this.status = "recording";
     } catch (cause) {
-      stopStreamTracks(this.stream);
+      this.stopStreamTracks();
       this.reset();
       throw mapAudioCaptureStartError(cause);
     }
@@ -144,7 +136,7 @@ export class AudioCapture {
     } catch (cause) {
       throw mapAudioCaptureStopError(cause);
     } finally {
-      stopStreamTracks(this.stream);
+      this.stopStreamTracks();
       this.reset();
     }
   }
@@ -155,9 +147,13 @@ export class AudioCapture {
         this.recorder?.stop();
       }
     } finally {
-      stopStreamTracks(this.stream);
+      this.stopStreamTracks();
       this.reset();
     }
+  }
+
+  private stopStreamTracks(): void {
+    this.stream?.getTracks().forEach((track) => track.stop());
   }
 
   private stopRecorder(recorder: AudioCaptureRecorder): Promise<void> {
