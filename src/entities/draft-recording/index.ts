@@ -1,6 +1,11 @@
 export type {
   AcceptDraftRecordingInput,
+  DraftRecordingValidationResult,
   DraftRecordingBehaviorStructure,
+} from "@/entities/draft-recording/models/behaviors/DraftRecordingBehavior";
+export {
+  MIN_DRAFT_RECORDING_DURATION_MS,
+  validateCapturedAudioForDraftRecording,
 } from "@/entities/draft-recording/models/behaviors/DraftRecordingBehavior";
 export type { DraftRecording } from "@/entities/draft-recording/models/entity";
 export { mapDraftRecordingRowToEntity } from "@/entities/draft-recording/models/mapper";
