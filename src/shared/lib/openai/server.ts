@@ -2,7 +2,7 @@ import "server-only";
 
 import OpenAI from "openai";
 
-export const OPENAI_STT_MODEL = "gpt-4o-mini-transcribe" as const;
+export const DEFAULT_OPENAI_STT_MODEL = "gpt-4o-mini-transcribe" as const;
 
 let openAIClient: OpenAI | null = null;
 
@@ -18,4 +18,8 @@ export function getOpenAIServerClient(): OpenAI {
   }
 
   return openAIClient;
+}
+
+export function getOpenAISTTModel(): string {
+  return process.env.OPENAI_STT_MODEL?.trim() || DEFAULT_OPENAI_STT_MODEL;
 }
