@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import "./globals.css";
+import "./global.css";
 
 // font
 import { Noto_Sans_KR } from "next/font/google";
