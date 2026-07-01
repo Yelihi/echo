@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 
 // shared
 import { Button } from "@/shared/components";
+import { errorPopupManager } from "@/shared/lib/error-popup";
 
 // features
 import { useLogoutSupabaseInClient } from "@/features/logout/services/query/useLogoutSupabaseInClient";
@@ -19,7 +20,11 @@ export function LogoutButton({ children }: LogoutButtonProps) {
     const response = await handleLogout();
 
     if (response.error) {
-      alert("로그아웃 실패 : " + response.error.message);
+      errorPopupManager.open({
+        title: "로그아웃 실패",
+        message: "잠시 후 다시 시도해 주세요.",
+        code: "AUTH-001",
+      });
     }
 
     setIsPending(false);
