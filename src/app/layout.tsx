@@ -6,6 +6,7 @@ import "./global.css";
 import { Noto_Sans_KR } from "next/font/google";
 import { QueryProvider } from "./providers/QueryProvider";
 import { cn } from "@/shared/lib/tailwind/utils";
+import { ErrorPopupProvider } from "@/shared/lib/error-popup";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" className={cn(notoSansKR.className, "font-sans")}>
       <body>
         <QueryProvider>{children}</QueryProvider>
+        <ErrorPopupProvider />
       </body>
     </html>
   );

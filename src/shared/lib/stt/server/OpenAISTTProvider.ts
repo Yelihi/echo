@@ -3,7 +3,11 @@ import "server-only";
 import { toFile } from "openai";
 
 import { getOpenAIServerClient, getOpenAISTTModel } from "@/shared/lib/openai/server";
-import { STTProviderError, mapToSTTProviderError } from "@/shared/lib/stt/errors";
+import {
+  STTEmptyTranscriptError,
+  STTUnsupportedAudioFormatError,
+  mapToSTTProviderError,
+} from "@/shared/lib/stt/errors";
 import type { STTProvider, STTProviderInput, STTTranscript } from "@/shared/lib/stt/types";
 import { getFilenameExtension, isAcceptedSTTAudioExtension } from "@/shared/lib/stt/validation";
 
@@ -45,13 +49,7 @@ export class OpenAISTTProvider implements STTProvider {
       const text = response.text?.trim() ?? "";
 
       if (!text) {
-        throw new STTProviderError(
-          "empty-transcript",
-          "STT provider returned an empty transcript.",
-          {
-            retryable: false,
-          },
-        );
+        throw new STTEmptyTranscriptError();
       }
 
       return {
@@ -69,10 +67,6 @@ function assertAcceptedAudio(filename: string): void {
   const extension = getFilenameExtension(filename);
 
   if (!isAcceptedSTTAudioExtension(extension)) {
-    throw new STTProviderError(
-      "unsupported-audio-format",
-      `Unsupported STT audio format: ${extension || "unknown"}.`,
-      { retryable: false },
-    );
+    throw new STTUnsupportedAudioFormatError(extension);
   }
 }

@@ -1,3 +1,9 @@
-// shared/components/ui barrel export
-// 공통 UI 컴포넌트를 이곳에서 export 합니다.
-// 예시: export { Button } from "./Button";
+export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/components/ui/alert-dialog";

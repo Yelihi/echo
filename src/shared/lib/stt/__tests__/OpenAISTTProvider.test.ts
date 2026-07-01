@@ -1,6 +1,12 @@
 import { describe, expect, it, jest } from "@jest/globals";
 
-import { STTProviderError, isAcceptedSTTAudioExtension } from "@/shared/lib/stt";
+import {
+  STTEmptyTranscriptError,
+  STTProviderError,
+  STTProviderRateLimitedError,
+  STTUnsupportedAudioFormatError,
+  isAcceptedSTTAudioExtension,
+} from "@/shared/lib/stt";
 import { OpenAISTTProvider } from "@/shared/lib/stt/server";
 
 jest.mock("server-only", () => ({}));
@@ -53,16 +59,20 @@ describe("OpenAISTTProvider", () => {
       model: "gpt-4o-mini-transcribe",
     });
 
-    await expect(
-      provider.transcribe({
+    try {
+      await provider.transcribe({
         audio: new Uint8Array([1, 2, 3]),
         filename: "recording.aac",
         mimeType: "audio/aac",
-      }),
-    ).rejects.toMatchObject({
-      code: "unsupported-audio-format",
-      retryable: false,
-    });
+      });
+      throw new Error("전사가 실패해야 합니다.");
+    } catch (error) {
+      expect(error).toBeInstanceOf(STTUnsupportedAudioFormatError);
+      expect(error).toMatchObject({
+        code: "STT-001",
+        retryable: false,
+      });
+    }
     expect(create).not.toHaveBeenCalled();
   });
 
@@ -75,16 +85,20 @@ describe("OpenAISTTProvider", () => {
       model: "gpt-4o-mini-transcribe",
     });
 
-    await expect(
-      provider.transcribe({
+    try {
+      await provider.transcribe({
         audio: new Uint8Array([1, 2, 3]),
         filename: "recording.webm",
         mimeType: "audio/webm",
-      }),
-    ).rejects.toMatchObject({
-      code: "provider-rate-limited",
-      retryable: true,
-    });
+      });
+      throw new Error("전사가 실패해야 합니다.");
+    } catch (error) {
+      expect(error).toBeInstanceOf(STTProviderRateLimitedError);
+      expect(error).toMatchObject({
+        code: "STT-003",
+        retryable: true,
+      });
+    }
   });
 
   it("빈 transcript를 재시도 불가능한 provider 오류로 변환한다", async () => {
@@ -103,8 +117,9 @@ describe("OpenAISTTProvider", () => {
       throw new Error("전사가 실패해야 합니다.");
     } catch (error) {
       expect(error).toBeInstanceOf(STTProviderError);
+      expect(error).toBeInstanceOf(STTEmptyTranscriptError);
       expect(error).toMatchObject({
-        code: "empty-transcript",
+        code: "STT-002",
         retryable: false,
       });
     }
