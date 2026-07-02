@@ -5,7 +5,9 @@ import reactHooks from "eslint-plugin-react-hooks";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
-  { ignores: [".next", "out", "dist", "build", "node_modules", "next-env.d.ts"] },
+  {
+    ignores: [".next", "out", "dist", "build", "storybook-static", "node_modules", "next-env.d.ts"],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
