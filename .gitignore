@@ -16,6 +16,7 @@ out
 # Build output
 dist
 build
+storybook-static
 
 # Environment variables
 .env
