@@ -96,8 +96,11 @@ export type Database = {
       };
       analysis_jobs: {
         Row: {
+          attempt_number: number;
           completed_at: string | null;
           created_at: string;
+          error_code: string | null;
+          error_log_ref: string | null;
           error_message: string | null;
           failed_at: string | null;
           id: string;
@@ -111,8 +114,11 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          attempt_number?: number;
           completed_at?: string | null;
           created_at?: string;
+          error_code?: string | null;
+          error_log_ref?: string | null;
           error_message?: string | null;
           failed_at?: string | null;
           id?: string;
@@ -126,8 +132,11 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          attempt_number?: number;
           completed_at?: string | null;
           created_at?: string;
+          error_code?: string | null;
+          error_log_ref?: string | null;
           error_message?: string | null;
           failed_at?: string | null;
           id?: string;
@@ -990,7 +999,36 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      claim_next_analysis_job: {
+        Args: {
+          p_provider?: string;
+        };
+        Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
+      };
+      complete_analysis_job: {
+        Args: {
+          p_job_id: string;
+        };
+        Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
+      };
+      fail_analysis_job: {
+        Args: {
+          p_error_code: string;
+          p_error_log_ref?: string | null;
+          p_error_message: string;
+          p_job_id: string;
+        };
+        Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
+      };
+      request_analysis_job: {
+        Args: {
+          p_memorization_session_id?: string | null;
+          p_provider?: string;
+          p_roleplay_session_id?: string | null;
+          p_user_id: string;
+        };
+        Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
+      };
     };
     Enums: {
       analysis_job_status: "queued" | "processing" | "completed" | "failed" | "canceled";

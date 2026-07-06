@@ -12,8 +12,8 @@ import {
 } from "@/entities/analysis-job/models/mapper";
 import { PracticeType } from "@/entities/practice-target";
 
-describe("analysis job mappers", () => {
-  it("maps a roleplay analysis job row", () => {
+describe("analysis job mapper", () => {
+  it("역할극 analysis job row를 엔티티로 매핑한다", () => {
     const row = createAnalysisJobRow();
 
     const entity = mapAnalysisJobRowToEntity(row);
@@ -25,7 +25,10 @@ describe("analysis job mappers", () => {
       practiceType: PracticeType.ROLEPLAY,
       state: "completed",
       provider: "openai",
+      attemptNumber: 1,
+      errorCode: null,
       errorMessage: null,
+      errorLogRef: null,
     });
     expect(entity.queuedAt).toEqual(new Date(row.queued_at));
     expect(entity.startedAt).toEqual(new Date(row.started_at as string));
@@ -33,7 +36,7 @@ describe("analysis job mappers", () => {
     expect(entity.failedAt).toBeNull();
   });
 
-  it("maps a memorization analysis job row", () => {
+  it("암기 analysis job row를 엔티티로 매핑한다", () => {
     const row = createAnalysisJobRow({
       roleplay_session_id: null,
       memorization_session_id: "33333333-3333-4333-8333-333333333333",
@@ -45,7 +48,7 @@ describe("analysis job mappers", () => {
     expect(entity.sessionId).toBe(row.memorization_session_id);
   });
 
-  it("rejects an analysis job row with mixed session targets", () => {
+  it("세션 대상이 섞인 analysis job row를 거부한다", () => {
     const row = createAnalysisJobRow({
       memorization_session_id: "33333333-3333-4333-8333-333333333333",
     });
@@ -55,7 +58,7 @@ describe("analysis job mappers", () => {
     );
   });
 
-  it("maps a practice target analysis result row", () => {
+  it("practice target analysis result row를 엔티티로 매핑한다", () => {
     const row = createTargetResultRow();
 
     const entity = mapPracticeTargetAnalysisResultRowToEntity(row);
@@ -77,7 +80,7 @@ describe("analysis job mappers", () => {
     expect(entity.updatedAt).toEqual(new Date(row.updated_at));
   });
 
-  it("rejects a target result row with non-object feedback", () => {
+  it("feedback이 객체가 아닌 target result row를 거부한다", () => {
     const row = createTargetResultRow({ feedback: ["invalid"] });
 
     expect(() => mapPracticeTargetAnalysisResultRowToEntity(row)).toThrow(
@@ -85,7 +88,7 @@ describe("analysis job mappers", () => {
     );
   });
 
-  it("maps a session analysis summary row", () => {
+  it("session analysis summary row를 엔티티로 매핑한다", () => {
     const row = createSummaryRow();
 
     const entity = mapSessionAnalysisSummaryRowToEntity(row);
@@ -112,11 +115,14 @@ function createAnalysisJobRow(overrides: Partial<AnalysisJobRow> = {}): Analysis
     memorization_session_id: null,
     status: "completed",
     provider: "openai",
+    attempt_number: 1,
     queued_at: "2026-06-13T00:00:00.000Z",
     started_at: "2026-06-13T00:01:00.000Z",
     completed_at: "2026-06-13T00:02:00.000Z",
     failed_at: null,
+    error_code: null,
     error_message: null,
+    error_log_ref: null,
     created_at: "2026-06-13T00:00:00.000Z",
     updated_at: "2026-06-13T00:02:00.000Z",
     ...overrides,
