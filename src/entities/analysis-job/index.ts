@@ -1,4 +1,13 @@
 export { AnalysisJobState } from "@/entities/analysis-job/models/enums";
+export {
+  AnalysisJobClaimError,
+  AnalysisJobCompleteError,
+  AnalysisJobFailError,
+  AnalysisJobFetchError,
+  AnalysisJobInvalidRowError,
+  AnalysisJobNotReturnedError,
+  AnalysisJobRequestError,
+} from "@/entities/analysis-job/models/errors";
 export type {
   AnalysisJob,
   PracticeTargetAnalysisResult,
@@ -14,7 +23,13 @@ export type {
   PracticeTargetAnalysisResultRow,
   SessionAnalysisSummaryRow,
 } from "@/entities/analysis-job/models/mapper";
-export type { AnalysisJobRepositoryPort } from "@/entities/analysis-job/models/repository";
+export type {
+  AnalysisJobRepositoryPort,
+  ClaimNextAnalysisJobInput,
+  FailAnalysisJobInput,
+  FindAnalysisJobBySessionInput,
+  RequestAnalysisJobInput,
+} from "@/entities/analysis-job/models/repository";
 export {
   AnalysisJobRepository,
   createAnalysisJobRepository,

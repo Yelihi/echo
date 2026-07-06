@@ -10,11 +10,14 @@ export interface AnalysisJob {
   readonly practiceType: PracticeType;
   readonly state: AnalysisJobState;
   readonly provider: string;
+  readonly attemptNumber: number;
   readonly queuedAt: Date;
   readonly startedAt: Date | null;
   readonly completedAt: Date | null;
   readonly failedAt: Date | null;
+  readonly errorCode: string | null;
   readonly errorMessage: string | null;
+  readonly errorLogRef: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }

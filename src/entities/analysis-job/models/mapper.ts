@@ -3,6 +3,7 @@ import type {
   PracticeTargetAnalysisResult,
   SessionAnalysisSummary,
 } from "@/entities/analysis-job/models/entity";
+import { AnalysisJobInvalidRowError } from "@/entities/analysis-job/models/errors";
 import { AnalysisJobState } from "@/entities/analysis-job/models/enums";
 import {
   mapPracticeTargetFields,
@@ -27,11 +28,14 @@ export function mapAnalysisJobRowToEntity(row: AnalysisJobRow): AnalysisJob {
     practiceType: sessionTarget.practiceType,
     state: row.status as AnalysisJobState,
     provider: row.provider,
+    attemptNumber: row.attempt_number,
     queuedAt: new Date(row.queued_at),
     startedAt: row.started_at ? new Date(row.started_at) : null,
     completedAt: row.completed_at ? new Date(row.completed_at) : null,
     failedAt: row.failed_at ? new Date(row.failed_at) : null,
+    errorCode: row.error_code,
     errorMessage: row.error_message,
+    errorLogRef: row.error_log_ref,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   };
@@ -73,7 +77,7 @@ export function mapSessionAnalysisSummaryRowToEntity(
 
 function mapJsonObject(value: Json, label: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`Invalid ${label} JSON object`);
+    throw new AnalysisJobInvalidRowError(`Invalid ${label} JSON object`);
   }
 
   return value as Record<string, unknown>;
