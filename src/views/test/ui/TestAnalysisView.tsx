@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-import { AudioCapture, type CapturedAudio } from "@/shared/lib/audio";
+import { AudioCapture, AudioCaptureError, type CapturedAudio } from "@/shared/lib/audio";
 
 type PracticeType = "roleplay" | "memorization";
 
@@ -22,11 +22,22 @@ export function TestAnalysisView() {
   async function startRecording() {
     const recorder = new AudioCapture();
     recorderRef.current = recorder;
-    await recorder.start();
-    setCapturedAudio(null);
-    setPayload(null);
-    setMessage("녹음 중");
-    setIsRecording(true);
+    setIsBusy(true);
+
+    try {
+      await recorder.start();
+      setCapturedAudio(null);
+      setPayload(null);
+      setMessage("녹음 중");
+      setIsRecording(true);
+    } catch (error) {
+      recorder.cancel();
+      recorderRef.current = null;
+      setIsRecording(false);
+      setMessage(formatAudioCaptureError(error));
+    } finally {
+      setIsBusy(false);
+    }
   }
 
   async function stopRecording() {
@@ -36,10 +47,20 @@ export function TestAnalysisView() {
       return;
     }
 
-    const audio = await recorder.stop();
-    setCapturedAudio(audio);
-    setIsRecording(false);
-    setMessage(`${Math.round(audio.durationMs / 1000)}초 녹음 완료`);
+    setIsBusy(true);
+
+    try {
+      const audio = await recorder.stop();
+      setCapturedAudio(audio);
+      setIsRecording(false);
+      setMessage(`${Math.round(audio.durationMs / 1000)}초 녹음 완료`);
+    } catch (error) {
+      setMessage(formatAudioCaptureError(error));
+    } finally {
+      recorderRef.current = null;
+      setIsRecording(false);
+      setIsBusy(false);
+    }
   }
 
   async function uploadAndRequest() {
@@ -70,6 +91,25 @@ export function TestAnalysisView() {
       setMessage(nextJobId ? `job 요청 완료: ${nextJobId}` : "job 요청 완료");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "요청 실패");
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  async function createTestFixture() {
+    setIsBusy(true);
+    setMessage("테스트 UUID 생성 중");
+
+    try {
+      const result = await postJson("/api/test-analysis/fixture");
+      setPracticeType("roleplay");
+      setUserId(readStringValue(result, "userId"));
+      setSessionId(readStringValue(result, "sessionId"));
+      setTargetId(readStringValue(result, "targetId"));
+      setPayload(result);
+      setMessage("테스트 UUID 생성 완료");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "테스트 UUID 생성 실패");
     } finally {
       setIsBusy(false);
     }
@@ -145,6 +185,13 @@ export function TestAnalysisView() {
         </section>
 
         <section className="flex flex-wrap gap-2">
+          <button
+            className="h-10 rounded-md border border-gray-border bg-white px-4 disabled:opacity-50"
+            disabled={isBusy}
+            onClick={createTestFixture}
+          >
+            테스트 UUID 생성
+          </button>
           <button
             className="h-10 rounded-md bg-blue-primary px-4 text-white disabled:opacity-50"
             disabled={isRecording || isBusy}
@@ -250,4 +297,30 @@ function readNestedString(
 
   const result = (nested as Record<string, unknown>)[valueKey];
   return typeof result === "string" ? result : "";
+}
+
+function readStringValue(value: Record<string, unknown>, key: string): string {
+  const result = value[key];
+  return typeof result === "string" ? result : "";
+}
+
+function formatAudioCaptureError(error: unknown): string {
+  if (!(error instanceof AudioCaptureError)) {
+    return "녹음 처리 중 알 수 없는 오류가 발생했습니다.";
+  }
+
+  switch (error.code) {
+    case "permission-denied":
+      return "마이크 권한이 거부되었습니다. 브라우저와 macOS 개인정보 보호 설정에서 마이크 권한을 허용해주세요.";
+    case "device-not-found":
+      return "사용 가능한 마이크를 찾지 못했습니다. 입력 장치 연결과 macOS 사운드 입력 설정을 확인해주세요.";
+    case "recorder-unavailable":
+      return "현재 주소에서는 브라우저 녹음을 사용할 수 없습니다. localhost 또는 HTTPS 주소에서 /test를 열어주세요.";
+    case "unsupported-format":
+      return "현재 브라우저가 지원하는 녹음 포맷을 찾지 못했습니다. Chrome 또는 Safari 최신 버전으로 다시 시도해주세요.";
+    case "empty-audio-data":
+      return "녹음된 오디오 데이터가 없습니다. 조금 더 길게 녹음한 뒤 다시 시도해주세요.";
+    default:
+      return error.message;
+  }
 }
