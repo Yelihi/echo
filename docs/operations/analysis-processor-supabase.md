@@ -21,6 +21,30 @@ OPENAI_API_KEY=
 - `PROCESS_ANALYSIS_SECRET`은 pg_cron과 Edge Function 사이의 호출 인증값입니다.
 - `OPENAI_API_KEY`는 로컬 Next API와 Supabase Edge Function secret 양쪽에 맞춰야 합니다.
 
+## 자동 배포 명령
+
+merge 후 원격 Supabase 반영은 아래 명령을 우선 사용합니다.
+
+```bash
+npm run supabase:analysis:check
+npm run supabase:analysis:deploy
+```
+
+`supabase:analysis:check`는 `.env.local`의 필수 값을 확인하고 `db push --dry-run`만 실행합니다. 원격 DB나 Edge Function은 변경하지 않습니다.
+
+`supabase:analysis:deploy`는 아래 과정을 순서대로 실행합니다.
+
+1. `db push --dry-run`
+2. `db push`
+3. `process-analysis-job` Edge Function 배포
+4. 인증 헤더를 포함한 smoke test
+
+성공하면 마지막에 `Analysis processor deploy completed.`가 출력됩니다. queued job이 없을 때 smoke test 응답은 아래와 같습니다.
+
+```json
+{ "status": "idle" }
+```
+
 ## 원격 DB migration 적용
 
 cron 등록 함수가 원격 DB에 없으면 먼저 migration을 적용합니다.
