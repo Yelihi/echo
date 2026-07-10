@@ -2,6 +2,8 @@
 
 ## Analysis Processor Flow
 
+Supabase 배포, secret 설정, pg_cron 등록, OpenAI quota 대응 절차는 [Analysis Processor Supabase 운영 가이드](./docs/operations/analysis-processor-supabase.md)를 참고합니다.
+
 ```mermaid
 sequenceDiagram
   autonumber

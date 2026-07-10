@@ -4,6 +4,7 @@ import type { AcceptedRecording, Evaluation, PracticeType } from "./types.ts";
 export async function transcribe(audio: Blob, recording: AcceptedRecording): Promise<string> {
   const body = new FormData();
   body.append("model", Deno.env.get("OPENAI_STT_MODEL")?.trim() || "gpt-4o-mini-transcribe");
+  body.append("language", "en");
   body.append("response_format", "json");
   body.append("file", audio, filenameFromPath(recording.object_path));
 
