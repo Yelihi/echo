@@ -94,8 +94,22 @@ export async function insertResult(
   }
 }
 
+export async function filterUnprocessedTargets(
+  supabase: Supabase,
+  job: AnalysisJob,
+  targets: Target[],
+): Promise<Target[]> {
+  const processedTargetKeys = await loadProcessedTargetKeys(supabase, job);
+
+  return targets.filter((target) => !processedTargetKeys.has(targetKey(target)));
+}
+
 export function completeJob(supabase: Supabase, jobId: string): Promise<AnalysisJob> {
   return rpcOne<AnalysisJob>(supabase, "complete_analysis_job", { p_job_id: jobId });
+}
+
+export function requeueJob(supabase: Supabase, jobId: string): Promise<AnalysisJob> {
+  return rpcOne<AnalysisJob>(supabase, "requeue_analysis_job", { p_job_id: jobId });
 }
 
 export function failJob(supabase: Supabase, jobId: string, message: string): Promise<AnalysisJob> {
@@ -178,6 +192,41 @@ function mapRecordingsToTargets(
 
     return { recording, expectedText };
   });
+}
+
+async function loadProcessedTargetKeys(supabase: Supabase, job: AnalysisJob): Promise<Set<string>> {
+  const results = await selectRows<{
+    roleplay_line_id: string | null;
+    memorization_sentence_id: string | null;
+  }>(
+    supabase
+      .from("practice_target_analysis_results")
+      .select("roleplay_line_id,memorization_sentence_id")
+      .eq("analysis_job_id", job.id),
+  );
+
+  return new Set(
+    results.map((result) =>
+      result.roleplay_line_id
+        ? `roleplay:${result.roleplay_line_id}`
+        : `memorization:${result.memorization_sentence_id}`,
+    ),
+  );
+}
+
+function targetKey(target: Target): string {
+  const { roleplay_line_id: roleplayLineId, memorization_sentence_id: memorizationSentenceId } =
+    target.recording;
+
+  if (roleplayLineId) {
+    return `roleplay:${roleplayLineId}`;
+  }
+
+  if (memorizationSentenceId) {
+    return `memorization:${memorizationSentenceId}`;
+  }
+
+  throw new Error(`Accepted recording has no target id: ${target.recording.object_path}.`);
 }
 
 async function rpcOne<T>(

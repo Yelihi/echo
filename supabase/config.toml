@@ -8,7 +8,7 @@ project_id = "english-speaking-practice"
 enabled = true
 # Port to use for the API URL.
 port = 54321
-# Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
+# Schemas to expose in your API. Tables, views and stored procedures in this schema will get
 # endpoints. `public` and `graphql_public` schemas are included by default.
 schemas = ["public", "graphql_public"]
 # Extra schemas to add to the search_path of every request.
@@ -151,6 +151,9 @@ max_indexes = 5
 
 # Vector Buckets is available to Supabase Pro plan.
 # [storage.vector.buckets.documents-openai]
+
+[functions.process-analysis-job]
+verify_jwt = false
 
 [auth]
 enabled = true

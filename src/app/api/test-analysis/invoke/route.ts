@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { rejectDisabledTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
+import { authorizeTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
 
 export async function POST() {
-  const disabled = rejectDisabledTestAnalysisApi();
+  const { response: authResponse } = await authorizeTestAnalysisApi();
 
-  if (disabled) {
-    return disabled;
+  if (authResponse) {
+    return authResponse;
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -15,7 +15,7 @@ export async function POST() {
     return NextResponse.json({ error: "Missing NEXT_PUBLIC_SUPABASE_URL" }, { status: 500 });
   }
 
-  const response = await fetch(`${url}/functions/v1/process-analysis-job`, {
+  const processorResponse = await fetch(`${url}/functions/v1/process-analysis-job`, {
     method: "POST",
     headers: {
       ...(process.env.PROCESS_ANALYSIS_SECRET
@@ -23,12 +23,12 @@ export async function POST() {
         : {}),
     },
   });
-  const text = await response.text();
+  const text = await processorResponse.text();
 
   return new NextResponse(text || "{}", {
-    status: response.status,
+    status: processorResponse.status,
     headers: {
-      "content-type": response.headers.get("content-type") || "application/json",
+      "content-type": processorResponse.headers.get("content-type") || "application/json",
     },
   });
 }

@@ -2,16 +2,16 @@ import { NextResponse } from "next/server";
 
 import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
 import type { Database } from "@/shared/lib/supabase";
-import { rejectDisabledTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
+import { authorizeTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
 
 const RECORDINGS_BUCKET = "recordings";
 type AcceptedRecordingInsert = Database["public"]["Tables"]["accepted_recordings"]["Insert"];
 
 export async function POST(request: Request) {
-  const disabled = rejectDisabledTestAnalysisApi();
+  const { auth, response } = await authorizeTestAnalysisApi();
 
-  if (disabled) {
-    return disabled;
+  if (response) {
+    return response;
   }
 
   const formData = await request.formData();
@@ -30,6 +30,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "userId, sessionId, targetId are required" },
       { status: 400 },
+    );
+  }
+
+  if (userId !== auth.userId) {
+    return NextResponse.json(
+      { error: "Cannot upload recordings for another user." },
+      { status: 403 },
     );
   }
 

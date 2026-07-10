@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 
 import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
-import { rejectDisabledTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
+import { authorizeTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
 
 export async function GET(request: Request) {
-  const disabled = rejectDisabledTestAnalysisApi();
+  const { auth, response } = await authorizeTestAnalysisApi();
 
-  if (disabled) {
-    return disabled;
+  if (response) {
+    return response;
   }
 
   const jobId = new URL(request.url).searchParams.get("jobId");
@@ -28,6 +28,13 @@ export async function GET(request: Request) {
 
   if (job.error) {
     return NextResponse.json({ error: job.error.message }, { status: 500 });
+  }
+
+  if (job.data && job.data.user_id !== auth.userId) {
+    return NextResponse.json(
+      { error: "Cannot read another user's analysis job." },
+      { status: 403 },
+    );
   }
 
   if (results.error) {

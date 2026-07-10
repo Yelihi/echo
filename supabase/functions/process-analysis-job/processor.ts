@@ -6,11 +6,15 @@ import {
   createServiceClient,
   downloadAudio,
   failJob,
+  filterUnprocessedTargets,
   insertResult,
   loadTargets,
+  requeueJob,
   type Supabase,
 } from "./repository.ts";
 import type { AnalysisJob, PracticeType, Target } from "./types.ts";
+
+const DEFAULT_TARGET_LIMIT = 3;
 
 export async function handleProcessAnalysisJob(request: Request): Promise<Response> {
   if (request.method === "OPTIONS") {
@@ -45,8 +49,26 @@ async function processClaimedJob(supabase: Supabase, job: AnalysisJob): Promise<
       throw new Error("No accepted recordings found for analysis job.");
     }
 
-    for (const target of targets) {
+    const pendingTargets = await filterUnprocessedTargets(supabase, job, targets);
+
+    if (pendingTargets.length === 0) {
+      return json({ status: "completed", job: await completeJob(supabase, job.id) });
+    }
+
+    const targetLimit = getTargetLimit();
+    const targetsToProcess = pendingTargets.slice(0, targetLimit);
+
+    for (const target of targetsToProcess) {
       await processTarget(supabase, job, target);
+    }
+
+    if (pendingTargets.length > targetsToProcess.length) {
+      return json({
+        status: "queued",
+        processed: targetsToProcess.length,
+        remaining: pendingTargets.length - targetsToProcess.length,
+        job: await requeueJob(supabase, job.id),
+      });
     }
 
     return json({ status: "completed", job: await completeJob(supabase, job.id) });
@@ -87,4 +109,14 @@ function getPracticeType(job: {
   }
 
   throw new Error("Analysis job has no session id.");
+}
+
+function getTargetLimit(): number {
+  const configuredLimit = Number(Deno.env.get("ANALYSIS_PROCESSOR_TARGET_LIMIT"));
+
+  if (Number.isInteger(configuredLimit) && configuredLimit > 0) {
+    return configuredLimit;
+  }
+
+  return DEFAULT_TARGET_LIMIT;
 }

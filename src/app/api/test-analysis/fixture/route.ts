@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
 import type { Database } from "@/shared/lib/supabase";
-import { rejectDisabledTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
+import { authorizeTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
 
 type RoleplaySessionInsert = Database["public"]["Tables"]["roleplay_sessions"]["Insert"];
 type RoleplaySessionLineInsert = Database["public"]["Tables"]["roleplay_session_lines"]["Insert"];
@@ -10,22 +10,16 @@ type RoleplaySessionLineInsert = Database["public"]["Tables"]["roleplay_session_
 const DEFAULT_TEXT = "Hello, I am testing the analysis processor.";
 
 export async function POST() {
-  const disabled = rejectDisabledTestAnalysisApi();
+  const { auth, response } = await authorizeTestAnalysisApi();
 
-  if (disabled) {
-    return disabled;
+  if (response) {
+    return response;
   }
 
   const supabase = getSupabaseServiceRoleClient();
-  const userId = await getFirstUserId();
-
-  if (!userId) {
-    return NextResponse.json({ error: "No auth user exists for test fixture." }, { status: 400 });
-  }
-
   const session = await supabase
     .from("roleplay_sessions")
-    .insert(createSessionRow(userId))
+    .insert(createSessionRow(auth.userId))
     .select("id,user_id")
     .single();
 
@@ -50,17 +44,6 @@ export async function POST() {
     targetId: line.data.id,
     expectedText: line.data.text_snapshot,
   });
-}
-
-async function getFirstUserId(): Promise<string | null> {
-  const supabase = getSupabaseServiceRoleClient();
-  const { data, error } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
-
-  if (error) {
-    throw error;
-  }
-
-  return data.users[0]?.id ?? null;
 }
 
 function createSessionRow(userId: string): RoleplaySessionInsert {
