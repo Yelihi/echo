@@ -22,6 +22,8 @@
     "supabase:migration:new": "supabase migration new",
     "supabase:functions:new": "supabase functions new",
     "supabase:functions:deploy": "supabase functions deploy",
+    "supabase:analysis:check": "node scripts/deploy-analysis-processor.mjs check",
+    "supabase:analysis:deploy": "node scripts/deploy-analysis-processor.mjs deploy",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
