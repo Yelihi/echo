@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 
-import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
+import type { AcceptedRecording } from "@/entities/accepted-recording";
+import { createAcceptedRecordingRepository } from "@/entities/accepted-recording";
+import { createCleanupFailureLogRepository } from "@/entities/cleanup-failure-log";
+import { createDraftRecordingRepository } from "@/entities/draft-recording";
+import type { LineId, SentenceId, SessionId, UserId } from "@/entities/value-object";
+import { acceptDraftRecording, createDraftRecording } from "@/features/recording-storage/server";
+import { RecordingStorageService } from "@/shared/lib/recording-storage/server";
 import type { Database } from "@/shared/lib/supabase";
+import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
 import { authorizeTestAnalysisApi } from "@/shared/lib/test-analysis/guard";
 
-const RECORDINGS_BUCKET = "recordings";
-type AcceptedRecordingInsert = Database["public"]["Tables"]["accepted_recordings"]["Insert"];
+type PracticeTypeInput = "roleplay" | "memorization";
+type AcceptedRecordingRow = Database["public"]["Tables"]["accepted_recordings"]["Row"];
 
 export async function POST(request: Request) {
   const { auth, response } = await authorizeTestAnalysisApi();
@@ -48,116 +55,44 @@ export async function POST(request: Request) {
   }
 
   const supabase = getSupabaseServiceRoleClient();
-  await ensureRecordingsBucket();
-
-  const extension = extensionFromFile(file);
   const contentType = contentTypeFromFile(file);
-  const objectPath = `test/${userId}/${crypto.randomUUID()}.${extension}`;
-  const upload = await supabase.storage.from(RECORDINGS_BUCKET).upload(objectPath, file, {
-    contentType,
-  });
+  const storage = new RecordingStorageService(supabase);
+  const draftRepository = createDraftRecordingRepository(supabase);
+  const acceptedRepository = createAcceptedRecordingRepository(supabase);
+  const cleanupFailureLogRepository = createCleanupFailureLogRepository(supabase);
+  const recordingFile = file.type === contentType ? file : new Blob([file], { type: contentType });
 
-  if (upload.error) {
-    return NextResponse.json({ error: upload.error.message }, { status: 500 });
+  try {
+    const recording = await createAcceptedRecordingForTestAnalysis({
+      userId,
+      practiceType,
+      sessionId,
+      targetId,
+      file: recordingFile,
+      durationMs,
+      storage,
+      draftRepository,
+      cleanupFailureLogRepository,
+      acceptedRepository,
+    });
+
+    const { data: job, error: jobError } = await supabase
+      .rpc("request_analysis_job", {
+        p_user_id: userId,
+        p_roleplay_session_id: practiceType === "roleplay" ? sessionId : null,
+        p_memorization_session_id: practiceType === "memorization" ? sessionId : null,
+        p_provider: "openai",
+      })
+      .maybeSingle();
+
+    if (jobError) {
+      return NextResponse.json({ error: jobError.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ recording, job });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
-
-  const recordingRow: AcceptedRecordingInsert =
-    practiceType === "roleplay"
-      ? {
-          user_id: userId,
-          roleplay_session_id: sessionId,
-          roleplay_line_id: targetId,
-          memorization_session_id: null,
-          memorization_sentence_id: null,
-          bucket_id: RECORDINGS_BUCKET,
-          object_path: objectPath,
-          mime_type: contentType,
-          size_bytes: file.size,
-          duration_ms: durationMs > 0 ? Math.round(durationMs) : null,
-        }
-      : {
-          user_id: userId,
-          roleplay_session_id: null,
-          roleplay_line_id: null,
-          memorization_session_id: sessionId,
-          memorization_sentence_id: targetId,
-          bucket_id: RECORDINGS_BUCKET,
-          object_path: objectPath,
-          mime_type: contentType,
-          size_bytes: file.size,
-          duration_ms: durationMs > 0 ? Math.round(durationMs) : null,
-        };
-
-  const existing = await findAcceptedRecording(practiceType, sessionId, targetId);
-  const savedRecording = existing
-    ? await supabase
-        .from("accepted_recordings")
-        .update(recordingRow)
-        .eq("id", existing.id)
-        .select("*")
-        .single()
-    : await supabase.from("accepted_recordings").insert(recordingRow).select("*").single();
-
-  if (savedRecording.error) {
-    return NextResponse.json({ error: savedRecording.error.message }, { status: 500 });
-  }
-
-  const { data: job, error: jobError } = await supabase
-    .rpc("request_analysis_job", {
-      p_user_id: userId,
-      p_roleplay_session_id: practiceType === "roleplay" ? sessionId : null,
-      p_memorization_session_id: practiceType === "memorization" ? sessionId : null,
-      p_provider: "openai",
-    })
-    .maybeSingle();
-
-  if (jobError) {
-    return NextResponse.json({ error: jobError.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ recording: savedRecording.data, job });
-}
-
-async function ensureRecordingsBucket(): Promise<void> {
-  const supabase = getSupabaseServiceRoleClient();
-  const bucket = await supabase.storage.getBucket(RECORDINGS_BUCKET);
-
-  if (!bucket.error) {
-    return;
-  }
-
-  const created = await supabase.storage.createBucket(RECORDINGS_BUCKET, {
-    public: false,
-    fileSizeLimit: "50MB",
-    allowedMimeTypes: ["audio/webm", "audio/mp4", "audio/aac", "audio/wav"],
-  });
-
-  if (created.error) {
-    throw created.error;
-  }
-}
-
-async function findAcceptedRecording(practiceType: string, sessionId: string, targetId: string) {
-  const supabase = getSupabaseServiceRoleClient();
-  const query =
-    practiceType === "roleplay"
-      ? supabase
-          .from("accepted_recordings")
-          .select("id")
-          .eq("roleplay_session_id", sessionId)
-          .eq("roleplay_line_id", targetId)
-      : supabase
-          .from("accepted_recordings")
-          .select("id")
-          .eq("memorization_session_id", sessionId)
-          .eq("memorization_sentence_id", targetId);
-  const { data, error } = await query.maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
 }
 
 function readString(formData: FormData, key: string): string {
@@ -165,16 +100,80 @@ function readString(formData: FormData, key: string): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function extensionFromFile(file: File): string {
-  const filenameExtension = file.name.split(".").at(-1);
-
-  if (filenameExtension) {
-    return filenameExtension;
-  }
-
-  return file.type.includes("mp4") ? "mp4" : "webm";
-}
-
 function contentTypeFromFile(file: File): string {
   return file.type.split(";")[0] || "audio/webm";
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+async function createAcceptedRecordingForTestAnalysis(input: {
+  readonly userId: string;
+  readonly practiceType: PracticeTypeInput;
+  readonly sessionId: string;
+  readonly targetId: string;
+  readonly file: Blob;
+  readonly durationMs: number;
+  readonly storage: RecordingStorageService;
+  readonly draftRepository: Parameters<typeof createDraftRecording>[0]["draftRepository"];
+  readonly acceptedRepository: Parameters<typeof acceptDraftRecording>[0]["acceptedRepository"];
+  readonly cleanupFailureLogRepository: Parameters<
+    typeof createDraftRecording
+  >[0]["cleanupFailureLogRepository"];
+}): Promise<AcceptedRecordingRow> {
+  const draftRecording = await createDraftRecording({
+    userId: input.userId as UserId,
+    target:
+      input.practiceType === "roleplay"
+        ? {
+            practiceType: "roleplay",
+            sessionId: input.sessionId as SessionId,
+            lineSnapshotId: input.targetId as LineId,
+          }
+        : {
+            practiceType: "memorization",
+            sessionId: input.sessionId as SessionId,
+            sentenceSnapshotId: input.targetId as SentenceId,
+          },
+    file: input.file,
+    durationMs: input.durationMs > 0 ? Math.round(input.durationMs) : null,
+    storage: input.storage,
+    draftRepository: input.draftRepository,
+    cleanupFailureLogRepository: input.cleanupFailureLogRepository,
+  });
+
+  const acceptedRecording = await acceptDraftRecording({
+    userId: input.userId as UserId,
+    draftRecordingId: draftRecording.id,
+    draftRepository: input.draftRepository,
+    acceptedRepository: input.acceptedRepository,
+    storage: input.storage,
+    cleanupFailureLogRepository: input.cleanupFailureLogRepository,
+  });
+
+  return serializeAcceptedRecordingRow(acceptedRecording);
+}
+
+function serializeAcceptedRecordingRow(recording: AcceptedRecording): AcceptedRecordingRow {
+  return {
+    id: recording.id,
+    user_id: recording.ownerId,
+    roleplay_session_id:
+      recording.target.practiceType === "roleplay" ? recording.target.sessionId : null,
+    roleplay_line_id:
+      recording.target.practiceType === "roleplay" ? recording.target.lineSnapshotId : null,
+    memorization_session_id:
+      recording.target.practiceType === "memorization" ? recording.target.sessionId : null,
+    memorization_sentence_id:
+      recording.target.practiceType === "memorization" ? recording.target.sentenceSnapshotId : null,
+    bucket_id: recording.audio.bucketId,
+    object_path: recording.audio.objectPath,
+    mime_type: recording.audio.mimeType,
+    size_bytes: recording.audio.sizeBytes,
+    duration_ms: recording.audio.durationMs,
+    accepted_at: recording.acceptedAt.toISOString(),
+    created_at: recording.createdAt.toISOString(),
+    updated_at: recording.updatedAt.toISOString(),
+  };
 }
