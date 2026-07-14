@@ -76,6 +76,29 @@
 [data-theme="dark"] {
 }
 
+@layer utilities {
+  .apple-glass {
+    /* 배경을 반투명하게 해야 뒤가 비치며 블러가 먹힙니다 */
+    background-color: rgba(30, 41, 59, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    /* 사파리 호환성 */
+
+    /* 입체감을 위한 테두리와 그림자 */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  /* 화이트 모드용 글래스가 별도로 필요하다면 분리 가능 */
+  .apple-glass-light {
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
 html,
 body {
   min-height: 100%;

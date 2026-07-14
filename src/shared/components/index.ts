@@ -5,3 +5,5 @@ export { Pluse } from "@/shared/components/atomics/svgs/Pluse";
 
 // atomics
 export { Button } from "@/shared/components/atomics/button/Button";
+export { Divider } from "@/shared/components/atomics/divider/Divider";
+export { Badge } from "@/shared/components/atomics/badge/Badge";
