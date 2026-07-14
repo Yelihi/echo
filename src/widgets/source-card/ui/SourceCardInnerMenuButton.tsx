@@ -26,7 +26,10 @@ const InnerMenuItem = ({ value, text, icon: Icon, theme, onClick }: InnerMenuIte
   return (
     <button
       className="w-full h-fit min-h-[36px] flex justify-start items-center py-[9px] px-[11px] gap-[10px] hover:shadow-md transition-all duration-300 cursor-pointer rounded-[9px]"
-      onClick={() => onClick(value)}
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick(value);
+      }}
     >
       <div className="flex justify-center items-center">
         <Icon
