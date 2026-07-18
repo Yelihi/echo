@@ -1,6 +1,6 @@
 import {
   RoleplayTxtImportInvalidOutputError,
-  RoleplayTxtImportTooManySpeakersError,
+  RoleplayTxtImportSpeakerCountError,
 } from "@/features/roleplay-txt-import/models/errors";
 import {
   openAIRoleplayTxtImportOutputSchema,
@@ -23,12 +23,8 @@ export function normalizeRoleplayTxtImportOutput(output: unknown): RoleplayTxtIm
     speakerBySourceName.set(speaker.sourceName, speaker.role);
   }
 
-  if (speakerBySourceName.size > 2) {
-    throw new RoleplayTxtImportTooManySpeakersError();
-  }
-
-  if (speakerBySourceName.size < 2) {
-    throw new RoleplayTxtImportInvalidOutputError();
+  if (speakerBySourceName.size !== 2) {
+    throw new RoleplayTxtImportSpeakerCountError();
   }
 
   const draft = {

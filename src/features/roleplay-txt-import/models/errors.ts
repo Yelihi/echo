@@ -14,7 +14,7 @@ export class RoleplayTxtImportEmptyTextError extends RoleplayTxtImportError {
   }
 }
 
-export class RoleplayTxtImportTooManySpeakersError extends RoleplayTxtImportError {
+export class RoleplayTxtImportSpeakerCountError extends RoleplayTxtImportError {
   constructor(options: CustomErrorOptions = {}) {
     super("RPI-003", "Roleplay TXT import supports exactly two speakers.", options);
   }

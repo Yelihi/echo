@@ -8,6 +8,6 @@ export {
   RoleplayTxtImportError,
   RoleplayTxtImportInvalidOutputError,
   RoleplayTxtImportProviderFailedError,
-  RoleplayTxtImportTooManySpeakersError,
+  RoleplayTxtImportSpeakerCountError,
   RoleplayTxtImportUnsupportedFileError,
 } from "@/features/roleplay-txt-import/models/errors";

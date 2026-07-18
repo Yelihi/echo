@@ -4,7 +4,7 @@ import {
   RoleplayTxtImportEmptyTextError,
   RoleplayTxtImportInvalidOutputError,
   RoleplayTxtImportProviderFailedError,
-  RoleplayTxtImportTooManySpeakersError,
+  RoleplayTxtImportSpeakerCountError,
   RoleplayTxtImportUnsupportedFileError,
 } from "@/features/roleplay-txt-import/models/errors";
 import {
@@ -93,10 +93,18 @@ describe("parseRoleplayTxtImport", () => {
     expect(parse).toHaveBeenCalledWith(expect.objectContaining({ model: "test-model" }));
   });
 
-  it("should reject parsed output with more than two speakers", async () => {
-    // Given
-    const parse = jest.fn(async () => ({
-      output_parsed: {
+  it.each([
+    {
+      label: "less than two speakers",
+      output: {
+        speakers: [{ sourceName: "A", role: "partner", displayName: "A" }],
+        lines: [{ speaker: "A", text: "Hello.", translation: null }],
+      },
+      text: "A: Hello.",
+    },
+    {
+      label: "more than two speakers",
+      output: {
         speakers: [
           { sourceName: "A", role: "partner", displayName: "A" },
           { sourceName: "B", role: "me", displayName: "B" },
@@ -108,23 +116,32 @@ describe("parseRoleplayTxtImport", () => {
           { speaker: "C", text: "Wait.", translation: null },
         ],
       },
+      text: "A: Hello.\nB: Hi.\nC: Wait.",
+    },
+  ])("should reject parsed output with $label", async ({ output, text }) => {
+    // Given
+    const parse = jest.fn(async () => ({
+      output_parsed: output,
     }));
 
     // When & Then
     await expect(
       parseRoleplayTxtImport({
-        file: createFile("script.txt", "text/plain", "A: Hello.\nB: Hi.\nC: Wait."),
+        file: createFile("script.txt", "text/plain", text),
         client: createClient(parse),
         model: "test-model",
       }),
-    ).rejects.toBeInstanceOf(RoleplayTxtImportTooManySpeakersError);
+    ).rejects.toBeInstanceOf(RoleplayTxtImportSpeakerCountError);
   });
 
   it("should map invalid OpenAI output to an import error", async () => {
     // Given
     const parse = jest.fn(async () => ({
       output_parsed: {
-        speakers: [{ sourceName: "A", role: "partner", displayName: "A" }],
+        speakers: [
+          { sourceName: "A", role: "partner", displayName: "A" },
+          { sourceName: "B", role: "me", displayName: "B" },
+        ],
         lines: [{ speaker: "Unknown", text: "Hello.", translation: null }],
       },
     }));
