@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ROLEPLAY_TXT_IMPORT_SPEAKER_IDS = ["partner", "me"] as const;
+import { ROLEPLAY_TXT_IMPORT_SPEAKER_IDS } from "@/features/roleplay-txt-import/config/const";
 
 const nonEmptyTextSchema = z.string().trim().min(1);
 
