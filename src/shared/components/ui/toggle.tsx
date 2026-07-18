@@ -7,12 +7,13 @@ import { Toggle as TogglePrimitive } from "radix-ui";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 const toggleVariants = cva(
-  "group/toggle inline-flex items-center justify-center gap-1 rounded-lg text-sm font-medium whitespace-nowrap transition-all outline-none hover:bg-muted hover:text-black-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-muted data-[state=on]:bg-muted dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/toggle inline-flex items-center justify-center gap-1 rounded-full bg-white border border-gray-border text-sm text-gray-text font-medium whitespace-nowrap transition-all duration-300 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
-      variant: {
-        default: "bg-gray-background",
-        outline: "border border-input rounded-full bg-gray-background hover:bg-muted",
+      theme: {
+        blue: "aria-pressed:bg-blue-primary aria-pressed:text-white data-[state=on]:bg-blue-primary data-[state=on]:text-white hover:border-blue-primary hover:text-blue-primary",
+        black:
+          "aria-pressed:bg-black-primary aria-pressed:text-white data-[state=on]:bg-black-primary data-[state=on]:text-white hover:border-black-primary hover:text-black-primary",
       },
       size: {
         default:
@@ -22,7 +23,7 @@ const toggleVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "default",
+      theme: "blue",
       size: "default",
     },
   },
@@ -31,14 +32,14 @@ const toggleVariants = cva(
 function Toggle({
   className,
 
-  variant = "default",
+  theme = "blue",
   size = "default",
   ...props
 }: React.ComponentProps<typeof TogglePrimitive.Root> & VariantProps<typeof toggleVariants>) {
   return (
     <TogglePrimitive.Root
       data-slot="toggle"
-      className={cn(toggleVariants({ variant, size, className }))}
+      className={cn(toggleVariants({ theme, size, className }))}
       {...props}
     />
   );

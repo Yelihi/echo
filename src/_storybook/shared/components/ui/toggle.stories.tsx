@@ -6,6 +6,20 @@ import { Toggle } from "@/shared/components/ui/toggle";
 const meta = {
   title: "shared/components/ui/Toggle",
   component: Toggle,
+  argTypes: {
+    theme: {
+      control: "select",
+      options: ["blue", "black"],
+    },
+    size: {
+      control: "select",
+      options: ["sm", "default", "lg"],
+    },
+  },
+  args: {
+    theme: "blue",
+    size: "default",
+  },
   decorators: [
     (Story) => (
       <div className="p-4">
@@ -13,62 +27,57 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta;
+} satisfies Meta<typeof Toggle>;
 
 export default meta;
 
-type Story = StoryObj;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
-    <Toggle variant="default" size="default">
-      Toggle
-    </Toggle>
-  ),
+  args: {
+    children: "Toggle",
+  },
 };
 
-export const Outline: Story = {
-  render: () => (
-    <Toggle variant="outline" size="default">
-      Toggle
-    </Toggle>
-  ),
+export const Black: Story = {
+  args: {
+    theme: "black",
+    children: "Toggle",
+  },
 };
 
 export const Pressed: Story = {
-  render: () => (
-    <Toggle variant="default" size="default" pressed>
-      Toggle
-    </Toggle>
-  ),
+  args: {
+    pressed: true,
+    children: "Toggle",
+  },
 };
 
 export const WithIcon: Story = {
-  render: () => (
-    <Toggle variant="outline" size="default" aria-label="Toggle bold">
+  render: (args) => (
+    <Toggle {...args} aria-label="Toggle bold">
       <Bold />
     </Toggle>
   ),
 };
 
 export const Disabled: Story = {
-  render: () => (
-    <Toggle variant="default" size="default" disabled>
-      Toggle
-    </Toggle>
-  ),
+  args: {
+    disabled: true,
+    children: "Toggle",
+  },
 };
 
 export const AllSizes: Story = {
-  render: () => (
+  render: (args) => (
     <div className="flex items-center gap-2">
-      <Toggle variant="outline" size="sm">
+      <Toggle {...args} size="sm">
         SM
       </Toggle>
-      <Toggle variant="outline" size="default">
+      <Toggle {...args} size="default">
         Default
       </Toggle>
-      <Toggle variant="outline" size="lg">
+      <Toggle {...args} size="lg">
         LG
       </Toggle>
     </div>
