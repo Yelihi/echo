@@ -5,7 +5,10 @@ import { createAcceptedRecordingRepository } from "@/entities/accepted-recording
 import { createCleanupFailureLogRepository } from "@/entities/cleanup-failure-log";
 import { createDraftRecordingRepository } from "@/entities/draft-recording";
 import type { LineId, SentenceId, SessionId, UserId } from "@/entities/value-object";
-import { acceptDraftRecording, createDraftRecording } from "@/features/recording-storage/server";
+import {
+  acceptDraftRecording,
+  createDraftRecording,
+} from "@/features/recording-storage/services/server";
 import { RecordingStorageService } from "@/shared/lib/recording-storage/server";
 import type { Database } from "@/shared/lib/supabase";
 import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";

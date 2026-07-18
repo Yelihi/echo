@@ -5,6 +5,12 @@ import { PracticeType } from "@/entities/practice-target";
 import type { RecordingAudio, RecordingId, UserId } from "@/entities/value-object";
 import { buildRecordingObjectPath } from "@/shared/lib/recording-storage/server/path";
 
+import { createCleanupFailureInput, recordCleanupFailure } from "./cleanupFailure";
+import {
+  assertDraftRecordingFound,
+  assertRecordingOwner,
+  assertUnlinkedDraftRecording,
+} from "./recordingCleanupPolicy";
 import type {
   AcceptDraftRecordingWorkflowInput,
   CreateAcceptedRecordingPlaybackUrlWorkflowInput,
@@ -64,17 +70,19 @@ export async function createDraftRecording(input: CreateDraftRecordingWorkflowIn
     try {
       await input.storage.remove(objectPath);
     } catch (removeError) {
-      await createCleanupFailureLog({
-        repository: input.cleanupFailureLogRepository,
-        source: DRAFT_CLEANUP_SOURCE,
-        userId: input.userId,
-        bucketId: RECORDINGS_BUCKET,
-        objectPath,
-        mimeType: input.file.type,
-        sizeBytes: input.file.size,
-        durationMs: input.durationMs,
-        errorMessage: getErrorMessage(removeError),
-      });
+      await recordCleanupFailure(
+        createCleanupFailureInput({
+          repository: input.cleanupFailureLogRepository,
+          source: DRAFT_CLEANUP_SOURCE,
+          userId: input.userId,
+          bucketId: RECORDINGS_BUCKET,
+          objectPath,
+          mimeType: input.file.type,
+          sizeBytes: input.file.size,
+          durationMs: input.durationMs,
+          error: removeError,
+        }),
+      );
     }
 
     throw createError;
@@ -84,8 +92,8 @@ export async function createDraftRecording(input: CreateDraftRecordingWorkflowIn
 export async function acceptDraftRecording(input: AcceptDraftRecordingWorkflowInput) {
   const draft = await input.draftRepository.findById(input.draftRecordingId);
 
-  assertFound(draft, "Draft recording not found");
-  assertOwner(draft.ownerId, input.userId);
+  assertDraftRecordingFound(draft);
+  assertRecordingOwner(draft.ownerId, input.userId);
 
   const existingAccepted =
     draft.target.practiceType === PracticeType.ROLEPLAY
@@ -117,8 +125,10 @@ export async function createAcceptedRecordingPlaybackUrl(
 ) {
   const accepted = await input.acceptedRepository.findById(input.recordingId);
 
-  assertFound(accepted, "Accepted recording not found");
-  assertOwner(accepted.ownerId, input.userId);
+  if (!accepted) {
+    throw new Error("Accepted recording not found");
+  }
+  assertRecordingOwner(accepted.ownerId, input.userId);
 
   return input.storage.createSignedPlaybackUrl(accepted.audio.objectPath);
 }
@@ -128,52 +138,36 @@ export async function deleteUnacceptedDraftRecording(
 ): Promise<void> {
   const draft = await input.draftRepository.findById(input.draftRecordingId);
 
-  assertFound(draft, "Draft recording not found");
-  assertOwner(draft.ownerId, input.userId);
+  assertDraftRecordingFound(draft);
+  assertRecordingOwner(draft.ownerId, input.userId);
 
   const accepted = await input.acceptedRepository.findByStorageObject(
     draft.audio.bucketId,
     draft.audio.objectPath,
   );
 
-  if (accepted) {
-    throw new Error("Cannot delete accepted recording object");
-  }
+  assertUnlinkedDraftRecording(accepted);
 
   try {
     await input.storage.remove(draft.audio.objectPath);
   } catch (removeError) {
-    await createCleanupFailureLog({
-      repository: input.cleanupFailureLogRepository,
-      source: DRAFT_CLEANUP_SOURCE,
-      userId: input.userId,
-      bucketId: draft.audio.bucketId,
-      objectPath: draft.audio.objectPath,
-      mimeType: draft.audio.mimeType,
-      sizeBytes: draft.audio.sizeBytes,
-      durationMs: draft.audio.durationMs,
-      errorMessage: getErrorMessage(removeError),
-    });
+    await recordCleanupFailure(
+      createCleanupFailureInput({
+        repository: input.cleanupFailureLogRepository,
+        source: DRAFT_CLEANUP_SOURCE,
+        userId: input.userId,
+        bucketId: draft.audio.bucketId,
+        objectPath: draft.audio.objectPath,
+        mimeType: draft.audio.mimeType,
+        sizeBytes: draft.audio.sizeBytes,
+        durationMs: draft.audio.durationMs,
+        error: removeError,
+      }),
+    );
     throw removeError;
   }
 
   await input.draftRepository.deleteById(draft.id);
-}
-
-function assertFound<T>(value: T | null, message: string): asserts value is T {
-  if (!value) {
-    throw new Error(message);
-  }
-}
-
-function assertOwner(ownerId: UserId, userId: UserId): void {
-  if (ownerId !== userId) {
-    throw new Error("Recording does not belong to user");
-  }
-}
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
 
 async function upsertAcceptedFromDraft(
@@ -221,41 +215,22 @@ async function removeReplacedAcceptedObject(input: {
   try {
     await input.storage.remove(input.previousAudio.objectPath);
   } catch (removeError) {
-    await createCleanupFailureLog({
-      repository: input.cleanupFailureLogRepository,
-      source: ACCEPTED_CLEANUP_SOURCE,
-      userId: input.userId,
-      bucketId: input.previousAudio.bucketId,
-      objectPath: input.previousAudio.objectPath,
-      mimeType: input.previousAudio.mimeType,
-      sizeBytes: input.previousAudio.sizeBytes,
-      durationMs: input.previousAudio.durationMs,
-      errorMessage: getErrorMessage(removeError),
-    });
+    await recordCleanupFailure(
+      createCleanupFailureInput({
+        repository: input.cleanupFailureLogRepository,
+        source: ACCEPTED_CLEANUP_SOURCE,
+        userId: input.userId,
+        bucketId: input.previousAudio.bucketId,
+        objectPath: input.previousAudio.objectPath,
+        mimeType: input.previousAudio.mimeType,
+        sizeBytes: input.previousAudio.sizeBytes,
+        durationMs: input.previousAudio.durationMs,
+        error: removeError,
+      }),
+    );
   }
 }
 
 function isSameStorageObject(left: RecordingAudio, right: RecordingAudio): boolean {
   return left.bucketId === right.bucketId && left.objectPath === right.objectPath;
-}
-
-async function createCleanupFailureLog(
-  input: Parameters<CleanupFailureLogRepositoryPort["create"]>[0] & {
-    readonly repository?: CleanupFailureLogRepositoryPort;
-  },
-): Promise<void> {
-  try {
-    await input.repository?.create({
-      source: input.source,
-      userId: input.userId,
-      bucketId: input.bucketId,
-      objectPath: input.objectPath,
-      mimeType: input.mimeType,
-      sizeBytes: input.sizeBytes,
-      durationMs: input.durationMs,
-      errorMessage: input.errorMessage,
-    });
-  } catch {
-    // Cleanup logging is best effort and must not mask the primary failure.
-  }
 }
