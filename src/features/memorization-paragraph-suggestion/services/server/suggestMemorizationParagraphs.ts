@@ -7,21 +7,16 @@ import {
   MemorizationParagraphSuggestionInvalidOutputError,
   MemorizationParagraphSuggestionProviderFailedError,
 } from "@/features/memorization-paragraph-suggestion/models/errors";
+import type {
+  MemorizationParagraphSuggestionOpenAIClient,
+  SuggestMemorizationParagraphsInput,
+} from "@/features/memorization-paragraph-suggestion/models/interface";
 import type { MemorizationParagraphSuggestion } from "@/features/memorization-paragraph-suggestion/models/schema";
-import {
-  requestParagraphSuggestion,
-  type MemorizationParagraphSuggestionOpenAIClient,
-} from "@/features/memorization-paragraph-suggestion/services/server/requestParagraphSuggestion";
+import { requestParagraphSuggestion } from "@/features/memorization-paragraph-suggestion/services/server/requestParagraphSuggestion";
 import { normalizeParagraphSuggestionOutput } from "@/features/memorization-paragraph-suggestion/services/server/normalizeParagraphSuggestionOutput";
 import { assertSuggestableText } from "@/features/memorization-paragraph-suggestion/services/server/validation";
 
 export type { MemorizationParagraphSuggestionOpenAIClient };
-
-export interface SuggestMemorizationParagraphsInput {
-  readonly text: string;
-  readonly client?: MemorizationParagraphSuggestionOpenAIClient;
-  readonly model?: string;
-}
 
 export async function suggestMemorizationParagraphs(
   input: SuggestMemorizationParagraphsInput,

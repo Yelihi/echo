@@ -2,20 +2,9 @@ import "server-only";
 
 import { zodTextFormat } from "openai/helpers/zod";
 
+import { buildParagraphSuggestionPrompt } from "@/features/memorization-paragraph-suggestion/config/prompt";
+import type { RequestParagraphSuggestionInput } from "@/features/memorization-paragraph-suggestion/models/interface";
 import { openAIMemorizationParagraphSuggestionOutputSchema } from "@/features/memorization-paragraph-suggestion/models/schema";
-import { buildParagraphSuggestionPrompt } from "@/features/memorization-paragraph-suggestion/services/server/prompt";
-
-export interface MemorizationParagraphSuggestionOpenAIClient {
-  readonly responses: {
-    parse(body: unknown): Promise<{ readonly output_parsed: unknown }>;
-  };
-}
-
-export interface RequestParagraphSuggestionInput {
-  readonly client: MemorizationParagraphSuggestionOpenAIClient;
-  readonly model: string;
-  readonly text: string;
-}
 
 export async function requestParagraphSuggestion(
   input: RequestParagraphSuggestionInput,

@@ -2,8 +2,7 @@ import {
   MemorizationParagraphSuggestionEmptyTextError,
   MemorizationParagraphSuggestionTextTooLongError,
 } from "@/features/memorization-paragraph-suggestion/models/errors";
-
-export const MEMORIZATION_PARAGRAPH_SUGGESTION_MAX_TEXT_LENGTH = 10_000;
+import { MEMORIZATION_PARAGRAPH_SUGGESTION_MAX_TEXT_LENGTH } from "@/features/memorization-paragraph-suggestion/config/const";
 
 export function assertSuggestableText(text: string): string {
   const trimmedText = text.trim();
