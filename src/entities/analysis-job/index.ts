@@ -19,6 +19,22 @@ export {
   mapSessionAnalysisSummaryRowToEntity,
 } from "@/entities/analysis-job/models/mapper";
 export type {
+  AnalysisResultAudioDto,
+  AnalysisResultDto,
+  AnalysisResultExpectedTargetDto,
+  AnalysisResultItemDto,
+  AnalysisResultItemState,
+  AnalysisResultJobDto,
+  AnalysisResultSchemaVersion,
+  AnalysisResultSourceResultDto,
+  AnalysisResultState,
+  CreateAnalysisResultDtoInput,
+} from "@/entities/analysis-job/models/dtos";
+export {
+  createAnalysisResultDto,
+  mapAnalysisResultState,
+} from "@/entities/analysis-job/services/behaviors/AnalysisResultDtoBehavior";
+export type {
   AnalysisJobRow,
   PracticeTargetAnalysisResultRow,
   SessionAnalysisSummaryRow,
