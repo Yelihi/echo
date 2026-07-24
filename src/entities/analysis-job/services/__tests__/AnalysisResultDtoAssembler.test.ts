@@ -4,7 +4,7 @@ import { AnalysisJobState } from "@/entities/analysis-job/models/enums";
 import {
   createAnalysisResultDto,
   mapAnalysisResultState,
-} from "@/entities/analysis-job/services/behaviors/AnalysisResultDtoBehavior";
+} from "@/entities/analysis-job/services/AnalysisResultDtoAssembler";
 import { PracticeType, type PracticeTarget } from "@/entities/practice-target";
 import type { LineId, SessionId } from "@/entities/value-object";
 
