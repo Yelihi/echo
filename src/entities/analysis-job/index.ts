@@ -33,7 +33,7 @@ export type {
 export {
   createAnalysisResultDto,
   mapAnalysisResultState,
-} from "@/entities/analysis-job/services/behaviors/AnalysisResultDtoBehavior";
+} from "@/entities/analysis-job/services/AnalysisResultDtoAssembler";
 export type {
   AnalysisJobRow,
   PracticeTargetAnalysisResultRow,
