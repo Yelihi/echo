@@ -1,0 +1,19 @@
+{
+  "codeConnect": {
+    "parser": "react",
+    "include": ["src/**/*.tsx"],
+    "exclude": [
+      "node_modules/**",
+      ".next/**",
+      "storybook-static/**",
+      "src/**/*.stories.tsx",
+      "src/**/__tests__/**"
+    ],
+    "paths": {
+      "@/*": "src/*"
+    },
+    "documentUrlSubstitutions": {
+      "<ECHO_DS>": "https://www.figma.com/design/4hKG57XYIE01IrrfDQT7eE"
+    }
+  }
+}
