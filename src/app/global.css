@@ -4,56 +4,268 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   Echo Design System — primitives
+   Source of truth: Figma "Echo Design System" › Primitives collection
+   https://www.figma.com/design/4hKG57XYIE01IrrfDQT7eE
+
+   These are raw ramp values. They are intentionally NOT in @theme,
+   so Tailwind does not generate utilities for them — always use the
+   semantic tokens below (bg-blue-primary, text-gray-text, …).
+   ============================================================ */
+:root {
+  /* Roleplay pillar — also the brand ramp */
+  --rp-50: #eff6fc;
+  --rp-100: #dcebf7;
+  --rp-200: #c2dcf0;
+  --rp-300: #a7d0eb;
+  --rp-400: #7db5df;
+  --rp-500: #5b9bd5;
+  --rp-600: #4585c4;
+  --rp-700: #2f6196;
+  --rp-800: #244b75;
+  --rp-glow: #8fc6f2;
+
+  /* Memorization pillar */
+  --mem-50: #eef1f5;
+  --mem-100: #dce3eb;
+  --mem-200: #bcc8d6;
+  --mem-300: #8e9fb3;
+  --mem-400: #5e7290;
+  --mem-500: #3e5168;
+  --mem-600: #2d3a4b;
+  --mem-700: #243040;
+  --mem-800: #1a232f;
+  --mem-glow: #86a2c0;
+
+  /* Yellow — highlight, use sparingly */
+  --yl-50: #fff8e3;
+  --yl-100: #ffefbe;
+  --yl-400: #ffd64d;
+  --yl-500: #ffcb1f;
+  --yl-600: #e6b200;
+  --yl-ink: #6b5200;
+
+  /* Ink */
+  --ink-900: #222222;
+  --ink-700: #4c545e;
+
+  /* Neutral ramp */
+  --neutral-50: #f7f7f8;
+  --neutral-100: #f4f4f5;
+  --neutral-150: #eaebec;
+  --neutral-200: #e1e2e4;
+  --neutral-300: #c2c4c8;
+  --neutral-400: #aeb0b6;
+  --neutral-500: #989ba2;
+  --neutral-600: #70737c;
+
+  /* Status */
+  --red-300: #ffb5b5;
+  --red-500: #ff5252;
+  --red-600: #ff4242;
+  --red-700: #e52222;
+  --red-subtle: #feecec;
+  --green-600: #00bf40;
+  --green-700: #009632;
+  --green-subtle: #d9ffe6;
+  --amber-600: #ff9200;
+  --amber-700: #9a5b00;
+  --amber-subtle: #fef4e6;
+
+  /* Surfaces */
+  --surface-app: #f2f4f6;
+  --surface-app-warm: #fafbfc;
+  --surface-card: #ffffff;
+
+  /* Alpha overlays — slate (#2d3a4b) and foreground (#37383c) */
+  --alpha-slate-6: #2d3a4b0e;
+  --alpha-slate-9: #2d3a4b17;
+  --alpha-slate-10: #2d3a4b1a;
+  --alpha-slate-16: #2d3a4b29;
+  --alpha-fg-88: #37383ce0;
+  --alpha-fg-61: #37383c9c;
+  --alpha-fg-28: #37383c47;
+  --alpha-white-65: #ffffffa6;
+  --alpha-black-50: #00000080;
+
+  /* Immersive session stage */
+  --session-bg: #141a24;
+  --session-glass: #ffffff12;
+  --session-glass-line: #ffffff24;
+}
+
+/* ------------------------------------------------------------
+   Active accent ramp.
+   Defaults to the roleplay pillar; set data-pillar="memo" on any
+   container to switch the whole subtree to the memorization ramp.
+   This mirrors the Roleplay / Memo modes in the Figma Color collection.
+   ------------------------------------------------------------ */
+:root {
+  --ac-50: var(--rp-50);
+  --ac-100: var(--rp-100);
+  --ac-200: var(--rp-200);
+  --ac-300: var(--rp-300);
+  --ac-400: var(--rp-400);
+  --ac-500: var(--rp-500);
+  --ac-600: var(--rp-600);
+  --ac-700: var(--rp-700);
+  --ac-800: var(--rp-800);
+  --ac-glow: var(--rp-glow);
+}
+
+[data-pillar="memo"] {
+  --ac-50: var(--mem-50);
+  --ac-100: var(--mem-100);
+  --ac-200: var(--mem-200);
+  --ac-300: var(--mem-300);
+  --ac-400: var(--mem-400);
+  --ac-500: var(--mem-500);
+  --ac-600: var(--mem-600);
+  --ac-700: var(--mem-700);
+  --ac-800: var(--mem-800);
+  --ac-glow: var(--mem-glow);
+}
+
 @theme {
-  /** color */
-  --color-black-primary: #222222;
-  --color-black-secondary: #4c545e;
-  --color-black-tertiary: #2d3a4b;
+  /** ── color · semantic ─────────────────────────────────────
+      Names match the Figma Color collection 1:1, so Dev Mode
+      hands developers exactly these variables. */
+  --color-black-primary: var(--ink-900);
+  --color-black-secondary: var(--ink-700);
+  --color-black-tertiary: var(--mem-600);
 
-  --color-red-primary: #ff5252;
-  --color-red-secondary: #feecec;
+  --color-red-primary: var(--red-500);
+  --color-red-secondary: var(--red-subtle);
 
-  --color-gray-background: #f2f4f6;
-  --color-gray-background-element: #2d3a4b0e;
-  --color-gray-text: #37383c9c;
-  --color-gray-text-secondary: #37383c47;
-  --color-gray-border: #2d3a4b29;
+  --color-gray-background: var(--surface-app);
+  --color-gray-background-element: var(--alpha-slate-6);
+  --color-gray-text: var(--alpha-fg-61);
+  --color-gray-text-secondary: var(--alpha-fg-28);
+  --color-gray-border: var(--alpha-slate-16);
 
-  --color-depp-blue-primary: #243040;
-  --color-deep-blue-secondary: #eef1f5;
+  --color-deep-blue-primary: var(--mem-700);
+  --color-deep-blue-secondary: var(--mem-50);
 
-  --color-blue-primary: #5b9bd5;
-  --color-blue-focus-title: #2f6196;
-  --color-blue-sub-paragraph: #4585c4;
-  --color-blue-secondary: #eff6fc;
-  --color-blue-border: #a7d0eb;
-  --color-blue-hover: #244b75;
-  --color-blue-step: #8fc6f2;
+  --color-blue-primary: var(--rp-500);
+  --color-blue-focus-title: var(--rp-700);
+  --color-blue-sub-paragraph: var(--rp-600);
+  --color-blue-secondary: var(--rp-50);
+  --color-blue-border: var(--rp-300);
+  --color-blue-hover: var(--rp-800);
+  --color-blue-step: var(--rp-glow);
 
-  --color-green-primary: #009632;
-  --color-green-secondary: #d9ffe6;
+  --color-green-primary: var(--green-700);
+  --color-green-secondary: var(--green-subtle);
 
-  --color-yellow-primary: #9a5b00;
-  --color-yellow-secondary: #fef4e6;
+  --color-yellow-primary: var(--amber-700);
+  --color-yellow-secondary: var(--amber-subtle);
 
-  --color-white-secondary: #ffffffa6;
+  --color-white-secondary: var(--alpha-white-65);
 
-  /** font size */
+  /** ── color · accent (pillar-aware) ────────────────────────
+      Prefer these on anything that should follow the active
+      pillar. Referencing the rp- or mem- ramps directly
+      bypasses the switch. */
+  --color-accent-50: var(--ac-50);
+  --color-accent-100: var(--ac-100);
+  --color-accent-200: var(--ac-200);
+  --color-accent-300: var(--ac-300);
+  --color-accent-400: var(--ac-400);
+  --color-accent-500: var(--ac-500);
+  --color-accent-600: var(--ac-600);
+  --color-accent-700: var(--ac-700);
+  --color-accent-800: var(--ac-800);
+  --color-accent-glow: var(--ac-glow);
+
+  /** ── color · surface & line ───────────────────────────────*/
+  --color-card-surface: var(--surface-card);
+  --color-card-line: var(--alpha-slate-10);
+  --color-card-line-strong: var(--alpha-slate-16);
+  --color-surface-app-warm: var(--surface-app-warm);
+  --color-wash-6: var(--alpha-slate-6);
+  --color-wash-9: var(--alpha-slate-9);
+  --color-scrim: var(--alpha-black-50);
+  --color-fg-standard: var(--alpha-fg-88);
+
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-150: var(--neutral-150);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-400: var(--neutral-400);
+
+  /** ── color · status ───────────────────────────────────────*/
+  --color-status-negative: var(--red-600);
+  --color-status-negative-border: var(--red-300);
+  --color-status-positive: var(--green-600);
+  --color-status-cautionary: var(--amber-600);
+  --color-highlight-miss: var(--yl-100);
+
+  /** ── color · immersive session ────────────────────────────*/
+  --color-session-bg: var(--session-bg);
+  --color-session-glass: var(--session-glass);
+  --color-session-glass-line: var(--session-glass-line);
+
+  /** ── typography ───────────────────────────────────────────
+      size / line-height / letter-spacing come from the Figma
+      text styles of the same name. */
   --text-heading-lg: 32px;
+  --text-heading-lg--line-height: 43px;
+  --text-heading-lg--letter-spacing: -0.027em;
   --text-heading-md: 27px;
+  --text-heading-md--line-height: 37px;
+  --text-heading-md--letter-spacing: -0.024em;
   --text-heading-sm: 20px;
+  --text-heading-sm--line-height: 28px;
+  --text-heading-sm--letter-spacing: -0.012em;
   --text-heading-xs: 18px;
+  --text-heading-xs--line-height: 26px;
+  --text-heading-xs--letter-spacing: -0.004em;
 
   --text-subtitle-lg: 14px;
+  --text-subtitle-lg--line-height: 20px;
+  --text-subtitle-lg--letter-spacing: 0.012em;
   --text-subtitle-md: 13px;
+  --text-subtitle-md--line-height: 18px;
+  --text-subtitle-md--letter-spacing: 0.018em;
   --text-subtitle-sm: 12px;
+  --text-subtitle-sm--line-height: 16px;
+  --text-subtitle-sm--letter-spacing: 0.024em;
 
   --text-body-1: 12px;
+  --text-body-1--line-height: 18px;
+  --text-body-1--letter-spacing: 0.006em;
   --text-body-2: 13px;
+  --text-body-2--line-height: 20px;
+  --text-body-2--letter-spacing: 0.006em;
   --text-body-3: 14px;
+  --text-body-3--line-height: 21px;
+  --text-body-3--letter-spacing: 0.006em;
   --text-body-4: 15px;
+  --text-body-4--line-height: 23px;
+  --text-body-4--letter-spacing: 0.006em;
   --text-body-5: 16px;
+  --text-body-5--line-height: 24px;
+  --text-body-5--letter-spacing: 0.006em;
   --text-body-6: 30px;
+  --text-body-6--line-height: 45px;
+  --text-body-6--letter-spacing: 0.006em;
+
+  /** ── radius ───────────────────────────────────────────────
+      Echo 고유 반경. shadcn의 --radius-sm/md/lg/xl과 충돌하지 않도록
+      역할 기반 이름을 씁니다. 값은 Figma Spacing 컬렉션과 동일합니다. */
+  --radius-chip: 10px;
+  --radius-control: 12px;
+  --radius-panel: 16px;
+  --radius-card: 20px;
+  --radius-hero: 24px;
+
+  /** ── elevation ────────────────────────────────────────────
+      Matches the Figma effect styles of the same name. */
+  --shadow-button: 0 1px 2px rgb(23 23 23 / 0.06);
+  --shadow-emphasize: 0 1px 2px rgb(23 23 23 / 0.06), 0 4px 12px rgb(23 23 23 / 0.07);
+  --shadow-strong: 0 1px 2px rgb(23 23 23 / 0.06), 0 8px 24px rgb(23 23 23 / 0.1);
+  --shadow-heavy: 0 2px 4px rgb(0 0 0 / 0.08), 0 16px 32px rgb(0 0 0 / 0.12);
+  --shadow-modal: 0 8px 16px rgb(0 0 0 / 0.08), 0 24px 48px rgb(0 0 0 / 0.16);
 
   /** animation */
 

@@ -5,7 +5,7 @@ import type { ListContainerProps } from "@/widgets/latest-sources/models/interfa
 
 export const ListContainer = ({ type, icon: Icon, title, children }: ListContainerProps) => {
   return (
-    <div className="bg-white w-full rounded-[20px] px-[18px] py-[20px] flex flex-col justify-start items-start gap-[10px]">
+    <div className="bg-white w-full rounded-card px-[18px] py-[20px] flex flex-col justify-start items-start gap-[10px]">
       <div className="w-full flex justify-start items-center gap-[10px]">
         <div className="h-[24px] flex justify-center items-start">
           <Icon

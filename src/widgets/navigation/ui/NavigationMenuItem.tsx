@@ -12,7 +12,7 @@ export const NavigationMenuItem = ({ icon: Icon, link, label }: NavigationMenuIt
     <Link href={link} className="flex justify-center items-center">
       <button
         className={cn(
-          "w-fit px-3 h-[33px] rounded-[10px] group  flex justify-center items-center gap-[10px] hover:bg-blue-secondary active:scale-98 transition-all duration-100 cursor-pointer",
+          "w-fit px-3 h-[33px] rounded-chip group  flex justify-center items-center gap-[10px] hover:bg-blue-secondary active:scale-98 transition-all duration-100 cursor-pointer",
           isCurrentHref ? "bg-blue-secondary" : "bg-white-secondary",
         )}
       >

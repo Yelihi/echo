@@ -9,7 +9,7 @@ import type {
 
 function RecordSummaryCard({ count, title, children }: RecordSummaryCardProps) {
   return (
-    <div className="rounded-[16px] w-full py-[16px] px-[18px] flex justify-start items-center gap-[10px] bg-white border border-gray-border rounded-[10px]">
+    <div className="rounded-panel w-full py-[16px] px-[18px] flex justify-start items-center gap-[10px] bg-white border border-gray-border rounded-chip">
       {children}
       <div className="flex flex-col items-start justify-start gap-[3px]">
         <p className="text-heading-sm font-extrabold text-black-primary">{count}</p>

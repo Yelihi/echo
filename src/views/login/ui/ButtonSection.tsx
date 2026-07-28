@@ -3,7 +3,7 @@ import { Google } from "@/shared/components";
 
 export function ButtonSection() {
   return (
-    <section className="bg-white rounded-[20px] p-[28px] w-[410px] flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-200">
+    <section className="bg-white rounded-card p-[28px] w-[410px] flex justify-center items-center shadow-button hover:shadow-emphasize transition-shadow duration-200">
       <div className="flex flex-col justify-center items-center gap-7 w-full">
         <div className="flex flex-col justify-center items-center gap-2 w-full">
           <p className="text-heading-sm font-semibold text-black-primary tracking-tight">

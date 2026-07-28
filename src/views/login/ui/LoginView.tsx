@@ -6,7 +6,7 @@ import { ButtonSection } from "@/views/login/ui/ButtonSection";
 export function LoginView() {
   return (
     <main className="w-full h-full flex flex-col justify-center items-center gap-[2rem] z-10">
-      <div className="flex justify-center items-center rounded-[20px] size-[66px] bg-blue-primary shadow-md">
+      <div className="flex justify-center items-center rounded-card size-[66px] bg-blue-primary shadow-emphasize">
         <Pluse className="size-[28px] text-white" />
       </div>
       <div className="flex flex-col justify-center items-center gap-3">

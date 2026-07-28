@@ -18,10 +18,10 @@ export const SourceCard = ({
   onMenuAction,
 }: SourceCardProps) => {
   return (
-    <div className="bg-white rounded-[20px] w-full min-w-[300px] h-[220px] p-[20px] shadow-md hover:shadow-lg transition-all duration-300">
+    <div className="bg-white rounded-card w-full min-w-[300px] h-[220px] p-[20px] shadow-emphasize hover:shadow-strong transition-all duration-300">
       <div className="size-full flex flex-col justify-start items-center gap-[20px]">
         <div className="w-full flex justify-between items-center">
-          <div className="w-full max-w-[200px] overflow-x-scroll scrollbar-hide scroll-smooth flex justify-start items-center gap-[10px]">
+          <div className="w-full max-w-[200px] overflow-x-scroll scrollbar-none scroll-smooth flex justify-start items-center gap-[10px]">
             {tags.map((tag) => (
               <Badge key={tag.value} size="small" theme={theme} value={tag.value}>
                 {tag.label}
@@ -34,7 +34,7 @@ export const SourceCard = ({
             innerMenuItems={innerMenuItems}
           />
         </div>
-        <div className="w-full flex flex-col justify-start items-start gap-[10px] cursor-pointer rounded-[10px] hover:shadow-md transition-all duration-300">
+        <div className="w-full flex flex-col justify-start items-start gap-[10px] cursor-pointer rounded-chip  transition-all duration-300">
           <div className="w-full flex flex-col items-start gap-[8px]">
             <p className="w-full text-heading-xs text-black-primary font-bold line-clamp-2 wrap-break-word leading-[24px] h-[48px]">
               {title}

@@ -8,7 +8,7 @@ interface RecordTableProps {
 
 export function RecordTable({ records }: RecordTableProps) {
   return (
-    <section className="size-fit shadow-md rounded-[20px] w-full">
+    <section className="size-fit shadow-emphasize rounded-card w-full">
       {records.map((record, index) => (
         <RecordTableRow
           key={record.id}

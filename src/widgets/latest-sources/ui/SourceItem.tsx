@@ -8,13 +8,13 @@ export const SourceItem = ({ icon: Icon, type, title, subTitle }: SourceItemProp
   return (
     <div
       className={cn(
-        "w-fit bg-white flex justify-start items-center gap-[15px] p-[10px] rounded-[20px] cursor-pointer hover:shadow-md transition-shadow duration-300 active:scale-96",
+        "w-fit bg-white flex justify-start items-center gap-[15px] p-[10px] rounded-card cursor-pointer hover:shadow-emphasize transition-shadow duration-300 active:scale-96",
         type === "role-play" ? "active:bg-blue-secondary" : "active:bg-deep-blue-secondary",
       )}
     >
       <div
         className={cn(
-          "size-[42px] flex justify-center items-center rounded-[10px]",
+          "size-[42px] flex justify-center items-center rounded-chip",
           type === "role-play" ? "bg-blue-secondary" : "bg-deep-blue-secondary",
         )}
       >
