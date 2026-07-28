@@ -39,21 +39,21 @@ export function LeftSideIcon({ status }: { status: RecordStatus }) {
   switch (status) {
     case "connected": {
       return (
-        <div className="size-[40px] rounded-[12px] flex justify-center items-center bg-gray-background">
+        <div className="size-[40px] rounded-control flex justify-center items-center bg-gray-background">
           <Waves className="size-[19px] text-gray-text" />
         </div>
       );
     }
     case "delete-failed": {
       return (
-        <div className="size-[40px] rounded-[12px] flex justify-center items-center bg-red-secondary">
+        <div className="size-[40px] rounded-control flex justify-center items-center bg-red-secondary">
           <FileWarning className="size-[19px] text-red-primary" />
         </div>
       );
     }
     case "orphaned": {
       return (
-        <div className="size-[40px] rounded-[12px] flex justify-center items-center bg-yellow-secondary">
+        <div className="size-[40px] rounded-control flex justify-center items-center bg-yellow-secondary">
           <UnlinkIcon className="size-[19px] text-yellow-primary" />
         </div>
       );

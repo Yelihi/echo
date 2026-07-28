@@ -1,4 +1,5 @@
 import { cva } from "class-variance-authority";
+import { cn } from "@/shared/utils/cn";
 import { ArrowRight, MessageSquare, Layers } from "lucide-react";
 
 import { Button } from "@/shared/components";
@@ -6,12 +7,12 @@ import { SessionIntroCardProps } from "@/widgets/session-intro-card/models/inter
 
 export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProps) => {
   const sessionIntroCardVariants = cva(
-    "relative p-[20px] cursor-pointer rounded-[24px] hover:shadow-lg transition-all duration-300",
+    "w-fit relative p-[20px] cursor-pointer rounded-hero hover:shadow-strong transition-all duration-300",
     {
       variants: {
         type: {
           "role-play": "bg-blue-primary",
-          memorization: "bg-depp-blue-primary",
+          memorization: "bg-deep-blue-primary",
         },
       },
     },
@@ -37,7 +38,7 @@ export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProp
   };
 
   return (
-    <div className={sessionIntroCardVariants({ type })}>
+    <div className={cn(sessionIntroCardVariants({ type }), "hover:shadow-emphasize")}>
       <div className="w-full min-w-[400px] flex flex-col justify-items-center gap-[30px]">
         <div className="flex flex-col justify-start items-start gap-[8px]">
           <p className="text-body-1 font-bold text-white">{textByType[type].info}</p>

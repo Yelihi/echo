@@ -15,7 +15,7 @@ import {
 const InnerMenuContainer = ({ children, isOpen }: InnerMenuContainerProps) => {
   return (
     isOpen && (
-      <div className="absolute top-9 right-1 bg-white shadow-md rounded-[20px] w-full min-w-[150px] h-fit p-[6px] z-10">
+      <div className="absolute top-9 right-1 bg-white shadow-emphasize rounded-card w-full min-w-[150px] h-fit p-[6px] z-10">
         {children}
       </div>
     )
@@ -25,7 +25,7 @@ const InnerMenuContainer = ({ children, isOpen }: InnerMenuContainerProps) => {
 const InnerMenuItem = ({ value, text, icon: Icon, theme, onClick }: InnerMenuItemProps) => {
   return (
     <button
-      className="w-full h-fit min-h-[36px] flex justify-start items-center py-[9px] px-[11px] gap-[10px] hover:shadow-md transition-all duration-300 cursor-pointer rounded-[9px]"
+      className="w-full h-fit min-h-[36px] flex justify-start items-center py-[9px] px-[11px] gap-[10px] hover:shadow-emphasize transition-all duration-300 cursor-pointer rounded-[9px]"
       onClick={(event) => {
         event.stopPropagation();
         onClick(value);

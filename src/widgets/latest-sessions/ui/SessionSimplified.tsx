@@ -21,11 +21,11 @@ export const SessionSimplified = ({
   sessionState,
 }: SessionSimplifiedProps) => {
   return (
-    <div className="w-full h-fit bg-white border border-gray-border rounded-[16px] p-[16px] flex justify-between items-center cursor-pointer">
+    <div className="w-full h-fit bg-white border border-gray-border rounded-panel p-[16px] flex justify-between items-center cursor-pointer">
       <div className="flex justify-start items-center gap-[10px]">
         <div
           className={cn(
-            "size-[42px] rounded-[12px] flex justify-center items-center",
+            "size-[42px] rounded-control flex justify-center items-center",
             sessionType === "role-playing" ? "bg-blue-secondary" : "bg-deep-blue-secondary",
           )}
         >

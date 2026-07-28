@@ -53,7 +53,7 @@ export const Profile = () => {
   return (
     <div ref={profileRef} className="relative size-[34px] z-10">
       <button
-        className="size-full rounded-full border border-blue-primary p-[1px] cursor-pointer hover:shadow-lg transition-all duration-100 active:scale-95"
+        className="size-full rounded-full border border-blue-primary p-[1px] cursor-pointer hover:shadow-strong transition-all duration-100 active:scale-95"
         onClick={toggleProfileMenu}
       >
         <div className="bg-blue-primary rounded-full flex justify-center items-center size-full">
@@ -61,7 +61,7 @@ export const Profile = () => {
         </div>
       </button>
       {isActive && (
-        <div className="absolute top-full right-0 translate-y-[5px] min-[1400px]:right-auto min-[1400px]:left-1/2 min-[1400px]:-translate-x-1/2 w-[150px] h-fit bg-white-secondary rounded-md shadow-md">
+        <div className="absolute top-full right-0 translate-y-[5px] min-[1400px]:right-auto min-[1400px]:left-1/2 min-[1400px]:-translate-x-1/2 w-[150px] h-fit bg-white-secondary rounded-md shadow-emphasize">
           {PROFILE_MENU.map((menu) => (
             <ProfileMenuItem {...menu} key={menu.key} onClick={actions[menu.key]} />
           ))}
