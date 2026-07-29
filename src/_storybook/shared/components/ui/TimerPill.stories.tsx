@@ -5,7 +5,7 @@ import { TimerPill } from "@/shared/components/ui/TimerPill";
 const meta = {
   title: "shared/components/ui/TimerPill",
   component: TimerPill,
-  parameters: {
+  globals: {
     backgrounds: { value: "session" },
   },
   argTypes: {

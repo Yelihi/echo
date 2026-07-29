@@ -5,7 +5,7 @@ import { Waveform } from "@/shared/components/ui/Waveform";
 const meta = {
   title: "shared/components/ui/Waveform",
   component: Waveform,
-  parameters: {
+  globals: {
     backgrounds: { value: "session" },
   },
   argTypes: {

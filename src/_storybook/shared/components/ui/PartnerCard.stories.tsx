@@ -5,7 +5,7 @@ import { PartnerCard } from "@/shared/components/ui/PartnerCard";
 const meta = {
   title: "shared/components/ui/PartnerCard",
   component: PartnerCard,
-  parameters: {
+  globals: {
     backgrounds: { value: "session" },
   },
   args: {

@@ -5,7 +5,7 @@ import { StageRow } from "@/shared/components/ui/StageRow";
 const meta = {
   title: "shared/components/ui/StageRow",
   component: StageRow,
-  parameters: {
+  globals: {
     backgrounds: { value: "session" },
   },
   argTypes: {

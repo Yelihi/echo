@@ -5,7 +5,7 @@ import { RecordOrb } from "@/shared/components/ui/RecordOrb";
 const meta = {
   title: "shared/components/ui/RecordOrb",
   component: RecordOrb,
-  parameters: {
+  globals: {
     backgrounds: { value: "session" },
   },
   argTypes: {

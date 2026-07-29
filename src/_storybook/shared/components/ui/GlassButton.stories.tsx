@@ -6,7 +6,7 @@ import { GlassButton } from "@/shared/components/ui/GlassButton";
 const meta = {
   title: "shared/components/ui/GlassButton",
   component: GlassButton,
-  parameters: {
+  globals: {
     backgrounds: { value: "session" },
   },
   argTypes: {
