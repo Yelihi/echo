@@ -19,3 +19,30 @@ export { Feedback } from "@/shared/components/ui/Feedback";
 export { LoadingState } from "@/shared/components/ui/LoadingState";
 export { PlayPill } from "@/shared/components/ui/PlayPill";
 export { SegmentedControl, SegmentedControlItem } from "@/shared/components/ui/SegmentedControl";
+
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/components/ui/dialog";
+
+export { AddLineButton } from "@/shared/components/ui/AddLineButton";
+export { ChatBubble } from "@/shared/components/ui/ChatBubble";
+export { ChatBubbleInput } from "@/shared/components/ui/ChatBubbleInput";
+export { ChatEditorRow } from "@/shared/components/ui/ChatEditorRow";
+export { DashedActionButton } from "@/shared/components/ui/DashedActionButton";
+export { EditorPanelHeader } from "@/shared/components/ui/EditorPanelHeader";
+export { GlassButton } from "@/shared/components/ui/GlassButton";
+export { ImportDialog } from "@/shared/components/ui/ImportDialog";
+export { ParagraphRow } from "@/shared/components/ui/ParagraphRow";
+export { PartnerCard } from "@/shared/components/ui/PartnerCard";
+export { RecordOrb } from "@/shared/components/ui/RecordOrb";
+export { StageRow } from "@/shared/components/ui/StageRow";
+export { TagInput } from "@/shared/components/ui/TagInput";
+export { TimerPill } from "@/shared/components/ui/TimerPill";
+export { Waveform } from "@/shared/components/ui/Waveform";

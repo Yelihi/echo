@@ -11,3 +11,5 @@ export { Input } from "@/shared/components/atomics/input/Input";
 export { Radio, RadioGroup } from "@/shared/components/atomics/radio/Radio";
 export { ProgressTrack } from "@/shared/components/atomics/progress-track/ProgressTrack";
 export { Spinner } from "@/shared/components/atomics/spinner/Spinner";
+export { Textarea } from "@/shared/components/atomics/textarea/Textarea";
+export { TitleField } from "@/shared/components/atomics/title-field/TitleField";
