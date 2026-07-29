@@ -14,6 +14,13 @@ const toggleVariants = cva(
         blue: "aria-pressed:bg-blue-primary aria-pressed:text-white data-[state=on]:bg-blue-primary data-[state=on]:text-white hover:border-blue-primary hover:text-blue-primary",
         black:
           "aria-pressed:bg-black-primary aria-pressed:text-white data-[state=on]:bg-black-primary data-[state=on]:text-white hover:border-black-primary hover:text-black-primary",
+        /**
+         * SegmentedControl 전용. base 의 pill 형태(rounded-full / bg-white / border)를
+         * 중화하고, 선택 시 흰 배경 + Shadow/Button 으로 떠오르게 합니다.
+         * SegmentedControl 이 컨테이너에 bg-neutral-100 을 깔아 대비를 만듭니다.
+         */
+        segmented:
+          "rounded-lg border-transparent bg-transparent shadow-none hover:border-transparent hover:text-black-primary data-[state=on]:bg-card-surface data-[state=on]:text-accent-700 data-[state=on]:shadow-button aria-pressed:bg-card-surface aria-pressed:text-accent-700 aria-pressed:shadow-button",
       },
       size: {
         default:

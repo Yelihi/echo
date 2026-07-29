@@ -38,7 +38,7 @@ export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProp
   };
 
   return (
-    <div className={cn(sessionIntroCardVariants({ type }), "hover:shadow-emphasize")}>
+    <div className={cn(sessionIntroCardVariants({ type }))}>
       <div className="w-full min-w-[400px] flex flex-col justify-items-center gap-[30px]">
         <div className="flex flex-col justify-start items-start gap-[8px]">
           <p className="text-body-1 font-bold text-white">{textByType[type].info}</p>
