@@ -46,5 +46,3 @@ export { StageRow } from "@/shared/components/ui/StageRow";
 export { TagInput } from "@/shared/components/ui/TagInput";
 export { TimerPill } from "@/shared/components/ui/TimerPill";
 export { Waveform } from "@/shared/components/ui/Waveform";
-export { MaterialCard } from "@/shared/components/ui/MaterialCard";
-export { RecentSessionCard } from "@/shared/components/ui/RecentSessionCard";
