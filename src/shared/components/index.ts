@@ -13,3 +13,6 @@ export { ProgressTrack } from "@/shared/components/atomics/progress-track/Progre
 export { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 export { Textarea } from "@/shared/components/atomics/textarea/Textarea";
 export { TitleField } from "@/shared/components/atomics/title-field/TitleField";
+export { Card } from "@/shared/components/atomics/card/Card";
+export { Chip } from "@/shared/components/atomics/chip/Chip";
+export { TagChip } from "@/shared/components/atomics/tag-chip/TagChip";
