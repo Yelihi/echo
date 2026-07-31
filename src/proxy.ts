@@ -18,11 +18,13 @@ export async function proxy(request: NextRequest) {
 
   // 3. 가드 조건 설정
   // 로그인을 안 한 상태로 대시보드(/dashboard) 등의 보호된 페이지에 접근할 때
+  // NAVIGATION_MENU(widgets/navigation/config/const.ts)의 경로와 일치해야 합니다.
   const protectedRoutes = [
     "/home",
-    "/roleplays",
-    "/memorization",
-    "/recordings",
+    "/role-playing",
+    "/sentence-memorization",
+    "/recording-management",
+    // 몰입형 세션 화면(내비게이션 없음)
     "/roleplay-sessions",
     "/memorization-sessions",
   ];
