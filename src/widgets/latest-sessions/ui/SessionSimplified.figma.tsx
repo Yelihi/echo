@@ -20,6 +20,7 @@ figma.connect(SessionSimplified, "<ECHO_DS>?node-id=31-123", {
       done: "completed",
       partial: "failed",
       analyzing: "inProgress",
+      pending: "pending",
     }),
   },
   example: ({ title, sessionType, sessionState }) => (

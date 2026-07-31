@@ -7,7 +7,7 @@ import { SessionIntroCardProps } from "@/widgets/session-intro-card/models/inter
 
 export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProps) => {
   const sessionIntroCardVariants = cva(
-    "w-fit relative p-[20px] cursor-pointer rounded-hero hover:shadow-strong transition-all duration-300",
+    "relative w-full cursor-pointer rounded-hero p-[20px] transition-all duration-300 hover:shadow-strong",
     {
       variants: {
         type: {
@@ -39,13 +39,11 @@ export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProp
 
   return (
     <div className={cn(sessionIntroCardVariants({ type }))}>
-      <div className="w-full min-w-[400px] flex flex-col justify-items-center gap-[30px]">
+      <div className="flex w-full flex-col justify-items-center gap-[30px]">
         <div className="flex flex-col justify-start items-start gap-[8px]">
           <p className="text-body-1 font-bold text-white">{textByType[type].info}</p>
           <h2 className="text-heading-md font-bold text-white">{textByType[type].title}</h2>
-          <p className="text-body-3 font-normal text-white whitespace-nowrap">
-            {textByType[type].subTitle}
-          </p>
+          <p className="text-body-3 font-normal text-white">{textByType[type].subTitle}</p>
         </div>
         <div className="w-full flex justify-between items-center">
           <p className="text-body-2 text-white font-semibold">자료 {currentSessions}개</p>
