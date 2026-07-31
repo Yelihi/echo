@@ -10,7 +10,7 @@ export interface SessionSimplifiedProps {
   sessionDate: Date;
   description: string;
   sessionType: "role-playing" | "memorization";
-  sessionState: "completed" | "failed" | "inProgress";
+  sessionState: "completed" | "failed" | "inProgress" | "pending";
 }
 
 export const SessionSimplified = ({

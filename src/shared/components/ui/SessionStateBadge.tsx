@@ -2,13 +2,14 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/shared/utils/cn";
 
 export interface SessionStateBadgeProps {
-  state: "completed" | "failed" | "inProgress";
+  state: "completed" | "failed" | "inProgress" | "pending";
 }
 
 const mappedLabel = {
   completed: "분석 완료",
   failed: "일부 실패",
   inProgress: "분석 중",
+  pending: "분석 전",
 };
 
 const sessionStateBadgeGroupVariant = cva(
@@ -19,6 +20,7 @@ const sessionStateBadgeGroupVariant = cva(
         completed: "bg-green-secondary text-green-primary",
         failed: "bg-yellow-secondary text-yellow-primary",
         inProgress: "bg-blue-secondary text-blue-primary",
+        pending: "border border-card-line-strong bg-card-surface text-gray-text",
       },
     },
   },
