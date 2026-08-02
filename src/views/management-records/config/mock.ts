@@ -3,13 +3,6 @@ import type {
   RecordsSummary,
 } from "@/views/management-records/models/interface";
 
-export const mockRecordsSummary: RecordsSummary = {
-  total: 7,
-  connected: 3,
-  failDelete: 1,
-  orphaned: 3,
-};
-
 export const mockRecords: RecordUIPresentation[] = [
   {
     id: "record-connected-001",
@@ -43,3 +36,18 @@ export const mockRecords: RecordUIPresentation[] = [
     inSession: "2",
   },
 ];
+
+export const mockRecordsSummary = mockRecords.reduce<RecordsSummary>(
+  (summary, record) => ({
+    total: summary.total + 1,
+    connected: summary.connected + (record.status === "connected" ? 1 : 0),
+    failDelete: summary.failDelete + (record.status === "delete-failed" ? 1 : 0),
+    orphaned: summary.orphaned + (record.status === "orphaned" ? 1 : 0),
+  }),
+  {
+    total: 0,
+    connected: 0,
+    failDelete: 0,
+    orphaned: 0,
+  },
+);
