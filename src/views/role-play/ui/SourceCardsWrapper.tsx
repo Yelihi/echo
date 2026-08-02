@@ -2,7 +2,6 @@
 
 import { SourceCard } from "@/widgets/source-card";
 
-import { mockSources } from "@/views/role-play/config/mock";
 import { ROLE_PLAY_INNER_MENU_ITEMS } from "@/views/role-play/config/const";
 import { RolePlayCardActionStrategyRegistry } from "@/views/role-play/services/RolePlayCardActionStrategy";
 import type { SourceCardsWrapperProps } from "@/views/role-play/models/interface";
@@ -18,8 +17,6 @@ const onDeleteSource = () => {
   alert("삭제하기");
 };
 
-// TODO: 서버 컴포넌트에서 필터/페이지네이션된 카드 목록을 props로 내려주게 되면 cards를 사용하도록 교체
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
   const registry = new RolePlayCardActionStrategyRegistry({
     onNavigatePatch,
@@ -32,7 +29,7 @@ export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
 
   return (
     <section className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[15px]">
-      {mockSources.map((source) => (
+      {cards.map((source) => (
         <SourceCard
           key={source.id}
           {...source}
