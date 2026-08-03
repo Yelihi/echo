@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import Link from "next/link";
 
 import { Button, TagChip } from "@/shared/components";
 import { mockMemorizationSources } from "@/views/memorization/config/mock";
@@ -14,8 +15,10 @@ export function MemorizationView() {
           <h1 className="text-heading-md font-bold text-black-primary">문장 암기</h1>
           <p className="text-body-4 text-gray-text">외울 문장 묶음을 선택하고 연습을 시작하세요.</p>
         </div>
-        <Button size="lg">
-          <Plus className="size-4" />새 자료
+        <Button size="lg" asChild>
+          <Link href="/sentence-memorization/new">
+            <Plus className="size-4" />새 자료
+          </Link>
         </Button>
       </header>
 
