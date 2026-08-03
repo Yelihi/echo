@@ -6,10 +6,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/shared/components";
 import { ConfirmDialog } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
-import {
-  memorizationEditorReducer,
-  type MemorizationEditorAction,
-} from "@/views/memorization/models/editorReducer";
+import { memorizationEditorReducer } from "@/views/memorization/models/reducer/editor";
+import type { MemorizationEditorAction } from "@/views/memorization/models/reducer/editor/interface";
 import { MemorizationEditorSourcePanel } from "@/views/memorization/ui/MemorizationEditorSourcePanel";
 import { MemorizationParagraphReviewPanel } from "@/views/memorization/ui/MemorizationParagraphReviewPanel";
 import type {

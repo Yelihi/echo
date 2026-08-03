@@ -9,7 +9,13 @@ import { DashedActionButton, TagInput } from "@/shared/components/ui";
 import { useTagInputController } from "@/shared/hooks/useTagInputController";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
-import type { MemorizationEditorAction } from "@/views/memorization/models/editorReducer";
+import {
+  setParagraphs,
+  setRawText,
+  setTags,
+  setTitle,
+} from "@/views/memorization/models/reducer/editor/actions";
+import type { MemorizationEditorAction } from "@/views/memorization/models/reducer/editor/interface";
 
 interface MemorizationEditorSourcePanelProps {
   draft: MemorizationEditorDraft;
@@ -35,13 +41,13 @@ export function MemorizationEditorSourcePanel({
 
   const tagInput = useTagInputController({
     tags: draft.tags,
-    onChange: (tags) => onAction({ type: "set_tags", tags }),
+    onChange: (tags) => onAction(setTags(tags)),
     getDuplicateKey: (tag) => createTagValue(tag).normalizedName,
     onInputDirty: onDirty,
   });
 
   const updateRawText = (rawText: string) => {
-    onAction({ type: "set_raw_text", rawText });
+    onAction(setRawText(rawText));
   };
 
   const createParagraphDraft = () => {
@@ -55,7 +61,7 @@ export function MemorizationEditorSourcePanel({
     }
 
     // TODO: AI 문단 제안 provider 연결 시 이 local split 을 교체합니다.
-    onAction({ type: "set_paragraphs", paragraphs });
+    onAction(setParagraphs(paragraphs));
   };
 
   return (
@@ -66,7 +72,7 @@ export function MemorizationEditorSourcePanel({
           <TitleField
             value={draft.title}
             placeholder="예: Business Email Openings"
-            onChange={(event) => onAction({ type: "set_title", title: event.target.value })}
+            onChange={(event) => onAction(setTitle(event.target.value))}
           />
         </label>
         <div className="mt-4 flex flex-col gap-2">

@@ -7,7 +7,13 @@ import { Button, Textarea } from "@/shared/components";
 import { EditorPanelHeader, ParagraphRow } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
-import type { MemorizationEditorAction } from "@/views/memorization/models/editorReducer";
+import {
+  confirmParagraphs as confirmParagraphsAction,
+  deleteParagraph as deleteParagraphAction,
+  mergeParagraph as mergeParagraphAction,
+  updateParagraph as updateParagraphAction,
+} from "@/views/memorization/models/reducer/editor/actions";
+import type { MemorizationEditorAction } from "@/views/memorization/models/reducer/editor/interface";
 
 interface MemorizationParagraphReviewPanelProps {
   draft: MemorizationEditorDraft;
@@ -48,15 +54,15 @@ export function MemorizationParagraphReviewPanel({
   );
 
   const updateParagraph = (index: number, value: string) => {
-    onAction({ type: "update_paragraph", index, value });
+    onAction(updateParagraphAction(index, value));
   };
 
   const mergeParagraph = (index: number) => {
-    onAction({ type: "merge_paragraph", index });
+    onAction(mergeParagraphAction(index));
   };
 
   const deleteParagraph = (index: number) => {
-    onAction({ type: "delete_paragraph", index });
+    onAction(deleteParagraphAction(index));
   };
 
   const confirmParagraphs = () => {
@@ -68,7 +74,7 @@ export function MemorizationParagraphReviewPanel({
       return;
     }
 
-    onAction({ type: "confirm_paragraphs", paragraphs: validParagraphs });
+    onAction(confirmParagraphsAction(validParagraphs));
   };
 
   return (
