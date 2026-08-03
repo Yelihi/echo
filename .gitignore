@@ -40,3 +40,5 @@ Thumbs.db
 !.env.example
 !.env.local.example
 node_modules
+
+tsconfig.tsbuildinfo
