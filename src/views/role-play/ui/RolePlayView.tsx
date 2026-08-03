@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import Link from "next/link";
 
 import { Button, TagChip } from "@/shared/components";
 import { mockSources } from "@/views/role-play/config/mock";
@@ -14,8 +15,10 @@ export function RolePlayView() {
           <h1 className="text-heading-md font-bold text-black-primary">롤플레잉</h1>
           <p className="text-body-4 text-gray-text">연습할 2인 대화 자료를 선택하세요.</p>
         </div>
-        <Button size="lg">
-          <Plus className="size-4" />새 자료
+        <Button size="lg" asChild>
+          <Link href="/role-playing/new">
+            <Plus className="size-4" />새 자료
+          </Link>
         </Button>
       </header>
 

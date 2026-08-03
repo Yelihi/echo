@@ -1,29 +1,26 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { SourceCard } from "@/widgets/source-card";
 
 import { ROLE_PLAY_INNER_MENU_ITEMS } from "@/views/role-play/config/const";
 import { RolePlayCardActionStrategyRegistry } from "@/views/role-play/services/RolePlayCardActionStrategy";
 import type { SourceCardsWrapperProps } from "@/views/role-play/models/interface";
 
-// service 내 strategyRepository 가져오기
-
-// 추후 구현될(feature) menu 함수
-const onNavigatePatch = () => {
-  alert("수정하기");
-};
-
 const onDeleteSource = () => {
   alert("삭제하기");
 };
 
 export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
+  const router = useRouter();
+
   const registry = new RolePlayCardActionStrategyRegistry({
-    onNavigatePatch,
+    onNavigatePatch: (id) => router.push(`/role-playing/${id}/edit`),
     onDelete: onDeleteSource,
   });
 
-  const onMenuAction = () => (value: string, id: string) => {
+  const onMenuAction = (value: string, id: string) => {
     registry.execute(value, id);
   };
 
@@ -34,7 +31,7 @@ export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
           key={source.id}
           {...source}
           innerMenuItems={ROLE_PLAY_INNER_MENU_ITEMS}
-          onMenuAction={onMenuAction()}
+          onMenuAction={onMenuAction}
         />
       ))}
     </section>
