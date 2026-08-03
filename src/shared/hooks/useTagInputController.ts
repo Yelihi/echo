@@ -5,19 +5,24 @@ import { useState, type ComponentProps } from "react";
 interface UseTagInputControllerParams {
   tags: string[];
   onChange: (tags: string[]) => void;
+  getDuplicateKey?: (tag: string) => string;
   onInputDirty?: () => void;
 }
 
 export function useTagInputController({
   tags,
   onChange,
+  getDuplicateKey = (tag) => tag,
   onInputDirty,
 }: UseTagInputControllerParams) {
   const [inputValue, setInputValue] = useState("");
 
   const addTag = (value: string) => {
     const nextTag = value.trim();
-    if (!nextTag || tags.includes(nextTag)) {
+    const nextTagKey = nextTag ? getDuplicateKey(nextTag) : "";
+    const tagKeys = new Set(tags.map(getDuplicateKey));
+
+    if (!nextTag || tagKeys.has(nextTagKey)) {
       setInputValue("");
       return;
     }

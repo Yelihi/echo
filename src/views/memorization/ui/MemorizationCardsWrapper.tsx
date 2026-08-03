@@ -1,22 +1,22 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { SourceCard } from "@/widgets/source-card";
 
 import { MEMORIZATION_INNER_MENU_ITEMS } from "@/views/memorization/config/const";
 import { MemorizationCardActionStrategyRegistry } from "@/views/memorization/services/MemorizationCardActionStrategy";
 import type { MemorizationCardsWrapperProps } from "@/views/memorization/models/interface";
 
-const onNavigatePatch = () => {
-  alert("수정하기");
-};
-
 const onDeleteSource = () => {
   alert("삭제하기");
 };
 
 export function MemorizationCardsWrapper({ cards }: MemorizationCardsWrapperProps) {
+  const router = useRouter();
+
   const registry = new MemorizationCardActionStrategyRegistry({
-    onNavigatePatch,
+    onNavigatePatch: (id) => router.push(`/sentence-memorization/${id}/edit`),
     onDelete: onDeleteSource,
   });
 
