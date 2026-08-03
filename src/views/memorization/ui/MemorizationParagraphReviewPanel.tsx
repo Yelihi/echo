@@ -7,10 +7,11 @@ import { Button, Textarea } from "@/shared/components";
 import { EditorPanelHeader, ParagraphRow } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
+import type { MemorizationEditorAction } from "@/views/memorization/models/editorReducer";
 
 interface MemorizationParagraphReviewPanelProps {
   draft: MemorizationEditorDraft;
-  onChange: (draft: MemorizationEditorDraft) => void;
+  onAction: (action: MemorizationEditorAction) => void;
 }
 
 function ParagraphActionButton({
@@ -39,7 +40,7 @@ function ParagraphActionButton({
 
 export function MemorizationParagraphReviewPanel({
   draft,
-  onChange,
+  onAction,
 }: MemorizationParagraphReviewPanelProps) {
   const validParagraphs = useMemo(
     () => draft.paragraphs.filter((paragraph) => paragraph.trim().length > 0),
@@ -47,39 +48,15 @@ export function MemorizationParagraphReviewPanel({
   );
 
   const updateParagraph = (index: number, value: string) => {
-    onChange({
-      ...draft,
-      confirmed: false,
-      paragraphs: draft.paragraphs.map((paragraph, currentIndex) =>
-        currentIndex === index ? value : paragraph,
-      ),
-    });
+    onAction({ type: "update_paragraph", index, value });
   };
 
   const mergeParagraph = (index: number) => {
-    if (index === 0) return;
-
-    onChange({
-      ...draft,
-      confirmed: false,
-      paragraphs: draft.paragraphs.reduce<string[]>((paragraphs, paragraph, currentIndex) => {
-        if (currentIndex === index - 1) {
-          paragraphs.push(`${paragraph} ${draft.paragraphs[index]}`.trim());
-          return paragraphs;
-        }
-
-        if (currentIndex !== index) paragraphs.push(paragraph);
-        return paragraphs;
-      }, []),
-    });
+    onAction({ type: "merge_paragraph", index });
   };
 
   const deleteParagraph = (index: number) => {
-    onChange({
-      ...draft,
-      confirmed: false,
-      paragraphs: draft.paragraphs.filter((_, currentIndex) => currentIndex !== index),
-    });
+    onAction({ type: "delete_paragraph", index });
   };
 
   const confirmParagraphs = () => {
@@ -91,7 +68,7 @@ export function MemorizationParagraphReviewPanel({
       return;
     }
 
-    onChange({ ...draft, paragraphs: validParagraphs, confirmed: true });
+    onAction({ type: "confirm_paragraphs", paragraphs: validParagraphs });
   };
 
   return (

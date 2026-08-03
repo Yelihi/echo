@@ -9,10 +9,11 @@ import { DashedActionButton, TagInput } from "@/shared/components/ui";
 import { useTagInputController } from "@/shared/hooks/useTagInputController";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
+import type { MemorizationEditorAction } from "@/views/memorization/models/editorReducer";
 
 interface MemorizationEditorSourcePanelProps {
   draft: MemorizationEditorDraft;
-  onChange: (draft: MemorizationEditorDraft) => void;
+  onAction: (action: MemorizationEditorAction) => void;
   onDirty: () => void;
 }
 
@@ -24,7 +25,7 @@ const splitParagraphs = (text: string) =>
 
 export function MemorizationEditorSourcePanel({
   draft,
-  onChange,
+  onAction,
   onDirty,
 }: MemorizationEditorSourcePanelProps) {
   const wordCount = useMemo(
@@ -34,13 +35,13 @@ export function MemorizationEditorSourcePanel({
 
   const tagInput = useTagInputController({
     tags: draft.tags,
-    onChange: (tags) => onChange({ ...draft, tags }),
+    onChange: (tags) => onAction({ type: "set_tags", tags }),
     getDuplicateKey: (tag) => createTagValue(tag).normalizedName,
     onInputDirty: onDirty,
   });
 
   const updateRawText = (rawText: string) => {
-    onChange({ ...draft, rawText, confirmed: false });
+    onAction({ type: "set_raw_text", rawText });
   };
 
   const createParagraphDraft = () => {
@@ -54,7 +55,7 @@ export function MemorizationEditorSourcePanel({
     }
 
     // TODO: AI 문단 제안 provider 연결 시 이 local split 을 교체합니다.
-    onChange({ ...draft, paragraphs, confirmed: false });
+    onAction({ type: "set_paragraphs", paragraphs });
   };
 
   return (
@@ -65,7 +66,7 @@ export function MemorizationEditorSourcePanel({
           <TitleField
             value={draft.title}
             placeholder="예: Business Email Openings"
-            onChange={(event) => onChange({ ...draft, title: event.target.value })}
+            onChange={(event) => onAction({ type: "set_title", title: event.target.value })}
           />
         </label>
         <div className="mt-4 flex flex-col gap-2">

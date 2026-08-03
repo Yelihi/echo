@@ -1,11 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/shared/components";
 import { ConfirmDialog } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
+import {
+  memorizationEditorReducer,
+  type MemorizationEditorAction,
+} from "@/views/memorization/models/editorReducer";
 import { MemorizationEditorSourcePanel } from "@/views/memorization/ui/MemorizationEditorSourcePanel";
 import { MemorizationParagraphReviewPanel } from "@/views/memorization/ui/MemorizationParagraphReviewPanel";
 import type {
@@ -20,7 +24,7 @@ interface MemorizationEditorClientProps {
 
 export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEditorClientProps) {
   const router = useRouter();
-  const [draft, setDraft] = useState(initialDraft);
+  const [draft, dispatch] = useReducer(memorizationEditorReducer, initialDraft);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
   const [edited, setEdited] = useState(false);
 
@@ -29,8 +33,8 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
     [draft.paragraphs],
   );
 
-  const markEdited = (nextDraft: MemorizationEditorDraft) => {
-    setDraft(nextDraft);
+  const dispatchEdited = (action: MemorizationEditorAction) => {
+    dispatch(action);
     setEdited(true);
   };
 
@@ -98,8 +102,12 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
         </header>
 
         <div className="grid w-full gap-5 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
-          <MemorizationEditorSourcePanel draft={draft} onChange={markEdited} onDirty={markDirty} />
-          <MemorizationParagraphReviewPanel draft={draft} onChange={markEdited} />
+          <MemorizationEditorSourcePanel
+            draft={draft}
+            onAction={dispatchEdited}
+            onDirty={markDirty}
+          />
+          <MemorizationParagraphReviewPanel draft={draft} onAction={dispatchEdited} />
         </div>
       </section>
 
