@@ -9,15 +9,19 @@ export const memorizationEditorEmptyDraft: MemorizationEditorDraft = {
   confirmed: false,
 };
 
-export const getMemorizationEditorMockDraft = (materialId?: string): MemorizationEditorDraft => {
-  const source =
-    mockMemorizationSources.find((item) => item.id === materialId) ?? mockMemorizationSources[0];
+export const getMemorizationEditorMockDraft = (
+  materialId?: string,
+): MemorizationEditorDraft | undefined => {
+  const source = mockMemorizationSources.find((item) => item.id === materialId);
+
+  if (!source) return undefined;
+
   const rawText =
     "Thank you for taking the time to meet with me today.\n\nI am excited to explain how my experience can contribute to your team.";
 
   return {
-    title: source?.title ?? "",
-    tags: source?.tags.map((tag) => tag.value) ?? [],
+    title: source.title,
+    tags: source.tags.map((tag) => tag.value),
     rawText,
     paragraphs: rawText.split("\n\n"),
     confirmed: true,
