@@ -12,6 +12,7 @@ import {
   ParagraphRow,
   TagInput,
 } from "@/shared/components/ui";
+import { useTagInputController } from "@/shared/hooks/useTagInputController";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 import type {
   MemorizationEditorDraft,
@@ -53,7 +54,6 @@ const splitParagraphs = (text: string) =>
 export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEditorClientProps) {
   const router = useRouter();
   const [draft, setDraft] = useState(initialDraft);
-  const [tagDraft, setTagDraft] = useState("");
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
   const [edited, setEdited] = useState(false);
 
@@ -72,16 +72,10 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
     setEdited(true);
   };
 
-  const addTag = () => {
-    const nextTag = tagDraft.trim().replace(/,$/, "");
-    if (!nextTag || draft.tags.includes(nextTag)) {
-      setTagDraft("");
-      return;
-    }
-
-    markEdited({ ...draft, tags: [...draft.tags, nextTag] });
-    setTagDraft("");
-  };
+  const tagInput = useTagInputController({
+    tags: draft.tags,
+    onChange: (tags) => markEdited({ ...draft, tags }),
+  });
 
   const updateRawText = (rawText: string) => {
     markEdited({ ...draft, rawText, confirmed: false });
@@ -225,19 +219,8 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
                   theme="memo"
                   tags={draft.tags}
                   placeholder="태그 입력 후 Enter"
-                  onRemoveTag={(tag) =>
-                    markEdited({ ...draft, tags: draft.tags.filter((item) => item !== tag) })
-                  }
-                  inputProps={{
-                    value: tagDraft,
-                    onChange: (event) => setTagDraft(event.target.value),
-                    onKeyDown: (event) => {
-                      if (event.key === "Enter" || event.key === ",") {
-                        event.preventDefault();
-                        addTag();
-                      }
-                    },
-                  }}
+                  onRemoveTag={tagInput.removeTag}
+                  inputProps={tagInput.inputProps}
                 />
               </div>
             </div>
