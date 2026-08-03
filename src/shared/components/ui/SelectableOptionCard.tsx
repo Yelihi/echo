@@ -5,7 +5,7 @@ import { radioVariants } from "@/shared/components/atomics/radio/Radio";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const selectableOptionCardVariants = cva(
-  "group/selectable-option-card flex w-full cursor-pointer items-center gap-3.5 rounded-panel border px-4.5 py-4 text-left transition-all",
+  "group/selectable-option-card flex w-full cursor-pointer items-center gap-3.5 rounded-panel border px-4.5 py-4 text-left transition-all disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       selected: {

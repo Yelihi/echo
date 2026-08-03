@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const roleCardVariants = cva(
-  "group/role-card relative flex w-full cursor-pointer flex-col gap-2 rounded-panel border p-4 text-left transition-all",
+  "group/role-card relative flex w-full cursor-pointer flex-col gap-2 rounded-panel border p-4 text-left transition-all disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       selected: {

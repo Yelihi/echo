@@ -1,10 +1,11 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Check } from "lucide-react";
 
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const voicePillVariants = cva(
-  "group/voice-pill flex flex-1 cursor-pointer flex-col items-center gap-1.5 rounded-xl border py-3.25 text-center transition-all",
+  "group/voice-pill relative flex flex-1 cursor-pointer flex-col items-center gap-1.5 rounded-xl border py-3.25 text-center transition-all disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       selected: {
@@ -47,6 +48,7 @@ export const VoicePill = ({
       className={cn(voicePillVariants({ selected }), className)}
       {...props}
     >
+      {selected && <Check className="absolute top-1.5 right-1.5 size-3.5 text-accent-600" />}
       <span
         className={cn("[&_svg]:size-5", selected ? "text-accent-700" : "text-gray-text-secondary")}
       >
