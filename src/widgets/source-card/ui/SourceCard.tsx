@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Clock } from "lucide-react";
+import Link from "next/link";
 
 import { Divider, Badge } from "@/shared/components";
 import { SourceCardInnerMenuButton } from "@/widgets/source-card/ui/SourceCardInnerMenuButton";
@@ -14,9 +15,34 @@ export const SourceCard = ({
   subTitle,
   theme,
   contentValue,
+  href,
   innerMenuItems,
   onMenuAction,
 }: SourceCardProps) => {
+  const body = (
+    <>
+      <div className="w-full flex flex-col items-start gap-[8px]">
+        <p className="w-full text-heading-xs text-black-primary font-bold line-clamp-2 wrap-break-word leading-[24px] h-[48px]">
+          {title}
+        </p>
+        <p className="text-body-2 font-normal text-gray-text line-clamp-2 wrap-break-word leading-[18px] h-[36px]">
+          {subTitle}
+        </p>
+      </div>
+      <Divider />
+      <div className="w-full flex justify-between items-center">
+        <div className="flex justify-start items-center gap-[10px]">
+          <Clock className="size-[13px] text-gray-text-secondary" />
+          <p className="text-body-1 text-gray-text-secondary font-normal">자료 분량</p>
+        </div>
+        <div className="flex justify-center items-center gap-[10px]">
+          <p className="text-body-1 text-gray-text-secondary font-normal">{contentValue}개 문단</p>
+          <ArrowRight className="size-[13px] text-gray-text-secondary" />
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="bg-white rounded-card w-full min-w-0 h-[220px] p-[20px] shadow-emphasize hover:shadow-strong transition-all duration-300">
       <div className="size-full flex flex-col justify-start items-center gap-[20px]">
@@ -34,29 +60,18 @@ export const SourceCard = ({
             innerMenuItems={innerMenuItems}
           />
         </div>
-        <div className="w-full flex flex-col justify-start items-start gap-[10px] cursor-pointer rounded-chip  transition-all duration-300">
-          <div className="w-full flex flex-col items-start gap-[8px]">
-            <p className="w-full text-heading-xs text-black-primary font-bold line-clamp-2 wrap-break-word leading-[24px] h-[48px]">
-              {title}
-            </p>
-            <p className="text-body-2 font-normal text-gray-text line-clamp-2 wrap-break-word leading-[18px] h-[36px]">
-              {subTitle}
-            </p>
+        {href ? (
+          <Link
+            href={href}
+            className="w-full flex flex-col justify-start items-start gap-[10px] cursor-pointer rounded-chip transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-accent-glow/50"
+          >
+            {body}
+          </Link>
+        ) : (
+          <div className="w-full flex flex-col justify-start items-start gap-[10px] cursor-pointer rounded-chip transition-all duration-300">
+            {body}
           </div>
-          <Divider />
-          <div className="w-full flex justify-between items-center">
-            <div className="flex justify-start items-center gap-[10px]">
-              <Clock className="size-[13px] text-gray-text-secondary" />
-              <p className="text-body-1 text-gray-text-secondary font-normal">자료 분량</p>
-            </div>
-            <div className="flex justify-center items-center gap-[10px]">
-              <p className="text-body-1 text-gray-text-secondary font-normal">
-                {contentValue}개 문단
-              </p>
-              <ArrowRight className="size-[13px] text-gray-text-secondary" />
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

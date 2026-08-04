@@ -12,6 +12,7 @@ export interface SourceCardProps {
   subTitle: string;
   theme: "red" | "blue" | "green" | "yellow" | "black";
   contentValue: number;
+  href?: string;
   innerMenuItems: Omit<InnerMenuItemProps, "onClick">[];
   onMenuAction: (value: string, id: string) => void;
 }
