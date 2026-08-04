@@ -15,6 +15,11 @@ import {
   VoicePill,
 } from "@/shared/components/ui";
 import { SessionReadyShell } from "@/widgets/session-ready";
+import {
+  ROLE_PLAY_READY_EVALUATION_MODES,
+  ROLE_PLAY_READY_ROLE_OPTIONS,
+  ROLE_PLAY_READY_VOICE_OPTIONS,
+} from "@/views/role-play/config/const";
 import type {
   RoleplayReadyEvaluationMode,
   RoleplayReadyMaterial,
@@ -25,50 +30,6 @@ import type {
 interface RolePlayReadyClientProps {
   material: RoleplayReadyMaterial;
 }
-
-const roleOptions: Array<{
-  value: RoleplayReadyRole;
-  title: string;
-  description: string;
-}> = [
-  {
-    value: "learner",
-    title: "내가 손님 역할",
-    description: "상대방 말을 듣고 내가 응답합니다.",
-  },
-  {
-    value: "partner",
-    title: "내가 상대 역할",
-    description: "대화 흐름을 바꿔 반대 역할로 연습합니다.",
-  },
-];
-
-const evaluationModes: Array<{
-  value: RoleplayReadyEvaluationMode;
-  title: string;
-  description: string;
-}> = [
-  {
-    value: "exact",
-    title: "정확도 중심",
-    description: "스크립트와 얼마나 일치하는지 비교합니다.",
-  },
-  {
-    value: "context",
-    title: "맥락 중심",
-    description: "의미가 자연스럽게 전달됐는지 봅니다.",
-  },
-];
-
-const voiceOptions: Array<{
-  value: RoleplayReadyVoice;
-  label: string;
-  sub: string;
-}> = [
-  { value: "soft", label: "Soft", sub: "차분한 톤" },
-  { value: "bright", label: "Bright", sub: "밝은 톤" },
-  { value: "calm", label: "Calm", sub: "느린 톤" },
-];
 
 export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
   const [selectedRole, setSelectedRole] = useState<RoleplayReadyRole>("learner");
@@ -112,7 +73,7 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2" role="radiogroup" aria-label="역할 선택">
-            {roleOptions.map((option) => (
+            {ROLE_PLAY_READY_ROLE_OPTIONS.map((option) => (
               <RoleCard
                 key={option.value}
                 role="radio"
@@ -144,7 +105,7 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
               </SegmentedControl>
             </div>
             <div className="grid gap-3" role="radiogroup" aria-label="평가 방식 상세 선택">
-              {evaluationModes.map((option) => (
+              {ROLE_PLAY_READY_EVALUATION_MODES.map((option) => (
                 <SelectableOptionCard
                   key={option.value}
                   role="radio"
@@ -162,7 +123,7 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
           <section className="flex flex-col gap-3">
             <h2 className="text-heading-xs font-bold">상대방 음성</h2>
             <div className="flex gap-2" role="radiogroup" aria-label="TTS 목소리 선택">
-              {voiceOptions.map((option) => (
+              {ROLE_PLAY_READY_VOICE_OPTIONS.map((option) => (
                 <VoicePill
                   key={option.value}
                   role="radio"
