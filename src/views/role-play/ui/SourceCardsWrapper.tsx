@@ -30,6 +30,7 @@ export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
         <SourceCard
           key={source.id}
           {...source}
+          href={`/role-playing/${source.id}/ready`}
           innerMenuItems={ROLE_PLAY_INNER_MENU_ITEMS}
           onMenuAction={onMenuAction}
         />
