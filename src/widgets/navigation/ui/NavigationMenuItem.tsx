@@ -7,7 +7,9 @@ import { cn } from "@/shared/utils/cn";
 import type { NavigationMenuItemProps } from "@/widgets/navigation/models/interface";
 
 export const NavigationMenuItem = ({ icon: Icon, link, label }: NavigationMenuItemProps) => {
-  const isCurrentHref = link === usePathname();
+  const pathname = usePathname();
+  const isCurrentHref = link === "/home" ? pathname === link : pathname.startsWith(link);
+
   return (
     <Link
       href={link}

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Headphones, Layers } from "lucide-react";
 
 import { cn } from "@/shared/lib/tailwind/utils";
 
@@ -43,6 +44,8 @@ export const SessionReadyHero = ({
   children,
   ...props
 }: SessionReadyHeroProps & React.ComponentProps<"div">) => {
+  const DecorativeIcon = theme === "memo" ? Layers : Headphones;
+
   return (
     <div
       data-slot="session-ready-hero"
@@ -50,6 +53,11 @@ export const SessionReadyHero = ({
       className={cn(sessionReadyHeroVariants({ theme }), className)}
       {...props}
     >
+      <DecorativeIcon
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-5 left-[560px] size-[150px] opacity-20"
+        strokeWidth={1.7}
+      />
       <div className="flex gap-1.5">
         {tags.map((tag) => (
           <span key={tag} className="text-body-1 font-bold tracking-wide uppercase opacity-85">

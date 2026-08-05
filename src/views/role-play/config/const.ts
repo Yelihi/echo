@@ -13,14 +13,14 @@ export const ROLE_PLAY_READY_ROLE_OPTIONS: Array<{
   description: string;
 }> = [
   {
-    value: "learner",
-    title: "내가 손님 역할",
-    description: "상대방 말을 듣고 내가 응답합니다.",
+    value: "partner",
+    title: "상대방",
+    description: "컴퓨터가 읽어요",
   },
   {
-    value: "partner",
-    title: "내가 상대 역할",
-    description: "대화 흐름을 바꿔 반대 역할로 연습합니다.",
+    value: "learner",
+    title: "나",
+    description: "내가 말해요",
   },
 ];
 
@@ -31,13 +31,13 @@ export const ROLE_PLAY_READY_EVALUATION_MODES: Array<{
 }> = [
   {
     value: "exact",
-    title: "정확도 중심",
-    description: "스크립트와 얼마나 일치하는지 비교합니다.",
+    title: "원문 완전 일치",
+    description: "대본과 거의 똑같이. 정확한 표현을 또렷이 익혀요.",
   },
   {
     value: "context",
-    title: "맥락 중심",
-    description: "의미가 자연스럽게 전달됐는지 봅니다.",
+    title: "스크립트 맥락 일치",
+    description: "뜻만 통하면 OK. 자연스러운 표현을 자유롭게 연습해요.",
   },
 ];
 
@@ -46,9 +46,9 @@ export const ROLE_PLAY_READY_VOICE_OPTIONS: Array<{
   label: string;
   sub: string;
 }> = [
-  { value: "soft", label: "Soft", sub: "차분한 톤" },
-  { value: "bright", label: "Bright", sub: "밝은 톤" },
-  { value: "calm", label: "Calm", sub: "느린 톤" },
+  { value: "soft", label: "Emma", sub: "영국 · 여성" },
+  { value: "bright", label: "James", sub: "미국 · 남성" },
+  { value: "calm", label: "Sofia", sub: "미국 · 여성" },
 ];
 
 export const ROLE_PLAY_INNER_MENU_ITEMS: Array<Omit<InnerMenuItemProps, "onClick">> = [
