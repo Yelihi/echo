@@ -1,6 +1,5 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Check } from "lucide-react";
 
 import { cn } from "@/shared/lib/tailwind/utils";
 
@@ -46,7 +45,6 @@ export const RoleCard = ({
       className={cn(roleCardVariants({ selected }), className)}
       {...props}
     >
-      {selected && <Check className="absolute top-3 right-3 size-4.5 text-accent-600" />}
       <span className="text-body-5 font-bold text-black-primary">{title}</span>
       <span className="text-body-2 text-gray-text">{description}</span>
     </button>

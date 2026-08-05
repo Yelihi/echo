@@ -21,42 +21,47 @@ export function MemorizationReadyModeAside({ materialId }: MemorizationReadyMode
   };
 
   return (
-    <aside className="rounded-hero border border-card-line bg-white p-5 text-black-primary shadow-heavy">
-      <div className="flex flex-col gap-5">
-        <section className="flex flex-col gap-3">
-          <h2 className="text-heading-xs font-bold">연습 모드</h2>
-          <div className="grid gap-3" role="radiogroup" aria-label="문장 암기 연습 모드 선택">
-            {MEMORIZATION_READY_MODE_OPTIONS.map((option, index) => {
-              const Icon = option.icon;
-
-              return (
-                <SelectableOptionCard
-                  key={option.value}
-                  role="radio"
-                  aria-checked={mode === option.value}
-                  selected={mode === option.value}
-                  icon={<Icon />}
-                  badge={index + 1}
-                  title={option.title}
-                  description={option.description}
-                  extra={
-                    option.value === "translate" && mode === "translate" ? (
-                      <span className="mt-1.5 block text-body-1 font-bold text-accent-700">
-                        번역 준비 예정
-                      </span>
-                    ) : undefined
-                  }
-                  onClick={() => setMode(option.value)}
-                />
-              );
-            })}
-          </div>
-        </section>
-
-        <Button type="button" size="lg" onClick={startSession}>
-          <Play /> 시작하기
-        </Button>
+    <section className="flex flex-col gap-3.5">
+      <div>
+        <h2 className="text-[17px] font-bold leading-normal">연습 모드</h2>
+        <p className="mt-1 text-[13.5px] text-gray-text">어떤 단서로 문장을 떠올릴지 골라보세요.</p>
       </div>
-    </aside>
+
+      <div className="grid gap-3" role="radiogroup" aria-label="문장 암기 연습 모드 선택">
+        {MEMORIZATION_READY_MODE_OPTIONS.map((option, index) => {
+          const Icon = option.icon;
+
+          return (
+            <SelectableOptionCard
+              key={option.value}
+              role="radio"
+              aria-checked={mode === option.value}
+              selected={mode === option.value}
+              className="min-h-[74px] px-[18px] py-4"
+              icon={<Icon />}
+              badge={index + 1}
+              title={option.title}
+              description={option.description}
+              extra={
+                option.value === "translate" && mode === "translate" ? (
+                  <span className="mt-1.5 block text-body-1 font-bold text-accent-700">
+                    번역 준비 예정
+                  </span>
+                ) : undefined
+              }
+              onClick={() => setMode(option.value)}
+            />
+          );
+        })}
+      </div>
+
+      <Button
+        type="button"
+        className="h-9 w-full bg-accent-600 hover:bg-accent-700"
+        onClick={startSession}
+      >
+        <Play /> 연습 시작하기
+      </Button>
+    </section>
   );
 }
