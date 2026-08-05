@@ -1,4 +1,4 @@
-import { Clock, FileText, Pilcrow } from "lucide-react";
+import { FileText, Mic2, Pilcrow } from "lucide-react";
 
 import { Chip } from "@/shared/components";
 import { StatItem } from "@/shared/components/atomics/stat-item/StatItem";
@@ -28,7 +28,7 @@ export function MemorizationReadyContent({ material }: MemorizationReadyContentP
         >
           <StatItem icon={<Pilcrow />} label="문단" value={`${material.paragraphCount}개`} />
           <StatItem icon={<FileText />} label="단어" value={`${material.wordCount}개`} />
-          <StatItem icon={<Clock />} label="예상 시간" value={`${material.estimatedMinutes}분`} />
+          <StatItem icon={<Mic2 />} label="통째 녹음" value="1회" />
         </SessionReadyHero>
 
         <div className="rounded-hero border border-session-glass-line bg-session-glass p-5 text-white shadow-heavy backdrop-blur-xl">
