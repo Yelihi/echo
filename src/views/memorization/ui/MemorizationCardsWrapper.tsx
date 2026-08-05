@@ -30,6 +30,7 @@ export function MemorizationCardsWrapper({ cards }: MemorizationCardsWrapperProp
         <SourceCard
           key={source.id}
           {...source}
+          href={`/sentence-memorization/${source.id}/ready`}
           innerMenuItems={MEMORIZATION_INNER_MENU_ITEMS}
           onMenuAction={onMenuAction}
         />
