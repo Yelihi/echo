@@ -14,7 +14,7 @@ export default async function SessionLayout({ children }: { children: React.Reac
   }
 
   return (
-    <main className="min-h-lvh bg-[#fafafa] text-black-primary">
+    <main className="min-h-lvh bg-surface-app-warm text-black-primary">
       <header className="sticky top-0 z-20 h-[62px]">
         <NavigationContainer />
       </header>
