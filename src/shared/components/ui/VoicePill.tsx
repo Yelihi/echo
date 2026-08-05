@@ -10,7 +10,7 @@ export const voicePillVariants = cva(
     variants: {
       selected: {
         false: "border-card-line-strong bg-white",
-        true: "border-[1.5px] border-accent-500 bg-accent-50",
+        true: "border-accent-500 bg-accent-50",
       },
     },
     defaultVariants: {
