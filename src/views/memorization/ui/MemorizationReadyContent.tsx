@@ -2,7 +2,6 @@ import { FileText, Mic2, Pilcrow } from "lucide-react";
 
 import { StatItem } from "@/shared/components/atomics/stat-item/StatItem";
 import { SessionReadyHero } from "@/shared/components/ui";
-import { SessionReadyShell } from "@/widgets/session-ready";
 import type { MemorizationReadyMaterial } from "@/views/memorization/models/ready";
 import { MemorizationReadyModeAside } from "@/views/memorization/ui/MemorizationReadyModeAside";
 
@@ -12,12 +11,7 @@ interface MemorizationReadyContentProps {
 
 export function MemorizationReadyContent({ material }: MemorizationReadyContentProps) {
   return (
-    <SessionReadyShell
-      pillar="memo"
-      backHref="/sentence-memorization"
-      backLabel="문장 암기 목록으로 돌아가기"
-      totalSteps={material.paragraphCount}
-    >
+    <>
       <SessionReadyHero
         className="w-full"
         theme="memo"
@@ -31,6 +25,6 @@ export function MemorizationReadyContent({ material }: MemorizationReadyContentP
       </SessionReadyHero>
 
       <MemorizationReadyModeAside materialId={material.id} />
-    </SessionReadyShell>
+    </>
   );
 }

@@ -12,7 +12,6 @@ import {
   SliderField,
   VoicePill,
 } from "@/shared/components/ui";
-import { SessionReadyShell } from "@/widgets/session-ready";
 import {
   ROLE_PLAY_READY_EVALUATION_MODES,
   ROLE_PLAY_READY_ROLE_OPTIONS,
@@ -41,12 +40,7 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
   };
 
   return (
-    <SessionReadyShell
-      pillar="roleplay"
-      backHref="/role-playing"
-      backLabel="롤플레잉 목록으로 돌아가기"
-      totalSteps={material.lineCount}
-    >
+    <>
       <SessionReadyHero
         className="w-full"
         theme="roleplay"
@@ -163,6 +157,6 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
       >
         <Play /> 연습 시작하기
       </Button>
-    </SessionReadyShell>
+    </>
   );
 }
