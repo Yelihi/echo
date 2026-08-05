@@ -10,7 +10,7 @@ export const selectableOptionCardVariants = cva(
     variants: {
       selected: {
         false: "border-card-line bg-card-surface",
-        true: "border-[1.5px] border-accent-500 bg-accent-50",
+        true: "border-accent-500 bg-accent-50",
       },
     },
     defaultVariants: {
