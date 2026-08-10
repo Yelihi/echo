@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, Mic, RotateCcw, Square, X } from "lucide-react";
+import { ChevronLeft, LoaderCircle, Mic, RotateCcw, Square, X } from "lucide-react";
 import * as React from "react";
 
 import type { CapturedAudio } from "@/shared/lib/audio";
@@ -56,6 +56,9 @@ export function RecordingSessionView({
   const recording = useRecordingSession();
   const [phase, setPhase] = React.useState<RecordingPhase>(initialPhase);
   const [elapsedMs, setElapsedMs] = React.useState(demoDurationMs);
+  const [currentStep, setCurrentStep] = React.useState(
+    initialPhase === "ready" ? 0 : Math.min(activeStep, totalSteps),
+  );
   const startedAtRef = React.useRef<number | null>(null);
   const audio =
     recording.state.status === "recorded" ||
@@ -63,19 +66,19 @@ export function RecordingSessionView({
     recording.state.status === "failed"
       ? recording.state.audio
       : null;
-  const displayedStep = phase === "ready" ? 0 : Math.min(activeStep, totalSteps);
+  const displayedStep = phase === "ready" ? 0 : currentStep;
   const isRecording = phase === "recording";
   const isRecorded = phase === "recorded";
   const isOrbDisabled = phase === "partner-speaking";
   const hasPartnerTurn = Boolean(partnerRole && partnerLine);
-  const canSave = Boolean(saveRecording && audio);
   const durationLabel = isRecording
     ? formatRecordingDuration(elapsedMs)
     : formatRecordingDuration(audio?.durationMs ?? demoDurationMs);
 
   React.useEffect(() => {
     setPhase(initialPhase);
-  }, [initialPhase]);
+    setCurrentStep(initialPhase === "ready" ? 0 : Math.min(activeStep, totalSteps));
+  }, [activeStep, initialPhase, totalSteps]);
 
   React.useEffect(() => {
     if (phase !== "partner-speaking" || !autoAdvancePartner) {
@@ -103,7 +106,17 @@ export function RecordingSessionView({
     }
   }, [recording.state.status]);
 
-  const startTurn = () => setPhase(hasPartnerTurn ? "partner-speaking" : "user-ready");
+  const startTurn = () => {
+    setCurrentStep((step) => (step === 0 ? Math.min(1, totalSteps) : step));
+    setPhase(hasPartnerTurn ? "partner-speaking" : "user-ready");
+  };
+
+  const retryRecording = () => {
+    recording.retry();
+    startedAtRef.current = null;
+    setElapsedMs(0);
+    setPhase("user-ready");
+  };
 
   const handleOrbClick = async () => {
     if (phase === "recording") {
@@ -122,10 +135,7 @@ export function RecordingSessionView({
     }
 
     if (phase === "recorded") {
-      recording.retry();
-      startedAtRef.current = null;
-      setElapsedMs(0);
-      setPhase("user-ready");
+      retryRecording();
       return;
     }
 
@@ -138,13 +148,16 @@ export function RecordingSessionView({
   };
 
   const handleSave = async () => {
-    if (!audio || !saveRecording) return;
+    if (!audio) return;
 
     try {
       recording.markSaving();
-      await saveRecording(audio);
+      await saveRecording?.(audio);
       recording.markSaved();
-      setPhase("user-ready");
+      setCurrentStep((step) => Math.min(totalSteps, step + 1));
+      startedAtRef.current = null;
+      setElapsedMs(0);
+      setPhase(hasPartnerTurn ? "partner-speaking" : "user-ready");
     } catch {
       recording.fail("저장하지 못했습니다. 다시 시도해주세요.", audio);
       setPhase("recorded");
@@ -184,10 +197,10 @@ export function RecordingSessionView({
           recording={isRecording}
           recorded={isRecorded}
           hasPartnerTurn={hasPartnerTurn}
-          saveDisabled={!canSave}
           saving={recording.state.status === "saving"}
           message={getHint(phase, recording.state.status)}
           onOrbClick={handleOrbClick}
+          onRetry={retryRecording}
           onSave={handleSave}
         />
       )}
@@ -293,10 +306,10 @@ function RecordingPanel({
   recording,
   recorded,
   hasPartnerTurn,
-  saveDisabled,
   saving,
   message,
   onOrbClick,
+  onRetry,
   onSave,
 }: {
   title: string;
@@ -308,10 +321,10 @@ function RecordingPanel({
   recording: boolean;
   recorded: boolean;
   hasPartnerTurn: boolean;
-  saveDisabled: boolean;
   saving: boolean;
   message: string;
   onOrbClick: () => void;
+  onRetry: () => void;
   onSave: () => void;
 }) {
   return (
@@ -335,9 +348,13 @@ function RecordingPanel({
         </div>
       </section>
       {recorded ? (
-        <footer className="absolute inset-x-0 bottom-5 z-10 flex justify-center px-5 py-3">
-          <GlassButton onClick={onSave} disabled={saveDisabled || saving}>
+        <footer className="absolute inset-x-0 bottom-5 z-10 flex justify-center gap-2.5 px-5 py-3">
+          <GlassButton onClick={onRetry} disabled={saving}>
             <RotateCcw />
+            다시 녹음
+          </GlassButton>
+          <GlassButton emphasis="primary" onClick={onSave} disabled={saving}>
+            {saving ? <LoaderCircle className="animate-spin" /> : null}
             {saving ? "저장 중" : "저장하기"}
           </GlassButton>
         </footer>
