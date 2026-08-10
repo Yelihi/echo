@@ -1,6 +1,7 @@
 "use client";
 
 import { Play } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/shared/components";
@@ -13,17 +14,18 @@ interface MemorizationReadyModeAsideProps {
 }
 
 export function MemorizationReadyModeAside({ materialId }: MemorizationReadyModeAsideProps) {
+  const router = useRouter();
   const [mode, setMode] = useState<MemorizationReadyMode>("read");
 
   const startSession = () => {
-    void { materialId, mode };
-    // TODO: create a memorization session snapshot, prepare translation when needed, then route to practice.
+    const params = new URLSearchParams({ mode });
+    router.push(`/sentence-memorization/${materialId}/session?${params.toString()}`);
   };
 
   return (
     <section className="flex flex-col gap-3.5">
       <div>
-        <h2 className="text-[17px] font-bold leading-normal">연습 모드</h2>
+        <h2 className="text-[17px] leading-normal font-bold">연습 모드</h2>
         <p className="mt-1 text-[13.5px] text-gray-text">어떤 단서로 문장을 떠올릴지 골라보세요.</p>
       </div>
 
@@ -42,13 +44,6 @@ export function MemorizationReadyModeAside({ materialId }: MemorizationReadyMode
               badge={index + 1}
               title={option.title}
               description={option.description}
-              extra={
-                option.value === "translate" && mode === "translate" ? (
-                  <span className="mt-1.5 block text-body-1 font-bold text-accent-700">
-                    번역 준비 예정
-                  </span>
-                ) : undefined
-              }
               onClick={() => setMode(option.value)}
             />
           );
