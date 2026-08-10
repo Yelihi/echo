@@ -28,15 +28,19 @@ export function useRecordingSession(
 ): UseRecordingSessionResult {
   const now = options.now ?? defaultNow;
   const recorderRef = useRef<AudioCapture | null>(null);
-  const startTokenRef = useRef(0);
+  const activeStartTokenRef = useRef<symbol | null>(null);
   const [state, dispatch] = useReducer(recordingSessionReducer, { status: "idle" });
 
-  const beginRecordingStart = useCallback(() => ++startTokenRef.current, []);
+  const beginRecordingStart = useCallback(() => {
+    const token = Symbol("recording-start");
+    activeStartTokenRef.current = token;
+    return token;
+  }, []);
   const invalidateRecordingStart = useCallback(() => {
-    startTokenRef.current += 1;
+    activeStartTokenRef.current = null;
   }, []);
   const isCurrentRecordingStart = useCallback(
-    (token: number) => token === startTokenRef.current,
+    (token: symbol) => token === activeStartTokenRef.current,
     [],
   );
 
