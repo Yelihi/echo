@@ -1,9 +1,8 @@
+import { MIN_RECORDING_DURATION_MS } from "@/features/session-recording/config/const";
 import type {
   RecordingSessionAction,
   RecordingSessionState,
-} from "@/shared/lib/session-recording/types";
-
-export const MIN_RECORDING_DURATION_MS = 800;
+} from "@/features/session-recording/models/reducer/recording/interface";
 
 export function recordingSessionReducer(
   state: RecordingSessionState,
@@ -18,19 +17,9 @@ export function recordingSessionReducer(
         : { status: "recorded", audio: action.audio };
     case "discard-too-short":
       return { status: "discarded", reason: "too-short" };
-    case "retry":
-    case "saved":
+    case "reset":
       return { status: "idle" };
-    case "save":
-      return state.status === "recorded" ? { status: "saving", audio: state.audio } : state;
-    case "fail": {
-      const audio =
-        action.audio ??
-        (state.status === "recorded" || state.status === "saving" ? state.audio : undefined);
-
-      return audio
-        ? { status: "failed", message: action.message, audio }
-        : { status: "failed", message: action.message };
-    }
+    case "fail":
+      return { status: "failed", errorCode: action.errorCode };
   }
 }

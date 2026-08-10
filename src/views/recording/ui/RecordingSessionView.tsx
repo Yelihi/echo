@@ -4,10 +4,11 @@ import Link from "next/link";
 import { ChevronLeft, LoaderCircle, Mic, RotateCcw, Square, X } from "lucide-react";
 import * as React from "react";
 
+import { useRecordingSession } from "@/features/session-recording";
 import type { CapturedAudio } from "@/shared/lib/audio";
-import { useRecordingSession } from "@/shared/lib/session-recording";
 import { cn } from "@/shared/lib/tailwind/utils";
 import { formatRecordingDuration } from "@/views/recording/ui/formatRecordingDuration";
+import { getRecordingSessionHint } from "@/views/recording/ui/recordingSessionMessage";
 
 export type RecordingPillar = "roleplay" | "memo";
 export type RecordingPhase =
@@ -56,16 +57,13 @@ export function RecordingSessionView({
   const recording = useRecordingSession();
   const [phase, setPhase] = React.useState<RecordingPhase>(initialPhase);
   const [elapsedMs, setElapsedMs] = React.useState(demoDurationMs);
+  const [saving, setSaving] = React.useState(false);
+  const [saveFailed, setSaveFailed] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(
     initialPhase === "ready" ? 0 : Math.min(activeStep, totalSteps),
   );
   const startedAtRef = React.useRef<number | null>(null);
-  const audio =
-    recording.state.status === "recorded" ||
-    recording.state.status === "saving" ||
-    recording.state.status === "failed"
-      ? recording.state.audio
-      : null;
+  const audio = recording.recordedAudio;
   const displayedStep = phase === "ready" ? 0 : currentStep;
   const isRecording = phase === "recording";
   const isRecorded = phase === "recorded";
@@ -113,6 +111,7 @@ export function RecordingSessionView({
 
   const retryRecording = () => {
     recording.retry();
+    setSaveFailed(false);
     startedAtRef.current = null;
     setElapsedMs(0);
     setPhase("user-ready");
@@ -121,12 +120,14 @@ export function RecordingSessionView({
   const handleOrbClick = async () => {
     if (phase === "recording") {
       await recording.stop();
+      setSaveFailed(false);
       setPhase("recorded");
       return;
     }
 
     if (phase === "failed") {
       recording.retry();
+      setSaveFailed(false);
       startedAtRef.current = Date.now();
       setElapsedMs(0);
       await recording.start();
@@ -151,16 +152,19 @@ export function RecordingSessionView({
     if (!audio) return;
 
     try {
-      recording.markSaving();
+      setSaving(true);
+      setSaveFailed(false);
       await saveRecording?.(audio);
-      recording.markSaved();
+      recording.retry();
       setCurrentStep((step) => Math.min(totalSteps, step + 1));
       startedAtRef.current = null;
       setElapsedMs(0);
       setPhase(hasPartnerTurn ? "partner-speaking" : "user-ready");
     } catch {
-      recording.fail("저장하지 못했습니다. 다시 시도해주세요.", audio);
+      setSaveFailed(true);
       setPhase("recorded");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -197,8 +201,8 @@ export function RecordingSessionView({
           recording={isRecording}
           recorded={isRecorded}
           hasPartnerTurn={hasPartnerTurn}
-          saving={recording.state.status === "saving"}
-          message={getHint(phase, recording.state.status)}
+          saving={saving}
+          message={getRecordingSessionHint(phase, recording.state, saveFailed)}
           onOrbClick={handleOrbClick}
           onRetry={retryRecording}
           onSave={handleSave}
@@ -445,27 +449,4 @@ function GlassButton({
       {...props}
     />
   );
-}
-
-function getHint(
-  phase: RecordingPhase,
-  recordingStatus: ReturnType<typeof useRecordingSession>["state"]["status"],
-): string {
-  if (recordingStatus === "discarded") return "녹음이 너무 짧습니다. 다시 녹음해 주세요";
-  if (recordingStatus === "failed") return "녹음을 처리하지 못했습니다. 다시 시도해 주세요";
-
-  switch (phase) {
-    case "partner-speaking":
-      return "상대방 문장이 끝나면 녹음할 수 있어요";
-    case "user-ready":
-      return "버튼을 눌러 내 문장을 녹음해 주세요";
-    case "recording":
-      return "말이 끝나면 버튼을 다시 눌러 주세요";
-    case "recorded":
-      return "저장하거나 다시 녹음할 수 있어요";
-    case "failed":
-      return "다시 녹음해 주세요";
-    case "ready":
-      return "";
-  }
 }

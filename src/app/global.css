@@ -95,28 +95,6 @@
   --session-glass-line: #ffffff24;
 }
 
-@keyframes echo-waveform {
-  0%,
-  100% {
-    transform: scaleY(0.45);
-  }
-
-  50% {
-    transform: scaleY(1);
-  }
-}
-
-[data-waveform-animated="true"] > i {
-  animation: echo-waveform 900ms ease-in-out infinite;
-  transform-origin: center;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-waveform-animated="true"] > i {
-    animation: none;
-  }
-}
-
 @keyframes echo-recording-halo {
   0% {
     opacity: 0.5;

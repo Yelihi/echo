@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, jest } from "@jest/globals";
 
-import { useRecordingSession } from "@/shared/lib/session-recording/useRecordingSession";
+import { useRecordingSession } from "@/features/session-recording";
 import type { AudioCaptureOptions, AudioCaptureRecorder } from "@/shared/lib/audio";
 
 function deferred<T>() {
@@ -83,7 +83,7 @@ describe("useRecordingSession", () => {
     expect(trackStop).toHaveBeenCalledTimes(1);
   });
 
-  it("stores localized messages for known audio errors", async () => {
+  it("stores stable error codes for known audio errors", async () => {
     const options: AudioCaptureOptions = {
       getUserMedia: jest.fn(async () => {
         throw new DOMException("denied", "NotAllowedError");
@@ -98,7 +98,7 @@ describe("useRecordingSession", () => {
 
     expect(result.current.state).toEqual({
       status: "failed",
-      message: "마이크 권한을 허용한 뒤 다시 시도해주세요.",
+      errorCode: "permission-denied",
     });
   });
 });

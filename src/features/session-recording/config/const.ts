@@ -1,0 +1,1 @@
+export const MIN_RECORDING_DURATION_MS = 800;
