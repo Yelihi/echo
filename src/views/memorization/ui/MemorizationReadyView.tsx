@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { getMemorizationReadyMockMaterial } from "@/views/memorization/config/readyMock";
 import type { MemorizationReadyViewProps } from "@/views/memorization/models/ready";
-import { MemorizationReadyContent } from "@/views/memorization/ui/MemorizationReadyContent";
+import { MemorizationRecordingView } from "@/views/recording/memorization/ui/MemorizationRecordingView";
 
 export function MemorizationReadyView({ materialId }: MemorizationReadyViewProps) {
   const material = getMemorizationReadyMockMaterial(materialId);
@@ -11,5 +11,5 @@ export function MemorizationReadyView({ materialId }: MemorizationReadyViewProps
     notFound();
   }
 
-  return <MemorizationReadyContent material={material} />;
+  return <MemorizationRecordingView material={material} />;
 }

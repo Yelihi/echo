@@ -34,4 +34,18 @@ describe("recordingSessionReducer", () => {
     expect(saving.status).toBe("saving");
     expect(recordingSessionReducer(saving, { type: "saved" })).toEqual({ status: "idle" });
   });
+
+  it("keeps the captured audio when save fails", () => {
+    const capturedAudio = audio(MIN_RECORDING_DURATION_MS);
+    const saving = recordingSessionReducer(
+      { status: "recorded", audio: capturedAudio },
+      { type: "save" },
+    );
+
+    expect(recordingSessionReducer(saving, { type: "fail", message: "failed" })).toEqual({
+      status: "failed",
+      message: "failed",
+      audio: capturedAudio,
+    });
+  });
 });

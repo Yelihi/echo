@@ -117,6 +117,44 @@
   }
 }
 
+@keyframes echo-recording-halo {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.74);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes echo-rec-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+[data-recording-halo="true"] {
+  animation: echo-recording-halo 1.6s ease-out infinite;
+}
+
+[data-rec-dot="true"] {
+  animation: echo-rec-dot 1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-recording-halo="true"],
+  [data-rec-dot="true"] {
+    animation: none;
+  }
+}
+
 /* ------------------------------------------------------------
    Active accent ramp.
    Defaults to the roleplay pillar; set data-pillar="memo" on any

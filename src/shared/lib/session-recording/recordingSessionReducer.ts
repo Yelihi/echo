@@ -23,7 +23,14 @@ export function recordingSessionReducer(
       return { status: "idle" };
     case "save":
       return state.status === "recorded" ? { status: "saving", audio: state.audio } : state;
-    case "fail":
-      return { status: "failed", message: action.message };
+    case "fail": {
+      const audio =
+        action.audio ??
+        (state.status === "recorded" || state.status === "saving" ? state.audio : undefined);
+
+      return audio
+        ? { status: "failed", message: action.message, audio }
+        : { status: "failed", message: action.message };
+    }
   }
 }

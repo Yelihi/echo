@@ -6,7 +6,7 @@ export type RecordingSessionState =
   | { readonly status: "recorded"; readonly audio: CapturedAudio }
   | { readonly status: "discarded"; readonly reason: "too-short" }
   | { readonly status: "saving"; readonly audio: CapturedAudio }
-  | { readonly status: "failed"; readonly message: string };
+  | { readonly status: "failed"; readonly message: string; readonly audio?: CapturedAudio };
 
 export type RecordingSessionAction =
   | { readonly type: "start"; readonly startedAtMs: number }
@@ -15,4 +15,4 @@ export type RecordingSessionAction =
   | { readonly type: "retry" }
   | { readonly type: "save" }
   | { readonly type: "saved" }
-  | { readonly type: "fail"; readonly message: string };
+  | { readonly type: "fail"; readonly message: string; readonly audio?: CapturedAudio };

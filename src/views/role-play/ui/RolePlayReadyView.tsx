@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { getRoleplayReadyMockMaterial } from "@/views/role-play/config/readyMock";
 import type { RolePlayReadyViewProps } from "@/views/role-play/models/ready";
-import { RolePlayReadyClient } from "@/views/role-play/ui/RolePlayReadyClient";
+import { RolePlayRecordingView } from "@/views/recording/role-play/ui/RolePlayRecordingView";
 
 export function RolePlayReadyView({ materialId }: RolePlayReadyViewProps) {
   const material = getRoleplayReadyMockMaterial(materialId);
@@ -11,5 +11,5 @@ export function RolePlayReadyView({ materialId }: RolePlayReadyViewProps) {
     notFound();
   }
 
-  return <RolePlayReadyClient material={material} />;
+  return <RolePlayRecordingView material={material} />;
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
 import { AudioCapture, AudioCaptureError, type AudioCaptureOptions } from "@/shared/lib/audio";
 import {
   recordingSessionReducer,
   MIN_RECORDING_DURATION_MS,
 } from "@/shared/lib/session-recording/recordingSessionReducer";
+import type { CapturedAudio } from "@/shared/lib/audio";
 import type { RecordingSessionState } from "@/shared/lib/session-recording/types";
 
 interface UseRecordingSessionOptions {
@@ -23,14 +24,23 @@ interface UseRecordingSessionResult {
   readonly retry: () => void;
   readonly markSaving: () => void;
   readonly markSaved: () => void;
-  readonly fail: (message: string) => void;
+  readonly fail: (message: string, audio?: CapturedAudio) => void;
 }
 
 const defaultNow = () => performance.now();
+const RECORDING_ERROR_MESSAGES: Record<AudioCaptureError["code"], string> = {
+  "permission-denied": "마이크 권한을 허용한 뒤 다시 시도해주세요.",
+  "device-not-found": "사용 가능한 마이크를 찾지 못했습니다.",
+  "unsupported-format": "이 브라우저에서는 지원되는 녹음 형식이 없습니다.",
+  "recorder-unavailable": "현재 환경에서는 녹음을 사용할 수 없습니다.",
+  "recorder-start-failed": "녹음을 시작하지 못했습니다. 다시 시도해주세요.",
+  "recorder-stop-failed": "녹음을 종료하지 못했습니다. 다시 시도해주세요.",
+  "empty-audio-data": "녹음된 음성이 없습니다. 다시 녹음해주세요.",
+};
 
 function getRecordingErrorMessage(error: unknown): string {
   return error instanceof AudioCaptureError
-    ? error.message
+    ? RECORDING_ERROR_MESSAGES[error.code]
     : "녹음을 처리하지 못했습니다. 다시 시도해주세요.";
 }
 
@@ -39,6 +49,7 @@ export function useRecordingSession(
 ): UseRecordingSessionResult {
   const now = options.now ?? defaultNow;
   const recorderRef = useRef<AudioCapture | null>(null);
+  const startVersionRef = useRef(0);
   const [state, dispatch] = useReducer(recordingSessionReducer, { status: "idle" });
 
   const getRecorder = useCallback(() => {
@@ -46,12 +57,27 @@ export function useRecordingSession(
     return recorderRef.current;
   }, [options.audioCaptureOptions]);
 
+  useEffect(() => {
+    return () => {
+      startVersionRef.current += 1;
+      recorderRef.current?.cancel();
+    };
+  }, []);
+
   const start = useCallback(async () => {
+    const startVersion = ++startVersionRef.current;
+    const recorder = getRecorder();
+
     try {
       dispatch({ type: "start", startedAtMs: now() });
-      await getRecorder().start();
+      await recorder.start();
+      if (startVersion !== startVersionRef.current) {
+        recorder.cancel();
+      }
     } catch (error) {
-      dispatch({ type: "fail", message: getRecordingErrorMessage(error) });
+      if (startVersion === startVersionRef.current) {
+        dispatch({ type: "fail", message: getRecordingErrorMessage(error) });
+      }
     }
   }, [getRecorder, now]);
 
@@ -65,11 +91,13 @@ export function useRecordingSession(
   }, [getRecorder]);
 
   const cancel = useCallback(() => {
+    startVersionRef.current += 1;
     recorderRef.current?.cancel();
     dispatch({ type: "retry" });
   }, []);
 
   const retry = useCallback(() => {
+    startVersionRef.current += 1;
     recorderRef.current?.cancel();
     dispatch({ type: "retry" });
   }, []);
@@ -84,7 +112,7 @@ export function useRecordingSession(
       retry,
       markSaving: () => dispatch({ type: "save" }),
       markSaved: () => dispatch({ type: "saved" }),
-      fail: (message: string) => dispatch({ type: "fail", message }),
+      fail: (message: string, audio?: CapturedAudio) => dispatch({ type: "fail", message, audio }),
     }),
     [cancel, retry, start, state, stop],
   );
