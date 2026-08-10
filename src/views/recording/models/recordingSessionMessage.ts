@@ -2,7 +2,7 @@ import type {
   RecordingSessionErrorCode,
   RecordingSessionState,
 } from "@/features/session-recording";
-import type { RecordingPhase } from "@/views/recording/ui/RecordingSessionView";
+import type { RecordingPhase } from "@/views/recording/models/interface";
 
 const RECORDING_ERROR_MESSAGES: Record<RecordingSessionErrorCode, string> = {
   "permission-denied": "마이크 권한을 허용한 뒤 다시 시도해주세요.",

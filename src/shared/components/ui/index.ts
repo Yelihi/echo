@@ -41,6 +41,7 @@ export { ImportDialog } from "@/shared/components/ui/ImportDialog";
 export { ParagraphRow } from "@/shared/components/ui/ParagraphRow";
 export { RoleCard } from "@/shared/components/ui/RoleCard";
 export { SelectableOptionCard } from "@/shared/components/ui/SelectableOptionCard";
+export { SessionReadyHero } from "@/shared/components/ui/SessionReadyHero";
 export { SliderField } from "@/shared/components/ui/SliderField";
 export { StageRow } from "@/shared/components/ui/StageRow";
 export { TagInput } from "@/shared/components/ui/TagInput";

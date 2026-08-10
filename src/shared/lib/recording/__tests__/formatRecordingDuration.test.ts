@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { formatRecordingDuration } from "@/views/recording/ui/formatRecordingDuration";
+import { formatRecordingDuration } from "@/shared/lib/recording/formatRecordingDuration";
 
 describe("formatRecordingDuration", () => {
   it("formats milliseconds as mm:ss", () => {

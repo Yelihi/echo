@@ -2,11 +2,9 @@
 
 import { Clock, MessageSquare, Mic2, Play, Shuffle, Target, Volume2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
 import { useState } from "react";
 
-import { Badge, Button, Card } from "@/shared/components";
-import { StatItem } from "@/shared/components/atomics/stat-item/StatItem";
+import { Button, Card, SessionReadyHero } from "@/shared/components";
 import { RoleCard, SelectableOptionCard, SliderField, VoicePill } from "@/shared/components/ui";
 import {
   ROLE_PLAY_READY_EVALUATION_MODES,
@@ -44,7 +42,7 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
 
   return (
     <>
-      <ReadyHero
+      <SessionReadyHero
         tags={material.tags}
         title={material.title}
         description={material.description}
@@ -151,37 +149,6 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
         <Play /> 연습 시작하기
       </Button>
     </>
-  );
-}
-
-function ReadyHero({
-  tags,
-  title,
-  description,
-  stats,
-}: {
-  tags: readonly string[];
-  title: string;
-  description: string;
-  stats: Array<{ icon: ReactNode; label: string; value: ReactNode }>;
-}) {
-  return (
-    <Card className="flex flex-col gap-5 p-6">
-      <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <Badge key={tag} value={tag} size="small" />
-        ))}
-      </div>
-      <div>
-        <h1 className="text-heading-md font-bold text-black-primary">{title}</h1>
-        <p className="mt-2 text-body-3 text-gray-text">{description}</p>
-      </div>
-      <div className="grid grid-cols-3 gap-3">
-        {stats.map((stat) => (
-          <StatItem key={stat.label} {...stat} />
-        ))}
-      </div>
-    </Card>
   );
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { getRecordingSessionHint } from "@/views/recording/ui/recordingSessionMessage";
+import { getRecordingSessionHint } from "@/views/recording/models/recordingSessionMessage";
 
 describe("getRecordingSessionHint", () => {
   it("maps capture error codes to Korean copy", () => {

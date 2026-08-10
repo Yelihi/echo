@@ -6,18 +6,12 @@ import * as React from "react";
 
 import { useRecordingSession } from "@/features/session-recording";
 import type { CapturedAudio } from "@/shared/lib/audio";
+import { formatRecordingDuration } from "@/shared/lib/recording/formatRecordingDuration";
 import { cn } from "@/shared/lib/tailwind/utils";
-import { formatRecordingDuration } from "@/views/recording/ui/formatRecordingDuration";
-import { getRecordingSessionHint } from "@/views/recording/ui/recordingSessionMessage";
+import type { RecordingPhase, RecordingPillar } from "@/views/recording/models/interface";
+import { getRecordingSessionHint } from "@/views/recording/models/recordingSessionMessage";
 
-export type RecordingPillar = "roleplay" | "memo";
-export type RecordingPhase =
-  | "ready"
-  | "partner-speaking"
-  | "user-ready"
-  | "recording"
-  | "recorded"
-  | "failed";
+export type { RecordingPhase, RecordingPillar } from "@/views/recording/models/interface";
 
 export interface RecordingSessionViewProps {
   pillar: RecordingPillar;
