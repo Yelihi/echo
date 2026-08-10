@@ -13,6 +13,7 @@ export const analysisBannerVariants = cva(
         analyzing: "border-accent-100 bg-accent-50",
         done: "border-green-secondary bg-green-secondary",
         partial: "border-yellow-secondary bg-yellow-secondary",
+        failed: "border-red-secondary bg-red-secondary",
       },
     },
     defaultVariants: {
@@ -30,6 +31,7 @@ export const analysisBannerIconVariants = cva(
         analyzing: "bg-accent-100 text-accent-700",
         done: "bg-green-secondary text-green-primary",
         partial: "bg-yellow-secondary text-yellow-primary",
+        failed: "bg-red-secondary text-red-primary",
       },
     },
     defaultVariants: {
@@ -48,6 +50,7 @@ const stateIcons: Record<AnalysisBannerState, React.ReactNode> = {
   analyzing: <AudioLines />,
   done: <CircleCheck />,
   partial: <TriangleAlert />,
+  failed: <TriangleAlert />,
 };
 
 export interface AnalysisBannerProps {

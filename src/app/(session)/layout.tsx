@@ -18,7 +18,7 @@ export default async function SessionLayout({ children }: { children: React.Reac
       <header className="sticky top-0 z-20 h-[62px]">
         <NavigationContainer />
       </header>
-      <section className="mx-auto w-full max-w-[792px] px-4 pb-10 pt-[30px]">{children}</section>
+      <section className="mx-auto w-full max-w-[960px] px-4 pb-10 pt-[30px]">{children}</section>
     </main>
   );
 }

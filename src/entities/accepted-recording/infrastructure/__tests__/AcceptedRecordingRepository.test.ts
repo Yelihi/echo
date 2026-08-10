@@ -182,6 +182,51 @@ describe("AcceptedRecordingRepository", () => {
     expect(query.eq).toHaveBeenCalledWith("object_path", row.object_path);
     expect(query.maybeSingle).toHaveBeenCalledTimes(1);
   });
+
+  it("finds many by roleplay session", async () => {
+    const row = createAcceptedRecordingRow();
+    const query = createQuery(queryResult([row]));
+    const { client } = createSupabaseStub({
+      tables: {
+        accepted_recordings: [query],
+      },
+    });
+    const repository = new AcceptedRecordingRepository(client);
+
+    const recordings = await repository.findManyByRoleplaySessionId(
+      row.roleplay_session_id as SessionId,
+    );
+
+    expect(recordings).toHaveLength(1);
+    expect(query.select).toHaveBeenCalledWith("*");
+    expect(query.eq).toHaveBeenCalledWith("roleplay_session_id", row.roleplay_session_id);
+    expect(query.order).toHaveBeenCalledWith("accepted_at", { ascending: true });
+  });
+
+  it("finds many by memorization session", async () => {
+    const row = createAcceptedRecordingRow({
+      roleplay_session_id: null,
+      roleplay_line_id: null,
+      memorization_session_id: "33333333-3333-4333-8333-333333333333",
+      memorization_sentence_id: "44444444-4444-4444-8444-444444444444",
+    });
+    const query = createQuery(queryResult([row]));
+    const { client } = createSupabaseStub({
+      tables: {
+        accepted_recordings: [query],
+      },
+    });
+    const repository = new AcceptedRecordingRepository(client);
+
+    const recordings = await repository.findManyByMemorizationSessionId(
+      row.memorization_session_id as SessionId,
+    );
+
+    expect(recordings).toHaveLength(1);
+    expect(query.select).toHaveBeenCalledWith("*");
+    expect(query.eq).toHaveBeenCalledWith("memorization_session_id", row.memorization_session_id);
+    expect(query.order).toHaveBeenCalledWith("accepted_at", { ascending: true });
+  });
 });
 
 interface QueryError {
@@ -205,14 +250,19 @@ function createQuery(result: QueryResult<unknown>) {
     insert: jest.fn(),
     update: jest.fn(),
     eq: jest.fn(),
+    order: jest.fn(),
     single: jest.fn(async () => result),
     maybeSingle: jest.fn(async () => result),
+    then: jest.fn((resolve: (value: QueryResult<unknown>) => unknown) =>
+      Promise.resolve(result).then(resolve),
+    ),
   };
 
   query.select.mockReturnValue(query);
   query.insert.mockReturnValue(query);
   query.update.mockReturnValue(query);
   query.eq.mockReturnValue(query);
+  query.order.mockReturnValue(query);
 
   return query;
 }
