@@ -16,3 +16,10 @@ export interface RoleplayReadyMaterial {
 export interface RolePlayReadyViewProps {
   materialId: string;
 }
+
+export interface RoleplayReadySettings {
+  role: RoleplayReadyRole;
+  evaluationMode: RoleplayReadyEvaluationMode;
+  voice: RoleplayReadyVoice;
+  speed: number;
+}
