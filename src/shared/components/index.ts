@@ -16,3 +16,4 @@ export { TitleField } from "@/shared/components/atomics/title-field/TitleField";
 export { Card } from "@/shared/components/atomics/card/Card";
 export { Chip } from "@/shared/components/atomics/chip/Chip";
 export { TagChip } from "@/shared/components/atomics/tag-chip/TagChip";
+export { SessionReadyHero } from "@/shared/components/ui/SessionReadyHero";

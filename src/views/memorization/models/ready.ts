@@ -14,3 +14,7 @@ export interface MemorizationReadyMaterial {
 export interface MemorizationReadyViewProps {
   materialId: string;
 }
+
+export interface MemorizationReadySettings {
+  mode: MemorizationReadyMode;
+}
