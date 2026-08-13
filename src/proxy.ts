@@ -21,10 +21,11 @@ export async function proxy(request: NextRequest) {
   // NAVIGATION_MENU(widgets/navigation/config/const.ts)의 경로와 일치해야 합니다.
   const protectedRoutes = [
     "/home",
+    "/sessions",
     "/role-playing",
     "/sentence-memorization",
     "/recording-management",
-    // 몰입형 세션 화면(내비게이션 없음)
+    // 세션 결과 화면
     "/roleplay-sessions",
     "/memorization-sessions",
   ];

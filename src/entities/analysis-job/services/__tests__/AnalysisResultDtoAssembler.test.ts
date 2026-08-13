@@ -96,6 +96,43 @@ describe("createAnalysisResultDto", () => {
     });
   });
 
+  it("ignores results for targets outside the expected target set", () => {
+    const dto = createAnalysisResultDto({
+      job: { state: AnalysisJobState.COMPLETED },
+      expectedTargets: [
+        {
+          id: "line-1",
+          original: "Learner line.",
+          target: createRoleplayTarget("line-1"),
+        },
+        {
+          id: "line-2",
+          original: "Another learner line.",
+          target: createRoleplayTarget("line-2"),
+        },
+      ],
+      results: [
+        {
+          schemaVersion: "v1",
+          target: createRoleplayTarget("line-1"),
+          transcript: "Learner line.",
+          diff: [{ op: "equal", expected: "Learner line.", actual: "Learner line." }],
+          feedback: "Good.",
+        },
+        {
+          schemaVersion: "v1",
+          target: createRoleplayTarget("partner-line"),
+          transcript: "Partner line.",
+          diff: [{ op: "equal", expected: "Partner line.", actual: "Partner line." }],
+          feedback: "Good.",
+        },
+      ],
+    });
+
+    expect(dto.state).toBe("partial");
+    expect(dto.items[1]?.state).toBe("missing");
+  });
+
   it("marks targets without results as pending while the job is not terminal", () => {
     const dto = createAnalysisResultDto({
       job: { state: AnalysisJobState.PROCESSING },

@@ -3,20 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 
 import { PlayPill } from "@/shared/components/ui";
-
-interface ResultAudioPlayPillProps {
-  readonly signedUrl: string;
-  readonly durationSec?: number;
-}
+import type { ResultAudioPlayPillProps } from "@/views/analysis-result/models";
 
 export function ResultAudioPlayPill({ signedUrl, durationSec }: ResultAudioPlayPillProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playbackUrl, setPlaybackUrl] = useState(signedUrl);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(durationSec ?? 0);
 
   useEffect(() => {
-    const audio = new Audio(signedUrl);
+    if (!playing && signedUrl !== playbackUrl) {
+      setPlaybackUrl(signedUrl);
+      setProgress(0);
+    }
+  }, [playbackUrl, playing, signedUrl]);
+
+  useEffect(() => {
+    const audio = new Audio(playbackUrl);
     audioRef.current = audio;
 
     const sync = () => {
@@ -37,7 +41,7 @@ export function ResultAudioPlayPill({ signedUrl, durationSec }: ResultAudioPlayP
       audio.removeEventListener("loadedmetadata", sync);
       audio.removeEventListener("ended", stop);
     };
-  }, [durationSec, signedUrl]);
+  }, [durationSec, playbackUrl]);
 
   const toggle = async () => {
     const audio = audioRef.current;
