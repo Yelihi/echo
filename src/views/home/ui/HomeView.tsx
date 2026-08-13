@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   HOME_INTRO_CARDS,
   HOME_RECENT_SESSIONS,
@@ -45,9 +47,14 @@ export function HomeView() {
       </div>
 
       <section className="flex w-full flex-col gap-3" aria-labelledby="recent-sessions-title">
-        <h2 id="recent-sessions-title" className="text-heading-xs font-bold text-black-primary">
-          최근 학습 기록
-        </h2>
+        <div className="flex items-center justify-between gap-4">
+          <h2 id="recent-sessions-title" className="text-heading-xs font-bold text-black-primary">
+            최근 학습 기록
+          </h2>
+          <Link href="/sessions" className="text-body-3 font-medium text-blue-primary">
+            전체 보기
+          </Link>
+        </div>
         <div className="flex w-full flex-col gap-2.5">
           {HOME_RECENT_SESSIONS.map((session) => (
             <SessionSimplified key={`${session.sessionType}-${session.title}`} {...session} />

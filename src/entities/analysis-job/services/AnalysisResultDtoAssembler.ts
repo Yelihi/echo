@@ -13,12 +13,15 @@ export function createAnalysisResultDto(input: CreateAnalysisResultDtoInput): An
   const resultsByTarget = new Map(
     input.results.map((result) => [targetKey(result.target), result]),
   );
+  const matchedResultCount = input.expectedTargets.filter((target) =>
+    resultsByTarget.has(targetKey(target.target)),
+  ).length;
 
   return {
     state: mapAnalysisResultState(
       input.job.state,
       input.expectedTargets.length,
-      input.results.length,
+      matchedResultCount,
     ),
     items: input.expectedTargets.map((expectedTarget) =>
       mapAnalysisResultItemDto(

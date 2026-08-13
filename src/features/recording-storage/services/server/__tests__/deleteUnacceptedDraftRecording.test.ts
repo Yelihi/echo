@@ -206,8 +206,12 @@ function createAcceptedRepository(input: {
     findByStorageObject: jest.fn(async () => input.accepted),
     findById: jest.fn<AcceptedRecordingRepositoryPort["findById"]>(),
     findByRoleplayTarget: jest.fn<AcceptedRecordingRepositoryPort["findByRoleplayTarget"]>(),
+    findManyByRoleplaySessionId:
+      jest.fn<AcceptedRecordingRepositoryPort["findManyByRoleplaySessionId"]>(),
     findByMemorizationTarget:
       jest.fn<AcceptedRecordingRepositoryPort["findByMemorizationTarget"]>(),
+    findManyByMemorizationSessionId:
+      jest.fn<AcceptedRecordingRepositoryPort["findManyByMemorizationSessionId"]>(),
   };
 }
 

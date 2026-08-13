@@ -30,8 +30,10 @@ export interface AcceptedRecordingRepositoryPort {
     sessionId: SessionId,
     lineSnapshotId: LineId,
   ): Promise<AcceptedRecording | null>;
+  findManyByRoleplaySessionId(sessionId: SessionId): Promise<AcceptedRecording[]>;
   findByMemorizationTarget(
     sessionId: SessionId,
     sentenceSnapshotId: SentenceId,
   ): Promise<AcceptedRecording | null>;
+  findManyByMemorizationSessionId(sessionId: SessionId): Promise<AcceptedRecording[]>;
 }

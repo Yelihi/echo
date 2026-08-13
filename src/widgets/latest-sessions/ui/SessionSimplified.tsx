@@ -1,17 +1,11 @@
 import { MessageSquare, Layers } from "lucide-react";
+import Link from "next/link";
 
 import { cn } from "@/shared/utils/cn";
 import { SessionStateBadge } from "@/shared/components/ui";
+import type { SessionSimplifiedProps } from "@/widgets/latest-sessions/models";
 
 import { convertFormatDate } from "@/widgets/latest-sessions/config/convertFortmatDate";
-
-export interface SessionSimplifiedProps {
-  title: string;
-  sessionDate: Date;
-  description: string;
-  sessionType: "role-playing" | "memorization";
-  sessionState: "completed" | "failed" | "inProgress" | "pending";
-}
 
 export const SessionSimplified = ({
   title,
@@ -19,9 +13,11 @@ export const SessionSimplified = ({
   description,
   sessionType,
   sessionState,
+  href,
+  disabled = false,
 }: SessionSimplifiedProps) => {
-  return (
-    <div className="w-full h-fit bg-white border border-gray-border rounded-panel p-[16px] flex justify-between items-center cursor-pointer">
+  const content = (
+    <>
       <div className="flex justify-start items-center gap-[10px]">
         <div
           className={cn(
@@ -43,6 +39,24 @@ export const SessionSimplified = ({
       <div className="size-fit">
         <SessionStateBadge state={sessionState} />
       </div>
+    </>
+  );
+  const className = cn(
+    "w-full h-fit bg-white border border-gray-border rounded-panel p-[16px] flex justify-between items-center transition-colors",
+    href && !disabled ? "cursor-pointer hover:bg-gray-background" : "cursor-default opacity-70",
+  );
+
+  if (href && !disabled) {
+    return (
+      <Link href={href} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={className} aria-disabled={disabled}>
+      {content}
     </div>
   );
 };

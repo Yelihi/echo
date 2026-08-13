@@ -1,4 +1,12 @@
-import { Home, MessageSquare, Layers, FolderOpenDot, Settings, LogOut } from "lucide-react";
+import {
+  FolderOpenDot,
+  Home,
+  Layers,
+  ListChecks,
+  LogOut,
+  MessageSquare,
+  Settings,
+} from "lucide-react";
 
 import type {
   NavigationMenuItemProps,
@@ -21,6 +29,11 @@ export const NAVIGATION_MENU: NavigationMenuItemProps[] = [
     icon: Layers,
     link: "/sentence-memorization",
     label: "문장 암기",
+  },
+  {
+    icon: ListChecks,
+    link: "/sessions",
+    label: "학습 기록",
   },
   {
     icon: FolderOpenDot,

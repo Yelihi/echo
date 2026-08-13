@@ -124,6 +124,20 @@ export class AcceptedRecordingRepository implements AcceptedRecordingRepositoryP
     return data ? mapAcceptedRecordingRowToEntity(data) : null;
   }
 
+  async findManyByRoleplaySessionId(sessionId: SessionId): Promise<AcceptedRecording[]> {
+    const { data, error } = await this.supabase
+      .from("accepted_recordings")
+      .select("*")
+      .eq("roleplay_session_id", sessionId)
+      .order("accepted_at", { ascending: true });
+
+    if (error) {
+      throw new Error(`Failed to fetch accepted recordings by roleplay session: ${error.message}`);
+    }
+
+    return data.map(mapAcceptedRecordingRowToEntity);
+  }
+
   async findByMemorizationTarget(
     sessionId: SessionId,
     sentenceSnapshotId: SentenceId,
@@ -142,6 +156,22 @@ export class AcceptedRecordingRepository implements AcceptedRecordingRepositoryP
     }
 
     return data ? mapAcceptedRecordingRowToEntity(data) : null;
+  }
+
+  async findManyByMemorizationSessionId(sessionId: SessionId): Promise<AcceptedRecording[]> {
+    const { data, error } = await this.supabase
+      .from("accepted_recordings")
+      .select("*")
+      .eq("memorization_session_id", sessionId)
+      .order("accepted_at", { ascending: true });
+
+    if (error) {
+      throw new Error(
+        `Failed to fetch accepted recordings by memorization session: ${error.message}`,
+      );
+    }
+
+    return data.map(mapAcceptedRecordingRowToEntity);
   }
 }
 

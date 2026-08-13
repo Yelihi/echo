@@ -25,6 +25,7 @@ export const RolePlaying: Story = {
     description: "역할극 연습",
     sessionType: "role-playing",
     sessionState: "completed",
+    href: "/roleplay-sessions/11111111-1111-4111-8111-111111111111/result",
   },
 };
 
@@ -35,5 +36,17 @@ export const Memorization: Story = {
     description: "문장 암기",
     sessionType: "memorization",
     sessionState: "failed",
+    href: "/memorization-sessions/33333333-3333-4333-8333-333333333333/result",
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    title: "TED 발췌 · 습관의 힘",
+    sessionDate: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    description: "분석 대기",
+    sessionType: "memorization",
+    sessionState: "pending",
+    disabled: true,
   },
 };
