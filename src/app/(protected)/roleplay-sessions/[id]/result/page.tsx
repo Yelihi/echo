@@ -6,9 +6,8 @@ import {
   retryRoleplayAnalysis,
 } from "@/views/analysis-result";
 import type { SessionId } from "@/entities/value-object";
+import { isUuidString } from "@/shared/utils/uuid";
 import { PageContainer } from "@/widgets/app-shell";
-
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface RoleplayResultPageProps {
   params: Promise<{
@@ -18,7 +17,7 @@ interface RoleplayResultPageProps {
 
 export default async function RoleplayResultPage({ params }: RoleplayResultPageProps) {
   const { id } = await params;
-  if (!UUID_PATTERN.test(id)) {
+  if (!isUuidString(id)) {
     notFound();
   }
 

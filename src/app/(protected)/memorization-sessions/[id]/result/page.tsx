@@ -6,9 +6,8 @@ import {
   retryMemorizationAnalysis,
 } from "@/views/analysis-result";
 import type { SessionId } from "@/entities/value-object";
+import { isUuidString } from "@/shared/utils/uuid";
 import { PageContainer } from "@/widgets/app-shell";
-
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface MemorizationResultPageProps {
   params: Promise<{
@@ -18,7 +17,7 @@ interface MemorizationResultPageProps {
 
 export default async function MemorizationResultPage({ params }: MemorizationResultPageProps) {
   const { id } = await params;
-  if (!UUID_PATTERN.test(id)) {
+  if (!isUuidString(id)) {
     notFound();
   }
 

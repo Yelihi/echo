@@ -1,4 +1,13 @@
-import type { AnalysisResultDto, AnalysisResultItemDto } from "@/entities/analysis-job";
+import type {
+  AnalysisJob,
+  AnalysisResultAudioDto,
+  AnalysisResultDto,
+  AnalysisResultItemDto,
+  PracticeTargetAnalysisResult,
+} from "@/entities/analysis-job";
+import type { MemorizationSession } from "@/entities/memorization-session";
+import type { RoleplaySession } from "@/entities/roleplay-session";
+import type { LineId, SentenceId } from "@/entities/value-object";
 import type { EvaluationDiffSegment } from "@/shared/lib/evaluation";
 
 export type ResultPracticeKind = "roleplay" | "memorization";
@@ -38,4 +47,18 @@ export interface DiffSegmentsProps {
 export interface ResultAudioPlayPillProps {
   readonly signedUrl: string;
   readonly durationSec?: number;
+}
+
+export interface RoleplayResultPageData {
+  readonly session: RoleplaySession;
+  readonly job: AnalysisJob;
+  readonly sourceResults: ReadonlyArray<PracticeTargetAnalysisResult>;
+  readonly audioByLineId: ReadonlyMap<LineId, AnalysisResultAudioDto>;
+}
+
+export interface MemorizationResultPageData {
+  readonly session: MemorizationSession;
+  readonly job: AnalysisJob;
+  readonly sourceResults: ReadonlyArray<PracticeTargetAnalysisResult>;
+  readonly audioBySentenceId: ReadonlyMap<SentenceId, AnalysisResultAudioDto>;
 }
