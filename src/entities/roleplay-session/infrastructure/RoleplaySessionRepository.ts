@@ -2,10 +2,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { SessionId } from "@/entities/value-object";
 import type { Database } from "@/shared/lib/supabase";
-import type { RoleplaySession } from "@/entities/roleplay-session/models/entity";
+import type {
+  RoleplaySession,
+  SummaryRoleplaySessions,
+} from "@/entities/roleplay-session/models/entity";
 import { SessionState } from "@/entities/roleplay-session/models/enums";
 import {
   mapRoleplaySessionRowToEntity,
+  mapRoleplaySessionsMetadataRowToEntity,
   type RoleplaySessionLineRow,
   type RoleplaySessionTagRow,
 } from "@/entities/roleplay-session/models/mapper";
@@ -40,6 +44,21 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
     return mapRoleplaySessionRowToEntity({ session, tags, lines });
   }
 
+  async getAllSessionsMetadata(): Promise<SummaryRoleplaySessions> {
+    const query = this.supabase
+      .from("roleplay_sessions")
+      .select("*")
+      .order("updated_at", { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(`Failed to fetch roleplay sessions metadata: ${error.message}`);
+    }
+
+    return mapRoleplaySessionsMetadataRowToEntity(data ?? []);
+  }
+
   async findMany(params: FindRoleplaySessionsParams = {}): Promise<RoleplaySession[]> {
     const sessionIds = params.tagNormalizedName
       ? await this.findSessionIdsByTag(params.tagNormalizedName)
@@ -60,7 +79,13 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
     }
 
     if (params.limit) {
-      query = query.limit(params.limit);
+      if (params.page != null) {
+        const page = Math.max(1, params.page);
+        const from = (page - 1) * params.limit;
+        query = query.range(from, from + params.limit - 1);
+      } else {
+        query = query.limit(params.limit);
+      }
     }
 
     const { data: sessions, error } = await query;

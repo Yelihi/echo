@@ -39,3 +39,7 @@ export interface MemorizationSession {
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
+
+export interface SummaryMemorizationSessions {
+  readonly totalCount: number;
+}

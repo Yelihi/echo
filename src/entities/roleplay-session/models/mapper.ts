@@ -5,6 +5,7 @@ import type {
   RoleplayLineSnapshot,
   RoleplaySession,
   RoleplaySpeakerSnapshot,
+  SummaryRoleplaySessions,
 } from "@/entities/roleplay-session/models/entity";
 import { SessionState } from "@/entities/roleplay-session/models/enums";
 
@@ -59,6 +60,14 @@ export function mapRoleplaySessionRowToEntity(rowSet: RoleplaySessionRowSet): Ro
     deletedAt: rowSet.session.deleted_at ? new Date(rowSet.session.deleted_at) : null,
     createdAt: new Date(rowSet.session.created_at),
     updatedAt: new Date(rowSet.session.updated_at),
+  };
+}
+
+export function mapRoleplaySessionsMetadataRowToEntity(
+  sessions: ReadonlyArray<RoleplaySessionRow>,
+): SummaryRoleplaySessions {
+  return {
+    totalCount: sessions.length,
   };
 }
 

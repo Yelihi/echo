@@ -5,7 +5,10 @@ import type {
   RoleplaySessionRow,
   RoleplaySessionTagRow,
 } from "@/entities/roleplay-session/models/mapper";
-import { mapRoleplaySessionRowToEntity } from "@/entities/roleplay-session/models/mapper";
+import {
+  mapRoleplaySessionRowToEntity,
+  mapRoleplaySessionsMetadataRowToEntity,
+} from "@/entities/roleplay-session/models/mapper";
 
 describe("mapRoleplaySessionRowToEntity", () => {
   it("maps roleplay session snapshot rows into a domain entity", () => {
@@ -100,6 +103,17 @@ describe("mapRoleplaySessionRowToEntity", () => {
         lines: [invalidLine],
       }),
     ).toThrow("Invalid roleplay session speaker order: 3");
+  });
+});
+
+describe("mapRoleplaySessionsMetadataRowToEntity", () => {
+  it("maps session rows into summary metadata without requiring domain entities", () => {
+    const summary = mapRoleplaySessionsMetadataRowToEntity([
+      createSessionRow(),
+      createSessionRow(),
+    ]);
+
+    expect(summary).toEqual({ totalCount: 2 });
   });
 });
 

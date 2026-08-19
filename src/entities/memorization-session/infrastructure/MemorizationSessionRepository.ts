@@ -2,10 +2,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { SessionId } from "@/entities/value-object";
 import type { Database } from "@/shared/lib/supabase";
-import type { MemorizationSession } from "@/entities/memorization-session/models/entity";
+import type {
+  MemorizationSession,
+  SummaryMemorizationSessions,
+} from "@/entities/memorization-session/models/entity";
 import { SessionState } from "@/entities/memorization-session/models/enums";
 import {
   mapMemorizationSessionRowToEntity,
+  mapMemorizationSessionsMetadataRowToEntity,
   type MemorizationSessionParagraphRow,
   type MemorizationSessionSentenceRow,
   type MemorizationSessionTagRow,
@@ -40,6 +44,19 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
     ]);
 
     return mapMemorizationSessionRowToEntity({ session, tags, paragraphs, sentences });
+  }
+
+  async getAllSessionsMetadata(): Promise<SummaryMemorizationSessions> {
+    const { data, error } = await this.supabase
+      .from("memorization_sessions")
+      .select("*")
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to fetch memorization sessions metadata: ${error.message}`);
+    }
+
+    return mapMemorizationSessionsMetadataRowToEntity(data ?? []);
   }
 
   async findMany(params: FindMemorizationSessionsParams = {}): Promise<MemorizationSession[]> {
