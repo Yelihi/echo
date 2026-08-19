@@ -1,15 +1,10 @@
 import { Suspense } from "react";
-import Link from "next/link";
 
-// widgets
-import { SessionSimplified } from "@/widgets/latest-sessions/ui/SessionSimplified";
-
-// views
-import { HOME_RECENT_SESSIONS } from "@/views/home/config/mock";
 import {
   HomeMemorizationSessionLatestList,
   HomeMemorizationSessionLatestListFallback,
 } from "@/views/home/ui/HomeMemorizationSessionLatestList";
+import { HomeLatestStudyRecords } from "@/views/home/ui/HomeLatestStudyRecords";
 import {
   HomeRoleplaySessionLatestList,
   HomeRoleplaySessionLatestListFallback,
@@ -52,21 +47,7 @@ export function HomeView() {
         </Suspense>
       </div>
 
-      <section className="flex w-full flex-col gap-3" aria-labelledby="recent-sessions-title">
-        <div className="flex items-center justify-between gap-4">
-          <h2 id="recent-sessions-title" className="text-heading-xs font-bold text-black-primary">
-            최근 학습 기록
-          </h2>
-          <Link href="/sessions" className="text-body-3 font-medium text-blue-primary">
-            전체 보기
-          </Link>
-        </div>
-        <div className="flex w-full flex-col gap-2.5">
-          {HOME_RECENT_SESSIONS.map((session) => (
-            <SessionSimplified key={`${session.sessionType}-${session.title}`} {...session} />
-          ))}
-        </div>
-      </section>
+      <HomeLatestStudyRecords />
     </section>
   );
 }
