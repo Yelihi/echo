@@ -79,7 +79,13 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
     }
 
     if (params.limit) {
-      query = query.limit(params.limit);
+      if (params.page != null) {
+        const page = Math.max(1, params.page);
+        const from = (page - 1) * params.limit;
+        query = query.range(from, from + params.limit - 1);
+      } else {
+        query = query.limit(params.limit);
+      }
     }
 
     const { data: sessions, error } = await query;
