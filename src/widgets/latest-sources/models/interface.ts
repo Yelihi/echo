@@ -1,10 +1,16 @@
 import { LucideIcon } from "lucide-react";
 
+export interface EmptyContainerProps {
+  title: string;
+  description?: string;
+}
+
 export interface ListContainerProps {
   type: "role-play" | "memorization";
   icon: LucideIcon;
   title: string;
-  children: React.ReactNode;
+  empty?: EmptyContainerProps;
+  children?: React.ReactNode;
 }
 
 export interface SourceItemProps {

@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { MessageSquare, FileText, Layers } from "lucide-react";
 
 import { ListContainer } from "@/widgets/latest-sources/ui/ListContainer";
-import { SourceItem } from "@/widgets/latest-sources/ui/SourceItem";
+import {
+  SOURCE_ITEM_SKELETON_COUNT,
+  SourceItem,
+  SourceItemSkeleton,
+} from "@/widgets/latest-sources/ui/SourceItem";
 import { SourceItemProps } from "@/widgets/latest-sources/models/interface";
 
 const meta = {
@@ -111,6 +115,34 @@ export const Memorization: Story = {
             title={item.title}
             subTitle={item.subTitle}
           />
+        ))}
+      </>
+    ),
+  },
+};
+
+export const Empty: Story = {
+  args: {
+    type: "role-play",
+    icon: MessageSquare,
+    title: "최근 롤플레이",
+    empty: {
+      title: "아직 롤플레이가 없어요",
+      description: "대화를 시작하면 여기에 나타나요.",
+    },
+    children: undefined,
+  },
+};
+
+export const Skeleton: Story = {
+  args: {
+    type: "role-play",
+    icon: MessageSquare,
+    title: "최근 롤플레이",
+    children: (
+      <>
+        {Array.from({ length: SOURCE_ITEM_SKELETON_COUNT }, (_, index) => (
+          <SourceItemSkeleton key={index} />
         ))}
       </>
     ),
