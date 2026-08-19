@@ -1,14 +1,17 @@
+import { Suspense } from "react";
 import Link from "next/link";
 
-import {
-  HOME_INTRO_CARDS,
-  HOME_RECENT_SESSIONS,
-  HOME_SOURCE_SECTIONS,
-} from "@/views/home/config/mock";
+// widgets
 import { SessionSimplified } from "@/widgets/latest-sessions/ui/SessionSimplified";
 import { ListContainer } from "@/widgets/latest-sources/ui/ListContainer";
 import { SourceItem } from "@/widgets/latest-sources/ui/SourceItem";
-import { SessionIntroCard } from "@/widgets/session-intro-card/ui/SessionIntroCard";
+
+// views
+import { HOME_RECENT_SESSIONS, HOME_SOURCE_SECTIONS } from "@/views/home/config/mock";
+import {
+  HomeSessionIntroCard,
+  HomeSessionIntroCardFallback,
+} from "@/views/home/ui/HomeSessionIntroCard";
 
 /**
  * 홈 화면.
@@ -26,9 +29,12 @@ export function HomeView() {
       </header>
 
       <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-2">
-        {HOME_INTRO_CARDS.map((card) => (
-          <SessionIntroCard key={card.type} {...card} />
-        ))}
+        <Suspense fallback={<HomeSessionIntroCardFallback type="role-play" />}>
+          <HomeSessionIntroCard type="role-play" />
+        </Suspense>
+        <Suspense fallback={<HomeSessionIntroCardFallback type="memorization" />}>
+          <HomeSessionIntroCard type="memorization" />
+        </Suspense>
       </div>
 
       <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-2">

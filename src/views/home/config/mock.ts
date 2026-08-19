@@ -3,17 +3,6 @@ import { Layers, MessageSquare } from "lucide-react";
 import type { SourceItemProps } from "@/widgets/latest-sources/models/interface";
 import type { SessionSimplifiedProps } from "@/widgets/latest-sessions/models";
 
-export const HOME_INTRO_CARDS = [
-  {
-    type: "role-play",
-    currentSessions: 6,
-  },
-  {
-    type: "memorization",
-    currentSessions: 4,
-  },
-] as const;
-
 export const HOME_SOURCE_SECTIONS: Array<{
   title: string;
   type: SourceItemProps["type"];
