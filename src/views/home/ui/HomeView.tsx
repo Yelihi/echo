@@ -3,11 +3,17 @@ import Link from "next/link";
 
 // widgets
 import { SessionSimplified } from "@/widgets/latest-sessions/ui/SessionSimplified";
-import { ListContainer } from "@/widgets/latest-sources/ui/ListContainer";
-import { SourceItem } from "@/widgets/latest-sources/ui/SourceItem";
 
 // views
-import { HOME_RECENT_SESSIONS, HOME_SOURCE_SECTIONS } from "@/views/home/config/mock";
+import { HOME_RECENT_SESSIONS } from "@/views/home/config/mock";
+import {
+  HomeMemorizationSessionLatestList,
+  HomeMemorizationSessionLatestListFallback,
+} from "@/views/home/ui/HomeMemorizationSessionLatestList";
+import {
+  HomeRoleplaySessionLatestList,
+  HomeRoleplaySessionLatestListFallback,
+} from "@/views/home/ui/HomeRoleplaySessionLatestList";
 import {
   HomeSessionIntroCard,
   HomeSessionIntroCardFallback,
@@ -38,18 +44,12 @@ export function HomeView() {
       </div>
 
       <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-2">
-        {HOME_SOURCE_SECTIONS.map((section) => (
-          <ListContainer
-            key={section.type}
-            icon={section.icon}
-            title={section.title}
-            type={section.type}
-          >
-            {section.items.map((item) => (
-              <SourceItem key={`${item.type}-${item.title}`} {...item} />
-            ))}
-          </ListContainer>
-        ))}
+        <Suspense fallback={<HomeRoleplaySessionLatestListFallback />}>
+          <HomeRoleplaySessionLatestList />
+        </Suspense>
+        <Suspense fallback={<HomeMemorizationSessionLatestListFallback />}>
+          <HomeMemorizationSessionLatestList />
+        </Suspense>
       </div>
 
       <section className="flex w-full flex-col gap-3" aria-labelledby="recent-sessions-title">

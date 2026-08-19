@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 import { cva } from "class-variance-authority";
 import { cn } from "@/shared/utils/cn";
 import { ArrowRight, MessageSquare, Layers } from "lucide-react";
@@ -5,18 +9,26 @@ import { ArrowRight, MessageSquare, Layers } from "lucide-react";
 import { Button } from "@/shared/components";
 import { SessionIntroCardProps } from "@/widgets/session-intro-card/models/interface";
 
-export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProps) => {
-  const sessionIntroCardVariants = cva(
-    "relative w-full cursor-pointer rounded-hero p-[20px] transition-all duration-300 hover:shadow-strong",
-    {
-      variants: {
-        type: {
-          "role-play": "bg-blue-primary",
-          memorization: "bg-deep-blue-primary",
-        },
+const sessionIntroCardVariants = cva(
+  "relative w-full cursor-pointer rounded-hero p-[20px] transition-all duration-300 hover:shadow-strong",
+  {
+    variants: {
+      type: {
+        "role-play": "bg-blue-primary",
+        memorization: "bg-deep-blue-primary",
       },
     },
-  );
+  },
+);
+
+export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProps) => {
+  const router = useRouter();
+
+  const routeStartSession = () => {
+    return type === "role-play"
+      ? router.push("/role-playing")
+      : router.push("/sentence-memorization");
+  };
 
   /**
    * 현재는 2가지 타입만 존재하기에 dictionary 처리. 타입 추가 시 정리 필요
@@ -51,6 +63,7 @@ export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProp
             variant={"ghost"}
             size={"lg"}
             className="apple-glass border-white text-white z-10"
+            onClick={routeStartSession}
           >
             시작하기
             <ArrowRight />
