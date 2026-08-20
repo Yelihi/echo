@@ -47,16 +47,15 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
   }
 
   async getAllSessionsMetadata(): Promise<SummaryMemorizationSessions> {
-    const { data, error } = await this.supabase
+    const { count, error } = await this.supabase
       .from("memorization_sessions")
-      .select("*")
-      .order("updated_at", { ascending: false });
+      .select("*", { count: "exact", head: true });
 
     if (error) {
       throw new Error(`Failed to fetch memorization sessions metadata: ${error.message}`);
     }
 
-    return mapMemorizationSessionsMetadataRowToEntity(data ?? []);
+    return mapMemorizationSessionsMetadataRowToEntity(count ?? 0);
   }
 
   async findMany(params: FindMemorizationSessionsParams = {}): Promise<MemorizationSession[]> {
@@ -71,8 +70,13 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
     let query = this.supabase
       .from("memorization_sessions")
       .select("*")
-      .eq("status", params.state ?? SessionState.IN_PROGRESS)
       .order("updated_at", { ascending: false });
+
+    if (params.states) {
+      query = query.in("status", [...params.states]);
+    } else {
+      query = query.eq("status", params.state ?? SessionState.IN_PROGRESS);
+    }
 
     if (sessionIds) {
       query = query.in("id", sessionIds);

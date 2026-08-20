@@ -8,6 +8,7 @@ import type { SessionState } from "@/entities/roleplay-session/models/enums";
 
 export interface FindRoleplaySessionsParams {
   readonly state?: SessionState;
+  readonly states?: readonly SessionState[];
   readonly tagNormalizedName?: string;
   readonly page?: number;
   readonly limit?: number;

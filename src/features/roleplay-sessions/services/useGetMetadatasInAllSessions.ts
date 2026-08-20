@@ -13,7 +13,7 @@ export const useGetMetadatasInAllSessions = (repository: RoleplaySessionReposito
     error,
   } = useQuery({
     ...roleplayKeyStore["roleplay-sessions"].all,
-    queryFn: repository.getAllSessionsMetadata,
+    queryFn: () => repository.getAllSessionsMetadata(),
   });
 
   return { metadataAllSessions, isLoading, error };

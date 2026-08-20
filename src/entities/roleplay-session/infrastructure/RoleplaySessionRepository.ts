@@ -45,18 +45,15 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
   }
 
   async getAllSessionsMetadata(): Promise<SummaryRoleplaySessions> {
-    const query = this.supabase
+    const { count, error } = await this.supabase
       .from("roleplay_sessions")
-      .select("*")
-      .order("updated_at", { ascending: false });
-
-    const { data, error } = await query;
+      .select("*", { count: "exact", head: true });
 
     if (error) {
       throw new Error(`Failed to fetch roleplay sessions metadata: ${error.message}`);
     }
 
-    return mapRoleplaySessionsMetadataRowToEntity(data ?? []);
+    return mapRoleplaySessionsMetadataRowToEntity(count ?? 0);
   }
 
   async findMany(params: FindRoleplaySessionsParams = {}): Promise<RoleplaySession[]> {
@@ -71,8 +68,13 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
     let query = this.supabase
       .from("roleplay_sessions")
       .select("*")
-      .eq("status", params.state ?? SessionState.IN_PROGRESS)
       .order("updated_at", { ascending: false });
+
+    if (params.states) {
+      query = query.in("status", [...params.states]);
+    } else {
+      query = query.eq("status", SessionState.IN_PROGRESS);
+    }
 
     if (sessionIds) {
       query = query.in("id", sessionIds);

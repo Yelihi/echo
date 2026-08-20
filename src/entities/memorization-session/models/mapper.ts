@@ -88,7 +88,7 @@ function mapMemorizationSentenceRowToEntity(
 }
 
 export function mapMemorizationSessionsMetadataRowToEntity(
-  sessions: ReadonlyArray<MemorizationSessionRow>,
+  totalCount: number,
 ): SummaryMemorizationSessions {
-  return { totalCount: sessions.length };
+  return { totalCount };
 }

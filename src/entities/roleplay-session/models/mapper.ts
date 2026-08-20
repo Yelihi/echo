@@ -64,10 +64,10 @@ export function mapRoleplaySessionRowToEntity(rowSet: RoleplaySessionRowSet): Ro
 }
 
 export function mapRoleplaySessionsMetadataRowToEntity(
-  sessions: ReadonlyArray<RoleplaySessionRow>,
+  totalCount: number,
 ): SummaryRoleplaySessions {
   return {
-    totalCount: sessions.length,
+    totalCount,
   };
 }
 

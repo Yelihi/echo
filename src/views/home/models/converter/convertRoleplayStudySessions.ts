@@ -1,12 +1,13 @@
 // entities
 import type { RoleplaySession } from "@/entities/roleplay-session";
+import type { SessionId } from "@/entities/value-object";
 
 // views
-import { mapStudySessionState } from "@/views/home/models/converter/mapStudySessionState";
 import type { GetLatestStudySession } from "@/views/home/models/interface";
 
 export function convertRoleplayStudySessions(
   sessions: ReadonlyArray<RoleplaySession>,
+  sessionStateById: ReadonlyMap<SessionId, GetLatestStudySession["sessionState"]>,
 ): GetLatestStudySession[] {
   return sessions.map((session) => ({
     id: session.id,
@@ -14,23 +15,15 @@ export function convertRoleplayStudySessions(
     sessionDate: session.updatedAt,
     description: `문장 ${session.lineSnapshots.length}개`,
     sessionType: "role-playing",
-    sessionState: mapStudySessionState(session.state),
+    sessionState: sessionStateById.get(session.id) ?? "pending",
     href: getRoleplaySessionHref(session),
-    disabled: session.state === "deleted",
+    disabled: session.state !== "completed",
   }));
 }
 
 function getRoleplaySessionHref(session: RoleplaySession) {
   if (session.state === "completed") {
     return `/roleplay-sessions/${session.id}/result`;
-  }
-
-  if (session.state === "in_progress") {
-    return `/role-playing/${session.id}/session`;
-  }
-
-  if (session.state === "ready") {
-    return `/role-playing/${session.id}/ready`;
   }
 
   return undefined;

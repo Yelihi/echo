@@ -8,6 +8,7 @@ import type { SessionState } from "@/entities/memorization-session/models/enums"
 
 export interface FindMemorizationSessionsParams {
   readonly state?: SessionState;
+  readonly states?: readonly SessionState[];
   readonly tagNormalizedName?: string;
   readonly page?: number;
   readonly limit?: number;

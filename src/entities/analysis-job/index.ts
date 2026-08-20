@@ -43,6 +43,7 @@ export type {
   AnalysisJobRepositoryPort,
   ClaimNextAnalysisJobInput,
   FailAnalysisJobInput,
+  FindAnalysisJobsBySessionIdsInput,
   FindAnalysisJobBySessionInput,
   RequestAnalysisJobInput,
 } from "@/entities/analysis-job/models/repository";

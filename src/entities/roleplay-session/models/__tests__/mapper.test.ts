@@ -107,11 +107,8 @@ describe("mapRoleplaySessionRowToEntity", () => {
 });
 
 describe("mapRoleplaySessionsMetadataRowToEntity", () => {
-  it("maps session rows into summary metadata without requiring domain entities", () => {
-    const summary = mapRoleplaySessionsMetadataRowToEntity([
-      createSessionRow(),
-      createSessionRow(),
-    ]);
+  it("maps exact count into summary metadata", () => {
+    const summary = mapRoleplaySessionsMetadataRowToEntity(2);
 
     expect(summary).toEqual({ totalCount: 2 });
   });

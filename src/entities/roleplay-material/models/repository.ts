@@ -12,4 +12,5 @@ export interface FindRoleplayMaterialsParams {
 export interface RoleplayMaterialRepositoryPort {
   findById(id: MaterialId): Promise<RoleplayMaterial | null>;
   findMany(params?: FindRoleplayMaterialsParams): Promise<RoleplayMaterial[]>;
+  countActive(): Promise<number>;
 }

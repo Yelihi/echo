@@ -92,6 +92,19 @@ export class MemorizationMaterialRepository implements MemorizationMaterialRepos
     );
   }
 
+  async countActive(): Promise<number> {
+    const { count, error } = await this.supabase
+      .from("memorization_materials")
+      .select("*", { count: "exact", head: true })
+      .eq("status", MaterialState.ACTIVE);
+
+    if (error) {
+      throw new Error(`Failed to count memorization materials: ${error.message}`);
+    }
+
+    return count ?? 0;
+  }
+
   private async findMaterialIdsByTag(normalizedName: string): Promise<MaterialId[]> {
     const { data, error } = await this.supabase
       .from("memorization_material_tags")

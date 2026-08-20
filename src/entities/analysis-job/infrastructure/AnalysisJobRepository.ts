@@ -22,6 +22,7 @@ import type {
   AnalysisJobRepositoryPort,
   ClaimNextAnalysisJobInput,
   FailAnalysisJobInput,
+  FindAnalysisJobsBySessionIdsInput,
   FindAnalysisJobBySessionInput,
   RequestAnalysisJobInput,
 } from "@/entities/analysis-job/models/repository";
@@ -203,6 +204,18 @@ export class AnalysisJobRepository implements AnalysisJobRepositoryPort {
     return data.map(mapAnalysisJobRowToEntity);
   }
 
+  async findLatestByRoleplaySessionIds(
+    input: FindAnalysisJobsBySessionIdsInput,
+  ): Promise<AnalysisJob[]> {
+    return this.findLatestBySessionIds("roleplay_session_id", input);
+  }
+
+  async findLatestByMemorizationSessionIds(
+    input: FindAnalysisJobsBySessionIdsInput,
+  ): Promise<AnalysisJob[]> {
+    return this.findLatestBySessionIds("memorization_session_id", input);
+  }
+
   async findByRoleplaySessionId(sessionId: SessionId): Promise<AnalysisJob | null> {
     return this.findCurrentByRoleplaySessionId({ sessionId });
   }
@@ -241,6 +254,45 @@ export class AnalysisJobRepository implements AnalysisJobRepositoryPort {
     }
 
     return data ? mapSessionAnalysisSummaryRowToEntity(data) : null;
+  }
+
+  private async findLatestBySessionIds(
+    sessionColumn: "roleplay_session_id" | "memorization_session_id",
+    input: FindAnalysisJobsBySessionIdsInput,
+  ): Promise<AnalysisJob[]> {
+    if (input.sessionIds.length === 0) {
+      return [];
+    }
+
+    const { data, error } = await this.supabase
+      .from("analysis_jobs")
+      .select("*")
+      .in(sessionColumn, [...input.sessionIds])
+      .eq("provider", input.provider ?? "openai")
+      .order("attempt_number", { ascending: false })
+      .order("queued_at", { ascending: false });
+
+    if (error) {
+      throw new AnalysisJobFetchError("Failed to fetch latest analysis jobs by sessions.", {
+        cause: error,
+      });
+    }
+
+    const seen = new Set<string>();
+    const latestJobs: AnalysisJob[] = [];
+
+    for (const row of data) {
+      const sessionId = row[sessionColumn];
+
+      if (!sessionId || seen.has(sessionId)) {
+        continue;
+      }
+
+      seen.add(sessionId);
+      latestJobs.push(mapAnalysisJobRowToEntity(row));
+    }
+
+    return latestJobs;
   }
 }
 
