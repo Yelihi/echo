@@ -8,10 +8,10 @@ import {
 } from "@/entities/roleplay-session";
 import type { SessionId } from "@/entities/value-object";
 import { RecordingStorageService } from "@/shared/lib/recording-storage/server";
+import { requireUser } from "@/features/login";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import type { RoleplayResultPageData } from "@/views/analysis-result/models";
 
-import { requireUser } from "./auth";
 import { createRoleplayAudioByLineId } from "./roleplayAudio";
 
 export async function getRoleplayResultPageData(

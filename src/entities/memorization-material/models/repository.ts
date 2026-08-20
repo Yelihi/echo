@@ -12,4 +12,5 @@ export interface FindMemorizationMaterialsParams {
 export interface MemorizationMaterialRepositoryPort {
   findById(id: MaterialId): Promise<MemorizationMaterial | null>;
   findMany(params?: FindMemorizationMaterialsParams): Promise<MemorizationMaterial[]>;
+  countActive(): Promise<number>;
 }

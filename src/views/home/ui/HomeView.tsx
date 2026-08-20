@@ -1,14 +1,18 @@
-import Link from "next/link";
+import { Suspense } from "react";
 
 import {
-  HOME_INTRO_CARDS,
-  HOME_RECENT_SESSIONS,
-  HOME_SOURCE_SECTIONS,
-} from "@/views/home/config/mock";
-import { SessionSimplified } from "@/widgets/latest-sessions/ui/SessionSimplified";
-import { ListContainer } from "@/widgets/latest-sources/ui/ListContainer";
-import { SourceItem } from "@/widgets/latest-sources/ui/SourceItem";
-import { SessionIntroCard } from "@/widgets/session-intro-card/ui/SessionIntroCard";
+  HomeMemorizationSessionLatestList,
+  HomeMemorizationSessionLatestListFallback,
+} from "@/views/home/ui/HomeMemorizationSessionLatestList";
+import { HomeLatestStudyRecords } from "@/views/home/ui/HomeLatestStudyRecords";
+import {
+  HomeRoleplaySessionLatestList,
+  HomeRoleplaySessionLatestListFallback,
+} from "@/views/home/ui/HomeRoleplaySessionLatestList";
+import {
+  HomeSessionIntroCard,
+  HomeSessionIntroCardFallback,
+} from "@/views/home/ui/HomeSessionIntroCard";
 
 /**
  * 홈 화면.
@@ -26,41 +30,24 @@ export function HomeView() {
       </header>
 
       <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-2">
-        {HOME_INTRO_CARDS.map((card) => (
-          <SessionIntroCard key={card.type} {...card} />
-        ))}
+        <Suspense fallback={<HomeSessionIntroCardFallback type="role-play" />}>
+          <HomeSessionIntroCard type="role-play" />
+        </Suspense>
+        <Suspense fallback={<HomeSessionIntroCardFallback type="memorization" />}>
+          <HomeSessionIntroCard type="memorization" />
+        </Suspense>
       </div>
 
       <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-2">
-        {HOME_SOURCE_SECTIONS.map((section) => (
-          <ListContainer
-            key={section.type}
-            icon={section.icon}
-            title={section.title}
-            type={section.type}
-          >
-            {section.items.map((item) => (
-              <SourceItem key={`${item.type}-${item.title}`} {...item} />
-            ))}
-          </ListContainer>
-        ))}
+        <Suspense fallback={<HomeRoleplaySessionLatestListFallback />}>
+          <HomeRoleplaySessionLatestList />
+        </Suspense>
+        <Suspense fallback={<HomeMemorizationSessionLatestListFallback />}>
+          <HomeMemorizationSessionLatestList />
+        </Suspense>
       </div>
 
-      <section className="flex w-full flex-col gap-3" aria-labelledby="recent-sessions-title">
-        <div className="flex items-center justify-between gap-4">
-          <h2 id="recent-sessions-title" className="text-heading-xs font-bold text-black-primary">
-            최근 학습 기록
-          </h2>
-          <Link href="/sessions" className="text-body-3 font-medium text-blue-primary">
-            전체 보기
-          </Link>
-        </div>
-        <div className="flex w-full flex-col gap-2.5">
-          {HOME_RECENT_SESSIONS.map((session) => (
-            <SessionSimplified key={`${session.sessionType}-${session.title}`} {...session} />
-          ))}
-        </div>
-      </section>
+      <HomeLatestStudyRecords />
     </section>
   );
 }

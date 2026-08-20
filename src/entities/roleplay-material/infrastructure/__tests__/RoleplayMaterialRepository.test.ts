@@ -68,6 +68,20 @@ describe("RoleplayMaterialRepository", () => {
     expect(materialQuery.limit).toHaveBeenCalledWith(10);
   });
 
+  it("counts active materials with an exact head query", async () => {
+    const materialQuery = createQuery({ ...queryResult(null), count: 123 });
+    const { client } = createSupabaseStub({
+      roleplay_materials: [materialQuery],
+    });
+    const repository = new RoleplayMaterialRepository(client);
+
+    const result = await repository.countActive();
+
+    expect(result).toBe(123);
+    expect(materialQuery.select).toHaveBeenCalledWith("*", { count: "exact", head: true });
+    expect(materialQuery.eq).toHaveBeenCalledWith("status", MaterialState.ACTIVE);
+  });
+
   it("throws a repository error when Supabase returns an error", async () => {
     const { client } = createSupabaseStub({
       roleplay_materials: [
@@ -91,6 +105,7 @@ interface QueryError {
 interface QueryResult<TData> {
   readonly data: TData;
   readonly error: QueryError | null;
+  readonly count?: number | null;
 }
 
 type QueryStub = ReturnType<typeof createQuery>;

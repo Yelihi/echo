@@ -2,10 +2,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { SessionId } from "@/entities/value-object";
 import type { Database } from "@/shared/lib/supabase";
-import type { MemorizationSession } from "@/entities/memorization-session/models/entity";
+import type {
+  MemorizationSession,
+  SummaryMemorizationSessions,
+} from "@/entities/memorization-session/models/entity";
 import { SessionState } from "@/entities/memorization-session/models/enums";
 import {
   mapMemorizationSessionRowToEntity,
+  mapMemorizationSessionsMetadataRowToEntity,
   type MemorizationSessionParagraphRow,
   type MemorizationSessionSentenceRow,
   type MemorizationSessionTagRow,
@@ -42,6 +46,18 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
     return mapMemorizationSessionRowToEntity({ session, tags, paragraphs, sentences });
   }
 
+  async getAllSessionsMetadata(): Promise<SummaryMemorizationSessions> {
+    const { count, error } = await this.supabase
+      .from("memorization_sessions")
+      .select("*", { count: "exact", head: true });
+
+    if (error) {
+      throw new Error(`Failed to fetch memorization sessions metadata: ${error.message}`);
+    }
+
+    return mapMemorizationSessionsMetadataRowToEntity(count ?? 0);
+  }
+
   async findMany(params: FindMemorizationSessionsParams = {}): Promise<MemorizationSession[]> {
     const sessionIds = params.tagNormalizedName
       ? await this.findSessionIdsByTag(params.tagNormalizedName)
@@ -54,15 +70,26 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
     let query = this.supabase
       .from("memorization_sessions")
       .select("*")
-      .eq("status", params.state ?? SessionState.IN_PROGRESS)
       .order("updated_at", { ascending: false });
+
+    if (params.states) {
+      query = query.in("status", [...params.states]);
+    } else {
+      query = query.eq("status", params.state ?? SessionState.IN_PROGRESS);
+    }
 
     if (sessionIds) {
       query = query.in("id", sessionIds);
     }
 
     if (params.limit) {
-      query = query.limit(params.limit);
+      if (params.page != null) {
+        const page = Math.max(1, params.page);
+        const from = (page - 1) * params.limit;
+        query = query.range(from, from + params.limit - 1);
+      } else {
+        query = query.limit(params.limit);
+      }
     }
 
     const { data: sessions, error } = await query;

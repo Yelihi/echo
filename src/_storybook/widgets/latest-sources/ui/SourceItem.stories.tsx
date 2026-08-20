@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { MessageSquare, BookOpen } from "lucide-react";
 
-import { SourceItem } from "@/widgets/latest-sources/ui/SourceItem";
+import {
+  SOURCE_ITEM_SKELETON_COUNT,
+  SourceItem,
+  SourceItemSkeleton,
+} from "@/widgets/latest-sources/ui/SourceItem";
 
 const meta = {
   title: "widgets/latest-sources/ui/SourceItem",
@@ -35,4 +39,18 @@ export const Memorization: Story = {
     title: "Memorization",
     subTitle: "2024.01.01",
   },
+};
+
+export const Skeleton: StoryObj = {
+  render: () => <SourceItemSkeleton />,
+};
+
+export const SkeletonList: StoryObj = {
+  render: () => (
+    <div className="flex w-[360px] flex-col gap-[5px]">
+      {Array.from({ length: SOURCE_ITEM_SKELETON_COUNT }, (_, index) => (
+        <SourceItemSkeleton key={index} />
+      ))}
+    </div>
+  ),
 };

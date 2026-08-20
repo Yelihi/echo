@@ -8,6 +8,7 @@ export type {
   RoleplayLineSnapshot,
   RoleplaySession,
   RoleplaySpeakerSnapshot,
+  SummaryRoleplaySessions,
 } from "@/entities/roleplay-session/models/entity";
 export { mapRoleplaySessionRowToEntity } from "@/entities/roleplay-session/models/mapper";
 export type {

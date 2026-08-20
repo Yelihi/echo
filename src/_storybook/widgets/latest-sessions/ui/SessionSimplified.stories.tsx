@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { SessionSimplified } from "@/widgets/latest-sessions/ui/SessionSimplified";
+import {
+  SESSION_SIMPLIFIED_SKELETON_COUNT,
+  SessionSimplified,
+  SessionSimplifiedSkeleton,
+} from "@/widgets/latest-sessions/ui/SessionSimplified";
 
 const meta = {
   title: "widgets/latest-sessions/ui/SessionSimplified",
@@ -49,4 +53,18 @@ export const Disabled: Story = {
     sessionState: "pending",
     disabled: true,
   },
+};
+
+export const Skeleton: StoryObj = {
+  render: () => <SessionSimplifiedSkeleton />,
+};
+
+export const SkeletonList: StoryObj = {
+  render: () => (
+    <div className="flex w-full flex-col gap-2.5">
+      {Array.from({ length: SESSION_SIMPLIFIED_SKELETON_COUNT }, (_, index) => (
+        <SessionSimplifiedSkeleton key={index} />
+      ))}
+    </div>
+  ),
 };

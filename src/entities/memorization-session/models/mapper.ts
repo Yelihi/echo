@@ -11,6 +11,7 @@ import type {
   MemorizationParagraphSnapshot,
   MemorizationSentenceSnapshot,
   MemorizationSession,
+  SummaryMemorizationSessions,
 } from "@/entities/memorization-session/models/entity";
 import { SessionState } from "@/entities/memorization-session/models/enums";
 
@@ -84,4 +85,10 @@ function mapMemorizationSentenceRowToEntity(
     text: sentence.text_snapshot,
     translation: sentence.translation_snapshot,
   };
+}
+
+export function mapMemorizationSessionsMetadataRowToEntity(
+  totalCount: number,
+): SummaryMemorizationSessions {
+  return { totalCount };
 }

@@ -4,6 +4,8 @@ import { cn } from "@/shared/utils/cn";
 
 import type { SourceItemProps } from "@/widgets/latest-sources/models/interface";
 
+export const SOURCE_ITEM_SKELETON_COUNT = 4;
+
 export const SourceItem = ({ icon: Icon, type, title, subTitle }: SourceItemProps) => {
   return (
     <div
@@ -32,6 +34,19 @@ export const SourceItem = ({ icon: Icon, type, title, subTitle }: SourceItemProp
       <div className="flex justify-items-center">
         <ArrowRight className="size-[16px] text-gray-text-secondary" />
       </div>
+    </div>
+  );
+};
+
+export const SourceItemSkeleton = () => {
+  return (
+    <div className="flex w-full items-center gap-[15px] rounded-card bg-white p-[10px]" aria-hidden>
+      <div className="size-[42px] shrink-0 animate-pulse rounded-chip bg-neutral-100" />
+      <div className="flex w-full flex-col gap-[5px]">
+        <div className="h-[16px] w-[56%] animate-pulse rounded-chip bg-neutral-100" />
+        <div className="h-[12px] w-[36%] animate-pulse rounded-chip bg-neutral-100" />
+      </div>
+      <div className="size-[16px] shrink-0 animate-pulse rounded-chip bg-neutral-100" />
     </div>
   );
 };

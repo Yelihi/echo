@@ -2,10 +2,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { SessionId } from "@/entities/value-object";
 import type { Database } from "@/shared/lib/supabase";
-import type { RoleplaySession } from "@/entities/roleplay-session/models/entity";
+import type {
+  RoleplaySession,
+  SummaryRoleplaySessions,
+} from "@/entities/roleplay-session/models/entity";
 import { SessionState } from "@/entities/roleplay-session/models/enums";
 import {
   mapRoleplaySessionRowToEntity,
+  mapRoleplaySessionsMetadataRowToEntity,
   type RoleplaySessionLineRow,
   type RoleplaySessionTagRow,
 } from "@/entities/roleplay-session/models/mapper";
@@ -40,6 +44,18 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
     return mapRoleplaySessionRowToEntity({ session, tags, lines });
   }
 
+  async getAllSessionsMetadata(): Promise<SummaryRoleplaySessions> {
+    const { count, error } = await this.supabase
+      .from("roleplay_sessions")
+      .select("*", { count: "exact", head: true });
+
+    if (error) {
+      throw new Error(`Failed to fetch roleplay sessions metadata: ${error.message}`);
+    }
+
+    return mapRoleplaySessionsMetadataRowToEntity(count ?? 0);
+  }
+
   async findMany(params: FindRoleplaySessionsParams = {}): Promise<RoleplaySession[]> {
     const sessionIds = params.tagNormalizedName
       ? await this.findSessionIdsByTag(params.tagNormalizedName)
@@ -52,15 +68,26 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
     let query = this.supabase
       .from("roleplay_sessions")
       .select("*")
-      .eq("status", params.state ?? SessionState.IN_PROGRESS)
       .order("updated_at", { ascending: false });
+
+    if (params.states) {
+      query = query.in("status", [...params.states]);
+    } else {
+      query = query.eq("status", SessionState.IN_PROGRESS);
+    }
 
     if (sessionIds) {
       query = query.in("id", sessionIds);
     }
 
     if (params.limit) {
-      query = query.limit(params.limit);
+      if (params.page != null) {
+        const page = Math.max(1, params.page);
+        const from = (page - 1) * params.limit;
+        query = query.range(from, from + params.limit - 1);
+      } else {
+        query = query.limit(params.limit);
+      }
     }
 
     const { data: sessions, error } = await query;

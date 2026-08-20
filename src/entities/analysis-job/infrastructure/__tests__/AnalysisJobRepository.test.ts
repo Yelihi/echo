@@ -88,6 +88,47 @@ describe("AnalysisJobRepository", () => {
     expect(query.order).toHaveBeenCalledWith("queued_at", { ascending: false });
   });
 
+  it("여러 역할극 세션의 최신 Job만 반환한다", async () => {
+    const latest = createAnalysisJobRow({
+      id: "33333333-3333-4333-8333-333333333333",
+      roleplay_session_id: "22222222-2222-4222-8222-222222222222",
+      attempt_number: 2,
+      status: "failed",
+      completed_at: null,
+      failed_at: "2026-07-03T00:03:00.000Z",
+    });
+    const stale = createAnalysisJobRow({
+      id: "44444444-4444-4444-8444-444444444444",
+      roleplay_session_id: latest.roleplay_session_id,
+      attempt_number: 1,
+    });
+    const other = createAnalysisJobRow({
+      id: "55555555-5555-4555-8555-555555555555",
+      roleplay_session_id: "66666666-6666-4666-8666-666666666666",
+      attempt_number: 1,
+    });
+    const query = createQuery(queryResult([latest, stale, other]));
+    const { client } = createSupabaseStub({
+      tables: {
+        analysis_jobs: [query],
+      },
+    });
+    const repository = new AnalysisJobRepository(client);
+
+    const jobs = await repository.findLatestByRoleplaySessionIds({
+      sessionIds: [latest.roleplay_session_id as SessionId, other.roleplay_session_id as SessionId],
+    });
+
+    expect(jobs.map((job) => job.id)).toEqual([latest.id, other.id]);
+    expect(query.in).toHaveBeenCalledWith("roleplay_session_id", [
+      latest.roleplay_session_id,
+      other.roleplay_session_id,
+    ]);
+    expect(query.eq).toHaveBeenCalledWith("provider", "openai");
+    expect(query.order).toHaveBeenCalledWith("attempt_number", { ascending: false });
+    expect(query.order).toHaveBeenCalledWith("queued_at", { ascending: false });
+  });
+
   it("다음 queued 분석 Job claim을 lifecycle RPC로 위임한다", async () => {
     const row = createAnalysisJobRow({ status: "processing", started_at: "2026-07-03T00:01:00Z" });
     const { client, rpc } = createSupabaseStub({
@@ -220,6 +261,7 @@ interface QueryError {
 interface QueryResult<TData> {
   readonly data: TData;
   readonly error: QueryError | null;
+  readonly count?: number | null;
 }
 
 type QueryStub = ReturnType<typeof createQuery>;

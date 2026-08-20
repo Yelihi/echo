@@ -21,6 +21,11 @@ export interface FindAnalysisJobBySessionInput {
   readonly provider?: string;
 }
 
+export interface FindAnalysisJobsBySessionIdsInput {
+  readonly sessionIds: readonly SessionId[];
+  readonly provider?: string;
+}
+
 export interface FailAnalysisJobInput {
   readonly jobId: AnalysisJobId;
   readonly errorCode: string;
@@ -40,6 +45,10 @@ export interface AnalysisJobRepositoryPort {
   ): Promise<AnalysisJob | null>;
   findHistoryByRoleplaySessionId(input: FindAnalysisJobBySessionInput): Promise<AnalysisJob[]>;
   findHistoryByMemorizationSessionId(input: FindAnalysisJobBySessionInput): Promise<AnalysisJob[]>;
+  findLatestByRoleplaySessionIds(input: FindAnalysisJobsBySessionIdsInput): Promise<AnalysisJob[]>;
+  findLatestByMemorizationSessionIds(
+    input: FindAnalysisJobsBySessionIdsInput,
+  ): Promise<AnalysisJob[]>;
   findByRoleplaySessionId(sessionId: SessionId): Promise<AnalysisJob | null>;
   findByMemorizationSessionId(sessionId: SessionId): Promise<AnalysisJob | null>;
   findResultsByJobId(analysisJobId: AnalysisJobId): Promise<PracticeTargetAnalysisResult[]>;

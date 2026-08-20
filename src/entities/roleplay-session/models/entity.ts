@@ -41,3 +41,8 @@ export interface RoleplaySession {
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
+
+export interface SummaryRoleplaySessions {
+  readonly totalCount: number;
+  // 추후 계속 생성될 예정
+}

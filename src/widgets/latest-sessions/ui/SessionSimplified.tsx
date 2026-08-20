@@ -60,3 +60,23 @@ export const SessionSimplified = ({
     </div>
   );
 };
+
+export const SESSION_SIMPLIFIED_SKELETON_COUNT = 5;
+
+export const SessionSimplifiedSkeleton = () => {
+  return (
+    <div
+      className="flex h-fit w-full items-center justify-between rounded-panel border border-gray-border bg-white p-[16px]"
+      aria-hidden
+    >
+      <div className="flex items-center justify-start gap-[10px]">
+        <div className="size-[42px] shrink-0 animate-pulse rounded-control bg-neutral-100" />
+        <div className="flex flex-col items-start justify-center gap-[4px]">
+          <div className="h-[16px] w-[140px] animate-pulse rounded-chip bg-neutral-100" />
+          <div className="h-[14px] w-[96px] animate-pulse rounded-chip bg-neutral-100" />
+        </div>
+      </div>
+      <div className="h-[25px] w-[100px] shrink-0 animate-pulse rounded-full bg-neutral-100" />
+    </div>
+  );
+};
