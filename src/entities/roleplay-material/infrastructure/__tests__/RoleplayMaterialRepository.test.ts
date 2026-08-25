@@ -68,6 +68,7 @@ describe("RoleplayMaterialRepository", () => {
     expect(result).toHaveLength(1);
     expect(materialQuery.eq).toHaveBeenCalledWith("status", MaterialState.ACTIVE);
     expect(materialQuery.order).toHaveBeenCalledWith("updated_at", { ascending: false });
+    expect(materialQuery.order).toHaveBeenCalledWith("id", { ascending: false });
     expect(materialQuery.limit).toHaveBeenCalledWith(10);
   });
 

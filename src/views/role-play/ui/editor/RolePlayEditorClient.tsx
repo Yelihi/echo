@@ -87,6 +87,10 @@ function RolePlayEditorHeader({ mode }: { mode: RoleplayEditorMode }) {
     }
 
     if (mode !== "create") {
+      errorPopupManager.open({
+        title: "아직 수정 저장을 지원하지 않습니다",
+        message: "지금은 새 자료 만들기만 저장할 수 있습니다. 수정 저장은 곧 연결됩니다.",
+      });
       return;
     }
 

@@ -83,7 +83,8 @@ export interface RoleplayReadyMaterial {
   lineCount: number;
   learnerTurnCount: number;
   estimatedMinutes: number;
-  difficulty: string;
+  partnerRole?: string;
+  partnerLine?: string;
 }
 
 export interface RolePlayReadyViewProps {

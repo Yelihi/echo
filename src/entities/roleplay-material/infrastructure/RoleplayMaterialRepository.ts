@@ -58,7 +58,8 @@ export class RoleplayMaterialRepository implements RoleplayMaterialRepositoryPor
       .from("roleplay_materials")
       .select("*")
       .eq("status", params.state ?? MaterialState.ACTIVE)
-      .order("updated_at", { ascending: false });
+      .order("updated_at", { ascending: false })
+      .order("id", { ascending: false });
 
     if (materialIds) {
       query = query.in("id", materialIds);

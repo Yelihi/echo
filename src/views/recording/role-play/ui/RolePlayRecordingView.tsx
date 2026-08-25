@@ -39,13 +39,12 @@ export function RolePlayRecordingView({
       meta={[
         `문장 ${material.lineCount}개`,
         `약 ${material.estimatedMinutes}분`,
-        `난이도 ${material.difficulty}`,
         ...settingsSummary,
       ]}
       totalSteps={material.lineCount}
       activeStep={Math.min(3, material.lineCount)}
-      partnerRole="BARISTA"
-      partnerLine="What can I get started for you today?"
+      partnerRole={material.partnerRole}
+      partnerLine={material.partnerLine}
       initialPhase={initialPhase}
       autoAdvancePartner={autoAdvancePartner}
     />

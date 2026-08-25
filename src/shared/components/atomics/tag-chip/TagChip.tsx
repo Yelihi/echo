@@ -50,7 +50,8 @@ export const TagChip = ({
       {...(asChild ? {} : { type: "button" })}
       data-slot="tag-chip"
       data-selected={selected}
-      aria-pressed={selected}
+      aria-pressed={asChild ? undefined : selected}
+      aria-current={asChild && selected ? "page" : undefined}
       className={cn(tagChipVariants({ selected }), className)}
       {...props}
     >

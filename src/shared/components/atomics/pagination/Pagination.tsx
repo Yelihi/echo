@@ -45,6 +45,8 @@ function PaginationLink({
   disabled,
   size = "icon",
   href,
+  children,
+  "aria-label": ariaLabel,
   ...props
 }: PaginationLinkProps) {
   if (disabled || href == null) {
@@ -54,9 +56,10 @@ function PaginationLink({
         size={size}
         disabled
         aria-disabled
+        aria-label={ariaLabel}
         className={cn("text-gray-text-secondary", className)}
       >
-        {props.children}
+        {children}
       </Button>
     );
   }
@@ -71,10 +74,13 @@ function PaginationLink({
       <Link
         href={href}
         aria-current={isActive ? "page" : undefined}
+        aria-label={ariaLabel}
         data-slot="pagination-link"
         data-active={isActive}
         {...props}
-      />
+      >
+        {children}
+      </Link>
     </Button>
   );
 }

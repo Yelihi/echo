@@ -12,7 +12,8 @@ const material: RoleplayReadyMaterial = {
   lineCount: 8,
   learnerTurnCount: 4,
   estimatedMinutes: 3,
-  difficulty: "초급",
+  partnerRole: "상대방",
+  partnerLine: "What can I get started for you today?",
 };
 
 const meta = {
