@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 
+// shared
 import { AudioCapture, AudioCaptureError, type CapturedAudio } from "@/shared/lib/audio";
 
 type PracticeType = "roleplay" | "memorization";

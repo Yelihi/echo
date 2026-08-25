@@ -1,3 +1,4 @@
+// shared
 export {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +18,7 @@ export { EmptyState } from "@/shared/components/ui/EmptyState";
 export { ErrorState } from "@/shared/components/ui/ErrorState";
 export { Feedback } from "@/shared/components/ui/Feedback";
 export { LoadingState } from "@/shared/components/ui/LoadingState";
+export { Pagination, PaginationSkeleton } from "@/shared/components/ui/Pagination";
 export { PlayPill } from "@/shared/components/ui/PlayPill";
 export { SegmentedControl, SegmentedControlItem } from "@/shared/components/ui/SegmentedControl";
 
@@ -45,4 +47,5 @@ export { SessionReadyHero } from "@/shared/components/ui/SessionReadyHero";
 export { SliderField } from "@/shared/components/ui/SliderField";
 export { StageRow } from "@/shared/components/ui/StageRow";
 export { TagInput } from "@/shared/components/ui/TagInput";
+export { TagInputField } from "@/shared/components/ui/TagInputField";
 export { VoicePill } from "@/shared/components/ui/VoicePill";

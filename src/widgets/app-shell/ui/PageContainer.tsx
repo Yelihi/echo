@@ -1,5 +1,6 @@
 import * as React from "react";
 
+// shared
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export interface PageContainerProps {
@@ -20,7 +21,7 @@ export const PageContainer = ({
   return (
     <div
       data-slot="page-container"
-      className={cn("mx-auto w-full max-w-320 px-6 pt-10 pb-20", className)}
+      className={cn("mx-auto flex w-full max-w-320 flex-1 flex-col px-6 pt-10 pb-20", className)}
       {...props}
     >
       {children}

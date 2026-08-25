@@ -1,9 +1,13 @@
+// views
 import {
   ROLE_PLAY_READY_EVALUATION_MODES,
   ROLE_PLAY_READY_ROLE_OPTIONS,
   ROLE_PLAY_READY_VOICE_OPTIONS,
 } from "@/views/role-play/config/const";
-import type { RoleplayReadyMaterial, RoleplayReadySettings } from "@/views/role-play/models/ready";
+import type {
+  RoleplayReadyMaterial,
+  RoleplayReadySettings,
+} from "@/views/role-play/models/interface";
 import {
   RecordingSessionView,
   type RecordingPhase,
@@ -35,13 +39,12 @@ export function RolePlayRecordingView({
       meta={[
         `문장 ${material.lineCount}개`,
         `약 ${material.estimatedMinutes}분`,
-        `난이도 ${material.difficulty}`,
         ...settingsSummary,
       ]}
       totalSteps={material.lineCount}
       activeStep={Math.min(3, material.lineCount)}
-      partnerRole="BARISTA"
-      partnerLine="What can I get started for you today?"
+      partnerRole={material.partnerRole}
+      partnerLine={material.partnerLine}
       initialPhase={initialPhase}
       autoAdvancePartner={autoAdvancePartner}
     />

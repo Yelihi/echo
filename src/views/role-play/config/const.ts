@@ -1,11 +1,27 @@
 import { Pencil, Trash2 } from "lucide-react";
 
+// widgets
 import type { InnerMenuItemProps } from "@/widgets/source-card/models/interface";
+
+// views
 import type {
   RoleplayReadyEvaluationMode,
   RoleplayReadyRole,
   RoleplayReadyVoice,
-} from "@/views/role-play/models/ready";
+} from "@/views/role-play/models/interface";
+
+export const ROLE_PLAY_ALL_TAG = "전체";
+
+export const ROLE_PLAY_SPEAKER_ONE_NAME = "상대방";
+export const ROLE_PLAY_SPEAKER_TWO_NAME = "나";
+
+export const ROLE_PLAY_LIST_PAGE_SIZE = 8;
+
+/** SourceCard h-[220px], grid gap-[15px], ROLE_PLAY_LIST_PAGE_SIZE=8 */
+export const ROLE_PLAY_SOURCE_CARDS_MIN_HEIGHT_CLASSNAME =
+  "min-h-[1865px] md:min-h-[925px] lg:min-h-[690px] xl:min-h-[455px]";
+
+export const ROLE_PLAY_SOURCE_CARDS_GRID_CLASSNAME = `grid w-full grid-cols-1 gap-[15px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${ROLE_PLAY_SOURCE_CARDS_MIN_HEIGHT_CLASSNAME}`;
 
 export const ROLE_PLAY_READY_ROLE_OPTIONS: Array<{
   value: RoleplayReadyRole;

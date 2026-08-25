@@ -1,3 +1,5 @@
+// shared
+
 // atomics / icons
 
 export { Google } from "@/shared/components/atomics/svgs/Google";
@@ -15,5 +17,5 @@ export { Textarea } from "@/shared/components/atomics/textarea/Textarea";
 export { TitleField } from "@/shared/components/atomics/title-field/TitleField";
 export { Card } from "@/shared/components/atomics/card/Card";
 export { Chip } from "@/shared/components/atomics/chip/Chip";
-export { TagChip } from "@/shared/components/atomics/tag-chip/TagChip";
+export { TagChip, TagChipSkeleton } from "@/shared/components/atomics/tag-chip/TagChip";
 export { SessionReadyHero } from "@/shared/components/ui/SessionReadyHero";

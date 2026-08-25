@@ -1,3 +1,4 @@
+// entities
 export { MaterialState } from "@/entities/roleplay-material/models/enums";
 export type {
   RoleplayLine,
@@ -12,6 +13,8 @@ export type {
   RoleplayMaterialTagRow,
 } from "@/entities/roleplay-material/models/mapper";
 export type {
+  CreateRoleplayMaterialInput,
+  CreateRoleplayMaterialLineInput,
   FindRoleplayMaterialsParams,
   RoleplayMaterialRepositoryPort,
 } from "@/entities/roleplay-material/models/repository";

@@ -1,5 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+// shared
+import type { Database } from "@/shared/lib/supabase";
+
+// entities
 import type {
   AnalysisJob,
   PracticeTargetAnalysisResult,
@@ -27,7 +31,6 @@ import type {
   RequestAnalysisJobInput,
 } from "@/entities/analysis-job/models/repository";
 import type { AnalysisJobId, SessionId } from "@/entities/value-object";
-import type { Database } from "@/shared/lib/supabase";
 
 const CURRENT_ANALYSIS_JOB_STATUSES = ["queued", "processing", "completed"] as const;
 

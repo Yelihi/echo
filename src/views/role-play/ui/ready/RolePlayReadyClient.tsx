@@ -4,8 +4,11 @@ import { Clock, MessageSquare, Mic2, Play, Shuffle, Target, Volume2 } from "luci
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// shared
 import { Button, Card, SessionReadyHero } from "@/shared/components";
 import { RoleCard, SelectableOptionCard, SliderField, VoicePill } from "@/shared/components/ui";
+
+// views
 import {
   ROLE_PLAY_READY_EVALUATION_MODES,
   ROLE_PLAY_READY_ROLE_OPTIONS,
@@ -16,7 +19,7 @@ import type {
   RoleplayReadyMaterial,
   RoleplayReadyRole,
   RoleplayReadyVoice,
-} from "@/views/role-play/models/ready";
+} from "@/views/role-play/models/interface";
 
 interface RolePlayReadyClientProps {
   material: RoleplayReadyMaterial;

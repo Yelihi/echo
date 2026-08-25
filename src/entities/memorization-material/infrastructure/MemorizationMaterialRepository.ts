@@ -1,7 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { MaterialId } from "@/entities/value-object";
+// shared
 import type { Database } from "@/shared/lib/supabase";
+
+// entities
 import type { MemorizationMaterial } from "@/entities/memorization-material/models/entity";
 import { MaterialState } from "@/entities/memorization-material/models/enums";
 import {
@@ -14,6 +16,7 @@ import type {
   FindMemorizationMaterialsParams,
   MemorizationMaterialRepositoryPort,
 } from "@/entities/memorization-material/models/repository";
+import type { MaterialId } from "@/entities/value-object";
 
 export class MemorizationMaterialRepository implements MemorizationMaterialRepositoryPort {
   constructor(private readonly supabase: SupabaseClient<Database>) {}

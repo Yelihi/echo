@@ -1,4 +1,7 @@
+// widgets
 import { PageContainer } from "@/widgets/app-shell";
+
+// views
 import { RolePlayEditorView } from "@/views/role-play";
 
 interface EditRolePlayingPageProps {

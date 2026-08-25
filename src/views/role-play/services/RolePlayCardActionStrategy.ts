@@ -1,3 +1,4 @@
+// widgets
 import { InnerMenuActionStrategy, InnerMenuActionStrategyRegistry } from "@/widgets/source-card";
 
 interface RolePlayCardActionParams {

@@ -1,6 +1,10 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+// shared
+import type { Database } from "@/shared/lib/supabase";
+
+// entities
 import { AnalysisJobRepository } from "@/entities/analysis-job/infrastructure/AnalysisJobRepository";
 import {
   AnalysisJobFetchError,
@@ -9,7 +13,6 @@ import {
 } from "@/entities/analysis-job/models/errors";
 import type { AnalysisJobRow } from "@/entities/analysis-job/models/mapper";
 import type { AnalysisJobId, SessionId, UserId } from "@/entities/value-object";
-import type { Database } from "@/shared/lib/supabase";
 
 describe("AnalysisJobRepository", () => {
   it("역할극 분석 Job 요청을 lifecycle RPC로 위임한다", async () => {

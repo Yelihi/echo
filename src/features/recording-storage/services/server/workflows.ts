@@ -1,9 +1,12 @@
+// shared
+import { buildRecordingObjectPath } from "@/shared/lib/recording-storage/server/path";
+
+// entities
 import { CleanupFailureSource } from "@/entities/cleanup-failure-log";
 import type { CleanupFailureLogRepositoryPort } from "@/entities/cleanup-failure-log/models/repository";
 import type { DraftRecording } from "@/entities/draft-recording/models/entity";
 import { PracticeType } from "@/entities/practice-target";
 import type { RecordingAudio, RecordingId, UserId } from "@/entities/value-object";
-import { buildRecordingObjectPath } from "@/shared/lib/recording-storage/server/path";
 
 import { createCleanupFailureInput, recordCleanupFailure } from "./cleanupFailure";
 import {
