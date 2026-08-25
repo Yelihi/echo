@@ -1,6 +1,8 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
 
+// shared
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const tagChipVariants = cva(
@@ -22,6 +24,7 @@ export const tagChipVariants = cva(
 export interface TagChipProps {
   /** 선택 상태. 상태는 호출자가 소유합니다. */
   selected?: boolean;
+  asChild?: boolean;
   children: React.ReactNode;
 }
 
@@ -34,14 +37,17 @@ export interface TagChipProps {
 export const TagChip = ({
   className,
   selected = false,
+  asChild = false,
   children,
   ...props
 }: TagChipProps &
   Omit<React.ComponentProps<"button">, "value"> &
   VariantProps<typeof tagChipVariants>) => {
+  const Comp = asChild ? Slot.Root : "button";
+
   return (
-    <button
-      type="button"
+    <Comp
+      {...(asChild ? {} : { type: "button" })}
       data-slot="tag-chip"
       data-selected={selected}
       aria-pressed={selected}
@@ -49,6 +55,18 @@ export const TagChip = ({
       {...props}
     >
       {children}
-    </button>
+    </Comp>
+  );
+};
+
+export const TagChipSkeleton = ({ className }: { className?: string }) => {
+  return (
+    <div
+      className={cn(
+        "h-8.5 w-16 shrink-0 animate-pulse rounded-full border border-card-line-strong bg-white",
+        className,
+      )}
+      aria-hidden
+    />
   );
 };

@@ -1,6 +1,9 @@
 import * as React from "react";
 
+// shared
 import { cn } from "@/shared/lib/tailwind/utils";
+
+// widgets
 import { NavigationContainer } from "@/widgets/navigation/ui/NavigationContainer";
 
 export interface AppShellProps {
@@ -31,7 +34,7 @@ export const AppShell = ({
       <header className="sticky top-0 z-50 h-15.5 shrink-0">
         <NavigationContainer />
       </header>
-      <main className="flex-1">{children}</main>
+      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
     </div>
   );
 };

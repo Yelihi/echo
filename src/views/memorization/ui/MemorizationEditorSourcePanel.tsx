@@ -3,11 +3,15 @@
 import { useMemo } from "react";
 import { Sparkles } from "lucide-react";
 
-import { createTagValue } from "@/entities/value-object";
+// shared
 import { Textarea, TitleField } from "@/shared/components";
-import { DashedActionButton, TagInput } from "@/shared/components/ui";
-import { useTagInputController } from "@/shared/hooks/useTagInputController";
+import { DashedActionButton, TagInputField } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
+
+// entities
+import { createTagValue } from "@/entities/value-object";
+
+// views
 import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
 import {
   setParagraphs,
@@ -38,13 +42,6 @@ export function MemorizationEditorSourcePanel({
     () => draft.rawText.trim().split(/\s+/).filter(Boolean).length,
     [draft.rawText],
   );
-
-  const tagInput = useTagInputController({
-    tags: draft.tags,
-    onChange: (tags) => onAction(setTags(tags)),
-    getDuplicateKey: (tag) => createTagValue(tag).normalizedName,
-    onInputDirty: onDirty,
-  });
 
   const updateRawText = (rawText: string) => {
     onAction(setRawText(rawText));
@@ -77,15 +74,13 @@ export function MemorizationEditorSourcePanel({
         </label>
         <div className="mt-4 flex flex-col gap-2">
           <span className="text-body-2 font-bold text-gray-text">태그</span>
-          <TagInput
+          <TagInputField
             theme="memo"
             tags={draft.tags}
             placeholder="태그 입력 후 Enter"
-            onRemoveTag={tagInput.removeTag}
-            inputProps={{
-              ...tagInput.inputProps,
-              "aria-label": "태그 입력",
-            }}
+            getDuplicateKey={(tag) => createTagValue(tag).normalizedName}
+            onChange={(tags) => onAction(setTags(tags))}
+            onInputDirty={onDirty}
           />
         </div>
       </div>

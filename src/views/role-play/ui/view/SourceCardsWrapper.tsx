@@ -2,11 +2,17 @@
 
 import { useRouter } from "next/navigation";
 
-import { SourceCard } from "@/widgets/source-card";
+// widgets
+import { SourceCard, SourceCardSkeleton } from "@/widgets/source-card";
 
-import { ROLE_PLAY_INNER_MENU_ITEMS } from "@/views/role-play/config/const";
-import { RolePlayCardActionStrategyRegistry } from "@/views/role-play/services/RolePlayCardActionStrategy";
+// views
+import {
+  ROLE_PLAY_INNER_MENU_ITEMS,
+  ROLE_PLAY_LIST_PAGE_SIZE,
+  ROLE_PLAY_SOURCE_CARDS_GRID_CLASSNAME,
+} from "@/views/role-play/config/const";
 import type { SourceCardsWrapperProps } from "@/views/role-play/models/interface";
+import { RolePlayCardActionStrategyRegistry } from "@/views/role-play/services/RolePlayCardActionStrategy";
 
 const onDeleteSource = () => {
   alert("삭제하기");
@@ -25,7 +31,7 @@ export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
   };
 
   return (
-    <section className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[15px]">
+    <section className={ROLE_PLAY_SOURCE_CARDS_GRID_CLASSNAME}>
       {cards.map((source) => (
         <SourceCard
           key={source.id}
@@ -38,3 +44,13 @@ export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
     </section>
   );
 };
+
+export function SourceCardsWrapperSkeleton() {
+  return (
+    <section className={ROLE_PLAY_SOURCE_CARDS_GRID_CLASSNAME} aria-hidden>
+      {Array.from({ length: ROLE_PLAY_LIST_PAGE_SIZE }, (_, index) => (
+        <SourceCardSkeleton key={index} />
+      ))}
+    </section>
+  );
+}

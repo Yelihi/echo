@@ -3,9 +3,12 @@
 import { useMemo } from "react";
 import { Check, ChevronUp, Trash } from "lucide-react";
 
+// shared
 import { Button, Textarea } from "@/shared/components";
 import { EditorPanelHeader, ParagraphRow } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
+
+// views
 import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
 import {
   confirmParagraphs as confirmParagraphsAction,

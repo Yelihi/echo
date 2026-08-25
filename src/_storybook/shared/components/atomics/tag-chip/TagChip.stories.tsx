@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import * as React from "react";
 
-import { TagChip } from "@/shared/components/atomics/tag-chip/TagChip";
+// shared
+import { TagChip, TagChipSkeleton } from "@/shared/components/atomics/tag-chip/TagChip";
 
 type TagChipStoryArgs = {
   disabled: boolean;
@@ -65,4 +66,8 @@ export const TagFilter: Story = {
 export const Disabled: Story = {
   args: { disabled: true },
   render: (args) => <TagFilterDemo {...args} />,
+};
+
+export const Skeleton: StoryObj = {
+  render: () => <TagChipSkeleton />,
 };

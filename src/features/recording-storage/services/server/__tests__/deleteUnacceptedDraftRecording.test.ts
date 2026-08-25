@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
 
+// entities
 import type { AcceptedRecording } from "@/entities/accepted-recording/models/entity";
 import type { AcceptedRecordingRepositoryPort } from "@/entities/accepted-recording/models/repository";
 import { CleanupFailureSource } from "@/entities/cleanup-failure-log";
@@ -8,6 +9,8 @@ import type { DraftRecording } from "@/entities/draft-recording/models/entity";
 import type { DraftRecordingRepositoryPort } from "@/entities/draft-recording/models/repository";
 import { PracticeType } from "@/entities/practice-target";
 import type { LineId, RecordingId, SessionId, UserId } from "@/entities/value-object";
+
+// features
 import type { RecordingStoragePort } from "@/features/recording-storage/services/server/types";
 import { deleteUnacceptedDraftRecording } from "@/features/recording-storage/services/server/workflows";
 

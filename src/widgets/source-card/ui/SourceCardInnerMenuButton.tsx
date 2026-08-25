@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { EllipsisVertical } from "lucide-react";
 
-import { cn } from "@/shared/utils/cn";
+// shared
 import { useClickOutside } from "@/shared/hooks/useClickOutside";
+import { cn } from "@/shared/utils/cn";
 
+// widgets
 import {
   type InnerMenuContainerProps,
   type InnerMenuItemProps,
@@ -25,6 +27,7 @@ const InnerMenuContainer = ({ children, isOpen }: InnerMenuContainerProps) => {
 const InnerMenuItem = ({ value, text, icon: Icon, theme, onClick }: InnerMenuItemProps) => {
   return (
     <button
+      type="button"
       className="w-full h-fit min-h-[36px] flex justify-start items-center py-[9px] px-[11px] gap-[10px] hover:shadow-emphasize transition-all duration-300 cursor-pointer rounded-[9px]"
       onClick={(event) => {
         event.stopPropagation();
@@ -57,7 +60,7 @@ export const SourceCardInnerMenuButton = ({
   innerMenuItems,
 }: SourceCardInnerMenuButtonProps) => {
   const [open, setOpen] = useState(false);
-  const innerMenuRef = useClickOutside<HTMLButtonElement>(() => setOpen(false));
+  const innerMenuRef = useClickOutside<HTMLDivElement>(() => setOpen(false));
 
   const toggleInnerMenu = () => {
     setOpen((prev) => !prev);
@@ -69,12 +72,16 @@ export const SourceCardInnerMenuButton = ({
   };
 
   return (
-    <button
-      ref={innerMenuRef}
-      className="relative size-[32px] flex justify-center items-center rounded-[11px] hover:bg-gray-background cursor-pointer transition-all duration-300"
-      onClick={toggleInnerMenu}
-    >
-      <EllipsisVertical className="size-[16px] text-black-secondary" />
+    <div ref={innerMenuRef} className="relative">
+      <button
+        type="button"
+        className="size-[32px] flex justify-center items-center rounded-[11px] hover:bg-gray-background cursor-pointer transition-all duration-300"
+        onClick={toggleInnerMenu}
+        aria-expanded={open}
+        aria-haspopup="menu"
+      >
+        <EllipsisVertical className="size-[16px] text-black-secondary" />
+      </button>
       <InnerMenuContainer isOpen={open}>
         {innerMenuItems.map((item) => (
           <InnerMenuItem
@@ -87,6 +94,6 @@ export const SourceCardInnerMenuButton = ({
           />
         ))}
       </InnerMenuContainer>
-    </button>
+    </div>
   );
 };

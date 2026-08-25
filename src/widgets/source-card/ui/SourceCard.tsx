@@ -3,10 +3,12 @@
 import { ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
 
+// shared
 import { Divider, Badge } from "@/shared/components";
-import { SourceCardInnerMenuButton } from "@/widgets/source-card/ui/SourceCardInnerMenuButton";
 
+// widgets
 import type { SourceCardProps } from "@/widgets/source-card/models/interface";
+import { SourceCardInnerMenuButton } from "@/widgets/source-card/ui/SourceCardInnerMenuButton";
 
 export const SourceCard = ({
   tags,
@@ -72,6 +74,41 @@ export const SourceCard = ({
             {body}
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+export const SOURCE_CARD_SKELETON_COUNT = 8;
+
+export const SourceCardSkeleton = () => {
+  return (
+    <div
+      className="h-[220px] w-full min-w-0 rounded-card bg-white p-[20px] shadow-emphasize"
+      aria-hidden
+    >
+      <div className="flex size-full flex-col items-center justify-start gap-[20px]">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center gap-[10px]">
+            <div className="h-[22px] w-[52px] animate-pulse rounded-full bg-neutral-100" />
+            <div className="h-[22px] w-[44px] animate-pulse rounded-full bg-neutral-100" />
+          </div>
+          <div className="size-[32px] animate-pulse rounded-[11px] bg-neutral-100" />
+        </div>
+        <div className="flex w-full flex-1 flex-col items-start gap-[10px]">
+          <div className="flex w-full flex-col gap-[8px]">
+            <div className="h-[16px] w-[78%] animate-pulse rounded-chip bg-neutral-100" />
+            <div className="h-[16px] w-[52%] animate-pulse rounded-chip bg-neutral-100" />
+          </div>
+          <div className="flex w-full flex-col gap-[8px]">
+            <div className="h-[14px] w-[88%] animate-pulse rounded-chip bg-neutral-100" />
+            <div className="h-[14px] w-[64%] animate-pulse rounded-chip bg-neutral-100" />
+          </div>
+          <div className="mt-auto flex w-full items-center justify-between pt-[8px]">
+            <div className="h-[12px] w-[72px] animate-pulse rounded-chip bg-neutral-100" />
+            <div className="h-[12px] w-[64px] animate-pulse rounded-chip bg-neutral-100" />
+          </div>
+        </div>
       </div>
     </div>
   );

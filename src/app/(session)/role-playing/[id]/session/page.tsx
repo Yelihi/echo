@@ -1,12 +1,19 @@
 import { notFound } from "next/navigation";
 
-import { getRoleplayReadyMockMaterial } from "@/views/role-play/config/readyMock";
+// shared
+import { isUuidString } from "@/shared/utils/uuid";
+
+// entities
+import type { MaterialId } from "@/entities/value-object";
+
+// views
 import type {
   RoleplayReadyEvaluationMode,
   RoleplayReadyRole,
   RoleplayReadySettings,
   RoleplayReadyVoice,
-} from "@/views/role-play/models/ready";
+} from "@/views/role-play/models/interface";
+import { getRolePlayReadyMaterial } from "@/views/role-play/services/server/getRolePlayReadyMaterial";
 import { RolePlayRecordingView } from "@/views/recording/role-play/ui/RolePlayRecordingView";
 
 interface RolePlayingSessionPageProps {
@@ -23,7 +30,12 @@ export default async function RolePlayingSessionPage({
   searchParams,
 }: RolePlayingSessionPageProps) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const material = getRoleplayReadyMockMaterial(id);
+
+  if (!isUuidString(id)) {
+    notFound();
+  }
+
+  const material = await getRolePlayReadyMaterial(id as MaterialId);
 
   if (!material) {
     notFound();

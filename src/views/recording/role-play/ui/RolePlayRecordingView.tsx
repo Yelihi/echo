@@ -1,9 +1,13 @@
+// views
 import {
   ROLE_PLAY_READY_EVALUATION_MODES,
   ROLE_PLAY_READY_ROLE_OPTIONS,
   ROLE_PLAY_READY_VOICE_OPTIONS,
 } from "@/views/role-play/config/const";
-import type { RoleplayReadyMaterial, RoleplayReadySettings } from "@/views/role-play/models/ready";
+import type {
+  RoleplayReadyMaterial,
+  RoleplayReadySettings,
+} from "@/views/role-play/models/interface";
 import {
   RecordingSessionView,
   type RecordingPhase,
