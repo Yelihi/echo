@@ -1,0 +1,10 @@
+Barista: Hi, welcome in. What can I get for you today?
+Customer: Hi. Can I get a medium iced latte, please?
+Barista: Sure. Would you like any flavor in that?
+Customer: Vanilla, please.
+Barista: Got it. Anything else?
+Customer: That's all. How much is it?
+Barista: That'll be six fifty. Can I get a name for the order?
+Customer: It's Alex.
+Barista: Thanks, Alex. It'll be ready in a couple of minutes.
+Customer: Thank you.

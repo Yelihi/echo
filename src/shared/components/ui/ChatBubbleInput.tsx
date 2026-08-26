@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const chatBubbleInputVariants = cva(
-  "group/chat-bubble-input w-full min-w-60 resize-none border px-4 py-3 text-body-4 leading-normal text-black-primary shadow-button transition-colors outline-none placeholder:text-gray-text-secondary",
+  "group/chat-bubble-input field-sizing-content w-full min-w-60 max-w-full resize-none overflow-hidden border px-4 py-3 text-body-4 leading-normal text-black-primary shadow-button transition-colors outline-none placeholder:text-gray-text-secondary",
   {
     variants: {
       speaker: {
@@ -31,6 +31,7 @@ export interface ChatBubbleInputProps {
  *
  * 결과 화면의 읽기 전용 `ChatBubble` 과는 다른 컴포넌트입니다 —
  * 이쪽은 테두리와 그림자가 있어 입력 가능하다는 걸 드러냅니다.
+ * 너비는 부모가 잡고, 높이는 field-sizing 으로 줄바꿈된 내용만큼 커집니다.
  */
 export const ChatBubbleInput = ({
   className,

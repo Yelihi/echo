@@ -4,8 +4,10 @@ export type {
   RoleplayTxtImportSpeakerId,
 } from "@/features/roleplay-txt-import/models/schema";
 export {
+  createRoleplayTxtImportErrorFromCode,
   RoleplayTxtImportEmptyTextError,
   RoleplayTxtImportError,
+  RoleplayTxtImportInvalidFileCountError,
   RoleplayTxtImportInvalidOutputError,
   RoleplayTxtImportProviderFailedError,
   RoleplayTxtImportSpeakerCountError,

@@ -1,10 +1,11 @@
 import * as React from "react";
+import { Loader2 } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const dashedActionButtonVariants = cva(
-  "group/dashed-action-button flex w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-dashed border-card-line-strong bg-card-surface px-5 text-body-3 font-bold text-black-secondary transition-colors outline-none hover:border-accent-400 hover:bg-accent-50 hover:text-accent-700 focus-visible:ring-2 focus-visible:ring-accent-500/30 disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
+  "group/dashed-action-button flex w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-dashed border-card-line-strong bg-card-surface px-5 text-body-3 font-bold text-black-secondary transition-colors outline-none hover:border-accent-400 hover:bg-accent-50 hover:text-accent-700 focus-visible:ring-2 focus-visible:ring-accent-500/30 disabled:pointer-events-none disabled:opacity-50 data-[dragging=true]:border-accent-400 data-[dragging=true]:bg-accent-50 data-[dragging=true]:text-accent-700 [&_svg]:shrink-0",
   {
     variants: {
       size: {
@@ -22,6 +23,7 @@ export interface DashedActionButtonProps {
   size?: VariantProps<typeof dashedActionButtonVariants>["size"];
   /** 좌측 아이콘 슬롯 */
   icon?: React.ReactNode;
+  pending?: boolean;
   children: React.ReactNode;
 }
 
@@ -33,6 +35,7 @@ export const DashedActionButton = ({
   className,
   size,
   icon,
+  pending,
   children,
   ...props
 }: DashedActionButtonProps & React.ComponentProps<"button">) => {
@@ -44,8 +47,8 @@ export const DashedActionButton = ({
       className={cn(dashedActionButtonVariants({ size }), className)}
       {...props}
     >
-      {icon}
-      {children}
+      {pending ? <Loader2 className="size-4 animate-spin" /> : icon}
+      {pending ? "변환중입니다!" : children}
     </button>
   );
 };
