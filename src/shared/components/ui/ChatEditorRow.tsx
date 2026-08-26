@@ -51,7 +51,12 @@ export const ChatEditorRow = ({
       className={cn(chatEditorRowVariants({ speaker }), className)}
       {...props}
     >
-      <div className={cn("flex max-w-4/5 flex-col gap-1.25", isMe ? "items-end" : "items-start")}>
+      <div
+        className={cn(
+          "flex w-full max-w-4/5 flex-col gap-1.25",
+          isMe ? "items-end" : "items-start",
+        )}
+      >
         <div className={cn("flex items-center gap-2 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
           <button
             type="button"

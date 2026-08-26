@@ -1,6 +1,9 @@
 // widgets
 import { PageContainer } from "@/widgets/app-shell";
 
+// shared
+import { parsePageQuery } from "@/shared/utils/pagination";
+
 // views
 import { RolePlayView } from "@/views/role-play";
 import { parseRolePlayTagQuery } from "@/views/role-play/services/filterRolePlayMaterialByTag";
@@ -10,11 +13,11 @@ interface RolePlayingPageProps {
 }
 
 export default async function RolePlayingPage({ searchParams }: RolePlayingPageProps) {
-  const { page = "1", tag } = await searchParams;
+  const { page, tag } = await searchParams;
 
   return (
     <PageContainer>
-      <RolePlayView page={Number(page) || 1} tags={parseRolePlayTagQuery(tag)} />
+      <RolePlayView page={parsePageQuery(page)} tags={parseRolePlayTagQuery(tag)} />
     </PageContainer>
   );
 }

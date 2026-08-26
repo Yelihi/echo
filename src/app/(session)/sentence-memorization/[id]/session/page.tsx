@@ -1,10 +1,17 @@
 import { notFound } from "next/navigation";
 
-import { getMemorizationReadyMockMaterial } from "@/views/memorization/config/readyMock";
+// shared
+import { isUuidString } from "@/shared/utils/uuid";
+
+// entities
+import type { MaterialId } from "@/entities/value-object";
+
+// views
 import type {
   MemorizationReadyMode,
   MemorizationReadySettings,
 } from "@/views/memorization/models/ready";
+import { getMemorizationReadyMaterial } from "@/views/memorization/services/server/getMemorizationReadyMaterial";
 import { MemorizationRecordingView } from "@/views/recording/memorization/ui/MemorizationRecordingView";
 
 interface SentenceMemorizationSessionPageProps {
@@ -19,7 +26,12 @@ export default async function SentenceMemorizationSessionPage({
   searchParams,
 }: SentenceMemorizationSessionPageProps) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const material = getMemorizationReadyMockMaterial(id);
+
+  if (!isUuidString(id)) {
+    notFound();
+  }
+
+  const material = await getMemorizationReadyMaterial(id as MaterialId);
 
   if (!material) {
     notFound();

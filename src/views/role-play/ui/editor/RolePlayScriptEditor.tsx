@@ -1,6 +1,7 @@
 "use client";
 
 import { useShallow } from "zustand/react/shallow";
+import { MessageSquare } from "lucide-react";
 
 // shared
 import {
@@ -8,17 +9,23 @@ import {
   ChatBubbleInput,
   ChatEditorRow,
   EditorPanelHeader,
+  EmptyState,
+  LoadingState,
 } from "@/shared/components/ui";
 
 // views
+import type {
+  RolePlayScriptEditorProps,
+  RolePlayScriptLineListProps,
+} from "@/views/role-play/models/interface";
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
 
-export function RolePlayScriptEditor() {
+export function RolePlayScriptEditor({ isPending }: RolePlayScriptEditorProps) {
   return (
     <div className="min-w-0 overflow-hidden rounded-card border border-card-line bg-white shadow-emphasize">
       <RolePlayScriptHeader />
-      <RolePlayScriptLineList />
-      <RolePlayScriptAddLineBar />
+      <RolePlayScriptLineList isPending={isPending} />
+      {isPending ? null : <RolePlayScriptAddLineBar />}
     </div>
   );
 }
@@ -35,18 +42,47 @@ function RolePlayScriptLineCount() {
   return `${validLineCount}개 대사`;
 }
 
-function RolePlayScriptLineList() {
+function RolePlayScriptLineList({ isPending }: RolePlayScriptLineListProps) {
   // useShallow 를 통해 Object.is 비교 기반의 객체 비교의 부작용인 매 리렌더링을 방지
   const lineIds = useRolePlayEditorStore(
     useShallow((state) => state.draft.lines.map((line) => line.id)),
   );
 
   return (
-    <div className="flex max-h-[620px] min-h-100 flex-col gap-4 overflow-y-auto bg-gray-background px-4 py-5 md:px-6">
-      {lineIds.map((lineId, index) => (
-        <RolePlayScriptLine key={lineId} lineId={lineId} index={index} />
-      ))}
+    <div className="flex h-100 flex-col overflow-y-auto bg-gray-background">
+      {isPending ? (
+        <RolePlayScriptPending />
+      ) : lineIds.length === 0 ? (
+        <RolePlayScriptEmpty />
+      ) : (
+        <div className="flex flex-col gap-4 px-4 py-5 md:px-6">
+          {lineIds.map((lineId, index) => (
+            <RolePlayScriptLine key={lineId} lineId={lineId} index={index} />
+          ))}
+        </div>
+      )}
     </div>
+  );
+}
+
+function RolePlayScriptPending() {
+  return (
+    <LoadingState
+      className="my-auto"
+      title="대본을 불러오는 중이에요"
+      description="TXT 대화를 두 명의 대사로 정리하고 있어요."
+    />
+  );
+}
+
+function RolePlayScriptEmpty() {
+  return (
+    <EmptyState
+      className="my-auto"
+      icon={<MessageSquare />}
+      title="아직 대사가 없어요"
+      description="왼쪽에서 TXT를 불러오거나, 아래 버튼으로 상대방과 내 대사를 추가해 보세요."
+    />
   );
 }
 

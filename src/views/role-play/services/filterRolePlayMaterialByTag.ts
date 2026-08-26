@@ -1,35 +1,19 @@
+// shared
+import { buildTagFilterHref, parseTagQuery, toggleFilterTag } from "@/shared/utils/tagQuery";
+
 // views
 import { ROLE_PLAY_ALL_TAG } from "@/views/role-play/config/const";
 
-export function parseRolePlayTagQuery(tag: string | string[] | undefined): string[] {
-  const raw = tag == null ? [] : Array.isArray(tag) ? tag : [tag];
+const ROLE_PLAY_LIST_PATH = "/role-playing";
 
-  return [
-    ...new Set(
-      raw.map((item) => item.trim().toLocaleLowerCase()).filter((item) => item.length > 0),
-    ),
-  ];
+export function parseRolePlayTagQuery(tag: string | string[] | undefined): string[] {
+  return parseTagQuery(tag);
 }
 
 export function getRolePlayListHref(tags: ReadonlyArray<string>) {
-  const params = new URLSearchParams();
-
-  tags.forEach((tag) => {
-    params.append("tag", tag);
-  });
-
-  const query = params.toString();
-  return query ? `/role-playing?${query}` : "/role-playing";
+  return buildTagFilterHref(ROLE_PLAY_LIST_PATH, tags);
 }
 
 export function toggleRolePlayTag(tags: ReadonlyArray<string>, tag: string): string[] {
-  const normalized = tag.trim().toLocaleLowerCase();
-
-  if (normalized === ROLE_PLAY_ALL_TAG.toLocaleLowerCase()) {
-    return [];
-  }
-
-  return tags.includes(normalized)
-    ? tags.filter((item) => item !== normalized)
-    : [...tags, normalized];
+  return toggleFilterTag(tags, tag, ROLE_PLAY_ALL_TAG);
 }

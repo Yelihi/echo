@@ -49,6 +49,7 @@ describe("parseRoleplayTxtImport", () => {
     // Given
     const parse = jest.fn(async () => ({
       output_parsed: {
+        status: "ok",
         speakers: [
           { sourceName: "Customer", role: "me", displayName: "Customer" },
           { sourceName: "Clerk", role: "partner", displayName: "Clerk" },
@@ -95,8 +96,14 @@ describe("parseRoleplayTxtImport", () => {
 
   it.each([
     {
+      label: "invalid_input status",
+      output: { status: "invalid_input", speakers: [], lines: [] },
+      text: "This article explains how to order coffee.",
+    },
+    {
       label: "less than two speakers",
       output: {
+        status: "ok",
         speakers: [{ sourceName: "A", role: "partner", displayName: "A" }],
         lines: [{ speaker: "A", text: "Hello.", translation: null }],
       },
@@ -105,6 +112,7 @@ describe("parseRoleplayTxtImport", () => {
     {
       label: "more than two speakers",
       output: {
+        status: "ok",
         speakers: [
           { sourceName: "A", role: "partner", displayName: "A" },
           { sourceName: "B", role: "me", displayName: "B" },
@@ -138,6 +146,7 @@ describe("parseRoleplayTxtImport", () => {
     // Given
     const parse = jest.fn(async () => ({
       output_parsed: {
+        status: "ok",
         speakers: [
           { sourceName: "A", role: "partner", displayName: "A" },
           { sourceName: "B", role: "me", displayName: "B" },

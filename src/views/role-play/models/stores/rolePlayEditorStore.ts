@@ -12,18 +12,7 @@ const rolePlayEditorEmptyDraft: RoleplayEditorDraft = {
   title: "",
   situation: "",
   tags: [],
-  lines: [
-    {
-      id: "line-partner-1",
-      speaker: "partner",
-      text: "",
-    },
-    {
-      id: "line-me-1",
-      speaker: "me",
-      text: "",
-    },
-  ],
+  lines: [],
 };
 
 const createLine = (speaker: RoleplayEditorSpeaker) => ({
@@ -71,6 +60,11 @@ export const useRolePlayEditorStore = createStore<RolePlayEditorStore>("rolePlay
   addLine: (speaker) =>
     set((state) => ({
       draft: { ...state.draft, lines: [...state.draft.lines, createLine(speaker)] },
+      edited: true,
+    })),
+  applyImportedScript: (lines) =>
+    set((state) => ({
+      draft: { ...state.draft, lines },
       edited: true,
     })),
   markDirty: () => set({ edited: true }),

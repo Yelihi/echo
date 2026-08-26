@@ -17,6 +17,10 @@ export function normalizeRoleplayTxtImportOutput(output: unknown): RoleplayTxtIm
     throw new RoleplayTxtImportInvalidOutputError({ cause: parsed.error });
   }
 
+  if (parsed.data.status === "invalid_input") {
+    throw new RoleplayTxtImportSpeakerCountError();
+  }
+
   const speakerBySourceName = new Map<string, RoleplayTxtImportSpeakerId>();
 
   for (const speaker of parsed.data.speakers) {

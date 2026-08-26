@@ -47,6 +47,12 @@ export function useTagInputController({
       if (event.key === "Enter") {
         event.preventDefault();
         addTag(event.currentTarget.value);
+        return;
+      }
+
+      if (event.key === "Backspace" && event.currentTarget.value === "" && tags.length > 0) {
+        event.preventDefault();
+        onChange(tags.slice(0, -1));
       }
     },
   };

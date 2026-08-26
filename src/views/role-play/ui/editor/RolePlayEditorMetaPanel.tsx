@@ -1,13 +1,15 @@
 "use client";
 
-import { FileUp } from "lucide-react";
-
 // shared
 import { Input, TitleField } from "@/shared/components";
-import { DashedActionButton, TagInputField } from "@/shared/components/ui";
+import { TagInputField } from "@/shared/components/ui";
+
+// features
+import type { RoleplayTxtImportProps } from "@/features/roleplay-txt-import/models/interface";
 
 // views
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
+import { RolePlayImportTxtButton } from "@/views/role-play/ui/editor/RolePlayImportTxtButton";
 
 function RolePlayTitleField() {
   const title = useRolePlayEditorStore((state) => state.draft.title);
@@ -60,7 +62,7 @@ function RolePlayTagsField() {
   );
 }
 
-export function RolePlayEditorMetaPanel() {
+export function RolePlayEditorMetaPanel({ txtImport }: { txtImport: RoleplayTxtImportProps }) {
   return (
     <aside className="flex min-w-0 flex-col gap-4">
       <div className="rounded-card border border-card-line bg-white p-5 shadow-emphasize">
@@ -69,9 +71,7 @@ export function RolePlayEditorMetaPanel() {
         <RolePlayTagsField />
       </div>
 
-      <DashedActionButton icon={<FileUp className="size-4" />}>
-        TXT 파일로 불러오기
-      </DashedActionButton>
+      <RolePlayImportTxtButton {...txtImport} />
     </aside>
   );
 }

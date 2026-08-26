@@ -15,7 +15,7 @@ export async function requestRoleplayTxtImport(
       {
         role: "system",
         content:
-          "Split a roleplay TXT script into exactly two speakers. Return only schema-valid output.",
+          "Validate then transform a roleplay TXT script. Return only schema-valid output. Do not invent speakers.",
       },
       {
         role: "user",

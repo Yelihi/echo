@@ -1,4 +1,4 @@
-import type { RoleplayTxtImportDraft } from "@/features/roleplay-txt-import/models/schema";
+import type { ChangeEvent, DragEvent } from "react";
 
 export interface RoleplayTxtImportOpenAIClient {
   readonly responses: {
@@ -19,6 +19,11 @@ export interface ParseRoleplayTxtImportInput {
 }
 
 export interface RoleplayTxtImportProps {
-  readonly onImported: (draft: RoleplayTxtImportDraft) => void;
-  readonly onCancel?: () => void;
+  readonly isPending: boolean;
+  readonly isDragging: boolean;
+  readonly handleDragEnter: (event: DragEvent<HTMLButtonElement>) => void;
+  readonly handleDragOver: (event: DragEvent<HTMLButtonElement>) => void;
+  readonly handleDragLeave: (event: DragEvent<HTMLButtonElement>) => void;
+  readonly handleDrop: (event: DragEvent<HTMLButtonElement>) => void;
+  readonly handleFileSelect: (event: ChangeEvent<HTMLInputElement>) => void;
 }

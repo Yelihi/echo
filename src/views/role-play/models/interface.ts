@@ -7,6 +7,14 @@ export interface RolePlayViewProps {
   tags: string[];
 }
 
+export interface RolePlayScriptEditorProps {
+  isPending: boolean;
+}
+
+export interface RolePlayScriptLineListProps {
+  isPending: boolean;
+}
+
 export interface GetRolePlaySessionsParams {
   page: number;
   limit?: number;
@@ -66,6 +74,7 @@ export interface RolePlayEditorStore {
   flipLineSpeaker: (lineId: string) => void;
   deleteLine: (lineId: string) => void;
   addLine: (speaker: RoleplayEditorSpeaker) => void;
+  applyImportedScript: (lines: RoleplayEditorLineDraft[]) => void;
   markDirty: () => void;
   reset: () => void;
 }
