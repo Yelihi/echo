@@ -1,11 +1,22 @@
 import { notFound } from "next/navigation";
 
-import { getMemorizationReadyMockMaterial } from "@/views/memorization/config/readyMock";
+// shared
+import { isUuidString } from "@/shared/utils/uuid";
+
+// entities
+import type { MaterialId } from "@/entities/value-object";
+
+// views
 import type { MemorizationReadyViewProps } from "@/views/memorization/models/ready";
+import { getMemorizationReadyMaterial } from "@/views/memorization/services/server/getMemorizationReadyMaterial";
 import { MemorizationReadyContent } from "@/views/memorization/ui/MemorizationReadyContent";
 
-export function MemorizationReadyView({ materialId }: MemorizationReadyViewProps) {
-  const material = getMemorizationReadyMockMaterial(materialId);
+export async function MemorizationReadyView({ materialId }: MemorizationReadyViewProps) {
+  if (!isUuidString(materialId)) {
+    notFound();
+  }
+
+  const material = await getMemorizationReadyMaterial(materialId as MaterialId);
 
   if (!material) {
     notFound();

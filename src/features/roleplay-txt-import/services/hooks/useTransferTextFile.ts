@@ -11,6 +11,7 @@ import {
   createRoleplayTxtImportErrorFromCode,
   RoleplayTxtImportError,
   RoleplayTxtImportInvalidFileCountError,
+  RoleplayTxtImportProviderFailedError,
   RoleplayTxtImportUnsupportedFileError,
 } from "@/features/roleplay-txt-import/models/errors";
 import type { RoleplayTxtImportProps } from "@/features/roleplay-txt-import/models/interface";
@@ -73,6 +74,7 @@ export const useTransferTextFile = (
     event.stopPropagation();
 
     const files = event.target.files;
+    event.target.value = "";
 
     if (files === null || files.length === 0 || files.length > 1) {
       openImportError(new RoleplayTxtImportInvalidFileCountError());
@@ -91,14 +93,18 @@ export const useTransferTextFile = (
 
   const transferFile = (file: File) => {
     startTransition(async () => {
-      const draft = await transferTextFile(file);
+      try {
+        const draft = await transferTextFile(file);
 
-      if (draft.code === "SUCCESS" && draft.data) {
-        onImported(draft.data);
-        return;
+        if (draft.code === "SUCCESS" && draft.data) {
+          onImported(draft.data);
+          return;
+        }
+
+        openImportError(createRoleplayTxtImportErrorFromCode(draft.code));
+      } catch {
+        openImportError(new RoleplayTxtImportProviderFailedError());
       }
-
-      openImportError(createRoleplayTxtImportErrorFromCode(draft.code));
     });
   };
 

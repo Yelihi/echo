@@ -16,7 +16,7 @@ import type {
   FindMemorizationMaterialsParams,
   MemorizationMaterialRepositoryPort,
 } from "@/entities/memorization-material/models/repository";
-import type { MaterialId } from "@/entities/value-object";
+import type { MaterialId, TagValue } from "@/entities/value-object";
 
 export class MemorizationMaterialRepository implements MemorizationMaterialRepositoryPort {
   constructor(private readonly supabase: SupabaseClient<Database>) {}
@@ -46,9 +46,10 @@ export class MemorizationMaterialRepository implements MemorizationMaterialRepos
   }
 
   async findMany(params: FindMemorizationMaterialsParams = {}): Promise<MemorizationMaterial[]> {
-    const materialIds = params.tagNormalizedName
-      ? await this.findMaterialIdsByTag(params.tagNormalizedName)
-      : null;
+    const materialIds =
+      params.tagNormalizedNames && params.tagNormalizedNames.length > 0
+        ? await this.findMaterialIdsByTags(params.tagNormalizedNames)
+        : null;
 
     if (materialIds && materialIds.length === 0) {
       return [];
@@ -58,14 +59,21 @@ export class MemorizationMaterialRepository implements MemorizationMaterialRepos
       .from("memorization_materials")
       .select("*")
       .eq("status", params.state ?? MaterialState.ACTIVE)
-      .order("updated_at", { ascending: false });
+      .order("updated_at", { ascending: false })
+      .order("id", { ascending: false });
 
     if (materialIds) {
       query = query.in("id", materialIds);
     }
 
     if (params.limit) {
-      query = query.limit(params.limit);
+      if (params.page != null) {
+        const page = Math.max(1, params.page);
+        const from = (page - 1) * params.limit;
+        query = query.range(from, from + params.limit - 1);
+      } else {
+        query = query.limit(params.limit);
+      }
     }
 
     const { data: materials, error } = await query;
@@ -96,10 +104,29 @@ export class MemorizationMaterialRepository implements MemorizationMaterialRepos
   }
 
   async countActive(): Promise<number> {
-    const { count, error } = await this.supabase
+    return this.count({ state: MaterialState.ACTIVE });
+  }
+
+  async count(params: FindMemorizationMaterialsParams = {}): Promise<number> {
+    const materialIds =
+      params.tagNormalizedNames && params.tagNormalizedNames.length > 0
+        ? await this.findMaterialIdsByTags(params.tagNormalizedNames)
+        : null;
+
+    if (materialIds && materialIds.length === 0) {
+      return 0;
+    }
+
+    let query = this.supabase
       .from("memorization_materials")
-      .select("*", { count: "exact", head: true })
-      .eq("status", MaterialState.ACTIVE);
+      .select("id", { count: "exact", head: true })
+      .eq("status", params.state ?? MaterialState.ACTIVE);
+
+    if (materialIds) {
+      query = query.in("id", materialIds);
+    }
+
+    const { count, error } = await query;
 
     if (error) {
       throw new Error(`Failed to count memorization materials: ${error.message}`);
@@ -108,17 +135,48 @@ export class MemorizationMaterialRepository implements MemorizationMaterialRepos
     return count ?? 0;
   }
 
-  private async findMaterialIdsByTag(normalizedName: string): Promise<MaterialId[]> {
+  async findDistinctTags(state: MaterialState = MaterialState.ACTIVE): Promise<TagValue[]> {
+    const { data: materials, error: materialsError } = await this.supabase
+      .from("memorization_materials")
+      .select("id")
+      .eq("status", state);
+
+    if (materialsError) {
+      throw new Error(`Failed to fetch memorization materials: ${materialsError.message}`);
+    }
+
+    if (!materials.length) {
+      return [];
+    }
+
+    const { data: tags, error: tagsError } = await this.supabase
+      .from("memorization_material_tags")
+      .select("display_name, normalized_name")
+      .in(
+        "material_id",
+        materials.map((material) => material.id),
+      );
+
+    if (tagsError) {
+      throw new Error(`Failed to fetch memorization material tags: ${tagsError.message}`);
+    }
+
+    return uniqueTagValues(tags);
+  }
+
+  private async findMaterialIdsByTags(
+    normalizedNames: ReadonlyArray<string>,
+  ): Promise<MaterialId[]> {
     const { data, error } = await this.supabase
       .from("memorization_material_tags")
       .select("material_id")
-      .eq("normalized_name", normalizedName);
+      .in("normalized_name", [...normalizedNames]);
 
     if (error) {
       throw new Error(`Failed to fetch memorization material tags: ${error.message}`);
     }
 
-    return data.map((row) => row.material_id as MaterialId);
+    return [...new Set(data.map((row) => row.material_id as MaterialId))];
   }
 
   private async findTagsByMaterialId(
@@ -216,4 +274,23 @@ export function createMemorizationMaterialRepository(
   supabase: SupabaseClient<Database>,
 ): MemorizationMaterialRepositoryPort {
   return new MemorizationMaterialRepository(supabase);
+}
+
+function uniqueTagValues(
+  tags: ReadonlyArray<Pick<MemorizationMaterialTagRow, "display_name" | "normalized_name">>,
+): TagValue[] {
+  const uniqueTags = new Map<string, TagValue>();
+
+  tags.forEach((tag) => {
+    if (!uniqueTags.has(tag.normalized_name)) {
+      uniqueTags.set(tag.normalized_name, {
+        displayName: tag.display_name,
+        normalizedName: tag.normalized_name,
+      });
+    }
+  });
+
+  return [...uniqueTags.values()].sort((left, right) =>
+    left.displayName.localeCompare(right.displayName, "ko"),
+  );
 }

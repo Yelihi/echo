@@ -69,7 +69,7 @@ export const TagInput = ({
       <input
         type="text"
         placeholder={tags.length ? undefined : placeholder}
-        className="min-w-0 flex-1 border-0 bg-transparent text-body-3 text-black-primary outline-none placeholder:text-gray-text-secondary"
+        className="min-w-32 flex-1 basis-32 border-0 bg-transparent text-body-3 text-black-primary outline-none placeholder:text-gray-text-secondary"
         {...inputProps}
       />
     </div>

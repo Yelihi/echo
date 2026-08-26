@@ -2,17 +2,23 @@
 
 import { useRouter } from "next/navigation";
 
-import { SourceCard } from "@/widgets/source-card";
+// widgets
+import { SourceCard, SourceCardSkeleton } from "@/widgets/source-card";
 
-import { MEMORIZATION_INNER_MENU_ITEMS } from "@/views/memorization/config/const";
+// views
+import {
+  MEMORIZATION_INNER_MENU_ITEMS,
+  MEMORIZATION_LIST_PAGE_SIZE,
+  MEMORIZATION_SOURCE_CARDS_GRID_CLASSNAME,
+} from "@/views/memorization/config/const";
+import type { SourceCardsWrapperProps } from "@/views/memorization/models/interface";
 import { MemorizationCardActionStrategyRegistry } from "@/views/memorization/services/MemorizationCardActionStrategy";
-import type { MemorizationCardsWrapperProps } from "@/views/memorization/models/interface";
 
 const onDeleteSource = () => {
   alert("삭제하기");
 };
 
-export function MemorizationCardsWrapper({ cards }: MemorizationCardsWrapperProps) {
+export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
   const router = useRouter();
 
   const registry = new MemorizationCardActionStrategyRegistry({
@@ -25,7 +31,7 @@ export function MemorizationCardsWrapper({ cards }: MemorizationCardsWrapperProp
   };
 
   return (
-    <section className="grid w-full grid-cols-1 gap-[15px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <section className={MEMORIZATION_SOURCE_CARDS_GRID_CLASSNAME}>
       {cards.map((source) => (
         <SourceCard
           key={source.id}
@@ -34,6 +40,16 @@ export function MemorizationCardsWrapper({ cards }: MemorizationCardsWrapperProp
           innerMenuItems={MEMORIZATION_INNER_MENU_ITEMS}
           onMenuAction={onMenuAction}
         />
+      ))}
+    </section>
+  );
+};
+
+export function SourceCardsWrapperSkeleton() {
+  return (
+    <section className={MEMORIZATION_SOURCE_CARDS_GRID_CLASSNAME} aria-hidden>
+      {Array.from({ length: MEMORIZATION_LIST_PAGE_SIZE }, (_, index) => (
+        <SourceCardSkeleton key={index} />
       ))}
     </section>
   );

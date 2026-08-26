@@ -1,7 +1,6 @@
 "use client";
 
-import type { ComponentProps } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import type { HTMLAttributes } from "react";
 
 // shared
 import {
@@ -13,37 +12,32 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/shared/components/atomics/pagination/Pagination";
+import { usePagination } from "@/shared/hooks/usePagination";
 import { cn } from "@/shared/lib/tailwind/utils";
-import { buildPageHref, getPaginationItems } from "@/shared/utils/pagination";
 
-export interface PaginationProps {
+export interface PaginationProps extends HTMLAttributes<HTMLElement> {
   page: number;
   totalPages: number;
 }
 
-export function Pagination({
-  page,
-  totalPages,
-  className,
-  ...props
-}: PaginationProps & ComponentProps<"nav">) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+export function Pagination({ page, totalPages, className, ...props }: PaginationProps) {
+  const { current, items, hrefForPage, isPrevDisabled, isNextDisabled, isHidden } = usePagination({
+    page,
+    totalPages,
+  });
 
-  if (totalPages < 1) {
+  if (isHidden) {
     return null;
   }
 
-  const current = Math.min(Math.max(page, 1), totalPages);
-  const hrefForPage = (nextPage: number) =>
-    buildPageHref(pathname, searchParams.toString(), nextPage);
-  const items = getPaginationItems(current, totalPages);
+  const previousPage = current - 1;
+  const nextPage = current + 1;
 
   return (
     <PaginationNav className={className} {...props}>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious href={hrefForPage(current - 1)} disabled={current <= 1} />
+          <PaginationPrevious href={hrefForPage(previousPage)} disabled={isPrevDisabled} />
         </PaginationItem>
         {items.map((item, index) =>
           item === "ellipsis" ? (
@@ -59,7 +53,7 @@ export function Pagination({
           ),
         )}
         <PaginationItem>
-          <PaginationNext href={hrefForPage(current + 1)} disabled={current >= totalPages} />
+          <PaginationNext href={hrefForPage(nextPage)} disabled={isNextDisabled} />
         </PaginationItem>
       </PaginationContent>
     </PaginationNav>

@@ -74,6 +74,19 @@ export class RoleplayTxtImportInvalidFileCountError extends RoleplayTxtImportErr
   }
 }
 
+export class RoleplayTxtImportUnauthorizedError extends RoleplayTxtImportError {
+  static readonly CODE = "RPI-007";
+  readonly title = "로그인이 필요합니다";
+
+  constructor(options: CustomErrorOptions = {}) {
+    super(
+      RoleplayTxtImportUnauthorizedError.CODE,
+      "대본을 불러오려면 다시 로그인해 주세요.",
+      options,
+    );
+  }
+}
+
 export function createRoleplayTxtImportErrorFromCode(code: string): RoleplayTxtImportError {
   switch (code) {
     case RoleplayTxtImportUnsupportedFileError.CODE:
@@ -86,6 +99,8 @@ export function createRoleplayTxtImportErrorFromCode(code: string): RoleplayTxtI
       return new RoleplayTxtImportInvalidOutputError();
     case RoleplayTxtImportInvalidFileCountError.CODE:
       return new RoleplayTxtImportInvalidFileCountError();
+    case RoleplayTxtImportUnauthorizedError.CODE:
+      return new RoleplayTxtImportUnauthorizedError();
     default:
       return new RoleplayTxtImportProviderFailedError();
   }

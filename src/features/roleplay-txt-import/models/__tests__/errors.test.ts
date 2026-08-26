@@ -4,6 +4,7 @@ import {
   createRoleplayTxtImportErrorFromCode,
   RoleplayTxtImportProviderFailedError,
   RoleplayTxtImportSpeakerCountError,
+  RoleplayTxtImportUnauthorizedError,
   RoleplayTxtImportUnsupportedFileError,
 } from "@/features/roleplay-txt-import/models/errors";
 
@@ -26,6 +27,16 @@ describe("createRoleplayTxtImportErrorFromCode", () => {
     expect(error).toBeInstanceOf(RoleplayTxtImportSpeakerCountError);
     expect(error.code).toBe("RPI-003");
     expect(error.title).toBe("불러올 수 없는 대본입니다");
+  });
+
+  it("should map RPI-007 to an unauthorized error", () => {
+    // Given / When
+    const error = createRoleplayTxtImportErrorFromCode(RoleplayTxtImportUnauthorizedError.CODE);
+
+    // Then
+    expect(error).toBeInstanceOf(RoleplayTxtImportUnauthorizedError);
+    expect(error.code).toBe("RPI-007");
+    expect(error.title).toBe("로그인이 필요합니다");
   });
 
   it("should fall back to a provider error for an unknown code", () => {

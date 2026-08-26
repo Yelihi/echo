@@ -11,5 +11,6 @@ export {
   RoleplayTxtImportInvalidOutputError,
   RoleplayTxtImportProviderFailedError,
   RoleplayTxtImportSpeakerCountError,
+  RoleplayTxtImportUnauthorizedError,
   RoleplayTxtImportUnsupportedFileError,
 } from "@/features/roleplay-txt-import/models/errors";
