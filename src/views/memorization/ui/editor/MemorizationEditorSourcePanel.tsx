@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { Sparkles } from "lucide-react";
 
 // shared
@@ -11,45 +10,78 @@ import { errorPopupManager } from "@/shared/lib/error-popup";
 // entities
 import { createTagValue } from "@/entities/value-object";
 
-// views
-import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
-import {
-  setParagraphs,
-  setRawText,
-  setTags,
-  setTitle,
-} from "@/views/memorization/models/reducer/editor/actions";
-import type { MemorizationEditorAction } from "@/views/memorization/models/reducer/editor/interface";
+// features
+import type { MemorizationParagraphSuggestionProps } from "@/features/memorization-paragraph-suggestion/models/interface";
 
-interface MemorizationEditorSourcePanelProps {
-  draft: MemorizationEditorDraft;
-  onAction: (action: MemorizationEditorAction) => void;
-  onDirty: () => void;
+// views
+import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
+
+function MemorizationTitleField() {
+  const title = useMemorizationEditorStore((state) => state.draft.title);
+  const setTitle = useMemorizationEditorStore((state) => state.setTitle);
+
+  return (
+    <label className="flex flex-col gap-2">
+      <span className="text-body-2 font-bold text-gray-text">제목</span>
+      <TitleField
+        value={title}
+        placeholder="예: Business Email Openings"
+        onChange={(event) => setTitle(event.target.value)}
+      />
+    </label>
+  );
 }
 
-const splitParagraphs = (text: string) =>
-  text
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
+function MemorizationTagsField() {
+  const tags = useMemorizationEditorStore((state) => state.draft.tags);
+  const setTags = useMemorizationEditorStore((state) => state.setTags);
+  const markDirty = useMemorizationEditorStore((state) => state.markDirty);
 
-export function MemorizationEditorSourcePanel({
-  draft,
-  onAction,
-  onDirty,
-}: MemorizationEditorSourcePanelProps) {
-  const wordCount = useMemo(
-    () => draft.rawText.trim().split(/\s+/).filter(Boolean).length,
-    [draft.rawText],
+  return (
+    <div className="mt-4 flex flex-col gap-2">
+      <span className="text-body-2 font-bold text-gray-text">태그</span>
+      <TagInputField
+        theme="memo"
+        tags={tags}
+        placeholder="태그 입력 후 Enter"
+        getDuplicateKey={(tag) => createTagValue(tag).normalizedName}
+        onChange={setTags}
+        onInputDirty={markDirty}
+      />
+    </div>
   );
+}
 
-  const updateRawText = (rawText: string) => {
-    onAction(setRawText(rawText));
-  };
+function MemorizationRawTextField() {
+  const rawText = useMemorizationEditorStore((state) => state.draft.rawText);
+  const setRawText = useMemorizationEditorStore((state) => state.setRawText);
+  const wordCount = rawText.trim().split(/\s+/).filter(Boolean).length;
 
-  const createParagraphDraft = () => {
-    const paragraphs = splitParagraphs(draft.rawText);
-    if (paragraphs.length === 0) {
+  return (
+    <div className="rounded-card border border-card-line bg-white p-5 shadow-emphasize">
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-body-2 font-bold text-gray-text">본문</span>
+        <span className="text-body-1 font-bold text-gray-text-secondary">{wordCount} words</span>
+      </div>
+      <Textarea
+        rows={14}
+        value={rawText}
+        placeholder="암기할 영어 본문을 입력하세요."
+        onChange={(event) => setRawText(event.target.value)}
+      />
+    </div>
+  );
+}
+
+function MemorizationParagraphSuggestButton({
+  paragraphSuggestion,
+}: {
+  paragraphSuggestion: MemorizationParagraphSuggestionProps;
+}) {
+  const requestSuggestion = () => {
+    const rawText = useMemorizationEditorStore.getState().draft.rawText;
+
+    if (!rawText.trim()) {
       errorPopupManager.open({
         title: "본문을 입력해주세요",
         message: "문단 초안을 만들려면 먼저 암기할 본문이 필요합니다.",
@@ -57,50 +89,35 @@ export function MemorizationEditorSourcePanel({
       return;
     }
 
-    // TODO: AI 문단 제안 provider 연결 시 이 local split 을 교체합니다.
-    onAction(setParagraphs(paragraphs));
+    paragraphSuggestion.suggest(rawText);
   };
 
   return (
+    <DashedActionButton
+      icon={<Sparkles className="size-4" />}
+      pending={paragraphSuggestion.isPending}
+      disabled={paragraphSuggestion.isPending}
+      onClick={requestSuggestion}
+    >
+      AI 문단 제안 요청
+    </DashedActionButton>
+  );
+}
+
+export function MemorizationEditorSourcePanel({
+  paragraphSuggestion,
+}: {
+  paragraphSuggestion: MemorizationParagraphSuggestionProps;
+}) {
+  return (
     <aside className="flex min-w-0 flex-col gap-4">
       <div className="rounded-card border border-card-line bg-white p-5 shadow-emphasize">
-        <label className="flex flex-col gap-2">
-          <span className="text-body-2 font-bold text-gray-text">제목</span>
-          <TitleField
-            value={draft.title}
-            placeholder="예: Business Email Openings"
-            onChange={(event) => onAction(setTitle(event.target.value))}
-          />
-        </label>
-        <div className="mt-4 flex flex-col gap-2">
-          <span className="text-body-2 font-bold text-gray-text">태그</span>
-          <TagInputField
-            theme="memo"
-            tags={draft.tags}
-            placeholder="태그 입력 후 Enter"
-            getDuplicateKey={(tag) => createTagValue(tag).normalizedName}
-            onChange={(tags) => onAction(setTags(tags))}
-            onInputDirty={onDirty}
-          />
-        </div>
+        <MemorizationTitleField />
+        <MemorizationTagsField />
       </div>
 
-      <div className="rounded-card border border-card-line bg-white p-5 shadow-emphasize">
-        <div className="mb-3 flex items-center justify-between">
-          <span className="text-body-2 font-bold text-gray-text">본문</span>
-          <span className="text-body-1 font-bold text-gray-text-secondary">{wordCount} words</span>
-        </div>
-        <Textarea
-          rows={14}
-          value={draft.rawText}
-          placeholder="암기할 영어 본문을 입력하세요."
-          onChange={(event) => updateRawText(event.target.value)}
-        />
-      </div>
-
-      <DashedActionButton icon={<Sparkles className="size-4" />} onClick={createParagraphDraft}>
-        AI 문단 제안 요청
-      </DashedActionButton>
+      <MemorizationRawTextField />
+      <MemorizationParagraphSuggestButton paragraphSuggestion={paragraphSuggestion} />
     </aside>
   );
 }

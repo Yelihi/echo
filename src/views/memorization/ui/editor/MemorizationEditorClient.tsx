@@ -1,55 +1,57 @@
 "use client";
 
-import { useMemo, useReducer, useState } from "react";
+import { useLayoutEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/shared/components";
-import { ConfirmDialog } from "@/shared/components/ui";
+// shared
 import { errorPopupManager } from "@/shared/lib/error-popup";
-import { memorizationEditorReducer } from "@/views/memorization/models/reducer/editor";
-import type { MemorizationEditorAction } from "@/views/memorization/models/reducer/editor/interface";
-import { MemorizationEditorSourcePanel } from "@/views/memorization/ui/MemorizationEditorSourcePanel";
-import { MemorizationParagraphReviewPanel } from "@/views/memorization/ui/MemorizationParagraphReviewPanel";
+import { cn } from "@/shared/lib/tailwind/utils";
+
+// features
+import { useSuggestMemorizationParagraphs } from "@/features/memorization-paragraph-suggestion/services/hooks/useSuggestMemorizationParagraphs";
+
+// views
+import { convertMemorizationParagraphSuggestionToEditorParagraphs } from "@/views/memorization/models/converter/convertMemorizationParagraphSuggestionToEditorParagraphs";
 import type {
   MemorizationEditorDraft,
   MemorizationEditorMode,
 } from "@/views/memorization/models/editor";
+import { createMemorizationMaterialErrorFromCode } from "@/views/memorization/models/errors";
+import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
+import { createMemorizationMaterial } from "@/views/memorization/services/action/createMemorizationMaterial";
+import { MemorizationEditorHeader } from "@/views/memorization/ui/editor/MemorizationEditorHeader";
+import { MemorizationEditorSourcePanel } from "@/views/memorization/ui/editor/MemorizationEditorSourcePanel";
+import { MemorizationParagraphReviewPanel } from "@/views/memorization/ui/editor/MemorizationParagraphReviewPanel";
 
 interface MemorizationEditorClientProps {
   mode: MemorizationEditorMode;
-  initialDraft: MemorizationEditorDraft;
+  initialDraft?: MemorizationEditorDraft;
 }
 
 export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEditorClientProps) {
   const router = useRouter();
-  const [draft, dispatch] = useReducer(memorizationEditorReducer, initialDraft);
-  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
-  const [edited, setEdited] = useState(false);
+  const [isSaving, startSaveTransition] = useTransition();
+  const paragraphSuggestion = useSuggestMemorizationParagraphs((suggestion) => {
+    useMemorizationEditorStore
+      .getState()
+      .setParagraphs(convertMemorizationParagraphSuggestionToEditorParagraphs(suggestion));
+  });
+  const isBusy = isSaving || paragraphSuggestion.isPending;
 
-  const validParagraphs = useMemo(
-    () => draft.paragraphs.filter((paragraph) => paragraph.trim().length > 0),
-    [draft.paragraphs],
-  );
-
-  const dispatchEdited = (action: MemorizationEditorAction) => {
-    dispatch(action);
-    setEdited(true);
-  };
-
-  const markDirty = () => {
-    setEdited(true);
-  };
-
-  const cancel = () => {
-    if (edited) {
-      setConfirmCancelOpen(true);
-      return;
+  useLayoutEffect(() => {
+    if (initialDraft) {
+      useMemorizationEditorStore.getState().hydrate(initialDraft);
+    } else {
+      useMemorizationEditorStore.getState().reset();
     }
 
-    router.push("/sentence-memorization");
-  };
+    return () => useMemorizationEditorStore.getState().reset();
+  }, [initialDraft]);
 
   const save = () => {
+    const draft = useMemorizationEditorStore.getState().draft;
+    const hasValidParagraph = draft.paragraphs.some((paragraph) => paragraph.trim().length > 0);
+
     if (!draft.title.trim()) {
       errorPopupManager.open({
         title: "제목을 입력해주세요",
@@ -66,7 +68,7 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
       return;
     }
 
-    if (!draft.confirmed || validParagraphs.length === 0) {
+    if (!draft.confirmed || !hasValidParagraph) {
       errorPopupManager.open({
         title: "문단을 확정해주세요",
         message: "문단 초안을 검수하고 확정해야 저장할 수 있습니다.",
@@ -74,50 +76,52 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
       return;
     }
 
-    // TODO: 저장 server action 연결 시 draft를 전달합니다.
+    if (mode !== "create") {
+      errorPopupManager.open({
+        title: "아직 수정 저장을 지원하지 않습니다",
+        message: "지금은 새 자료 만들기만 저장할 수 있습니다. 수정 저장은 곧 연결됩니다.",
+      });
+      return;
+    }
+
+    startSaveTransition(async () => {
+      const result = await createMemorizationMaterial(draft);
+
+      if (result.code === "SUCCESS") {
+        router.push("/sentence-memorization");
+        return;
+      }
+
+      const error = createMemorizationMaterialErrorFromCode(result.code);
+      errorPopupManager.open({
+        title: error.title,
+        message: error.message,
+        code: error.code,
+      });
+    });
   };
 
   return (
-    <>
-      <section className="flex w-full flex-col gap-7" data-pillar="memo">
-        <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <h1 className="text-heading-md font-bold text-black-primary">
-              {mode === "create" ? "문장 암기 자료 만들기" : "문장 암기 자료 수정"}
-            </h1>
-            <p className="text-body-4 text-gray-text">
-              긴 영어 본문을 입력하고 암기 기준 문단을 확정하세요.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" size="lg" onClick={cancel}>
-              취소
-            </Button>
-            <Button type="button" size="lg" onClick={save}>
-              저장
-            </Button>
-          </div>
-        </header>
-
-        <div className="grid w-full gap-5 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
-          <MemorizationEditorSourcePanel
-            draft={draft}
-            onAction={dispatchEdited}
-            onDirty={markDirty}
-          />
-          <MemorizationParagraphReviewPanel draft={draft} onAction={dispatchEdited} />
+    <section
+      className="flex min-h-0 w-full flex-1 flex-col gap-7 lg:h-full lg:overflow-hidden"
+      data-pillar="memo"
+      aria-busy={isBusy}
+    >
+      <MemorizationEditorHeader mode={mode} isSaving={isSaving} isBusy={isBusy} onSave={save} />
+      <div className="grid min-h-0 w-full flex-1 gap-5 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
+        <div
+          className={cn("min-h-0 lg:h-full lg:overflow-y-auto", isBusy && "opacity-60")}
+          inert={isBusy}
+        >
+          <MemorizationEditorSourcePanel paragraphSuggestion={paragraphSuggestion} />
         </div>
-      </section>
-
-      <ConfirmDialog
-        open={confirmCancelOpen}
-        onOpenChange={setConfirmCancelOpen}
-        title="편집을 취소할까요?"
-        description="지금까지 입력한 내용은 저장되지 않습니다."
-        confirmLabel="나가기"
-        cancelLabel="계속 편집"
-        onConfirm={() => router.push("/sentence-memorization")}
-      />
-    </>
+        <div
+          className={cn("flex min-h-0 flex-1 flex-col lg:h-full", isSaving && "opacity-60")}
+          inert={isSaving}
+        >
+          <MemorizationParagraphReviewPanel />
+        </div>
+      </div>
+    </section>
   );
 }
