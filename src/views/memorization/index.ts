@@ -3,5 +3,5 @@ export {
   MemorizationView,
   MemorizationViewFallback,
 } from "@/views/memorization/ui/view/MemorizationView";
-export { MemorizationEditorView } from "@/views/memorization/ui/MemorizationEditorView";
-export { MemorizationReadyView } from "@/views/memorization/ui/MemorizationReadyView";
+export { MemorizationEditorView } from "@/views/memorization/ui/editor/MemorizationEditorView";
+export { MemorizationReadyView } from "@/views/memorization/ui/ready/MemorizationReadyView";
