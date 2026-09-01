@@ -63,6 +63,12 @@ export type CreateRolePlayMaterialResult =
   | { code: "RPM-002" }
   | { code: "RPM-003" };
 
+export type CreateRolePlaySessionResult =
+  | { code: "SUCCESS"; sessionId: string }
+  | { code: "RPS-001" }
+  | { code: "RPS-002" }
+  | { code: "RPS-003" };
+
 export interface RolePlayEditorStore {
   draft: RoleplayEditorDraft;
   edited: boolean;
@@ -83,6 +89,11 @@ export interface RolePlayEditorStore {
 export type RoleplayReadyRole = "learner" | "partner";
 export type RoleplayReadyEvaluationMode = "exact" | "context";
 export type RoleplayReadyVoice = "soft" | "bright" | "calm";
+
+export interface CreateRolePlaySessionRequest {
+  materialId: string;
+  role: RoleplayReadyRole;
+}
 
 export interface RoleplayReadyMaterial {
   id: string;
@@ -105,4 +116,13 @@ export interface RoleplayReadySettings {
   evaluationMode: RoleplayReadyEvaluationMode;
   voice: RoleplayReadyVoice;
   speed: number;
+}
+
+export interface RolePlayReadyStore {
+  settings: RoleplayReadySettings;
+  setRole: (role: RoleplayReadyRole) => void;
+  setEvaluationMode: (evaluationMode: RoleplayReadyEvaluationMode) => void;
+  setVoice: (voice: RoleplayReadyVoice) => void;
+  setSpeed: (speed: number) => void;
+  reset: () => void;
 }

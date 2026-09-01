@@ -38,6 +38,7 @@ export const Badge = ({
   theme,
   size,
   asChild = false,
+  children,
   ...props
 }: SourceBadgeProps &
   React.ComponentProps<"span"> &
@@ -51,6 +52,8 @@ export const Badge = ({
       data-value={value}
       className={cn(badgeVariants({ theme, size }), className)}
       {...props}
-    />
+    >
+      {children ?? value}
+    </Comp>
   );
 };

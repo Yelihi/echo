@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { SessionId } from "@/entities/value-object";
+import type { SessionId, SpeakerId } from "@/entities/value-object";
 import type { Database } from "@/shared/lib/supabase";
 import type {
   RoleplaySession,
@@ -14,6 +14,7 @@ import {
   type RoleplaySessionTagRow,
 } from "@/entities/roleplay-session/models/mapper";
 import type {
+  CreateRoleplaySessionSnapshot,
   FindRoleplaySessionsParams,
   RoleplaySessionRepositoryPort,
 } from "@/entities/roleplay-session/models/repository";
@@ -183,6 +184,97 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
 
     return data;
   }
+
+  async createSession(snapshot: CreateRoleplaySessionSnapshot): Promise<RoleplaySession> {
+    const { material, selectedLearnerSpeakerId } = snapshot;
+    const [speakerOne, speakerTwo] = material.speakers;
+    const selectedLearnerSpeakerOrder = resolveSpeakerOrder(
+      material.speakers,
+      selectedLearnerSpeakerId,
+    );
+
+    const { data: session, error: sessionError } = await this.supabase
+      .from("roleplay_sessions")
+      .insert({
+        user_id: material.ownerId,
+        material_id: material.id,
+        material_title_snapshot: material.title,
+        situation_snapshot: material.situation,
+        speaker_one_name_snapshot: speakerOne.displayName,
+        speaker_two_name_snapshot: speakerTwo.displayName,
+        selected_learner_speaker_order: selectedLearnerSpeakerOrder,
+        current_line_order: 0,
+        status: SessionState.READY,
+        started_at: null,
+      })
+      .select("*")
+      .single();
+
+    if (sessionError || !session) {
+      throw new Error(`Failed to create roleplay session: ${sessionError?.message}`);
+    }
+
+    try {
+      const tagsResult =
+        material.tags.length === 0
+          ? { data: [] as RoleplaySessionTagRow[], error: null }
+          : await this.supabase
+              .from("roleplay_session_tags")
+              .insert(
+                material.tags.map((tag) => ({
+                  session_id: session.id,
+                  user_id: material.ownerId,
+                  display_name: tag.displayName,
+                  normalized_name: tag.normalizedName,
+                })),
+              )
+              .select("*");
+
+      if (tagsResult.error) {
+        throw new Error(`Failed to create roleplay session tags: ${tagsResult.error.message}`);
+      }
+
+      const { data: lines, error: linesError } = await this.supabase
+        .from("roleplay_session_lines")
+        .insert(
+          material.lines.map((line) => ({
+            session_id: session.id,
+            user_id: material.ownerId,
+            line_order: line.order,
+            speaker_order: resolveSpeakerOrder(material.speakers, line.speakerId),
+            text_snapshot: line.text,
+            translation_snapshot: line.translation,
+          })),
+        )
+        .select("*");
+
+      if (linesError || !lines) {
+        throw new Error(`Failed to create roleplay session lines: ${linesError?.message}`);
+      }
+
+      return mapRoleplaySessionRowToEntity({
+        session,
+        tags: tagsResult.data ?? [],
+        lines,
+      });
+    } catch (error) {
+      await this.supabase.from("roleplay_sessions").delete().eq("id", session.id);
+      throw error;
+    }
+  }
+}
+
+function resolveSpeakerOrder(
+  speakers: CreateRoleplaySessionSnapshot["material"]["speakers"],
+  speakerId: SpeakerId,
+): 1 | 2 {
+  const speaker = speakers.find((item) => item.id === speakerId);
+
+  if (!speaker) {
+    throw new Error(`Unknown roleplay speaker: ${speakerId}`);
+  }
+
+  return speaker.order;
 }
 
 export function createRoleplaySessionRepository(

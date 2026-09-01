@@ -1,10 +1,15 @@
 import { describe, expect, it } from "@jest/globals";
 
 // entities
+import { MaterialState } from "@/entities/roleplay-material";
 import type { UserId } from "@/entities/value-object";
 
 // views
-import { roleplayEditorDraftSchema } from "@/views/role-play/config/schema";
+import {
+  createRoleplaySessionInputSchema,
+  createRoleplaySessionSnapshotSchema,
+  roleplayEditorDraftSchema,
+} from "@/views/role-play/config/schema";
 import { convertRolePlayEditorDraftToCreateInput } from "@/views/role-play/models/converter/convertRolePlayEditorDraft";
 
 describe("roleplayEditorDraftSchema", () => {
@@ -53,6 +58,82 @@ describe("roleplayEditorDraftSchema", () => {
       situation: "Ordering a drink",
       tags: [],
       lines: [{ speaker: "me", text: "   " }],
+    });
+
+    expect(parsed.success).toBe(false);
+  });
+});
+
+describe("createRoleplaySessionInputSchema", () => {
+  const ownerId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+  const materialId = "11111111-1111-4111-8111-111111111111";
+
+  it("should accept a learner speaker that belongs to the material", () => {
+    const parsed = createRoleplaySessionInputSchema.parse({
+      ownerId,
+      materialId,
+      selectedLearnerSpeakerId: `${materialId}:speaker:2`,
+    });
+
+    expect(parsed.selectedLearnerSpeakerId).toBe(`${materialId}:speaker:2`);
+  });
+
+  it("should reject a speaker id that does not belong to the material", () => {
+    const parsed = createRoleplaySessionInputSchema.safeParse({
+      ownerId,
+      materialId,
+      selectedLearnerSpeakerId: "22222222-2222-4222-8222-222222222222:speaker:2",
+    });
+
+    expect(parsed.success).toBe(false);
+  });
+});
+
+describe("createRoleplaySessionSnapshotSchema", () => {
+  const ownerId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+  const materialId = "11111111-1111-4111-8111-111111111111";
+  const speakerOneId = `${materialId}:speaker:1`;
+  const speakerTwoId = `${materialId}:speaker:2`;
+
+  const validSnapshot = {
+    selectedLearnerSpeakerId: speakerTwoId,
+    material: {
+      id: materialId,
+      ownerId,
+      title: "Cafe order",
+      situation: "Ordering a drink",
+      tags: [{ displayName: "Travel", normalizedName: "travel" }],
+      speakers: [
+        { id: speakerOneId, order: 1 as const, displayName: "상대방" },
+        { id: speakerTwoId, order: 2 as const, displayName: "나" },
+      ] as const,
+      lines: [
+        {
+          id: "44444444-4444-4444-8444-444444444444",
+          order: 0,
+          speakerId: speakerOneId,
+          text: "Hello",
+          translation: null,
+        },
+      ],
+      state: MaterialState.ACTIVE,
+      deletedAt: null,
+      createdAt: new Date("2026-06-13T00:00:00.000Z"),
+      updatedAt: new Date("2026-06-13T00:10:00.000Z"),
+    },
+  };
+
+  it("should accept an active material snapshot with a valid learner speaker", () => {
+    const parsed = createRoleplaySessionSnapshotSchema.parse(validSnapshot);
+
+    expect(parsed.material.title).toBe("Cafe order");
+    expect(parsed.selectedLearnerSpeakerId).toBe(speakerTwoId);
+  });
+
+  it("should reject a snapshot whose learner speaker is not on the material", () => {
+    const parsed = createRoleplaySessionSnapshotSchema.safeParse({
+      ...validSnapshot,
+      selectedLearnerSpeakerId: `${materialId}:speaker:1`.replace("11111111", "22222222"),
     });
 
     expect(parsed.success).toBe(false);
