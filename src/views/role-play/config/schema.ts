@@ -55,11 +55,17 @@ export type RoleplayEditorDraftInput = z.infer<typeof roleplayEditorDraftSchema>
 const partnerVoiceSchema = z.nativeEnum(RoleplayPartnerVoice);
 const speechSpeedSchema = z.number().min(0.7).max(1.3);
 
-export const speakRolePlayPartnerLineSchema = z.object({
-  text: z.string().trim().min(1).max(2000),
-  voice: partnerVoiceSchema,
-  speed: speechSpeedSchema,
-});
+export const speakRolePlayPartnerLineSchema = z.discriminatedUnion("mode", [
+  z.object({
+    mode: z.literal("preview"),
+    voice: partnerVoiceSchema,
+    speed: speechSpeedSchema,
+  }),
+  z.object({
+    mode: z.literal("session"),
+    sessionId: uuidSchema,
+  }),
+]);
 
 export const createRoleplaySessionInputSchema = z
   .object({

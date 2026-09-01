@@ -5,11 +5,11 @@ import { isUuidString } from "@/shared/utils/uuid";
 
 // entities
 import { SessionState } from "@/entities/memorization-session";
-import type { MaterialId, SessionId } from "@/entities/value-object";
+import type { SessionId } from "@/entities/value-object";
 
 // views
 import type { MemorizationReadyMode } from "@/views/memorization/models/ready";
-import { getMemorizationReadyMaterial } from "@/views/memorization/services/server/getMemorizationReadyMaterial";
+import { convertMemorizationSessionToRecordingMaterial } from "@/views/memorization/models/converter/convertMemorizationSessionToRecordingMaterial";
 import { getMemorizationSession } from "@/views/memorization/services/server/getMemorizationSession";
 import { MemorizationRecordingView } from "@/views/recording/memorization/ui/MemorizationRecordingView";
 
@@ -34,22 +34,16 @@ export default async function SentenceMemorizationSessionPage({
 
   if (
     !session ||
-    session.sourceMaterialId !== id ||
     session.state === SessionState.DELETED ||
-    session.deletedAt
+    session.deletedAt ||
+    (session.sourceMaterialId !== null && session.sourceMaterialId !== id)
   ) {
-    notFound();
-  }
-
-  const material = await getMemorizationReadyMaterial(id as MaterialId);
-
-  if (!material) {
     notFound();
   }
 
   return (
     <MemorizationRecordingView
-      material={material}
+      material={convertMemorizationSessionToRecordingMaterial(session, id)}
       settings={{
         mode: pick(query.mode, modes, "read"),
       }}

@@ -24,11 +24,14 @@ describe("RoleplaySessionRepository", () => {
     const sessionQuery = createMutationQuery(queryResult(session));
     const tagQuery = createMutationQuery(queryResult(tags));
     const lineQuery = createMutationQuery(queryResult(lines));
-    const { client, from } = createSupabaseStub({
-      roleplay_sessions: [sessionQuery],
-      roleplay_session_tags: [tagQuery],
-      roleplay_session_lines: [lineQuery],
-    });
+    const { client, from, rpc } = createSupabaseStub(
+      {
+        roleplay_sessions: [sessionQuery],
+        roleplay_session_tags: [tagQuery],
+        roleplay_session_lines: [lineQuery],
+      },
+      queryResult(session.id),
+    );
     const repository = new RoleplaySessionRepository(client);
     const material = createMaterial();
 
@@ -50,41 +53,29 @@ describe("RoleplaySessionRepository", () => {
       lineSnapshots: [{ text: lines[0].text_snapshot, speakerOrder: 1 }],
       state: "ready",
     });
+    expect(rpc).toHaveBeenCalledWith("create_roleplay_session_snapshot", {
+      p_material_id: material.id,
+      p_material_title: material.title,
+      p_situation: material.situation,
+      p_speaker_one_name: "Staff",
+      p_speaker_two_name: "Passenger",
+      p_selected_learner_speaker_order: 2,
+      p_partner_voice: RoleplayPartnerVoice.JAMES,
+      p_speech_speed: 0.9,
+      p_tags: [{ display_name: "Airport", normalized_name: "airport" }],
+      p_lines: [
+        {
+          line_order: 0,
+          speaker_order: 1,
+          text_snapshot: "How can I help you?",
+          translation_snapshot: null,
+        },
+      ],
+    });
     expect(from).toHaveBeenNthCalledWith(1, "roleplay_sessions");
     expect(from).toHaveBeenNthCalledWith(2, "roleplay_session_tags");
     expect(from).toHaveBeenNthCalledWith(3, "roleplay_session_lines");
-    expect(sessionQuery.insert).toHaveBeenCalledWith({
-      user_id: material.ownerId,
-      material_id: material.id,
-      material_title_snapshot: material.title,
-      situation_snapshot: material.situation,
-      speaker_one_name_snapshot: "Staff",
-      speaker_two_name_snapshot: "Passenger",
-      selected_learner_speaker_order: 2,
-      partner_voice: RoleplayPartnerVoice.JAMES,
-      speech_speed: 0.9,
-      current_line_order: 0,
-      status: "ready",
-      started_at: null,
-    });
-    expect(tagQuery.insert).toHaveBeenCalledWith([
-      {
-        session_id: session.id,
-        user_id: material.ownerId,
-        display_name: "Airport",
-        normalized_name: "airport",
-      },
-    ]);
-    expect(lineQuery.insert).toHaveBeenCalledWith([
-      {
-        session_id: session.id,
-        user_id: material.ownerId,
-        line_order: 0,
-        speaker_order: 1,
-        text_snapshot: "How can I help you?",
-        translation_snapshot: null,
-      },
-    ]);
+    expect(sessionQuery.maybeSingle).toHaveBeenCalled();
   });
 });
 
@@ -116,6 +107,7 @@ function createMutationQuery(result: QueryResult<unknown>) {
     select: jest.fn(),
     eq: jest.fn(),
     single: jest.fn(async () => result),
+    maybeSingle: jest.fn(async () => result),
     then: (
       onFulfilled: (value: QueryResult<unknown>) => unknown,
       onRejected?: (reason: unknown) => unknown,
@@ -130,7 +122,10 @@ function createMutationQuery(result: QueryResult<unknown>) {
   return query;
 }
 
-function createSupabaseStub(tableQueries: Record<string, QueryInput[]>) {
+function createSupabaseStub(
+  tableQueries: Record<string, QueryInput[]>,
+  rpcResult: QueryResult<unknown> = queryResult(null),
+) {
   const queues = Object.fromEntries(
     Object.entries(tableQueries).map(([table, queries]) => [
       table,
@@ -146,10 +141,12 @@ function createSupabaseStub(tableQueries: Record<string, QueryInput[]>) {
 
     return query;
   });
+  const rpc = jest.fn(async () => rpcResult);
 
   return {
-    client: { from } as unknown as SupabaseClient<Database>,
+    client: { from, rpc } as unknown as SupabaseClient<Database>,
     from,
+    rpc,
   };
 }
 

@@ -6,14 +6,14 @@ import { isUuidString } from "@/shared/utils/uuid";
 // entities
 import type { RoleplaySession } from "@/entities/roleplay-session";
 import { SessionState } from "@/entities/roleplay-session";
-import type { MaterialId, SessionId } from "@/entities/value-object";
+import type { SessionId } from "@/entities/value-object";
 
 // views
 import type {
   RoleplayReadyEvaluationMode,
   RoleplayReadySettings,
 } from "@/views/role-play/models/interface";
-import { getRolePlayReadyMaterial } from "@/views/role-play/services/server/getRolePlayReadyMaterial";
+import { convertRolePlaySessionToRecordingMaterial } from "@/views/role-play/models/converter/convertRolePlaySessionToRecordingMaterial";
 import { getRolePlaySession } from "@/views/role-play/services/server/getRolePlaySession";
 import { RolePlayRecordingView } from "@/views/recording/role-play/ui/RolePlayRecordingView";
 
@@ -38,22 +38,17 @@ export default async function RolePlayingSessionPage({
 
   if (
     !session ||
-    session.sourceMaterialId !== id ||
     session.state === SessionState.DELETED ||
-    session.deletedAt
+    session.deletedAt ||
+    (session.sourceMaterialId !== null && session.sourceMaterialId !== id)
   ) {
-    notFound();
-  }
-
-  const material = await getRolePlayReadyMaterial(id as MaterialId);
-
-  if (!material) {
     notFound();
   }
 
   return (
     <RolePlayRecordingView
-      material={material}
+      sessionId={session.id}
+      material={convertRolePlaySessionToRecordingMaterial(session, id)}
       settings={settingsFromSession(
         session,
         pick(query.evaluationMode, evaluationModes, "context"),

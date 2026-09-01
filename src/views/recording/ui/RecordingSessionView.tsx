@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, LoaderCircle, Mic, RotateCcw, Square, X } from "lucide-react";
+import { ChevronLeft, LoaderCircle, Mic, RotateCcw, Square, Volume2, X } from "lucide-react";
 import * as React from "react";
 
 import { useRecordingSession } from "@/features/session-recording";
@@ -12,6 +12,9 @@ import type { RecordingPhase, RecordingPillar } from "@/views/recording/models/i
 import { getRecordingSessionHint } from "@/views/recording/models/recordingSessionMessage";
 
 export type { RecordingPhase, RecordingPillar } from "@/views/recording/models/interface";
+
+const SILENT_WAV =
+  "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
 
 export interface RecordingSessionViewProps {
   pillar: RecordingPillar;
@@ -61,6 +64,11 @@ export function RecordingSessionView({
   const startedAtRef = React.useRef<number | null>(null);
   const partnerAudioRef = React.useRef<HTMLAudioElement | null>(null);
   const partnerObjectUrlRef = React.useRef<string | null>(null);
+  const partnerBlobRef = React.useRef<Blob | null>(null);
+  const partnerPlayIdRef = React.useRef(0);
+  const [partnerPlaybackBlocked, setPartnerPlaybackBlocked] = React.useState(false);
+  const [canReplayPartner, setCanReplayPartner] = React.useState(false);
+  const [partnerReplayNonce, setPartnerReplayNonce] = React.useState(0);
   const audio = recording.recordedAudio;
   const displayedStep = phase === "ready" ? 0 : currentStep;
   const isRecording = phase === "recording";
@@ -76,6 +84,59 @@ export function RecordingSessionView({
     setCurrentStep(initialPhase === "ready" ? 0 : Math.min(activeStep, totalSteps));
   }, [activeStep, initialPhase, totalSteps]);
 
+  const getPartnerAudio = React.useCallback(() => {
+    const partnerAudio = partnerAudioRef.current ?? new Audio();
+    partnerAudioRef.current = partnerAudio;
+    return partnerAudio;
+  }, []);
+
+  const unlockPartnerAudio = React.useCallback(async () => {
+    const partnerAudio = getPartnerAudio();
+    partnerAudio.src = SILENT_WAV;
+
+    try {
+      await partnerAudio.play();
+      partnerAudio.pause();
+      partnerAudio.currentTime = 0;
+    } catch {
+      // Autoplay unlock is best-effort; replay remains available if play() later fails.
+    }
+  }, [getPartnerAudio]);
+
+  const playPartnerBlob = React.useCallback(
+    async (blob: Blob, playId: number) => {
+      const partnerAudio = getPartnerAudio();
+
+      if (partnerObjectUrlRef.current) {
+        URL.revokeObjectURL(partnerObjectUrlRef.current);
+      }
+
+      const objectUrl = URL.createObjectURL(blob);
+      partnerObjectUrlRef.current = objectUrl;
+      partnerAudio.src = objectUrl;
+      partnerAudio.currentTime = 0;
+      partnerAudio.onended = () => {
+        if (playId === partnerPlayIdRef.current) {
+          setPartnerPlaybackBlocked(false);
+          setPhase("user-ready");
+        }
+      };
+      partnerAudio.onerror = () => {
+        if (playId === partnerPlayIdRef.current) {
+          setPartnerPlaybackBlocked(true);
+        }
+      };
+
+      try {
+        await partnerAudio.play();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [getPartnerAudio],
+  );
+
   React.useEffect(() => {
     if (phase !== "partner-speaking") {
       return;
@@ -90,42 +151,35 @@ export function RecordingSessionView({
       return () => window.clearTimeout(timeoutId);
     }
 
-    const audio = partnerAudioRef.current ?? new Audio();
-    partnerAudioRef.current = audio;
+    const partnerAudio = getPartnerAudio();
+    const playId = partnerPlayIdRef.current + 1;
+    partnerPlayIdRef.current = playId;
     let cancelled = false;
-
-    const finish = () => {
-      if (!cancelled) {
-        setPhase("user-ready");
-      }
-    };
 
     const playPartnerLine = async () => {
       try {
-        const blob = await speakPartnerLine();
+        const blob = partnerBlobRef.current ?? (await speakPartnerLine());
 
-        if (cancelled) {
+        if (cancelled || playId !== partnerPlayIdRef.current) {
           return;
         }
 
         if (!blob) {
-          finish();
+          setPartnerPlaybackBlocked(true);
           return;
         }
 
-        if (partnerObjectUrlRef.current) {
-          URL.revokeObjectURL(partnerObjectUrlRef.current);
-        }
+        partnerBlobRef.current = blob;
+        setCanReplayPartner(true);
+        const played = await playPartnerBlob(blob, playId);
 
-        const objectUrl = URL.createObjectURL(blob);
-        partnerObjectUrlRef.current = objectUrl;
-        audio.src = objectUrl;
-        audio.currentTime = 0;
-        audio.onended = finish;
-        audio.onerror = finish;
-        await audio.play();
+        if (!cancelled && playId === partnerPlayIdRef.current && !played) {
+          setPartnerPlaybackBlocked(true);
+        }
       } catch {
-        finish();
+        if (!cancelled && playId === partnerPlayIdRef.current) {
+          setPartnerPlaybackBlocked(true);
+        }
       }
     };
 
@@ -133,11 +187,18 @@ export function RecordingSessionView({
 
     return () => {
       cancelled = true;
-      audio.pause();
-      audio.onended = null;
-      audio.onerror = null;
+      partnerAudio.pause();
+      partnerAudio.onended = null;
+      partnerAudio.onerror = null;
     };
-  }, [autoAdvancePartner, phase, speakPartnerLine]);
+  }, [
+    autoAdvancePartner,
+    getPartnerAudio,
+    phase,
+    playPartnerBlob,
+    partnerReplayNonce,
+    speakPartnerLine,
+  ]);
 
   React.useEffect(() => {
     return () => {
@@ -164,9 +225,41 @@ export function RecordingSessionView({
     }
   }, [recording.state.status]);
 
+  const beginPartnerOrUserTurn = async () => {
+    setPartnerPlaybackBlocked(false);
+
+    if (!hasPartnerTurn) {
+      setPhase("user-ready");
+      return;
+    }
+
+    await unlockPartnerAudio();
+    setPhase("partner-speaking");
+  };
+
   const startTurn = () => {
     setCurrentStep((step) => (step === 0 ? Math.min(1, totalSteps) : step));
-    setPhase(hasPartnerTurn ? "partner-speaking" : "user-ready");
+    void beginPartnerOrUserTurn();
+  };
+
+  const replayPartnerLine = async () => {
+    setPartnerPlaybackBlocked(false);
+    const playId = partnerPlayIdRef.current + 1;
+    partnerPlayIdRef.current = playId;
+
+    if (partnerBlobRef.current) {
+      const played = await playPartnerBlob(partnerBlobRef.current, playId);
+
+      if (playId === partnerPlayIdRef.current && !played) {
+        setPartnerPlaybackBlocked(true);
+      }
+
+      return;
+    }
+
+    partnerBlobRef.current = null;
+    setCanReplayPartner(false);
+    setPartnerReplayNonce((nonce) => nonce + 1);
   };
 
   const retryRecording = () => {
@@ -219,7 +312,7 @@ export function RecordingSessionView({
       setCurrentStep((step) => Math.min(totalSteps, step + 1));
       startedAtRef.current = null;
       setElapsedMs(0);
-      setPhase(hasPartnerTurn ? "partner-speaking" : "user-ready");
+      await beginPartnerOrUserTurn();
     } catch {
       setSaveFailed(true);
       setPhase("recorded");
@@ -261,10 +354,17 @@ export function RecordingSessionView({
           recording={isRecording}
           recorded={isRecorded}
           hasPartnerTurn={hasPartnerTurn}
+          canReplayPartner={canReplayPartner || partnerPlaybackBlocked}
           saving={saving}
-          message={getRecordingSessionHint(phase, recording.state, saveFailed)}
+          message={getRecordingSessionHint(
+            phase,
+            recording.state,
+            saveFailed,
+            partnerPlaybackBlocked,
+          )}
           onOrbClick={handleOrbClick}
           onRetry={retryRecording}
+          onReplayPartner={replayPartnerLine}
           onSave={handleSave}
         />
       )}
@@ -370,10 +470,12 @@ function RecordingPanel({
   recording,
   recorded,
   hasPartnerTurn,
+  canReplayPartner,
   saving,
   message,
   onOrbClick,
   onRetry,
+  onReplayPartner,
   onSave,
 }: {
   title: string;
@@ -385,10 +487,12 @@ function RecordingPanel({
   recording: boolean;
   recorded: boolean;
   hasPartnerTurn: boolean;
+  canReplayPartner: boolean;
   saving: boolean;
   message: string;
   onOrbClick: () => void;
   onRetry: () => void;
+  onReplayPartner: () => void;
   onSave: () => void;
 }) {
   return (
@@ -409,6 +513,12 @@ function RecordingPanel({
         <div className="flex flex-col items-center gap-[13px]">
           <TimerPill recording={recording}>{durationLabel}</TimerPill>
           <p className="text-body-3 text-white/55">{message}</p>
+          {phase === "partner-speaking" && canReplayPartner ? (
+            <GlassButton onClick={onReplayPartner}>
+              <Volume2 />
+              다시 듣기
+            </GlassButton>
+          ) : null}
         </div>
       </section>
       {recorded ? (

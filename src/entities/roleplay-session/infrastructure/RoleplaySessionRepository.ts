@@ -193,76 +193,38 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
       selectedLearnerSpeakerId,
     );
 
-    const { data: session, error: sessionError } = await this.supabase
-      .from("roleplay_sessions")
-      .insert({
-        user_id: material.ownerId,
-        material_id: material.id,
-        material_title_snapshot: material.title,
-        situation_snapshot: material.situation,
-        speaker_one_name_snapshot: speakerOne.displayName,
-        speaker_two_name_snapshot: speakerTwo.displayName,
-        selected_learner_speaker_order: selectedLearnerSpeakerOrder,
-        partner_voice: partnerVoice,
-        speech_speed: speechSpeed,
-        current_line_order: 0,
-        status: SessionState.READY,
-        started_at: null,
-      })
-      .select("*")
-      .single();
+    const { data: sessionId, error } = await this.supabase.rpc("create_roleplay_session_snapshot", {
+      p_material_id: material.id,
+      p_material_title: material.title,
+      p_situation: material.situation,
+      p_speaker_one_name: speakerOne.displayName,
+      p_speaker_two_name: speakerTwo.displayName,
+      p_selected_learner_speaker_order: selectedLearnerSpeakerOrder,
+      p_partner_voice: partnerVoice,
+      p_speech_speed: speechSpeed,
+      p_tags: material.tags.map((tag) => ({
+        display_name: tag.displayName,
+        normalized_name: tag.normalizedName,
+      })),
+      p_lines: material.lines.map((line) => ({
+        line_order: line.order,
+        speaker_order: resolveSpeakerOrder(material.speakers, line.speakerId),
+        text_snapshot: line.text,
+        translation_snapshot: line.translation,
+      })),
+    });
 
-    if (sessionError || !session) {
-      throw new Error(`Failed to create roleplay session: ${sessionError?.message}`);
+    if (error || !sessionId) {
+      throw new Error(`Failed to create roleplay session: ${error?.message}`);
     }
 
-    try {
-      const tagsResult =
-        material.tags.length === 0
-          ? { data: [] as RoleplaySessionTagRow[], error: null }
-          : await this.supabase
-              .from("roleplay_session_tags")
-              .insert(
-                material.tags.map((tag) => ({
-                  session_id: session.id,
-                  user_id: material.ownerId,
-                  display_name: tag.displayName,
-                  normalized_name: tag.normalizedName,
-                })),
-              )
-              .select("*");
+    const session = await this.findById(sessionId as SessionId);
 
-      if (tagsResult.error) {
-        throw new Error(`Failed to create roleplay session tags: ${tagsResult.error.message}`);
-      }
-
-      const { data: lines, error: linesError } = await this.supabase
-        .from("roleplay_session_lines")
-        .insert(
-          material.lines.map((line) => ({
-            session_id: session.id,
-            user_id: material.ownerId,
-            line_order: line.order,
-            speaker_order: resolveSpeakerOrder(material.speakers, line.speakerId),
-            text_snapshot: line.text,
-            translation_snapshot: line.translation,
-          })),
-        )
-        .select("*");
-
-      if (linesError || !lines) {
-        throw new Error(`Failed to create roleplay session lines: ${linesError?.message}`);
-      }
-
-      return mapRoleplaySessionRowToEntity({
-        session,
-        tags: tagsResult.data ?? [],
-        lines,
-      });
-    } catch (error) {
-      await this.supabase.from("roleplay_sessions").delete().eq("id", session.id);
-      throw error;
+    if (!session) {
+      throw new Error("Failed to load created roleplay session");
     }
+
+    return session;
   }
 }
 

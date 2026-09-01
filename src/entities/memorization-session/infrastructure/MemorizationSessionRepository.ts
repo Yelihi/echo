@@ -223,106 +223,37 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
 
   async createSession(snapshot: CreateMemorizationSessionSnapshot): Promise<MemorizationSession> {
     const { material } = snapshot;
-
-    const { data: session, error: sessionError } = await this.supabase
-      .from("memorization_sessions")
-      .insert({
-        user_id: material.ownerId,
-        material_id: material.id,
-        material_title_snapshot: material.title,
-        current_paragraph_order: 0,
-        current_sentence_order: 0,
-        status: SessionState.READY,
-        started_at: null,
-      })
-      .select("*")
-      .single();
-
-    if (sessionError || !session) {
-      throw new Error(`Failed to create memorization session: ${sessionError?.message}`);
-    }
-
-    try {
-      const tagsResult =
-        material.tags.length === 0
-          ? { data: [] as MemorizationSessionTagRow[], error: null }
-          : await this.supabase
-              .from("memorization_session_tags")
-              .insert(
-                material.tags.map((tag) => ({
-                  session_id: session.id,
-                  user_id: material.ownerId,
-                  display_name: tag.displayName,
-                  normalized_name: tag.normalizedName,
-                })),
-              )
-              .select("*");
-
-      if (tagsResult.error) {
-        throw new Error(`Failed to create memorization session tags: ${tagsResult.error.message}`);
-      }
-
-      const { data: paragraphs, error: paragraphsError } = await this.supabase
-        .from("memorization_session_paragraphs")
-        .insert(
-          material.paragraphs.map((paragraph) => ({
-            session_id: session.id,
-            user_id: material.ownerId,
-            paragraph_order: paragraph.order,
+    const { data: sessionId, error } = await this.supabase.rpc(
+      "create_memorization_session_snapshot",
+      {
+        p_material_id: material.id,
+        p_material_title: material.title,
+        p_tags: material.tags.map((tag) => ({
+          display_name: tag.displayName,
+          normalized_name: tag.normalizedName,
+        })),
+        p_paragraphs: material.paragraphs.map((paragraph) => ({
+          paragraph_order: paragraph.order,
+          sentences: paragraph.sentences.map((sentence) => ({
+            sentence_order: sentence.order,
+            text_snapshot: sentence.text,
+            translation_snapshot: sentence.translation,
           })),
-        )
-        .select("*");
+        })),
+      },
+    );
 
-      if (paragraphsError || !paragraphs) {
-        throw new Error(
-          `Failed to create memorization session paragraphs: ${paragraphsError?.message}`,
-        );
-      }
-
-      const paragraphIdByOrder = new Map(
-        paragraphs.map((paragraph) => [paragraph.paragraph_order, paragraph.id]),
-      );
-
-      const { data: sentences, error: sentencesError } = await this.supabase
-        .from("memorization_session_sentences")
-        .insert(
-          material.paragraphs.flatMap((paragraph) => {
-            const paragraphId = paragraphIdByOrder.get(paragraph.order);
-
-            if (!paragraphId) {
-              throw new Error(
-                `Missing memorization session paragraph for order: ${paragraph.order}`,
-              );
-            }
-
-            return paragraph.sentences.map((sentence) => ({
-              session_id: session.id,
-              user_id: material.ownerId,
-              paragraph_id: paragraphId,
-              sentence_order: sentence.order,
-              text_snapshot: sentence.text,
-              translation_snapshot: sentence.translation,
-            }));
-          }),
-        )
-        .select("*");
-
-      if (sentencesError || !sentences) {
-        throw new Error(
-          `Failed to create memorization session sentences: ${sentencesError?.message}`,
-        );
-      }
-
-      return mapMemorizationSessionRowToEntity({
-        session,
-        tags: tagsResult.data ?? [],
-        paragraphs,
-        sentences,
-      });
-    } catch (error) {
-      await this.supabase.from("memorization_sessions").delete().eq("id", session.id);
-      throw error;
+    if (error || !sessionId) {
+      throw new Error(`Failed to create memorization session: ${error?.message}`);
     }
+
+    const session = await this.findById(sessionId as SessionId);
+
+    if (!session) {
+      throw new Error("Failed to load created memorization session");
+    }
+
+    return session;
   }
 }
 

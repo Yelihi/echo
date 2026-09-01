@@ -23,6 +23,7 @@ import {
 
 export interface RolePlayRecordingViewProps {
   material: RoleplayReadyMaterial;
+  sessionId?: string;
   settings?: RoleplayReadySettings;
   initialPhase?: RecordingPhase;
   autoAdvancePartner?: boolean;
@@ -30,6 +31,7 @@ export interface RolePlayRecordingViewProps {
 
 export function RolePlayRecordingView({
   material,
+  sessionId,
   settings,
   initialPhase,
   autoAdvancePartner,
@@ -37,14 +39,13 @@ export function RolePlayRecordingView({
   const settingsSummary = settings ? getSettingsSummary(settings) : [];
   const partnerLine = material.partnerLine;
   const speakPartnerLine = useCallback(async () => {
-    if (!settings || !partnerLine) {
+    if (!sessionId || !partnerLine) {
       return null;
     }
 
     const result = await speakRolePlayPartnerLine({
-      text: partnerLine,
-      voice: settings.voice,
-      speed: settings.speed,
+      mode: "session",
+      sessionId,
     });
 
     if (result.code !== "SUCCESS") {
@@ -52,7 +53,7 @@ export function RolePlayRecordingView({
     }
 
     return decodeTtsAudioBase64(result.audioBase64, result.mimeType);
-  }, [partnerLine, settings]);
+  }, [partnerLine, sessionId]);
 
   return (
     <RecordingSessionView
@@ -73,7 +74,7 @@ export function RolePlayRecordingView({
       partnerLine={partnerLine}
       initialPhase={initialPhase}
       autoAdvancePartner={autoAdvancePartner}
-      speakPartnerLine={settings && partnerLine ? speakPartnerLine : undefined}
+      speakPartnerLine={sessionId && partnerLine ? speakPartnerLine : undefined}
     />
   );
 }

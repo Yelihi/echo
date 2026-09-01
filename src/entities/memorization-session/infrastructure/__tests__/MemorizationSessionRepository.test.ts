@@ -26,12 +26,15 @@ describe("MemorizationSessionRepository", () => {
     const tagQuery = createMutationQuery(queryResult(tags));
     const paragraphQuery = createMutationQuery(queryResult(paragraphs));
     const sentenceQuery = createMutationQuery(queryResult(sentences));
-    const { client, from } = createSupabaseStub({
-      memorization_sessions: [sessionQuery],
-      memorization_session_tags: [tagQuery],
-      memorization_session_paragraphs: [paragraphQuery],
-      memorization_session_sentences: [sentenceQuery],
-    });
+    const { client, from, rpc } = createSupabaseStub(
+      {
+        memorization_sessions: [sessionQuery],
+        memorization_session_tags: [tagQuery],
+        memorization_session_paragraphs: [paragraphQuery],
+        memorization_session_sentences: [sentenceQuery],
+      },
+      queryResult(session.id),
+    );
     const repository = new MemorizationSessionRepository(client);
     const material = createMaterial();
 
@@ -45,44 +48,28 @@ describe("MemorizationSessionRepository", () => {
       paragraphSnapshots: [{ order: 0, sentences: [{ text: sentences[0].text_snapshot }] }],
       state: "ready",
     });
+    expect(rpc).toHaveBeenCalledWith("create_memorization_session_snapshot", {
+      p_material_id: material.id,
+      p_material_title: material.title,
+      p_tags: [{ display_name: "Speech", normalized_name: "speech" }],
+      p_paragraphs: [
+        {
+          paragraph_order: 0,
+          sentences: [
+            {
+              sentence_order: 0,
+              text_snapshot: "English is a daily habit.",
+              translation_snapshot: null,
+            },
+          ],
+        },
+      ],
+    });
     expect(from).toHaveBeenNthCalledWith(1, "memorization_sessions");
     expect(from).toHaveBeenNthCalledWith(2, "memorization_session_tags");
     expect(from).toHaveBeenNthCalledWith(3, "memorization_session_paragraphs");
     expect(from).toHaveBeenNthCalledWith(4, "memorization_session_sentences");
-    expect(sessionQuery.insert).toHaveBeenCalledWith({
-      user_id: material.ownerId,
-      material_id: material.id,
-      material_title_snapshot: material.title,
-      current_paragraph_order: 0,
-      current_sentence_order: 0,
-      status: "ready",
-      started_at: null,
-    });
-    expect(tagQuery.insert).toHaveBeenCalledWith([
-      {
-        session_id: session.id,
-        user_id: material.ownerId,
-        display_name: "Speech",
-        normalized_name: "speech",
-      },
-    ]);
-    expect(paragraphQuery.insert).toHaveBeenCalledWith([
-      {
-        session_id: session.id,
-        user_id: material.ownerId,
-        paragraph_order: 0,
-      },
-    ]);
-    expect(sentenceQuery.insert).toHaveBeenCalledWith([
-      {
-        session_id: session.id,
-        user_id: material.ownerId,
-        paragraph_id: paragraphs[0].id,
-        sentence_order: 0,
-        text_snapshot: "English is a daily habit.",
-        translation_snapshot: null,
-      },
-    ]);
+    expect(sessionQuery.maybeSingle).toHaveBeenCalled();
   });
 });
 
@@ -114,6 +101,7 @@ function createMutationQuery(result: QueryResult<unknown>) {
     select: jest.fn(),
     eq: jest.fn(),
     single: jest.fn(async () => result),
+    maybeSingle: jest.fn(async () => result),
     then: (
       onFulfilled: (value: QueryResult<unknown>) => unknown,
       onRejected?: (reason: unknown) => unknown,
@@ -128,7 +116,10 @@ function createMutationQuery(result: QueryResult<unknown>) {
   return query;
 }
 
-function createSupabaseStub(tableQueries: Record<string, QueryInput[]>) {
+function createSupabaseStub(
+  tableQueries: Record<string, QueryInput[]>,
+  rpcResult: QueryResult<unknown> = queryResult(null),
+) {
   const queues = Object.fromEntries(
     Object.entries(tableQueries).map(([table, queries]) => [
       table,
@@ -144,10 +135,12 @@ function createSupabaseStub(tableQueries: Record<string, QueryInput[]>) {
 
     return query;
   });
+  const rpc = jest.fn(async () => rpcResult);
 
   return {
-    client: { from } as unknown as SupabaseClient<Database>,
+    client: { from, rpc } as unknown as SupabaseClient<Database>,
     from,
+    rpc,
   };
 }
 

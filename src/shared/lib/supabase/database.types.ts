@@ -1035,6 +1035,37 @@ export type Database = {
         };
         Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
       };
+      consume_tts_generation: {
+        Args: {
+          p_limit?: number;
+          p_window_seconds?: number;
+        };
+        Returns: boolean;
+      };
+      create_roleplay_session_snapshot: {
+        Args: {
+          p_material_id: string;
+          p_material_title: string;
+          p_situation: string;
+          p_speaker_one_name: string;
+          p_speaker_two_name: string;
+          p_selected_learner_speaker_order: number;
+          p_partner_voice: string;
+          p_speech_speed: number;
+          p_tags: Json;
+          p_lines: Json;
+        };
+        Returns: string;
+      };
+      create_memorization_session_snapshot: {
+        Args: {
+          p_material_id: string;
+          p_material_title: string;
+          p_tags: Json;
+          p_paragraphs: Json;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       analysis_job_status: "queued" | "processing" | "completed" | "failed" | "canceled";

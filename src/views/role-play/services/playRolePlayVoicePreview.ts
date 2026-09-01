@@ -4,7 +4,6 @@
 import { decodeTtsAudioBase64 } from "@/shared/lib/tts/decodeTtsAudioBase64";
 
 // views
-import { ROLE_PLAY_VOICE_PREVIEW_TEXT } from "@/views/role-play/config/const";
 import type { RoleplayReadyVoice } from "@/views/role-play/models/interface";
 import { speakRolePlayPartnerLine } from "@/views/role-play/services/action/speakRolePlayPartnerLine";
 
@@ -31,7 +30,7 @@ export async function playRolePlayVoicePreview(input: {
   const requestId = previewRequestId;
 
   const result = await speakRolePlayPartnerLine({
-    text: ROLE_PLAY_VOICE_PREVIEW_TEXT,
+    mode: "preview",
     voice: input.voice,
     speed: input.speed,
   });
