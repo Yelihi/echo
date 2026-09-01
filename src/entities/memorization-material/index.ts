@@ -13,6 +13,9 @@ export type {
   MemorizationMaterialTagRow,
 } from "@/entities/memorization-material/models/mapper";
 export type {
+  CreateMemorizationMaterialInput,
+  CreateMemorizationMaterialParagraphInput,
+  CreateMemorizationMaterialSentenceInput,
   FindMemorizationMaterialsParams,
   MemorizationMaterialRepositoryPort,
 } from "@/entities/memorization-material/models/repository";
