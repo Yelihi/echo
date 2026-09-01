@@ -1,4 +1,4 @@
-export { SessionState } from "@/entities/roleplay-session/models/enums";
+export { RoleplayPartnerVoice, SessionState } from "@/entities/roleplay-session/models/enums";
 export type {
   RoleplayLineSnapshot,
   RoleplaySession,

@@ -7,7 +7,7 @@ import type { RolePlayReadyStore, RoleplayReadySettings } from "@/views/role-pla
 export const ROLE_PLAY_READY_DEFAULT_SETTINGS: RoleplayReadySettings = {
   role: "learner",
   evaluationMode: "context",
-  voice: "soft",
+  voice: "emma",
   speed: 1,
 };
 

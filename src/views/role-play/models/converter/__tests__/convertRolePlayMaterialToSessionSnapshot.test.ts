@@ -4,6 +4,7 @@ import { describe, expect, it } from "@jest/globals";
 import type { RoleplayMaterial } from "@/entities/roleplay-material";
 import { MaterialState } from "@/entities/roleplay-material/models/enums";
 import type { LineId, MaterialId, SpeakerId, UserId } from "@/entities/value-object";
+import { RoleplayPartnerVoice } from "@/entities/roleplay-session";
 
 // views
 import { convertRolePlayMaterialToSessionSnapshot } from "@/views/role-play/models/converter/convertRolePlayMaterialToSessionSnapshot";
@@ -38,9 +39,14 @@ describe("convertRolePlayMaterialToSessionSnapshot", () => {
       updatedAt: new Date("2026-06-13T00:10:00.000Z"),
     };
 
-    const snapshot = convertRolePlayMaterialToSessionSnapshot(material, learnerId);
+    const snapshot = convertRolePlayMaterialToSessionSnapshot(material, learnerId, {
+      partnerVoice: RoleplayPartnerVoice.EMMA,
+      speechSpeed: 1,
+    });
 
     expect(snapshot.selectedLearnerSpeakerId).toBe(learnerId);
+    expect(snapshot.partnerVoice).toBe(RoleplayPartnerVoice.EMMA);
+    expect(snapshot.speechSpeed).toBe(1);
     expect(snapshot.material).toEqual(material);
     expect(snapshot.material).not.toBe(material);
     expect(snapshot.material.tags).not.toBe(material.tags);

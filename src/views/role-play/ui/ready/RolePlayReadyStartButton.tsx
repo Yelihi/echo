@@ -24,20 +24,19 @@ export function RolePlayReadyStartButton({ materialId }: RolePlayReadyStartButto
   const startSession = () => {
     const { role, evaluationMode, voice, speed } = useRolePlayReadyStore.getState().settings;
     const params = new URLSearchParams({
-      role,
       evaluationMode,
-      voice,
-      speed: String(speed),
     });
 
     startTransition(async () => {
       const result = await createRolePlaySession({
         materialId,
         role,
+        voice,
+        speed,
       });
 
       if (result.code === "SUCCESS") {
-        router.push(`/role-playing/${materialId}/session?${params.toString()}`);
+        router.push(`/role-playing/${materialId}/session/${result.sessionId}?${params.toString()}`);
         return;
       }
 

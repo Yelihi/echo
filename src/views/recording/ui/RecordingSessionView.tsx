@@ -28,6 +28,7 @@ export interface RecordingSessionViewProps {
   initialPhase?: RecordingPhase;
   demoDurationMs?: number;
   autoAdvancePartner?: boolean;
+  speakPartnerLine?: () => Promise<Blob | null>;
   saveRecording?: (audio: CapturedAudio) => Promise<void>;
 }
 
@@ -46,6 +47,7 @@ export function RecordingSessionView({
   initialPhase = "ready",
   demoDurationMs = 12000,
   autoAdvancePartner = true,
+  speakPartnerLine,
   saveRecording,
 }: RecordingSessionViewProps) {
   const recording = useRecordingSession();
@@ -57,6 +59,8 @@ export function RecordingSessionView({
     initialPhase === "ready" ? 0 : Math.min(activeStep, totalSteps),
   );
   const startedAtRef = React.useRef<number | null>(null);
+  const partnerAudioRef = React.useRef<HTMLAudioElement | null>(null);
+  const partnerObjectUrlRef = React.useRef<string | null>(null);
   const audio = recording.recordedAudio;
   const displayedStep = phase === "ready" ? 0 : currentStep;
   const isRecording = phase === "recording";
@@ -73,13 +77,75 @@ export function RecordingSessionView({
   }, [activeStep, initialPhase, totalSteps]);
 
   React.useEffect(() => {
-    if (phase !== "partner-speaking" || !autoAdvancePartner) {
+    if (phase !== "partner-speaking") {
       return;
     }
 
-    const timeoutId = window.setTimeout(() => setPhase("user-ready"), 1400);
-    return () => window.clearTimeout(timeoutId);
-  }, [autoAdvancePartner, phase]);
+    if (!speakPartnerLine) {
+      if (!autoAdvancePartner) {
+        return;
+      }
+
+      const timeoutId = window.setTimeout(() => setPhase("user-ready"), 1400);
+      return () => window.clearTimeout(timeoutId);
+    }
+
+    const audio = partnerAudioRef.current ?? new Audio();
+    partnerAudioRef.current = audio;
+    let cancelled = false;
+
+    const finish = () => {
+      if (!cancelled) {
+        setPhase("user-ready");
+      }
+    };
+
+    const playPartnerLine = async () => {
+      try {
+        const blob = await speakPartnerLine();
+
+        if (cancelled) {
+          return;
+        }
+
+        if (!blob) {
+          finish();
+          return;
+        }
+
+        if (partnerObjectUrlRef.current) {
+          URL.revokeObjectURL(partnerObjectUrlRef.current);
+        }
+
+        const objectUrl = URL.createObjectURL(blob);
+        partnerObjectUrlRef.current = objectUrl;
+        audio.src = objectUrl;
+        audio.currentTime = 0;
+        audio.onended = finish;
+        audio.onerror = finish;
+        await audio.play();
+      } catch {
+        finish();
+      }
+    };
+
+    void playPartnerLine();
+
+    return () => {
+      cancelled = true;
+      audio.pause();
+      audio.onended = null;
+      audio.onerror = null;
+    };
+  }, [autoAdvancePartner, phase, speakPartnerLine]);
+
+  React.useEffect(() => {
+    return () => {
+      if (partnerObjectUrlRef.current) {
+        URL.revokeObjectURL(partnerObjectUrlRef.current);
+      }
+    };
+  }, []);
 
   React.useEffect(() => {
     if (phase !== "recording") {

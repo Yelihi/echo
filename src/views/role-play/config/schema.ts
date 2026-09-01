@@ -5,6 +5,7 @@ import { isUuidString } from "@/shared/utils/uuid";
 
 // entities
 import { MaterialState } from "@/entities/roleplay-material";
+import { RoleplayPartnerVoice } from "@/entities/roleplay-session";
 
 const uuidSchema = z.string().refine(isUuidString, { message: "Invalid uuid" });
 
@@ -51,11 +52,22 @@ export const roleplayEditorDraftSchema = z.object({
 
 export type RoleplayEditorDraftInput = z.infer<typeof roleplayEditorDraftSchema>;
 
+const partnerVoiceSchema = z.nativeEnum(RoleplayPartnerVoice);
+const speechSpeedSchema = z.number().min(0.7).max(1.3);
+
+export const speakRolePlayPartnerLineSchema = z.object({
+  text: z.string().trim().min(1).max(2000),
+  voice: partnerVoiceSchema,
+  speed: speechSpeedSchema,
+});
+
 export const createRoleplaySessionInputSchema = z
   .object({
     ownerId: uuidSchema,
     materialId: uuidSchema,
     selectedLearnerSpeakerId: speakerIdSchema,
+    partnerVoice: partnerVoiceSchema,
+    speechSpeed: speechSpeedSchema,
   })
   .superRefine((input, context) => {
     const expectedPrefix = `${input.materialId}:speaker:`;
@@ -108,6 +120,8 @@ export const createRoleplaySessionSnapshotSchema = z
   .object({
     material: roleplaySessionSnapshotMaterialSchema,
     selectedLearnerSpeakerId: speakerIdSchema,
+    partnerVoice: partnerVoiceSchema,
+    speechSpeed: speechSpeedSchema,
   })
   .superRefine((snapshot, context) => {
     const [speakerOne, speakerTwo] = snapshot.material.speakers;

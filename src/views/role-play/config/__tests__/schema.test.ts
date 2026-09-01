@@ -73,6 +73,8 @@ describe("createRoleplaySessionInputSchema", () => {
       ownerId,
       materialId,
       selectedLearnerSpeakerId: `${materialId}:speaker:2`,
+      partnerVoice: "emma",
+      speechSpeed: 1,
     });
 
     expect(parsed.selectedLearnerSpeakerId).toBe(`${materialId}:speaker:2`);
@@ -83,6 +85,8 @@ describe("createRoleplaySessionInputSchema", () => {
       ownerId,
       materialId,
       selectedLearnerSpeakerId: "22222222-2222-4222-8222-222222222222:speaker:2",
+      partnerVoice: "emma",
+      speechSpeed: 1,
     });
 
     expect(parsed.success).toBe(false);
@@ -97,6 +101,8 @@ describe("createRoleplaySessionSnapshotSchema", () => {
 
   const validSnapshot = {
     selectedLearnerSpeakerId: speakerTwoId,
+    partnerVoice: "emma",
+    speechSpeed: 1,
     material: {
       id: materialId,
       ownerId,

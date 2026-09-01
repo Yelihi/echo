@@ -46,6 +46,8 @@ describe("mapRoleplaySessionRowToEntity", () => {
         { displayName: "Travel", normalizedName: "travel" },
       ],
       selectedLearnerSpeakerOrder: 2,
+      partnerVoice: "emma",
+      speechSpeed: 1,
       speakerSnapshots: [
         {
           id: `${session.id}:speaker:1`,
@@ -82,6 +84,14 @@ describe("mapRoleplaySessionRowToEntity", () => {
     expect(entity.startedAt).toEqual(new Date(session.started_at as string));
     expect(entity.createdAt).toEqual(new Date(session.created_at));
     expect(entity.updatedAt).toEqual(new Date(session.updated_at));
+  });
+
+  it("rejects an unknown partner voice", () => {
+    const session = createSessionRow({ partner_voice: "alloy" });
+
+    expect(() => mapRoleplaySessionRowToEntity({ session, tags: [], lines: [] })).toThrow(
+      "Invalid roleplay partner voice: alloy",
+    );
   });
 
   it("rejects an unknown selected learner speaker order", () => {
@@ -124,6 +134,8 @@ function createSessionRow(overrides: Partial<RoleplaySessionRow> = {}): Roleplay
     speaker_one_name_snapshot: "Staff",
     speaker_two_name_snapshot: "Passenger",
     selected_learner_speaker_order: 2,
+    partner_voice: "emma",
+    speech_speed: 1,
     current_line_order: 1,
     status: "in_progress",
     started_at: "2026-06-13T00:01:00.000Z",

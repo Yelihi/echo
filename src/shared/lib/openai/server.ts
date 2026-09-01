@@ -3,6 +3,7 @@ import "server-only";
 import OpenAI from "openai";
 
 export const DEFAULT_OPENAI_STT_MODEL = "gpt-4o-mini-transcribe" as const;
+export const DEFAULT_OPENAI_TTS_MODEL = "tts-1" as const;
 export const DEFAULT_OPENAI_EVALUATION_MODEL = "gpt-5.4-mini" as const;
 
 let openAIClient: OpenAI | null = null;
@@ -23,6 +24,10 @@ export function getOpenAIServerClient(): OpenAI {
 
 export function getOpenAISTTModel(): string {
   return process.env.OPENAI_STT_MODEL?.trim() || DEFAULT_OPENAI_STT_MODEL;
+}
+
+export function getOpenAITTSModel(): string {
+  return process.env.OPENAI_TTS_MODEL?.trim() || DEFAULT_OPENAI_TTS_MODEL;
 }
 
 export function getOpenAIEvaluationModel(): string {

@@ -848,10 +848,12 @@ export type Database = {
           id: string;
           material_id: string | null;
           material_title_snapshot: string;
+          partner_voice: string;
           selected_learner_speaker_order: number;
           situation_snapshot: string;
           speaker_one_name_snapshot: string;
           speaker_two_name_snapshot: string;
+          speech_speed: number;
           started_at: string | null;
           status: Database["public"]["Enums"]["practice_session_status"];
           updated_at: string;
@@ -865,10 +867,12 @@ export type Database = {
           id?: string;
           material_id?: string | null;
           material_title_snapshot: string;
+          partner_voice?: string;
           selected_learner_speaker_order: number;
           situation_snapshot: string;
           speaker_one_name_snapshot: string;
           speaker_two_name_snapshot: string;
+          speech_speed?: number;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
           updated_at?: string;
@@ -882,10 +886,12 @@ export type Database = {
           id?: string;
           material_id?: string | null;
           material_title_snapshot?: string;
+          partner_voice?: string;
           selected_learner_speaker_order?: number;
           situation_snapshot?: string;
           speaker_one_name_snapshot?: string;
           speaker_two_name_snapshot?: string;
+          speech_speed?: number;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
           updated_at?: string;

@@ -88,11 +88,13 @@ export interface RolePlayEditorStore {
 // ready
 export type RoleplayReadyRole = "learner" | "partner";
 export type RoleplayReadyEvaluationMode = "exact" | "context";
-export type RoleplayReadyVoice = "soft" | "bright" | "calm";
+export type RoleplayReadyVoice = "emma" | "james" | "sofia";
 
 export interface CreateRolePlaySessionRequest {
   materialId: string;
   role: RoleplayReadyRole;
+  voice: RoleplayReadyVoice;
+  speed: number;
 }
 
 export interface RoleplayReadyMaterial {

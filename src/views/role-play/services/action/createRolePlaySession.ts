@@ -42,6 +42,8 @@ export const createRolePlaySession = async (
     ownerId: user.id,
     materialId: input.materialId,
     selectedLearnerSpeakerId: `${input.materialId}:speaker:${input.role === "learner" ? 2 : 1}`,
+    partnerVoice: input.voice,
+    speechSpeed: input.speed,
   });
 
   if (!parsedInput.success) {
@@ -60,6 +62,10 @@ export const createRolePlaySession = async (
     const snapshot = convertRolePlayMaterialToSessionSnapshot(
       material,
       parsedInput.data.selectedLearnerSpeakerId as SpeakerId,
+      {
+        partnerVoice: parsedInput.data.partnerVoice,
+        speechSpeed: parsedInput.data.speechSpeed,
+      },
     );
 
     if (!createRoleplaySessionSnapshotSchema.safeParse(snapshot).success) {

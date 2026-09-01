@@ -7,7 +7,7 @@ import type {
   RoleplaySpeakerSnapshot,
   SummaryRoleplaySessions,
 } from "@/entities/roleplay-session/models/entity";
-import { SessionState } from "@/entities/roleplay-session/models/enums";
+import { RoleplayPartnerVoice, SessionState } from "@/entities/roleplay-session/models/enums";
 
 export type RoleplaySessionRow = Database["public"]["Tables"]["roleplay_sessions"]["Row"];
 export type RoleplaySessionTagRow = Database["public"]["Tables"]["roleplay_session_tags"]["Row"];
@@ -49,6 +49,8 @@ export function mapRoleplaySessionRowToEntity(rowSet: RoleplaySessionRowSet): Ro
         normalizedName: tag.normalized_name,
       })),
     selectedLearnerSpeakerOrder: mapSpeakerOrder(rowSet.session.selected_learner_speaker_order),
+    partnerVoice: mapPartnerVoice(rowSet.session.partner_voice),
+    speechSpeed: Number(rowSet.session.speech_speed),
     speakerSnapshots,
     lineSnapshots: [...rowSet.lines]
       .sort((left, right) => left.line_order - right.line_order)
@@ -91,4 +93,16 @@ function mapSpeakerOrder(speakerOrder: number): 1 | 2 {
   }
 
   throw new Error(`Invalid roleplay session speaker order: ${speakerOrder}`);
+}
+
+function mapPartnerVoice(partnerVoice: string): RoleplayPartnerVoice {
+  if (
+    partnerVoice === RoleplayPartnerVoice.EMMA ||
+    partnerVoice === RoleplayPartnerVoice.JAMES ||
+    partnerVoice === RoleplayPartnerVoice.SOFIA
+  ) {
+    return partnerVoice;
+  }
+
+  throw new Error(`Invalid roleplay partner voice: ${partnerVoice}`);
 }

@@ -8,6 +8,7 @@ import type { Database } from "@/shared/lib/supabase";
 import type { RoleplayMaterial } from "@/entities/roleplay-material";
 import { MaterialState } from "@/entities/roleplay-material/models/enums";
 import { RoleplaySessionRepository } from "@/entities/roleplay-session/infrastructure/RoleplaySessionRepository";
+import { RoleplayPartnerVoice } from "@/entities/roleplay-session/models/enums";
 import type {
   RoleplaySessionLineRow,
   RoleplaySessionRow,
@@ -34,6 +35,8 @@ describe("RoleplaySessionRepository", () => {
     const result = await repository.createSession({
       material,
       selectedLearnerSpeakerId: material.speakers[1].id,
+      partnerVoice: RoleplayPartnerVoice.JAMES,
+      speechSpeed: 0.9,
     });
 
     expect(result).toMatchObject({
@@ -41,6 +44,8 @@ describe("RoleplaySessionRepository", () => {
       sourceMaterialId: material.id,
       materialTitleSnapshot: material.title,
       selectedLearnerSpeakerOrder: 2,
+      partnerVoice: "james",
+      speechSpeed: 0.9,
       tagsSnapshot: [{ displayName: "Airport", normalizedName: "airport" }],
       lineSnapshots: [{ text: lines[0].text_snapshot, speakerOrder: 1 }],
       state: "ready",
@@ -56,6 +61,8 @@ describe("RoleplaySessionRepository", () => {
       speaker_one_name_snapshot: "Staff",
       speaker_two_name_snapshot: "Passenger",
       selected_learner_speaker_order: 2,
+      partner_voice: RoleplayPartnerVoice.JAMES,
+      speech_speed: 0.9,
       current_line_order: 0,
       status: "ready",
       started_at: null,
@@ -187,6 +194,8 @@ function createSessionRow(overrides: Partial<RoleplaySessionRow> = {}): Roleplay
     speaker_one_name_snapshot: "Staff",
     speaker_two_name_snapshot: "Passenger",
     selected_learner_speaker_order: 2,
+    partner_voice: "james",
+    speech_speed: 0.9,
     current_line_order: 0,
     status: "ready",
     started_at: null,

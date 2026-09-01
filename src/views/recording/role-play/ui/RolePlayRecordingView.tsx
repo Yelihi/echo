@@ -1,3 +1,10 @@
+"use client";
+
+import { useCallback } from "react";
+
+// shared
+import { decodeTtsAudioBase64 } from "@/shared/lib/tts/decodeTtsAudioBase64";
+
 // views
 import {
   ROLE_PLAY_READY_EVALUATION_MODES,
@@ -8,6 +15,7 @@ import type {
   RoleplayReadyMaterial,
   RoleplayReadySettings,
 } from "@/views/role-play/models/interface";
+import { speakRolePlayPartnerLine } from "@/views/role-play/services/action/speakRolePlayPartnerLine";
 import {
   RecordingSessionView,
   type RecordingPhase,
@@ -27,6 +35,24 @@ export function RolePlayRecordingView({
   autoAdvancePartner,
 }: RolePlayRecordingViewProps) {
   const settingsSummary = settings ? getSettingsSummary(settings) : [];
+  const partnerLine = material.partnerLine;
+  const speakPartnerLine = useCallback(async () => {
+    if (!settings || !partnerLine) {
+      return null;
+    }
+
+    const result = await speakRolePlayPartnerLine({
+      text: partnerLine,
+      voice: settings.voice,
+      speed: settings.speed,
+    });
+
+    if (result.code !== "SUCCESS") {
+      return null;
+    }
+
+    return decodeTtsAudioBase64(result.audioBase64, result.mimeType);
+  }, [partnerLine, settings]);
 
   return (
     <RecordingSessionView
@@ -44,9 +70,10 @@ export function RolePlayRecordingView({
       totalSteps={material.lineCount}
       activeStep={Math.min(3, material.lineCount)}
       partnerRole={material.partnerRole}
-      partnerLine={material.partnerLine}
+      partnerLine={partnerLine}
       initialPhase={initialPhase}
       autoAdvancePartner={autoAdvancePartner}
+      speakPartnerLine={settings && partnerLine ? speakPartnerLine : undefined}
     />
   );
 }

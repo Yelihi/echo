@@ -186,7 +186,7 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
   }
 
   async createSession(snapshot: CreateRoleplaySessionSnapshot): Promise<RoleplaySession> {
-    const { material, selectedLearnerSpeakerId } = snapshot;
+    const { material, selectedLearnerSpeakerId, partnerVoice, speechSpeed } = snapshot;
     const [speakerOne, speakerTwo] = material.speakers;
     const selectedLearnerSpeakerOrder = resolveSpeakerOrder(
       material.speakers,
@@ -203,6 +203,8 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
         speaker_one_name_snapshot: speakerOne.displayName,
         speaker_two_name_snapshot: speakerTwo.displayName,
         selected_learner_speaker_order: selectedLearnerSpeakerOrder,
+        partner_voice: partnerVoice,
+        speech_speed: speechSpeed,
         current_line_order: 0,
         status: SessionState.READY,
         started_at: null,

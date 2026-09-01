@@ -11,6 +11,7 @@ export interface SliderFieldProps {
   step: number;
   value: number;
   onChange: (value: number) => void;
+  onCommit?: (value: number) => void;
   minLabel?: React.ReactNode;
   midLabel?: React.ReactNode;
   maxLabel?: React.ReactNode;
@@ -29,6 +30,7 @@ export const SliderField = ({
   step,
   value,
   onChange,
+  onCommit,
   minLabel,
   midLabel,
   maxLabel,
@@ -56,6 +58,19 @@ export const SliderField = ({
           step={step}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
+          onPointerUp={(e) => onCommit?.(Number(e.currentTarget.value))}
+          onKeyUp={(e) => {
+            if (
+              e.key === "ArrowLeft" ||
+              e.key === "ArrowRight" ||
+              e.key === "Home" ||
+              e.key === "End" ||
+              e.key === "PageUp" ||
+              e.key === "PageDown"
+            ) {
+              onCommit?.(Number(e.currentTarget.value));
+            }
+          }}
           aria-labelledby={labelId}
           className="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-accent-600 [&::-moz-range-thumb]:bg-white [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-accent-600 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow"
         />
