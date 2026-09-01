@@ -1,6 +1,10 @@
 import { z } from "zod";
 
+// shared
+import { isUuidString } from "@/shared/utils/uuid";
+
 // entities
+import { MaterialState } from "@/entities/memorization-material";
 import { createTagValue } from "@/entities/value-object";
 
 const uniqueDisplayTags = (tags: string[]): string[] => {
@@ -40,3 +44,52 @@ export const memorizationEditorDraftSchema = z.object({
 });
 
 export type MemorizationEditorDraftInput = z.infer<typeof memorizationEditorDraftSchema>;
+
+const uuidSchema = z.string().refine(isUuidString, { message: "Invalid uuid" });
+
+export const createMemorizationSessionInputSchema = z.object({
+  ownerId: uuidSchema,
+  materialId: uuidSchema,
+});
+
+export type CreateMemorizationSessionInputParsed = z.infer<
+  typeof createMemorizationSessionInputSchema
+>;
+
+const memorizationSessionSnapshotSentenceSchema = z.object({
+  id: uuidSchema,
+  order: z.number().int().min(0),
+  text: z.string().trim().min(1).max(2000),
+  translation: z.string().trim().min(1).max(2000).nullable(),
+});
+
+const memorizationSessionSnapshotParagraphSchema = z.object({
+  id: uuidSchema,
+  order: z.number().int().min(0),
+  sentences: z.array(memorizationSessionSnapshotSentenceSchema).min(1),
+});
+
+const memorizationSessionSnapshotMaterialSchema = z.object({
+  id: uuidSchema,
+  ownerId: uuidSchema,
+  title: z.string().trim().min(1).max(120),
+  tags: z.array(
+    z.object({
+      displayName: z.string().trim().min(1).max(80),
+      normalizedName: z.string().trim().min(1).max(80),
+    }),
+  ),
+  paragraphs: z.array(memorizationSessionSnapshotParagraphSchema).min(1),
+  state: z.literal(MaterialState.ACTIVE),
+  deletedAt: z.null(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const createMemorizationSessionSnapshotSchema = z.object({
+  material: memorizationSessionSnapshotMaterialSchema,
+});
+
+export type CreateMemorizationSessionSnapshotParsed = z.infer<
+  typeof createMemorizationSessionSnapshotSchema
+>;

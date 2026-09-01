@@ -13,6 +13,12 @@ describe("getRecordingSessionHint", () => {
     ).toBe("마이크 권한을 허용한 뒤 다시 시도해주세요.");
   });
 
+  it("asks the user to replay partner audio when autoplay is blocked", () => {
+    expect(getRecordingSessionHint("partner-speaking", { status: "idle" }, false, true)).toBe(
+      "재생이 막혔어요. 다시 듣기를 눌러 주세요",
+    );
+  });
+
   it("shows save failure without replacing the recorded audio state", () => {
     expect(
       getRecordingSessionHint(

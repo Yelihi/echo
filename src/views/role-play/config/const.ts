@@ -62,10 +62,18 @@ export const ROLE_PLAY_READY_VOICE_OPTIONS: Array<{
   label: string;
   sub: string;
 }> = [
-  { value: "soft", label: "Emma", sub: "영국 · 여성" },
-  { value: "bright", label: "James", sub: "미국 · 남성" },
-  { value: "calm", label: "Sofia", sub: "미국 · 여성" },
+  { value: "emma", label: "Emma", sub: "영국 · 여성" },
+  { value: "james", label: "James", sub: "미국 · 남성" },
+  { value: "sofia", label: "Sofia", sub: "미국 · 여성" },
 ];
+
+export const ROLE_PLAY_PARTNER_VOICE_TO_OPENAI = {
+  emma: "shimmer",
+  james: "onyx",
+  sofia: "nova",
+} as const;
+
+export const ROLE_PLAY_VOICE_PREVIEW_TEXT = "Hi, nice to meet you.";
 
 export const ROLE_PLAY_INNER_MENU_ITEMS: Array<Omit<InnerMenuItemProps, "onClick">> = [
   {

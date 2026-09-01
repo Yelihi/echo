@@ -2,8 +2,11 @@ import { describe, expect, it } from "@jest/globals";
 
 import type { MemorizationSession } from "@/entities/memorization-session";
 import { SessionState as MemorizationSessionState } from "@/entities/memorization-session";
-import type { RoleplaySession } from "@/entities/roleplay-session";
-import { SessionState as RoleplaySessionState } from "@/entities/roleplay-session";
+import {
+  RoleplayPartnerVoice,
+  SessionState as RoleplaySessionState,
+  type RoleplaySession,
+} from "@/entities/roleplay-session";
 import type { MaterialId, SessionId, SpeakerId, UserId } from "@/entities/value-object";
 import { convertMemorizationStudySessions } from "@/views/home/models/converter/convertMemorizationStudySessions";
 import { convertRoleplayStudySessions } from "@/views/home/models/converter/convertRoleplayStudySessions";
@@ -53,6 +56,8 @@ function createRoleplaySession(overrides: Partial<RoleplaySession> = {}): Rolepl
     situationSnapshot: "Checking in.",
     tagsSnapshot: [],
     selectedLearnerSpeakerOrder: 1,
+    partnerVoice: RoleplayPartnerVoice.EMMA,
+    speechSpeed: 1,
     speakerSnapshots: [
       { id: "speaker-1" as SpeakerId, order: 1, displayName: "Staff" },
       { id: "speaker-2" as SpeakerId, order: 2, displayName: "Passenger" },

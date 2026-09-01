@@ -19,6 +19,7 @@ export function getRecordingSessionHint(
   phase: RecordingPhase,
   recordingState: RecordingSessionState,
   saveFailed: boolean,
+  partnerPlaybackBlocked = false,
 ): string {
   if (saveFailed) return "저장하지 못했습니다. 다시 시도해주세요.";
   if (recordingState.status === "discarded") return "녹음이 너무 짧습니다. 다시 녹음해 주세요";
@@ -26,7 +27,9 @@ export function getRecordingSessionHint(
 
   switch (phase) {
     case "partner-speaking":
-      return "상대방 문장이 끝나면 녹음할 수 있어요";
+      return partnerPlaybackBlocked
+        ? "재생이 막혔어요. 다시 듣기를 눌러 주세요"
+        : "상대방 문장이 끝나면 녹음할 수 있어요";
     case "user-ready":
       return "버튼을 눌러 내 문장을 녹음해 주세요";
     case "recording":

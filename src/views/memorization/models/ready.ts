@@ -18,3 +18,13 @@ export interface MemorizationReadyViewProps {
 export interface MemorizationReadySettings {
   mode: MemorizationReadyMode;
 }
+
+export interface CreateMemorizationSessionRequest {
+  materialId: string;
+}
+
+export type CreateMemorizationSessionResult =
+  | { code: "SUCCESS"; sessionId: string }
+  | { code: "MMS-001" }
+  | { code: "MMS-002" }
+  | { code: "MMS-003" };

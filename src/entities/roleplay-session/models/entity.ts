@@ -7,7 +7,7 @@ import type {
   UserId,
 } from "@/entities/value-object";
 
-import type { SessionState } from "@/entities/roleplay-session/models/enums";
+import type { RoleplayPartnerVoice, SessionState } from "@/entities/roleplay-session/models/enums";
 
 export interface RoleplaySpeakerSnapshot {
   readonly id: SpeakerId;
@@ -31,6 +31,8 @@ export interface RoleplaySession {
   readonly situationSnapshot: string;
   readonly tagsSnapshot: ReadonlyArray<TagValue>;
   readonly selectedLearnerSpeakerOrder: 1 | 2;
+  readonly partnerVoice: RoleplayPartnerVoice;
+  readonly speechSpeed: number;
   readonly speakerSnapshots: readonly [RoleplaySpeakerSnapshot, RoleplaySpeakerSnapshot];
   readonly lineSnapshots: ReadonlyArray<RoleplayLineSnapshot>;
   readonly currentLineOrder: number;

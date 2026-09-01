@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { SessionId } from "@/entities/value-object";
+import type { SessionId, SpeakerId } from "@/entities/value-object";
 import type { Database } from "@/shared/lib/supabase";
 import type {
   RoleplaySession,
@@ -14,6 +14,7 @@ import {
   type RoleplaySessionTagRow,
 } from "@/entities/roleplay-session/models/mapper";
 import type {
+  CreateRoleplaySessionSnapshot,
   FindRoleplaySessionsParams,
   RoleplaySessionRepositoryPort,
 } from "@/entities/roleplay-session/models/repository";
@@ -183,6 +184,61 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
 
     return data;
   }
+
+  async createSession(snapshot: CreateRoleplaySessionSnapshot): Promise<RoleplaySession> {
+    const { material, selectedLearnerSpeakerId, partnerVoice, speechSpeed } = snapshot;
+    const [speakerOne, speakerTwo] = material.speakers;
+    const selectedLearnerSpeakerOrder = resolveSpeakerOrder(
+      material.speakers,
+      selectedLearnerSpeakerId,
+    );
+
+    const { data: sessionId, error } = await this.supabase.rpc("create_roleplay_session_snapshot", {
+      p_material_id: material.id,
+      p_material_title: material.title,
+      p_situation: material.situation,
+      p_speaker_one_name: speakerOne.displayName,
+      p_speaker_two_name: speakerTwo.displayName,
+      p_selected_learner_speaker_order: selectedLearnerSpeakerOrder,
+      p_partner_voice: partnerVoice,
+      p_speech_speed: speechSpeed,
+      p_tags: material.tags.map((tag) => ({
+        display_name: tag.displayName,
+        normalized_name: tag.normalizedName,
+      })),
+      p_lines: material.lines.map((line) => ({
+        line_order: line.order,
+        speaker_order: resolveSpeakerOrder(material.speakers, line.speakerId),
+        text_snapshot: line.text,
+        translation_snapshot: line.translation,
+      })),
+    });
+
+    if (error || !sessionId) {
+      throw new Error(`Failed to create roleplay session: ${error?.message}`);
+    }
+
+    const session = await this.findById(sessionId as SessionId);
+
+    if (!session) {
+      throw new Error("Failed to load created roleplay session");
+    }
+
+    return session;
+  }
+}
+
+function resolveSpeakerOrder(
+  speakers: CreateRoleplaySessionSnapshot["material"]["speakers"],
+  speakerId: SpeakerId,
+): 1 | 2 {
+  const speaker = speakers.find((item) => item.id === speakerId);
+
+  if (!speaker) {
+    throw new Error(`Unknown roleplay speaker: ${speakerId}`);
+  }
+
+  return speaker.order;
 }
 
 export function createRoleplaySessionRepository(

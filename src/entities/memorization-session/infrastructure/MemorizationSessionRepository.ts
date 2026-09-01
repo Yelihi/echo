@@ -17,6 +17,7 @@ import {
 import type {
   FindMemorizationSessionsParams,
   MemorizationSessionRepositoryPort,
+  CreateMemorizationSessionSnapshot,
 } from "@/entities/memorization-session/models/repository";
 
 export class MemorizationSessionRepository implements MemorizationSessionRepositoryPort {
@@ -218,6 +219,41 @@ export class MemorizationSessionRepository implements MemorizationSessionReposit
     }
 
     return data;
+  }
+
+  async createSession(snapshot: CreateMemorizationSessionSnapshot): Promise<MemorizationSession> {
+    const { material } = snapshot;
+    const { data: sessionId, error } = await this.supabase.rpc(
+      "create_memorization_session_snapshot",
+      {
+        p_material_id: material.id,
+        p_material_title: material.title,
+        p_tags: material.tags.map((tag) => ({
+          display_name: tag.displayName,
+          normalized_name: tag.normalizedName,
+        })),
+        p_paragraphs: material.paragraphs.map((paragraph) => ({
+          paragraph_order: paragraph.order,
+          sentences: paragraph.sentences.map((sentence) => ({
+            sentence_order: sentence.order,
+            text_snapshot: sentence.text,
+            translation_snapshot: sentence.translation,
+          })),
+        })),
+      },
+    );
+
+    if (error || !sessionId) {
+      throw new Error(`Failed to create memorization session: ${error?.message}`);
+    }
+
+    const session = await this.findById(sessionId as SessionId);
+
+    if (!session) {
+      throw new Error("Failed to load created memorization session");
+    }
+
+    return session;
   }
 }
 

@@ -848,10 +848,12 @@ export type Database = {
           id: string;
           material_id: string | null;
           material_title_snapshot: string;
+          partner_voice: string;
           selected_learner_speaker_order: number;
           situation_snapshot: string;
           speaker_one_name_snapshot: string;
           speaker_two_name_snapshot: string;
+          speech_speed: number;
           started_at: string | null;
           status: Database["public"]["Enums"]["practice_session_status"];
           updated_at: string;
@@ -865,10 +867,12 @@ export type Database = {
           id?: string;
           material_id?: string | null;
           material_title_snapshot: string;
+          partner_voice?: string;
           selected_learner_speaker_order: number;
           situation_snapshot: string;
           speaker_one_name_snapshot: string;
           speaker_two_name_snapshot: string;
+          speech_speed?: number;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
           updated_at?: string;
@@ -882,10 +886,12 @@ export type Database = {
           id?: string;
           material_id?: string | null;
           material_title_snapshot?: string;
+          partner_voice?: string;
           selected_learner_speaker_order?: number;
           situation_snapshot?: string;
           speaker_one_name_snapshot?: string;
           speaker_two_name_snapshot?: string;
+          speech_speed?: number;
           started_at?: string | null;
           status?: Database["public"]["Enums"]["practice_session_status"];
           updated_at?: string;
@@ -1028,6 +1034,37 @@ export type Database = {
           p_user_id: string;
         };
         Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
+      };
+      consume_tts_generation: {
+        Args: {
+          p_limit?: number;
+          p_window_seconds?: number;
+        };
+        Returns: boolean;
+      };
+      create_roleplay_session_snapshot: {
+        Args: {
+          p_material_id: string;
+          p_material_title: string;
+          p_situation: string;
+          p_speaker_one_name: string;
+          p_speaker_two_name: string;
+          p_selected_learner_speaker_order: number;
+          p_partner_voice: string;
+          p_speech_speed: number;
+          p_tags: Json;
+          p_lines: Json;
+        };
+        Returns: string;
+      };
+      create_memorization_session_snapshot: {
+        Args: {
+          p_material_id: string;
+          p_material_title: string;
+          p_tags: Json;
+          p_paragraphs: Json;
+        };
+        Returns: string;
       };
     };
     Enums: {

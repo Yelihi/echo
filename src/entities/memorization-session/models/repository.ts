@@ -1,5 +1,5 @@
 import type { SessionId } from "@/entities/value-object";
-
+import type { MemorizationMaterial } from "@/entities/memorization-material";
 import type {
   MemorizationSession,
   SummaryMemorizationSessions,
@@ -14,8 +14,13 @@ export interface FindMemorizationSessionsParams {
   readonly limit?: number;
 }
 
+export interface CreateMemorizationSessionSnapshot {
+  readonly material: MemorizationMaterial;
+}
+
 export interface MemorizationSessionRepositoryPort {
   findById(id: SessionId): Promise<MemorizationSession | null>;
   findMany(params?: FindMemorizationSessionsParams): Promise<MemorizationSession[]>;
   getAllSessionsMetadata(): Promise<SummaryMemorizationSessions>;
+  createSession: (snapshot: CreateMemorizationSessionSnapshot) => Promise<MemorizationSession>;
 }

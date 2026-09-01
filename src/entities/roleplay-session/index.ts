@@ -1,9 +1,4 @@
-export { SessionState } from "@/entities/roleplay-session/models/enums";
-export type {
-  CreateRoleplaySessionInput,
-  CreateRoleplaySessionSnapshot,
-  RoleplaySessionBehaviorStructure,
-} from "@/entities/roleplay-session/models/behaviors/RoleplaySessionBehavior";
+export { RoleplayPartnerVoice, SessionState } from "@/entities/roleplay-session/models/enums";
 export type {
   RoleplayLineSnapshot,
   RoleplaySession,
@@ -18,6 +13,8 @@ export type {
   RoleplaySessionTagRow,
 } from "@/entities/roleplay-session/models/mapper";
 export type {
+  CreateRoleplaySessionInput,
+  CreateRoleplaySessionSnapshot,
   FindRoleplaySessionsParams,
   RoleplaySessionRepositoryPort,
 } from "@/entities/roleplay-session/models/repository";
