@@ -13,7 +13,7 @@ export default async function EditSentenceMemorizationPage({
   const { id } = await params;
 
   return (
-    <PageContainer>
+    <PageContainer className="lg:h-[calc(100dvh-(var(--spacing)*15.5))] lg:overflow-hidden lg:pb-6">
       <MemorizationEditorView mode="edit" materialId={id} />
     </PageContainer>
   );

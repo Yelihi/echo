@@ -13,6 +13,7 @@ import {
   type MemorizationMaterialTagRow,
 } from "@/entities/memorization-material/models/mapper";
 import type {
+  CreateMemorizationMaterialInput,
   FindMemorizationMaterialsParams,
   MemorizationMaterialRepositoryPort,
 } from "@/entities/memorization-material/models/repository";
@@ -162,6 +163,105 @@ export class MemorizationMaterialRepository implements MemorizationMaterialRepos
     }
 
     return uniqueTagValues(tags);
+  }
+
+  async create(input: CreateMemorizationMaterialInput): Promise<MemorizationMaterial> {
+    const { data: material, error: materialError } = await this.supabase
+      .from("memorization_materials")
+      .insert({
+        user_id: input.ownerId,
+        title: input.title,
+      })
+      .select("*")
+      .single();
+
+    if (materialError || !material) {
+      throw new Error(`Failed to create memorization material: ${materialError?.message}`);
+    }
+
+    try {
+      const [tagsResult, paragraphsResult] = await Promise.all([
+        input.tags.length === 0
+          ? Promise.resolve({ data: [] as MemorizationMaterialTagRow[], error: null })
+          : this.supabase
+              .from("memorization_material_tags")
+              .insert(
+                input.tags.map((tag) => ({
+                  material_id: material.id,
+                  user_id: input.ownerId,
+                  display_name: tag.displayName,
+                  normalized_name: tag.normalizedName,
+                })),
+              )
+              .select("*"),
+        this.supabase
+          .from("memorization_material_paragraphs")
+          .insert(
+            input.paragraphs.map((paragraph) => ({
+              material_id: material.id,
+              user_id: input.ownerId,
+              paragraph_order: paragraph.order,
+            })),
+          )
+          .select("*"),
+      ]);
+
+      if (tagsResult.error) {
+        throw new Error(`Failed to create memorization material tags: ${tagsResult.error.message}`);
+      }
+
+      const { data: paragraphs, error: paragraphsError } = paragraphsResult;
+
+      if (paragraphsError || !paragraphs) {
+        throw new Error(
+          `Failed to create memorization material paragraphs: ${paragraphsError?.message}`,
+        );
+      }
+
+      const paragraphIdByOrder = new Map(
+        paragraphs.map((paragraph) => [paragraph.paragraph_order, paragraph.id] as const),
+      );
+
+      const { data: sentences, error: sentencesError } = await this.supabase
+        .from("memorization_material_sentences")
+        .insert(
+          input.paragraphs.flatMap((paragraph) => {
+            const paragraphId = paragraphIdByOrder.get(paragraph.order);
+
+            if (!paragraphId) {
+              throw new Error(
+                `Failed to create memorization material paragraphs: missing paragraph ${paragraph.order}`,
+              );
+            }
+
+            return paragraph.sentences.map((sentence) => ({
+              paragraph_id: paragraphId,
+              material_id: material.id,
+              user_id: input.ownerId,
+              sentence_order: sentence.order,
+              text: sentence.text,
+              translation: sentence.translation ?? null,
+            }));
+          }),
+        )
+        .select("*");
+
+      if (sentencesError || !sentences) {
+        throw new Error(
+          `Failed to create memorization material sentences: ${sentencesError?.message}`,
+        );
+      }
+
+      return mapMemorizationMaterialRowToEntity({
+        material,
+        tags: tagsResult.data ?? [],
+        paragraphs,
+        sentences,
+      });
+    } catch (error) {
+      await this.supabase.from("memorization_materials").delete().eq("id", material.id);
+      throw error;
+    }
   }
 
   private async findMaterialIdsByTags(

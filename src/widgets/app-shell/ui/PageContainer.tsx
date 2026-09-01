@@ -21,7 +21,10 @@ export const PageContainer = ({
   return (
     <div
       data-slot="page-container"
-      className={cn("mx-auto flex w-full max-w-320 flex-1 flex-col px-6 pt-10 pb-20", className)}
+      className={cn(
+        "mx-auto flex min-h-0 w-full max-w-320 flex-1 flex-col px-6 pt-10 pb-20",
+        className,
+      )}
       {...props}
     >
       {children}

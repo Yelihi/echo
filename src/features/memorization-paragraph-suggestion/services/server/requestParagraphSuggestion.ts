@@ -2,7 +2,10 @@ import "server-only";
 
 import { zodTextFormat } from "openai/helpers/zod";
 
-import { buildParagraphSuggestionPrompt } from "@/features/memorization-paragraph-suggestion/config/prompt";
+import {
+  buildParagraphSuggestionPrompt,
+  PARAGRAPH_SUGGESTION_SYSTEM_PROMPT,
+} from "@/features/memorization-paragraph-suggestion/config/prompt";
 import type { RequestParagraphSuggestionInput } from "@/features/memorization-paragraph-suggestion/models/interface";
 import { openAIMemorizationParagraphSuggestionOutputSchema } from "@/features/memorization-paragraph-suggestion/models/schema";
 
@@ -14,8 +17,7 @@ export async function requestParagraphSuggestion(
     input: [
       {
         role: "system",
-        content:
-          "Suggest paragraph splits for English sentence memorization. Return only schema-valid output.",
+        content: PARAGRAPH_SUGGESTION_SYSTEM_PROMPT,
       },
       {
         role: "user",

@@ -13,7 +13,7 @@ import type {
   MemorizationMaterialSentenceRow,
   MemorizationMaterialTagRow,
 } from "@/entities/memorization-material/models/mapper";
-import type { MaterialId } from "@/entities/value-object";
+import type { MaterialId, UserId } from "@/entities/value-object";
 
 describe("MemorizationMaterialRepository", () => {
   it("assembles a material with tags, paragraphs, and sentences", async () => {
@@ -205,6 +205,77 @@ describe("MemorizationMaterialRepository", () => {
       repository.findById("11111111-1111-4111-8111-111111111111" as MaterialId),
     ).rejects.toThrow("Failed to fetch memorization material: database unavailable");
   });
+
+  it("creates a material with tags, paragraphs, and sentences", async () => {
+    const material = createMaterialRow();
+    const tags = [createTagRow()];
+    const paragraphs = [createParagraphRow()];
+    const sentences = [createSentenceRow()];
+    const materialQuery = createMutationQuery(queryResult(material));
+    const tagQuery = createMutationQuery(queryResult(tags));
+    const paragraphQuery = createMutationQuery(queryResult(paragraphs));
+    const sentenceQuery = createMutationQuery(queryResult(sentences));
+    const { client, from } = createSupabaseStub({
+      memorization_materials: [materialQuery],
+      memorization_material_tags: [tagQuery],
+      memorization_material_paragraphs: [paragraphQuery],
+      memorization_material_sentences: [sentenceQuery],
+    });
+    const repository = new MemorizationMaterialRepository(client);
+
+    const result = await repository.create({
+      ownerId: material.user_id as UserId,
+      title: material.title,
+      tags: [{ displayName: "Speech", normalizedName: "speech" }],
+      paragraphs: [
+        {
+          order: 0,
+          sentences: [{ order: 0, text: "English is a daily habit." }],
+        },
+      ],
+    });
+
+    expect(result).toMatchObject({
+      id: material.id,
+      title: material.title,
+      tags: [{ displayName: "Speech", normalizedName: "speech" }],
+      paragraphs: [{ sentences: [{ text: sentences[0].text }] }],
+    });
+    expect(from).toHaveBeenNthCalledWith(1, "memorization_materials");
+    expect(from.mock.calls.slice(1, 3).map(([table]) => table)).toEqual(
+      expect.arrayContaining(["memorization_material_tags", "memorization_material_paragraphs"]),
+    );
+    expect(from).toHaveBeenNthCalledWith(4, "memorization_material_sentences");
+    expect(materialQuery.insert).toHaveBeenCalledWith({
+      user_id: material.user_id,
+      title: material.title,
+    });
+    expect(tagQuery.insert).toHaveBeenCalledWith([
+      {
+        material_id: material.id,
+        user_id: material.user_id,
+        display_name: "Speech",
+        normalized_name: "speech",
+      },
+    ]);
+    expect(paragraphQuery.insert).toHaveBeenCalledWith([
+      {
+        material_id: material.id,
+        user_id: material.user_id,
+        paragraph_order: 0,
+      },
+    ]);
+    expect(sentenceQuery.insert).toHaveBeenCalledWith([
+      {
+        paragraph_id: paragraphs[0].id,
+        material_id: material.id,
+        user_id: material.user_id,
+        sentence_order: 0,
+        text: "English is a daily habit.",
+        translation: null,
+      },
+    ]);
+  });
 });
 
 interface QueryError {
@@ -217,7 +288,7 @@ interface QueryResult<TData> {
   readonly count: number | null;
 }
 
-type QueryStub = ReturnType<typeof createQuery>;
+type QueryStub = ReturnType<typeof createQuery> | ReturnType<typeof createMutationQuery>;
 type QueryInput = QueryStub | QueryResult<unknown>;
 
 function queryResult<TData>(
@@ -249,6 +320,27 @@ function createQuery(result: QueryResult<unknown>) {
   query.in.mockReturnValue(query);
   query.limit.mockReturnValue(query);
   query.range.mockReturnValue(query);
+
+  return query;
+}
+
+function createMutationQuery(result: QueryResult<unknown>) {
+  const query = {
+    insert: jest.fn(),
+    delete: jest.fn(),
+    select: jest.fn(),
+    eq: jest.fn(),
+    single: jest.fn(async () => result),
+    then: (
+      onFulfilled: (value: QueryResult<unknown>) => unknown,
+      onRejected?: (reason: unknown) => unknown,
+    ) => Promise.resolve(result).then(onFulfilled, onRejected),
+  };
+
+  query.insert.mockReturnValue(query);
+  query.delete.mockReturnValue(query);
+  query.select.mockReturnValue(query);
+  query.eq.mockReturnValue(query);
 
   return query;
 }
