@@ -13,6 +13,7 @@ export type {
   MemorizationSessionTagRow,
 } from "@/entities/memorization-session/models/mapper";
 export type {
+  CreateMemorizationSessionSnapshot,
   FindMemorizationSessionsParams,
   MemorizationSessionRepositoryPort,
 } from "@/entities/memorization-session/models/repository";

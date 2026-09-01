@@ -1,13 +1,19 @@
 "use client";
 
-import { Play } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Loader2, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
+// shared
 import { Button } from "@/shared/components";
+import { errorPopupManager } from "@/shared/lib/error-popup";
 import { SelectableOptionCard } from "@/shared/components/ui";
+
+// views
 import { MEMORIZATION_READY_MODE_OPTIONS } from "@/views/memorization/config/const";
+import { createMemorizationSessionErrorFromCode } from "@/views/memorization/models/errors";
 import type { MemorizationReadyMode } from "@/views/memorization/models/ready";
+import { createMemorizationSession } from "@/views/memorization/services/action/createMemorizationSession";
 
 interface MemorizationReadyModeAsideProps {
   materialId: string;
@@ -15,11 +21,29 @@ interface MemorizationReadyModeAsideProps {
 
 export function MemorizationReadyModeAside({ materialId }: MemorizationReadyModeAsideProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [mode, setMode] = useState<MemorizationReadyMode>("read");
 
   const startSession = () => {
     const params = new URLSearchParams({ mode });
-    router.push(`/sentence-memorization/${materialId}/session?${params.toString()}`);
+
+    startTransition(async () => {
+      const result = await createMemorizationSession({ materialId });
+
+      if (result.code === "SUCCESS") {
+        router.push(
+          `/sentence-memorization/${materialId}/session/${result.sessionId}?${params.toString()}`,
+        );
+        return;
+      }
+
+      const error = createMemorizationSessionErrorFromCode(result.code);
+      errorPopupManager.open({
+        title: error.title,
+        message: error.message,
+        code: error.code,
+      });
+    });
   };
 
   return (
@@ -54,8 +78,9 @@ export function MemorizationReadyModeAside({ materialId }: MemorizationReadyMode
         type="button"
         className="h-9 w-full bg-accent-600 hover:bg-accent-700"
         onClick={startSession}
+        disabled={isPending}
       >
-        <Play /> 연습 시작하기
+        {isPending ? <Loader2 className="size-4 animate-spin" /> : <Play />} 연습 시작하기
       </Button>
     </section>
   );
