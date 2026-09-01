@@ -6,7 +6,10 @@ import { MaterialState } from "@/entities/memorization-material";
 import type { MaterialId, ParagraphId, SentenceId, UserId } from "@/entities/value-object";
 
 // views
-import { convertMemorizationMaterialToEditorDraft } from "@/views/memorization/models/converter/convertMemorizationEditorDraft";
+import {
+  convertMemorizationEditorDraftToCreateInput,
+  convertMemorizationMaterialToEditorDraft,
+} from "@/views/memorization/models/converter/convertMemorizationEditorDraft";
 
 describe("convertMemorizationMaterialToEditorDraft", () => {
   it("should join stored paragraphs into the editor draft instead of matching mock text", () => {
@@ -64,6 +67,70 @@ describe("convertMemorizationMaterialToEditorDraft", () => {
         "Small progress compounds.",
       ],
       confirmed: true,
+    });
+  });
+});
+
+describe("convertMemorizationEditorDraftToCreateInput", () => {
+  const ownerId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" as UserId;
+
+  it("should keep a single-sentence paragraph as one sentence", () => {
+    expect(
+      convertMemorizationEditorDraftToCreateInput(
+        {
+          title: "Daily Speaking",
+          tags: ["Speech"],
+          confirmed: true,
+          paragraphs: ["English is a daily habit.", "Small progress compounds."],
+        },
+        ownerId,
+      ),
+    ).toMatchObject({
+      paragraphs: [
+        {
+          order: 0,
+          sentences: [{ order: 0, text: "English is a daily habit.", translation: null }],
+        },
+        {
+          order: 1,
+          sentences: [{ order: 0, text: "Small progress compounds.", translation: null }],
+        },
+      ],
+    });
+  });
+
+  it("should reconstruct sentence rows when a confirmed paragraph contains multiple sentences", () => {
+    expect(
+      convertMemorizationEditorDraftToCreateInput(
+        {
+          title: "Follow-up Email",
+          tags: [],
+          confirmed: true,
+          paragraphs: [
+            "Dear Alex,",
+            "I hope this email finds you well. I am writing to follow up on our previous conversation regarding the new project timeline.",
+          ],
+        },
+        ownerId,
+      ),
+    ).toMatchObject({
+      paragraphs: [
+        {
+          order: 0,
+          sentences: [{ order: 0, text: "Dear Alex,", translation: null }],
+        },
+        {
+          order: 1,
+          sentences: [
+            { order: 0, text: "I hope this email finds you well.", translation: null },
+            {
+              order: 1,
+              text: "I am writing to follow up on our previous conversation regarding the new project timeline.",
+              translation: null,
+            },
+          ],
+        },
+      ],
     });
   });
 });

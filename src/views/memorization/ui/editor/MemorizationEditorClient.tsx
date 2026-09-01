@@ -16,7 +16,10 @@ import type {
   MemorizationEditorDraft,
   MemorizationEditorMode,
 } from "@/views/memorization/models/editor";
-import { createMemorizationMaterialErrorFromCode } from "@/views/memorization/models/errors";
+import {
+  createMemorizationMaterialErrorFromCode,
+  MemorizationMaterialSaveFailedError,
+} from "@/views/memorization/models/errors";
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
 import { createMemorizationMaterial } from "@/views/memorization/services/action/createMemorizationMaterial";
 import { MemorizationEditorHeader } from "@/views/memorization/ui/editor/MemorizationEditorHeader";
@@ -85,19 +88,30 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
     }
 
     startSaveTransition(async () => {
-      const result = await createMemorizationMaterial(draft);
+      try {
+        const result = await createMemorizationMaterial(draft);
 
-      if (result.code === "SUCCESS") {
-        router.push("/sentence-memorization");
-        return;
+        if (result.code === "SUCCESS") {
+          router.push("/sentence-memorization");
+          return;
+        }
+
+        const error = createMemorizationMaterialErrorFromCode(result.code);
+        errorPopupManager.open({
+          title: error.title,
+          message: error.message,
+          code: error.code,
+        });
+      } catch {
+        const error = createMemorizationMaterialErrorFromCode(
+          MemorizationMaterialSaveFailedError.CODE,
+        );
+        errorPopupManager.open({
+          title: error.title,
+          message: error.message,
+          code: error.code,
+        });
       }
-
-      const error = createMemorizationMaterialErrorFromCode(result.code);
-      errorPopupManager.open({
-        title: error.title,
-        message: error.message,
-        code: error.code,
-      });
     });
   };
 
@@ -116,8 +130,8 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
           <MemorizationEditorSourcePanel paragraphSuggestion={paragraphSuggestion} />
         </div>
         <div
-          className={cn("flex min-h-0 flex-1 flex-col lg:h-full", isSaving && "opacity-60")}
-          inert={isSaving}
+          className={cn("flex min-h-0 flex-1 flex-col lg:h-full", isBusy && "opacity-60")}
+          inert={isBusy}
         >
           <MemorizationParagraphReviewPanel />
         </div>

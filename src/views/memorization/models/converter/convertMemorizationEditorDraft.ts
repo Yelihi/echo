@@ -18,6 +18,15 @@ export const MEMORIZATION_EDITOR_EMPTY_DRAFT: MemorizationEditorDraft = {
   confirmed: false,
 };
 
+const splitMemorizationParagraphIntoSentences = (paragraph: string): string[] => {
+  const sentences = Array.from(
+    new Intl.Segmenter("en", { granularity: "sentence" }).segment(paragraph),
+    (segment) => segment.segment.trim(),
+  ).filter((sentence) => sentence.length > 0);
+
+  return sentences.length > 0 ? sentences : [paragraph];
+};
+
 export function convertMemorizationEditorDraftToCreateInput(
   draft: MemorizationEditorDraftInput,
   ownerId: UserId,
@@ -28,7 +37,11 @@ export function convertMemorizationEditorDraftToCreateInput(
     tags: draft.tags.map((tag) => createTagValue(tag)),
     paragraphs: draft.paragraphs.map((text, index) => ({
       order: index,
-      sentences: [{ order: 0, text, translation: null }],
+      sentences: splitMemorizationParagraphIntoSentences(text).map((sentence, sentenceIndex) => ({
+        order: sentenceIndex,
+        text: sentence,
+        translation: null,
+      })),
     })),
   };
 }

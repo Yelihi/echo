@@ -44,10 +44,16 @@ export const useMemorizationEditorStore = createStore<MemorizationEditorStore>(
     setTitle: (title) => set((state) => ({ draft: { ...state.draft, title }, edited: true })),
     setTags: (tags) => set((state) => ({ draft: { ...state.draft, tags }, edited: true })),
     setRawText: (rawText) =>
-      set((state) => ({
-        draft: withUnconfirmedParagraphs(state.draft, { rawText }),
-        edited: true,
-      })),
+      set((state) => {
+        if (state.draft.rawText === rawText) {
+          return state;
+        }
+
+        return {
+          draft: withUnconfirmedParagraphs(state.draft, { rawText, paragraphs: [] }),
+          edited: true,
+        };
+      }),
     setParagraphs: (paragraphs) =>
       set((state) => ({
         draft: withUnconfirmedParagraphs(state.draft, { paragraphs }),

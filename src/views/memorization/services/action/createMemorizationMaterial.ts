@@ -25,22 +25,22 @@ import {
 export const createMemorizationMaterial = async (
   material: MemorizationEditorDraft,
 ): Promise<CreateMemorizationMaterialResult> => {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { code: MemorizationMaterialUnauthorizedError.CODE };
-  }
-
-  const parsed = memorizationEditorDraftSchema.safeParse(material);
-
-  if (!parsed.success) {
-    return { code: MemorizationMaterialInvalidError.CODE };
-  }
-
   try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { code: MemorizationMaterialUnauthorizedError.CODE };
+    }
+
+    const parsed = memorizationEditorDraftSchema.safeParse(material);
+
+    if (!parsed.success) {
+      return { code: MemorizationMaterialInvalidError.CODE };
+    }
+
     const created = await createMemorizationMaterialRepository(supabase).create(
       convertMemorizationEditorDraftToCreateInput(parsed.data, user.id as UserId),
     );
