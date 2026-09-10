@@ -117,7 +117,7 @@ describe("createRoleplaySessionSnapshotSchema", () => {
         {
           id: "44444444-4444-4444-8444-444444444444",
           order: 0,
-          speakerId: speakerOneId,
+          speakerId: speakerTwoId,
           text: "Hello",
           translation: null,
         },
@@ -144,4 +144,47 @@ describe("createRoleplaySessionSnapshotSchema", () => {
 
     expect(parsed.success).toBe(false);
   });
+});
+
+it("학습자에게 문장이 없으면 세션 스냅샷을 거부한다", () => {
+  const materialId = "11111111-1111-4111-8111-111111111111";
+  const snapshot = {
+    selectedLearnerSpeakerId: `${materialId}:speaker:2`,
+    partnerVoice: "emma",
+    speechSpeed: 1,
+    evaluationMode: "context",
+    material: {
+      id: materialId,
+      ownerId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      title: "Test",
+      situation: "Test",
+      tags: [],
+      state: MaterialState.ACTIVE,
+      deletedAt: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      speakers: [1, 2].map((order) => ({
+        id: `${materialId}:speaker:${order}`,
+        order,
+        displayName: "Speaker",
+      })),
+      lines: [
+        {
+          id: "44444444-4444-4444-8444-444444444444",
+          order: 0,
+          speakerId: `${materialId}:speaker:1`,
+          text: "Hello",
+          translation: null,
+        },
+      ],
+    },
+  };
+  const result = createRoleplaySessionSnapshotSchema.safeParse(snapshot);
+  expect(result.success).toBe(false);
+  if (!result.success)
+    expect(result.error.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ message: "Learner speaker must have at least one line" }),
+      ]),
+    );
 });

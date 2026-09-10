@@ -42,11 +42,13 @@ describe("convertRolePlayMaterialToSessionSnapshot", () => {
     const snapshot = convertRolePlayMaterialToSessionSnapshot(material, learnerId, {
       partnerVoice: RoleplayPartnerVoice.EMMA,
       speechSpeed: 1,
+      evaluationMode: "context",
     });
 
     expect(snapshot.selectedLearnerSpeakerId).toBe(learnerId);
     expect(snapshot.partnerVoice).toBe(RoleplayPartnerVoice.EMMA);
     expect(snapshot.speechSpeed).toBe(1);
+    expect(snapshot.evaluationMode).toBe("context");
     expect(snapshot.material).toEqual(material);
     expect(snapshot.material).not.toBe(material);
     expect(snapshot.material.tags).not.toBe(material.tags);

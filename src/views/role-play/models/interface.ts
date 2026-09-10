@@ -80,7 +80,8 @@ export type CreateRolePlaySessionResult =
   | { code: "SUCCESS"; sessionId: string }
   | { code: "RPS-001" }
   | { code: "RPS-002" }
-  | { code: "RPS-003" };
+  | { code: "RPS-003" }
+  | { code: "RPS-004" };
 
 export interface RolePlayEditorStore {
   draft: RoleplayEditorDraft;
@@ -101,6 +102,7 @@ export interface RolePlayEditorStore {
 // ready
 
 export interface CreateRolePlaySessionRequest {
+  evaluationMode: RoleplayReadyEvaluationMode;
   materialId: string;
   role: RoleplayReadyRole;
   voice: RoleplayReadyVoice;

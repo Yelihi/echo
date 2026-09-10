@@ -62,6 +62,7 @@ export const createRoleplaySessionInputSchema = z
     selectedLearnerSpeakerId: speakerIdSchema,
     partnerVoice: partnerVoiceSchema,
     speechSpeed: speechSpeedSchema,
+    evaluationMode: z.enum(["exact", "context"]).default("context"),
   })
   .superRefine((input, context) => {
     const expectedPrefix = `${input.materialId}:speaker:`;
@@ -116,6 +117,7 @@ export const createRoleplaySessionSnapshotSchema = z
     selectedLearnerSpeakerId: speakerIdSchema,
     partnerVoice: partnerVoiceSchema,
     speechSpeed: speechSpeedSchema,
+    evaluationMode: z.enum(["exact", "context"]).default("context"),
   })
   .superRefine((snapshot, context) => {
     const [speakerOne, speakerTwo] = snapshot.material.speakers;
@@ -150,6 +152,16 @@ export const createRoleplaySessionSnapshotSchema = z
         code: z.ZodIssueCode.custom,
         path: ["selectedLearnerSpeakerId"],
         message: "Learner speaker must be one of the material speakers",
+      });
+    }
+
+    if (
+      !snapshot.material.lines.some((line) => line.speakerId === snapshot.selectedLearnerSpeakerId)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["selectedLearnerSpeakerId"],
+        message: "Learner speaker must have at least one line",
       });
     }
 

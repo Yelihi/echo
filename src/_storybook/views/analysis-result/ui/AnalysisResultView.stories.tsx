@@ -31,6 +31,7 @@ const readyItem = {
 
 const doneViewModel = {
   kind: "roleplay",
+  canRetry: false,
   title: "Airport Check-in",
   meta: "오후 3:10 · 문장 3개",
   result: {
@@ -97,6 +98,7 @@ export const Partial: Story = {
   args: {
     viewModel: {
       ...doneViewModel,
+      canRetry: true,
       result: {
         ...doneViewModel.result,
         state: "partial",
@@ -169,3 +171,7 @@ function createRoleplayTarget(lineId: string): PracticeTarget {
     lineSnapshotId: lineId as LineId,
   };
 }
+
+export const CompletedPartial: Story = {
+  args: { viewModel: { ...doneViewModel, result: { state: "partial", items: [readyItem] } } },
+};

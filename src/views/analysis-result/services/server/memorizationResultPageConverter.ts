@@ -37,6 +37,7 @@ export function createMemorizationResultPageViewModel(
 
   return {
     kind: "memorization",
+    canRetry: job === null || job.state === AnalysisJobState.FAILED,
     title: session.materialTitleSnapshot,
     meta: createMeta(session.completedAt ?? session.updatedAt, sentences.length),
     result,

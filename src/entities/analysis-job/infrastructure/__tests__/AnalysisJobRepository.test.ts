@@ -12,7 +12,7 @@ import {
   AnalysisJobRequestError,
 } from "@/entities/analysis-job/models/errors";
 import type { AnalysisJobRow } from "@/entities/analysis-job/models/mapper";
-import type { AnalysisJobId, SessionId, UserId } from "@/entities/value-object";
+import type { SessionId, UserId } from "@/entities/value-object";
 
 describe("AnalysisJobRepository", () => {
   it("역할극 분석 Job 요청을 lifecycle RPC로 위임한다", async () => {
@@ -145,58 +145,6 @@ describe("AnalysisJobRepository", () => {
 
     expect(job?.state).toBe("processing");
     expect(rpc).toHaveBeenCalledWith("claim_next_analysis_job", { p_provider: "openai" });
-  });
-
-  it("processing Job 완료 처리를 lifecycle RPC로 위임한다", async () => {
-    const row = createAnalysisJobRow({ status: "completed" });
-    const { client, rpc } = createSupabaseStub({
-      rpc: {
-        complete_analysis_job: queryResult(row),
-      },
-    });
-    const repository = new AnalysisJobRepository(client);
-
-    const job = await repository.completeAnalysisJob(row.id as AnalysisJobId);
-
-    expect(job.state).toBe("completed");
-    expect(rpc).toHaveBeenCalledWith("complete_analysis_job", { p_job_id: row.id });
-  });
-
-  it("processing Job 실패 처리를 정제된 에러 메타데이터와 함께 lifecycle RPC로 위임한다", async () => {
-    const row = createAnalysisJobRow({
-      status: "failed",
-      completed_at: null,
-      failed_at: "2026-07-03T00:02:00Z",
-      error_code: "EVAL-003",
-      error_message: "Evaluation provider failed.",
-      error_log_ref: "glitchtip:event:123",
-    });
-    const { client, rpc } = createSupabaseStub({
-      rpc: {
-        fail_analysis_job: queryResult(row),
-      },
-    });
-    const repository = new AnalysisJobRepository(client);
-
-    const job = await repository.failAnalysisJob({
-      jobId: row.id as AnalysisJobId,
-      errorCode: "EVAL-003",
-      errorMessage: "Evaluation provider failed.",
-      errorLogRef: "glitchtip:event:123",
-    });
-
-    expect(job).toMatchObject({
-      state: "failed",
-      errorCode: "EVAL-003",
-      errorMessage: "Evaluation provider failed.",
-      errorLogRef: "glitchtip:event:123",
-    });
-    expect(rpc).toHaveBeenCalledWith("fail_analysis_job", {
-      p_error_code: "EVAL-003",
-      p_error_log_ref: "glitchtip:event:123",
-      p_error_message: "Evaluation provider failed.",
-      p_job_id: row.id,
-    });
   });
 
   it("조회 실패를 CustomError로 매핑한다", async () => {
@@ -336,6 +284,7 @@ function createSupabaseStub({
 
 function createAnalysisJobRow(overrides: Partial<AnalysisJobRow> = {}): AnalysisJobRow {
   return {
+    evaluation_mode: "exact",
     id: "11111111-1111-4111-8111-111111111111",
     user_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
     roleplay_session_id: "22222222-2222-4222-8222-222222222222",

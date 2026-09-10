@@ -3,6 +3,7 @@ export type PracticeType = "roleplay" | "memorization";
 export type AnalysisJob = {
   id: string;
   claim_token: string;
+  evaluation_mode: "exact" | "context";
   user_id: string;
   roleplay_session_id: string | null;
   memorization_session_id: string | null;
@@ -34,3 +35,10 @@ export type Evaluation = {
   score: number | null;
   diff: DiffSegment[];
 };
+
+export interface EvaluationInput {
+  expectedText: string;
+  transcript: string;
+  practiceType: PracticeType;
+  evaluationMode: "exact" | "context";
+}

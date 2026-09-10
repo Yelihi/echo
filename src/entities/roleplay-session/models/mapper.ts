@@ -51,6 +51,7 @@ export function mapRoleplaySessionRowToEntity(rowSet: RoleplaySessionRowSet): Ro
     selectedLearnerSpeakerOrder: mapSpeakerOrder(rowSet.session.selected_learner_speaker_order),
     partnerVoice: mapPartnerVoice(rowSet.session.partner_voice),
     speechSpeed: Number(rowSet.session.speech_speed),
+    evaluationMode: rowSet.session.evaluation_mode,
     speakerSnapshots,
     lineSnapshots: [...rowSet.lines]
       .sort((left, right) => left.line_order - right.line_order)

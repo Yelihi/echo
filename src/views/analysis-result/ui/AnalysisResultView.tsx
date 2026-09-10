@@ -9,7 +9,7 @@ import { AnalysisRetryButton } from "./AnalysisRetryButton";
 
 export function AnalysisResultView({ viewModel, retryAction }: AnalysisResultViewProps) {
   const { kind, result } = viewModel;
-  const showRetry = result.state === "failed" || result.state === "partial";
+  const showRetry = viewModel.canRetry;
   const analyzing = result.state === "pending" || result.state === "analyzing";
 
   return (

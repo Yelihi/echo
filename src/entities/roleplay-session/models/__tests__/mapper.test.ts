@@ -126,6 +126,7 @@ describe("mapRoleplaySessionsMetadataRowToEntity", () => {
 
 function createSessionRow(overrides: Partial<RoleplaySessionRow> = {}): RoleplaySessionRow {
   return {
+    evaluation_mode: "exact",
     id: "11111111-1111-4111-8111-111111111111",
     user_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
     material_id: "99999999-9999-4999-8999-999999999999",

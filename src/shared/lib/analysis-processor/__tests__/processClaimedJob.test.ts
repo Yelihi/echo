@@ -10,6 +10,7 @@ import type { AnalysisProcessingDependencies } from "../../../../../supabase/fun
 const job: AnalysisJob = {
   id: "job",
   claim_token: "claim",
+  evaluation_mode: "context",
   user_id: "owner",
   roleplay_session_id: "session",
   memorization_session_id: null,

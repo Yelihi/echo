@@ -80,6 +80,7 @@ async function processTarget(supabase: Supabase, job: AnalysisJob, target: Targe
         expectedText: target.expectedText,
         transcript,
         practiceType: getPracticeType(job),
+        evaluationMode: job.evaluation_mode ?? "exact",
       }),
   });
 

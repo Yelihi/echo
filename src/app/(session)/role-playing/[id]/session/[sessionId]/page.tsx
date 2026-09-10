@@ -9,10 +9,7 @@ import { SessionState } from "@/entities/roleplay-session";
 import type { SessionId } from "@/entities/value-object";
 
 // views
-import type {
-  RoleplayReadyEvaluationMode,
-  RoleplayReadySettings,
-} from "@/views/role-play/models/interface";
+import type { RoleplayReadySettings } from "@/views/role-play/models/interface";
 import { convertRolePlaySessionToRecordingMaterial } from "@/views/role-play/models/converter/convertRolePlaySessionToRecordingMaterial";
 import { getRolePlaySession } from "@/features/roleplay-sessions/services/server/getRolePlaySession";
 import { RolePlayRecordingView } from "@/views/recording/ui/role-play/RolePlayRecordingView";
@@ -23,13 +20,8 @@ interface RolePlayingSessionPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-const evaluationModes: RoleplayReadyEvaluationMode[] = ["exact", "context"];
-
-export default async function RolePlayingSessionPage({
-  params,
-  searchParams,
-}: RolePlayingSessionPageProps) {
-  const [{ id, sessionId }, query] = await Promise.all([params, searchParams]);
+export default async function RolePlayingSessionPage({ params }: RolePlayingSessionPageProps) {
+  const { id, sessionId } = await params;
 
   if (!isUuidString(id) || !isUuidString(sessionId)) {
     notFound();
@@ -79,31 +71,16 @@ export default async function RolePlayingSessionPage({
             }
           : undefined
       }
-      settings={settingsFromSession(
-        session,
-        pick(query.evaluationMode, evaluationModes, "context"),
-      )}
+      settings={settingsFromSession(session)}
     />
   );
 }
 
-function settingsFromSession(
-  session: RoleplaySession,
-  evaluationMode: RoleplayReadyEvaluationMode,
-): RoleplayReadySettings {
+function settingsFromSession(session: RoleplaySession): RoleplayReadySettings {
   return {
     role: session.selectedLearnerSpeakerOrder === 2 ? "learner" : "partner",
-    evaluationMode,
+    evaluationMode: session.evaluationMode,
     voice: session.partnerVoice,
     speed: session.speechSpeed,
   };
-}
-
-function pick<T extends string>(
-  value: string | string[] | undefined,
-  options: readonly T[],
-  fallback: T,
-) {
-  const selected = Array.isArray(value) ? value[0] : value;
-  return selected && options.includes(selected as T) ? (selected as T) : fallback;
 }

@@ -21,6 +21,7 @@ export interface ResultTurnViewModel {
 
 export interface AnalysisResultPageViewModel {
   readonly kind: ResultPracticeKind;
+  readonly canRetry: boolean;
   readonly title: string;
   readonly meta: string;
   readonly result: AnalysisResultDto;

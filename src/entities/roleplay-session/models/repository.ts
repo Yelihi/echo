@@ -25,6 +25,7 @@ export interface CreateRoleplaySessionSnapshot {
   readonly selectedLearnerSpeakerId: SpeakerId;
   readonly partnerVoice: RoleplayPartnerVoice;
   readonly speechSpeed: number;
+  readonly evaluationMode?: "exact" | "context";
 }
 
 export interface RoleplaySessionRepositoryPort {

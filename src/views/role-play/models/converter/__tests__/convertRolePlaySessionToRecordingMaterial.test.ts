@@ -67,6 +67,7 @@ function createSession(
     ],
     selectedLearnerSpeakerOrder: overrides.selectedLearnerSpeakerOrder,
     partnerVoice: RoleplayPartnerVoice.EMMA,
+    evaluationMode: "exact",
     speechSpeed: 1,
     speakerSnapshots: [
       {

@@ -37,6 +37,7 @@ export function createRoleplayResultPageViewModel(
 
   return {
     kind: "roleplay",
+    canRetry: job === null || job.state === AnalysisJobState.FAILED,
     title: session.materialTitleSnapshot,
     meta: createMeta(session.completedAt ?? session.updatedAt, session.lineSnapshots.length),
     result,

@@ -1,5 +1,6 @@
+import type {} from "./deno.d.ts";
 import { createExactDiff } from "./exactDiff.ts";
-import type { AcceptedRecording, Evaluation, PracticeType } from "./models/types.ts";
+import type { AcceptedRecording, Evaluation, EvaluationInput } from "./models/types.ts";
 
 export async function transcribe(audio: Blob, recording: AcceptedRecording): Promise<string> {
   const body = new FormData();
@@ -31,13 +32,8 @@ export async function transcribe(audio: Blob, recording: AcceptedRecording): Pro
   return text;
 }
 
-export async function evaluate(input: {
-  expectedText: string;
-  transcript: string;
-  practiceType: PracticeType;
-}): Promise<Evaluation> {
-  // The Edge Function uses REST instead of the OpenAI SDK, so we send the JSON Schema
-  // directly and still validate locally before persisting the result.
+export async function evaluate(input: EvaluationInput): Promise<Evaluation> {
+  // REST 요청에 JSON Schema를 전달하고 저장 전에도 응답을 검증한다.
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     signal: AbortSignal.timeout(60_000),
@@ -66,15 +62,12 @@ export async function evaluate(input: {
   return {
     feedback: parsed.feedback,
     score: parsed.score,
-    diff: createExactDiff(input.expectedText, input.transcript),
+    diff:
+      input.evaluationMode === "exact" ? createExactDiff(input.expectedText, input.transcript) : [],
   };
 }
 
-function buildEvaluationRequestBody(input: {
-  expectedText: string;
-  transcript: string;
-  practiceType: PracticeType;
-}) {
+function buildEvaluationRequestBody(input: EvaluationInput) {
   return {
     model: Deno.env.get("OPENAI_EVALUATION_MODEL")?.trim() || "gpt-5.4-mini",
     messages: [
@@ -87,7 +80,10 @@ function buildEvaluationRequestBody(input: {
         role: "user",
         content: [
           `Practice type: ${input.practiceType}`,
-          "Evaluation mode: exact",
+          `Evaluation mode: ${input.evaluationMode}`,
+          input.evaluationMode === "context"
+            ? "Score semantic intent and appropriateness. Accept equivalent paraphrases; do not penalize wording differences alone."
+            : "Score fidelity to the expected sentence, including missing or changed words.",
           `Expected: ${input.expectedText}`,
           `Transcript: ${input.transcript}`,
         ].join("\n"),

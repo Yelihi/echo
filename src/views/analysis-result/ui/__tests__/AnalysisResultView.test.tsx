@@ -24,6 +24,7 @@ describe("실패한 분석 결과", () => {
         retryAction={jest.fn(async () => {})}
         viewModel={{
           kind: "roleplay",
+          canRetry: true,
           title: "Practice",
           meta: "Today",
           result: { state, items: [item] },
@@ -72,4 +73,21 @@ describe("실패한 분석 결과", () => {
       expect(bubble?.classList.contains("bg-red-50")).toBe(!transcript);
     },
   );
+});
+
+it("완료된 작업의 일부 결과에는 재시도 버튼을 표시하지 않는다", () => {
+  render(
+    <AnalysisResultView
+      retryAction={jest.fn(async () => {})}
+      viewModel={{
+        kind: "roleplay",
+        canRetry: false,
+        title: "Practice",
+        meta: "",
+        result: { state: "partial", items: [] },
+        turns: [],
+      }}
+    />,
+  );
+  expect(screen.queryByRole("button", { name: "다시 분석하기" })).toBeNull();
 });

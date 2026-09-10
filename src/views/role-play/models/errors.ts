@@ -70,6 +70,18 @@ export class RolePlaySessionCreateSourceMaterialNotFoundError extends RolePlaySe
   }
 }
 
+export class RolePlaySessionNoLearnerLinesError extends RolePlaySessionCreateError {
+  static readonly CODE = "RPS-004";
+  readonly title = "연습할 문장이 없습니다";
+
+  constructor() {
+    super(
+      RolePlaySessionNoLearnerLinesError.CODE,
+      "선택한 역할의 문장이 없습니다. 다른 역할을 선택해 주세요.",
+    );
+  }
+}
+
 export class RolePlaySessionCreateFailedError extends RolePlaySessionCreateError {
   static readonly CODE = "RPS-003";
   readonly title = "세션 생성에 실패했습니다";
@@ -98,6 +110,8 @@ export function createRolePlaySessionErrorFromCode(code: string): RolePlaySessio
       return new RolePlaySessionCreateUnauthorizedError();
     case RolePlaySessionCreateSourceMaterialNotFoundError.CODE:
       return new RolePlaySessionCreateSourceMaterialNotFoundError();
+    case RolePlaySessionNoLearnerLinesError.CODE:
+      return new RolePlaySessionNoLearnerLinesError();
     case RolePlaySessionCreateFailedError.CODE:
       return new RolePlaySessionCreateFailedError();
     default:

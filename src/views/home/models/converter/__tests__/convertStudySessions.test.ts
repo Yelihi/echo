@@ -57,6 +57,7 @@ function createRoleplaySession(overrides: Partial<RoleplaySession> = {}): Rolepl
     tagsSnapshot: [],
     selectedLearnerSpeakerOrder: 1,
     partnerVoice: RoleplayPartnerVoice.EMMA,
+    evaluationMode: "exact",
     speechSpeed: 1,
     speakerSnapshots: [
       { id: "speaker-1" as SpeakerId, order: 1, displayName: "Staff" },

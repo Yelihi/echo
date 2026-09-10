@@ -38,20 +38,71 @@ function accepted(result) {
   assert.equal(result.error, null, result.error?.message);
   return result.data;
 }
+const credentialsByUser = new Map();
 async function createUser() {
+  const email = `recording-${randomUUID()}@example.test`;
+  const password = randomUUID();
   const { user } = accepted(
     await admin.auth.admin.createUser({
-      email: `recording-${randomUUID()}@example.test`,
-      password: randomUUID(),
+      email,
+      password,
       email_confirm: true,
     }),
   );
   userIds.push(user.id);
+  credentialsByUser.set(user.id, { email, password });
   return user.id;
 }
 try {
   const ownerId = await createUser();
   const otherUserId = await createUser();
+  const owner = createClient(config.API_URL, config.ANON_KEY, { auth: { persistSession: false } });
+  accepted(await owner.auth.signInWithPassword(credentialsByUser.get(ownerId)));
+  const snapshotInput = {
+    p_material_id: null,
+    p_material_title: "Review regression",
+    p_situation: "Test",
+    p_speaker_one_name: "Partner",
+    p_speaker_two_name: "Learner",
+    p_selected_learner_speaker_order: 2,
+    p_partner_voice: "emma",
+    p_speech_speed: 1,
+    p_evaluation_mode: "context",
+    p_tags: [],
+    p_lines: [
+      { line_order: 0, speaker_order: 1, text_snapshot: "Hello", translation_snapshot: null },
+    ],
+  };
+  assert(
+    (await owner.rpc("create_roleplay_session_snapshot", snapshotInput)).error,
+    "A session with no learner lines must be rejected",
+  );
+  const modeSessionId = accepted(
+    await owner.rpc("create_roleplay_session_snapshot", {
+      ...snapshotInput,
+      p_lines: [{ ...snapshotInput.p_lines[0], speaker_order: 2 }],
+    }),
+  );
+  assert.equal(
+    accepted(
+      await owner
+        .from("roleplay_sessions")
+        .select("evaluation_mode")
+        .eq("id", modeSessionId)
+        .single(),
+    ).evaluation_mode,
+    "context",
+  );
+  assert(
+    (
+      await owner
+        .from("roleplay_sessions")
+        .update({ evaluation_mode: "exact" })
+        .eq("id", modeSessionId)
+    ).error,
+    "Persisted evaluation mode is immutable",
+  );
+
   const lines = [randomUUID(), randomUUID()];
   accepted(
     await admin.from("roleplay_sessions").insert({
@@ -63,6 +114,7 @@ try {
       speaker_two_name_snapshot: "Learner",
       selected_learner_speaker_order: 2,
       status: "ready",
+      evaluation_mode: "context",
     }),
   );
   accepted(
@@ -111,6 +163,35 @@ try {
     (await admin.rpc("commit_roleplay_recording", recordings[1])).error,
     "Out-of-order target must be rejected",
   );
+  const directRecording = {
+    id: randomUUID(),
+    user_id: ownerId,
+    roleplay_session_id: sessionId,
+    roleplay_line_id: lines[1],
+    bucket_id: "recordings",
+    object_path: recordings[1].p_object_path,
+    mime_type: "audio/wav",
+    size_bytes: 16044,
+    duration_ms: 1000,
+  };
+  assert(
+    (await owner.from("accepted_recordings").insert(directRecording)).error,
+    "Authenticated direct roleplay writes must be rejected",
+  );
+  assert(
+    (await admin.from("accepted_recordings").insert(directRecording)).error,
+    "Legacy service writes must also respect target order",
+  );
+  assert(
+    (
+      await admin.from("accepted_recordings").insert({
+        ...directRecording,
+        roleplay_line_id: lines[0],
+        object_path: "missing.wav",
+      })
+    ).error,
+    "Direct writes cannot reference missing storage objects",
+  );
   const finish = { p_user_id: ownerId, p_session_id: sessionId };
   assert(
     (await admin.rpc("finish_roleplay_recording", finish)).error,
@@ -156,8 +237,12 @@ try {
     ])
   ).forEach(accepted);
   const jobs = accepted(
-    await admin.from("analysis_jobs").select("id").eq("roleplay_session_id", sessionId),
+    await admin
+      .from("analysis_jobs")
+      .select("id,evaluation_mode")
+      .eq("roleplay_session_id", sessionId),
   );
+  assert.equal(jobs[0].evaluation_mode, "context");
   assert.equal(jobs.length, 1, "Concurrent completion must enqueue exactly one job");
   assert.equal(
     accepted(await admin.from("roleplay_sessions").select("status").eq("id", sessionId).single())
@@ -175,6 +260,34 @@ try {
     "Accepted recording is immutable after completion",
   );
 
+  for (const [name, args] of [
+    ["complete_analysis_job", { p_job_id: jobs[0].id }],
+    ["requeue_analysis_job", { p_job_id: jobs[0].id }],
+    [
+      "fail_analysis_job",
+      {
+        p_job_id: jobs[0].id,
+        p_error_code: "TEST",
+        p_error_message: "Test",
+        p_error_log_ref: null,
+      },
+    ],
+  ])
+    assert((await admin.rpc(name, args)).error, `Legacy RPC ${name} must be disabled`);
+  assert(
+    (
+      await admin.from("practice_target_analysis_results").insert({
+        user_id: ownerId,
+        analysis_job_id: jobs[0].id,
+        roleplay_session_id: sessionId,
+        roleplay_line_id: lines[0],
+        transcript: "Legacy",
+        feedback: {},
+        score: 100,
+      })
+    ).error,
+    "Legacy unfenced result insert must be rejected",
+  );
   const claim = randomUUID();
   accepted(
     await admin
@@ -205,6 +318,30 @@ try {
     accepted(await admin.from("analysis_jobs").select("status").eq("id", jobs[0].id).single())
       .status,
     "processing",
+  );
+  accepted(
+    await admin.rpc("save_claimed_analysis_result", {
+      p_job_id: jobs[0].id,
+      p_claim_token: claim,
+      p_result: { roleplay_line_id: lines[0], transcript: "Hello", feedback: {}, score: 100 },
+    }),
+  );
+  accepted(
+    await admin.rpc("transition_claimed_analysis_job", {
+      p_job_id: jobs[0].id,
+      p_claim_token: claim,
+      p_status: "failed",
+      p_error_message: "Partial",
+    }),
+  );
+  assert.equal(
+    accepted(
+      await admin
+        .from("practice_target_analysis_results")
+        .select("id")
+        .eq("analysis_job_id", jobs[0].id),
+    ).length,
+    1,
   );
   console.info(
     "PASS local RPC: ownership, order, idempotency, completion, immutability, claim fencing",
