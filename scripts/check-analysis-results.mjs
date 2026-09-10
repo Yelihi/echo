@@ -18,7 +18,12 @@ try {
       await page.getByRole("button", { name: "다시 분석하기" }).waitFor();
       assert(await page.getByText("I would like a window seat.", { exact: true }).isVisible());
       if (state === "partial") {
-        assert(await page.locator('[data-slot="chat-bubble"]').filter({ hasText: "I want a window seat." }).isVisible());
+        assert(
+          await page
+            .locator('[data-slot="chat-bubble"]')
+            .filter({ hasText: "I want a window seat." })
+            .isVisible(),
+        );
         assert(
           await page
             .locator('[data-slot="chat-bubble"]')

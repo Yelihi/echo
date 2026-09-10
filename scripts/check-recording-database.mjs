@@ -54,32 +54,28 @@ try {
   const otherUserId = await createUser();
   const lines = [randomUUID(), randomUUID()];
   accepted(
-    await admin
-      .from("roleplay_sessions")
-      .insert({
-        id: sessionId,
-        user_id: ownerId,
-        material_title_snapshot: "Recording regression",
-        situation_snapshot: "Local test only",
-        speaker_one_name_snapshot: "Partner",
-        speaker_two_name_snapshot: "Learner",
-        selected_learner_speaker_order: 2,
-        status: "ready",
-      }),
+    await admin.from("roleplay_sessions").insert({
+      id: sessionId,
+      user_id: ownerId,
+      material_title_snapshot: "Recording regression",
+      situation_snapshot: "Local test only",
+      speaker_one_name_snapshot: "Partner",
+      speaker_two_name_snapshot: "Learner",
+      selected_learner_speaker_order: 2,
+      status: "ready",
+    }),
   );
   accepted(
-    await admin
-      .from("roleplay_session_lines")
-      .insert(
-        lines.map((id, index) => ({
-          id,
-          user_id: ownerId,
-          session_id: sessionId,
-          line_order: index,
-          speaker_order: 2,
-          text_snapshot: `Line ${index}`,
-        })),
-      ),
+    await admin.from("roleplay_session_lines").insert(
+      lines.map((id, index) => ({
+        id,
+        user_id: ownerId,
+        session_id: sessionId,
+        line_order: index,
+        speaker_order: 2,
+        text_snapshot: `Line ${index}`,
+      })),
+    ),
   );
   const recordings = [];
   for (const lineId of lines) {
