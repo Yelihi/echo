@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, within } from "storybook/test";
 
 import { AnalysisResultView } from "@/views/analysis-result/ui/AnalysisResultView";
 import { PracticeType } from "@/entities/practice-target";
@@ -30,6 +31,7 @@ const readyItem = {
 
 const doneViewModel = {
   kind: "roleplay",
+  canRetry: false,
   title: "Airport Check-in",
   meta: "오후 3:10 · 문장 3개",
   result: {
@@ -59,6 +61,7 @@ const doneViewModel = {
 const meta = {
   title: "views/analysis-result/ui/AnalysisResultView",
   component: AnalysisResultView,
+  parameters: { nextjs: { appDirectory: true } },
   args: {
     viewModel: doneViewModel,
     retryAction: async () => {},
@@ -75,12 +78,27 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Done: Story = {};
+export const Done: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("원본 문장")).toBeVisible();
+    await expect(canvas.getByText("실제 발화")).toBeVisible();
+    const spokenBubble = canvas
+      .getAllByText(readyItem.transcript, { exact: true })
+      .find((element) => element.getAttribute("data-slot") === "chat-bubble");
+    await expect(spokenBubble).toBeVisible();
+    await expect(canvas.getByRole("navigation", { name: "결과 페이지 이동" })).toBeVisible();
+  },
+};
+export const Analyzing: Story = {
+  args: { viewModel: { ...doneViewModel, result: { state: "analyzing", items: [] }, turns: [] } },
+};
 
 export const Partial: Story = {
   args: {
     viewModel: {
       ...doneViewModel,
+      canRetry: true,
       result: {
         ...doneViewModel.result,
         state: "partial",
@@ -91,6 +109,7 @@ export const Partial: Story = {
             original: "Could you repeat that?",
             target: createRoleplayTarget("line-3"),
             state: "missing",
+            audio: readyItem.audio,
           },
         ],
       },
@@ -105,6 +124,7 @@ export const Partial: Story = {
             original: "Could you repeat that?",
             target: createRoleplayTarget("line-3"),
             state: "missing",
+            audio: readyItem.audio,
           },
         },
       ],
@@ -151,3 +171,7 @@ function createRoleplayTarget(lineId: string): PracticeTarget {
     lineSnapshotId: lineId as LineId,
   };
 }
+
+export const CompletedPartial: Story = {
+  args: { viewModel: { ...doneViewModel, result: { state: "partial", items: [readyItem] } } },
+};

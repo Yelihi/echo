@@ -9,6 +9,7 @@ const config: Config = {
   coverageProvider: "v8",
   passWithNoTests: true,
   testEnvironment: "jsdom",
+  moduleNameMapper: { "^@/(.*)$": "<rootDir>/src/$1" },
   testMatch: ["<rootDir>/src/**/__tests__/**/*.{test,spec}.{ts,tsx}"],
   setupFilesAfterEnv: ["<rootDir>/src/setup.test.ts"],
 };

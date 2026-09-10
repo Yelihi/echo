@@ -55,18 +55,6 @@ export type RoleplayEditorDraftInput = z.infer<typeof roleplayEditorDraftSchema>
 const partnerVoiceSchema = z.nativeEnum(RoleplayPartnerVoice);
 const speechSpeedSchema = z.number().min(0.7).max(1.3);
 
-export const speakRolePlayPartnerLineSchema = z.discriminatedUnion("mode", [
-  z.object({
-    mode: z.literal("preview"),
-    voice: partnerVoiceSchema,
-    speed: speechSpeedSchema,
-  }),
-  z.object({
-    mode: z.literal("session"),
-    sessionId: uuidSchema,
-  }),
-]);
-
 export const createRoleplaySessionInputSchema = z
   .object({
     ownerId: uuidSchema,
@@ -74,6 +62,7 @@ export const createRoleplaySessionInputSchema = z
     selectedLearnerSpeakerId: speakerIdSchema,
     partnerVoice: partnerVoiceSchema,
     speechSpeed: speechSpeedSchema,
+    evaluationMode: z.enum(["exact", "context"]).default("context"),
   })
   .superRefine((input, context) => {
     const expectedPrefix = `${input.materialId}:speaker:`;
@@ -128,6 +117,7 @@ export const createRoleplaySessionSnapshotSchema = z
     selectedLearnerSpeakerId: speakerIdSchema,
     partnerVoice: partnerVoiceSchema,
     speechSpeed: speechSpeedSchema,
+    evaluationMode: z.enum(["exact", "context"]).default("context"),
   })
   .superRefine((snapshot, context) => {
     const [speakerOne, speakerTwo] = snapshot.material.speakers;
@@ -162,6 +152,16 @@ export const createRoleplaySessionSnapshotSchema = z
         code: z.ZodIssueCode.custom,
         path: ["selectedLearnerSpeakerId"],
         message: "Learner speaker must be one of the material speakers",
+      });
+    }
+
+    if (
+      !snapshot.material.lines.some((line) => line.speakerId === snapshot.selectedLearnerSpeakerId)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["selectedLearnerSpeakerId"],
+        message: "Learner speaker must have at least one line",
       });
     }
 

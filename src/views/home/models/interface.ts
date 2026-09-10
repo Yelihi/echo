@@ -1,4 +1,4 @@
-import type { SessionSimplifiedProps } from "@/widgets/latest-sessions/models";
+export type { GetLatestStudySession } from "@/widgets/latest-sessions/models/studySession";
 
 export interface GetLatestRoleplaySessionsParams {
   page: number;
@@ -8,8 +8,4 @@ export interface GetLatestRoleplaySessionsParams {
 export interface GetLatestMemorizationSessionsParams {
   page: number;
   limit?: number;
-}
-
-export interface GetLatestStudySession extends SessionSimplifiedProps {
-  id: string;
 }

@@ -1,7 +1,7 @@
 import { FileText, Mic2, Pilcrow } from "lucide-react";
 
 import { SessionReadyHero } from "@/shared/components";
-import type { MemorizationReadyMaterial } from "@/views/memorization/models/ready";
+import type { MemorizationReadyMaterial } from "@/features/memorization-sessions/models/ready";
 import { MemorizationReadyModeAside } from "@/views/memorization/ui/ready/MemorizationReadyModeAside";
 
 interface MemorizationReadyContentProps {

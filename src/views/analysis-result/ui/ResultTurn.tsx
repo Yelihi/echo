@@ -9,7 +9,12 @@ export function ResultTurn({ turn }: ResultTurnProps) {
 
   return (
     <article className={cn("flex flex-col gap-2", mine ? "items-end" : "items-start")}>
-      <ChatBubble speaker={turn.speaker} className="max-w-[620px]">
+      <p className="text-xs font-semibold text-gray-text">{mine ? "원본 문장" : "상대방"}</p>
+      <ChatBubble
+        speaker="partner"
+        lang="en"
+        className="max-w-full break-words rounded-lg text-base leading-relaxed sm:max-w-[620px]"
+      >
         {turn.text}
       </ChatBubble>
       {turn.analysis ? <AnalysisItem item={turn.analysis} /> : null}

@@ -1,5 +1,8 @@
+import type { Supabase } from "./models/repository.ts";
+import { processClaimedJob } from "./processClaimedJob.ts";
 import { authorize, corsHeaders, json } from "./http.ts";
 import { evaluate, transcribe } from "./openai.ts";
+import { observeAnalysisOperation } from "./logging.ts";
 import {
   claimNextJob,
   completeJob,
@@ -10,9 +13,8 @@ import {
   insertResult,
   loadTargets,
   requeueJob,
-  type Supabase,
 } from "./repository.ts";
-import type { AnalysisJob, PracticeType, Target } from "./types.ts";
+import type { AnalysisJob, PracticeType, Target } from "./models/types.ts";
 
 const DEFAULT_TARGET_LIMIT = 3;
 
@@ -38,68 +40,60 @@ export async function handleProcessAnalysisJob(request: Request): Promise<Respon
     return json({ status: "idle" });
   }
 
-  return processClaimedJob(supabase, job);
-}
-
-async function processClaimedJob(supabase: Supabase, job: AnalysisJob): Promise<Response> {
-  try {
-    const targets = await loadTargets(supabase, job);
-
-    if (targets.length === 0) {
-      throw new Error("No accepted recordings found for analysis job.");
-    }
-
-    const pendingTargets = await filterUnprocessedTargets(supabase, job, targets);
-
-    if (pendingTargets.length === 0) {
-      return json({ status: "completed", job: await completeJob(supabase, job.id) });
-    }
-
-    const targetLimit = getTargetLimit();
-    const targetsToProcess = pendingTargets.slice(0, targetLimit);
-
-    for (const target of targetsToProcess) {
-      await processTarget(supabase, job, target);
-    }
-
-    if (pendingTargets.length > targetsToProcess.length) {
-      return json({
-        status: "queued",
-        processed: targetsToProcess.length,
-        remaining: pendingTargets.length - targetsToProcess.length,
-        job: await requeueJob(supabase, job.id),
-      });
-    }
-
-    return json({ status: "completed", job: await completeJob(supabase, job.id) });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Analysis processor failed.";
-
-    return json(
-      { status: "failed", job: await failJob(supabase, job.id, message), error: message },
-      500,
-    );
-  }
+  const result = await processClaimedJob(
+    job,
+    {
+      loadTargets: (claimedJob) => loadTargets(supabase, claimedJob),
+      filterUnprocessedTargets: (claimedJob, targets) =>
+        filterUnprocessedTargets(supabase, claimedJob, targets),
+      processTarget: (claimedJob, target) => processTarget(supabase, claimedJob, target),
+      completeJob: (claimedJob) => completeJob(supabase, claimedJob),
+      requeueJob: (claimedJob) => requeueJob(supabase, claimedJob),
+      failJob: (claimedJob, message) => failJob(supabase, claimedJob, message),
+    },
+    getTargetLimit(),
+  );
+  return json(result, result.status === "failed" ? 500 : 200);
 }
 
 async function processTarget(supabase: Supabase, job: AnalysisJob, target: Target): Promise<void> {
-  // Each target is intentionally processed in order. Batch size is one job, so keeping this
-  // sequential makes failure handling deterministic and avoids partial parallel writes.
-  const audio = await downloadAudio(supabase, target.recording);
-  const transcript = await transcribe(audio, target.recording);
-  const evaluation = await evaluate({
-    expectedText: target.expectedText,
-    transcript,
-    practiceType: getPracticeType(job),
+  const context = {
+    jobId: job.id,
+    targetId:
+      target.recording.roleplay_line_id ?? target.recording.memorization_sentence_id ?? "unknown",
+  };
+  const audio = await observeAnalysisOperation({
+    ...context,
+    operation: "audio.download",
+    execute: () => downloadAudio(supabase, target.recording),
+  });
+  const transcript = await observeAnalysisOperation({
+    ...context,
+    operation: "audio.transcribe",
+    execute: () => transcribe(audio, target.recording),
+  });
+  const evaluation = await observeAnalysisOperation({
+    ...context,
+    operation: "text.evaluate",
+    execute: () =>
+      evaluate({
+        expectedText: target.expectedText,
+        transcript,
+        practiceType: getPracticeType(job),
+        evaluationMode: job.evaluation_mode ?? "exact",
+      }),
   });
 
-  await insertResult(supabase, job, target, transcript, evaluation);
+  await observeAnalysisOperation({
+    ...context,
+    operation: "result.save",
+    execute: () => insertResult(supabase, job, target, transcript, evaluation),
+  });
 }
 
-function getPracticeType(job: {
-  roleplay_session_id: string | null;
-  memorization_session_id: string | null;
-}): PracticeType {
+function getPracticeType(
+  job: Pick<AnalysisJob, "roleplay_session_id" | "memorization_session_id">,
+): PracticeType {
   if (job.roleplay_session_id) {
     return "roleplay";
   }
@@ -115,7 +109,7 @@ function getTargetLimit(): number {
   const configuredLimit = Number(Deno.env.get("ANALYSIS_PROCESSOR_TARGET_LIMIT"));
 
   if (Number.isInteger(configuredLimit) && configuredLimit > 0) {
-    return configuredLimit;
+    return Math.min(configuredLimit, DEFAULT_TARGET_LIMIT);
   }
 
   return DEFAULT_TARGET_LIMIT;

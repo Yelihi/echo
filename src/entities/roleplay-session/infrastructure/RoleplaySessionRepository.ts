@@ -202,6 +202,7 @@ export class RoleplaySessionRepository implements RoleplaySessionRepositoryPort 
       p_selected_learner_speaker_order: selectedLearnerSpeakerOrder,
       p_partner_voice: partnerVoice,
       p_speech_speed: speechSpeed,
+      p_evaluation_mode: snapshot.evaluationMode ?? "exact",
       p_tags: material.tags.map((tag) => ({
         display_name: tag.displayName,
         normalized_name: tag.normalizedName,

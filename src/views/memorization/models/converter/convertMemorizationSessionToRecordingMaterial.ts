@@ -2,7 +2,7 @@
 import type { MemorizationSession } from "@/entities/memorization-session";
 
 // views
-import type { MemorizationReadyMaterial } from "@/views/memorization/models/ready";
+import type { MemorizationReadyMaterial } from "@/features/memorization-sessions/models/ready";
 
 export function convertMemorizationSessionToRecordingMaterial(
   session: MemorizationSession,
@@ -20,6 +20,10 @@ export function convertMemorizationSessionToRecordingMaterial(
     wordCount,
     estimatedMinutes: Math.max(1, Math.ceil(Math.max(sentences.length, 1) / 3)),
     difficulty: session.tagsSnapshot.at(-1)?.displayName ?? "기본",
+    previewLines: session.paragraphSnapshots.map((paragraph, index) => ({
+      label: `문단 ${index + 1}`,
+      text: paragraph.sentences.map((sentence) => sentence.text).join(" "),
+    })),
   };
 }
 

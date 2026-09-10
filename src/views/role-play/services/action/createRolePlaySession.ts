@@ -18,6 +18,7 @@ import {
 import { convertRolePlayMaterialToSessionSnapshot } from "@/views/role-play/models/converter/convertRolePlayMaterialToSessionSnapshot";
 import {
   RolePlaySessionCreateFailedError,
+  RolePlaySessionNoLearnerLinesError,
   RolePlaySessionCreateSourceMaterialNotFoundError,
   RolePlaySessionCreateUnauthorizedError,
 } from "@/views/role-play/models/errors";
@@ -44,6 +45,7 @@ export const createRolePlaySession = async (
     selectedLearnerSpeakerId: `${input.materialId}:speaker:${input.role === "learner" ? 2 : 1}`,
     partnerVoice: input.voice,
     speechSpeed: input.speed,
+    evaluationMode: input.evaluationMode,
   });
 
   if (!parsedInput.success) {
@@ -59,12 +61,19 @@ export const createRolePlaySession = async (
       return { code: RolePlaySessionCreateSourceMaterialNotFoundError.CODE };
     }
 
+    if (
+      !material.lines.some((line) => line.speakerId === parsedInput.data.selectedLearnerSpeakerId)
+    ) {
+      return { code: RolePlaySessionNoLearnerLinesError.CODE };
+    }
+
     const snapshot = convertRolePlayMaterialToSessionSnapshot(
       material,
       parsedInput.data.selectedLearnerSpeakerId as SpeakerId,
       {
         partnerVoice: parsedInput.data.partnerVoice,
         speechSpeed: parsedInput.data.speechSpeed,
+        evaluationMode: parsedInput.data.evaluationMode,
       },
     );
 

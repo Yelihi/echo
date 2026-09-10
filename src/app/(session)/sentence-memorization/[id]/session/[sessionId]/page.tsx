@@ -8,10 +8,10 @@ import { SessionState } from "@/entities/memorization-session";
 import type { SessionId } from "@/entities/value-object";
 
 // views
-import type { MemorizationReadyMode } from "@/views/memorization/models/ready";
+import type { MemorizationReadyMode } from "@/features/memorization-sessions/models/ready";
 import { convertMemorizationSessionToRecordingMaterial } from "@/views/memorization/models/converter/convertMemorizationSessionToRecordingMaterial";
 import { getMemorizationSession } from "@/views/memorization/services/server/getMemorizationSession";
-import { MemorizationRecordingView } from "@/views/recording/memorization/ui/MemorizationRecordingView";
+import { MemorizationRecordingView } from "@/views/recording/ui/memorization/MemorizationRecordingView";
 
 interface SentenceMemorizationSessionPageProps {
   params: Promise<{ id: string; sessionId: string }>;

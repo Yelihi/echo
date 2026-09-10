@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Sparkles } from "lucide-react";
 
 import { SessionSimplified } from "@/widgets/latest-sessions/ui/SessionSimplified";
-import { getLatestStudySessions } from "@/views/home/services/getLatestStudySessions";
+import { getLatestStudySessions } from "@/widgets/latest-sessions/services/server/getLatestStudySessions";
 
 function EmptyColorMark() {
   return (

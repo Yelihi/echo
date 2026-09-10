@@ -96,6 +96,7 @@ export type Database = {
       };
       analysis_jobs: {
         Row: {
+          evaluation_mode: "exact" | "context";
           attempt_number: number;
           completed_at: string | null;
           created_at: string;
@@ -114,6 +115,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          evaluation_mode?: "exact" | "context";
           attempt_number?: number;
           completed_at?: string | null;
           created_at?: string;
@@ -132,6 +134,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          evaluation_mode?: "exact" | "context";
           attempt_number?: number;
           completed_at?: string | null;
           created_at?: string;
@@ -841,6 +844,7 @@ export type Database = {
       };
       roleplay_sessions: {
         Row: {
+          evaluation_mode: "exact" | "context";
           completed_at: string | null;
           created_at: string;
           current_line_order: number;
@@ -860,6 +864,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          evaluation_mode?: "exact" | "context";
           completed_at?: string | null;
           created_at?: string;
           current_line_order?: number;
@@ -879,6 +884,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          evaluation_mode?: "exact" | "context";
           completed_at?: string | null;
           created_at?: string;
           current_line_order?: number;
@@ -1011,6 +1017,23 @@ export type Database = {
         };
         Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
       };
+      commit_roleplay_recording: {
+        Args: {
+          p_user_id: string;
+          p_session_id: string;
+          p_line_id: string;
+          p_recording_id: string;
+          p_object_path: string;
+          p_mime_type: string;
+          p_size_bytes: number;
+          p_duration_ms: number;
+        };
+        Returns: undefined;
+      };
+      finish_roleplay_recording: {
+        Args: { p_user_id: string; p_session_id: string };
+        Returns: undefined;
+      };
       complete_analysis_job: {
         Args: {
           p_job_id: string;
@@ -1044,6 +1067,7 @@ export type Database = {
       };
       create_roleplay_session_snapshot: {
         Args: {
+          p_evaluation_mode?: string;
           p_material_id: string;
           p_material_title: string;
           p_situation: string;

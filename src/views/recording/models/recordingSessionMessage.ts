@@ -39,6 +39,7 @@ export function getRecordingSessionHint(
     case "failed":
       return "다시 녹음해 주세요";
     case "ready":
+    case "completed":
       return "";
   }
 }

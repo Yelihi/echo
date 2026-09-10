@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { speakRolePlayPartnerLineSchema } from "@/views/role-play/config/schema";
+import { speakRolePlayPartnerLineSchema } from "@/features/roleplay-sessions/models/partnerSpeechSchema";
 
 describe("speakRolePlayPartnerLineSchema", () => {
   it("should accept a preview request without client-supplied text", () => {

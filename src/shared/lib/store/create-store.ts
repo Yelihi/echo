@@ -1,5 +1,6 @@
 import { create, type StateCreator } from "zustand";
 import { devtools } from "zustand/middleware";
+import { createStore as createVanillaStore } from "zustand/vanilla";
 
 /**
  * Zustand 스토어 생성 헬퍼
@@ -23,5 +24,21 @@ import { devtools } from "zustand/middleware";
  * ```
  */
 export function createStore<T>(name: string, initializer: StateCreator<T>) {
-  return create<T>()(devtools(initializer, { name }));
+  return create<T>()(
+    devtools(initializer, {
+      name,
+      enabled:
+        process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_STORE_DEVTOOLS === "true",
+    }),
+  );
+}
+
+export function createStoreApi<T>(name: string, initializer: StateCreator<T>) {
+  return createVanillaStore<T>()(
+    devtools(initializer, {
+      name,
+      enabled:
+        process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_STORE_DEVTOOLS === "true",
+    }),
+  );
 }

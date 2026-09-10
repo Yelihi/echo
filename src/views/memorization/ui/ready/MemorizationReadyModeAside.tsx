@@ -12,7 +12,7 @@ import { SelectableOptionCard } from "@/shared/components/ui";
 // views
 import { MEMORIZATION_READY_MODE_OPTIONS } from "@/views/memorization/config/const";
 import { createMemorizationSessionErrorFromCode } from "@/views/memorization/models/errors";
-import type { MemorizationReadyMode } from "@/views/memorization/models/ready";
+import type { MemorizationReadyMode } from "@/features/memorization-sessions/models/ready";
 import { createMemorizationSession } from "@/views/memorization/services/action/createMemorizationSession";
 
 interface MemorizationReadyModeAsideProps {

@@ -1,0 +1,24 @@
+receivers:
+  filelog/echo:
+    include: ["${env:ECHO_LOG_FILE}"]
+    start_at: beginning
+    operators:
+      - type: json_parser
+        parse_to: attributes
+        on_error: drop
+processors:
+  resource/echo:
+    attributes:
+      - key: service.name
+        value: echo-server
+        action: upsert
+  batch: {}
+exporters:
+  otlp_http/signoz:
+    endpoint: "${env:SIGNOZ_OTLP_ENDPOINT}"
+service:
+  pipelines:
+    logs:
+      receivers: [filelog/echo]
+      processors: [resource/echo, batch]
+      exporters: [otlp_http/signoz]

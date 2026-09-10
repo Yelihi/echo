@@ -3,7 +3,8 @@ import type { RoleplaySession } from "@/entities/roleplay-session";
 
 // views
 import type { RoleplayReadyMaterial } from "@/views/role-play/models/interface";
-import { selectRolePlaySessionPartner } from "@/views/role-play/models/selectRolePlaySessionPartner";
+import { selectRolePlaySessionPartner } from "@/entities/roleplay-session/models/selectPartner";
+import { createRoleplayRecordingTurns } from "@/entities/roleplay-session/models/recordingTurns";
 
 export function convertRolePlaySessionToRecordingMaterial(
   session: RoleplaySession,
@@ -24,5 +25,13 @@ export function convertRolePlaySessionToRecordingMaterial(
     estimatedMinutes: Math.max(1, Math.ceil(session.lineSnapshots.length / 3)),
     partnerRole: partner.partnerRole,
     partnerLine: partner.partnerLine,
+    recordingTurns: createRoleplayRecordingTurns(session),
+    previewLines: session.lineSnapshots.map((line) => ({
+      label:
+        line.speakerOrder === session.selectedLearnerSpeakerOrder
+          ? "나"
+          : (partner.partnerRole ?? "상대방"),
+      text: line.text,
+    })),
   };
 }

@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useResultAutoRefresh } from "@/shared/services/hooks/useResultAutoRefresh";
 
 export function ResultAutoRefresh() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const id = window.setInterval(() => router.refresh(), 5000);
-
-    return () => window.clearInterval(id);
-  }, [router]);
+  useResultAutoRefresh();
 
   return null;
 }

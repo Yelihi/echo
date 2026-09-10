@@ -42,7 +42,6 @@ export type {
 export type {
   AnalysisJobRepositoryPort,
   ClaimNextAnalysisJobInput,
-  FailAnalysisJobInput,
   FindAnalysisJobsBySessionIdsInput,
   FindAnalysisJobBySessionInput,
   RequestAnalysisJobInput,

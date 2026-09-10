@@ -7,7 +7,7 @@ export interface SessionStateBadgeProps {
 
 const mappedLabel = {
   completed: "분석 완료",
-  failed: "일부 실패",
+  failed: "분석 실패",
   inProgress: "분석 중",
   pending: "분석 전",
 };

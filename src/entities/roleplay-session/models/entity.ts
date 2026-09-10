@@ -33,6 +33,7 @@ export interface RoleplaySession {
   readonly selectedLearnerSpeakerOrder: 1 | 2;
   readonly partnerVoice: RoleplayPartnerVoice;
   readonly speechSpeed: number;
+  readonly evaluationMode: "exact" | "context";
   readonly speakerSnapshots: readonly [RoleplaySpeakerSnapshot, RoleplaySpeakerSnapshot];
   readonly lineSnapshots: ReadonlyArray<RoleplayLineSnapshot>;
   readonly currentLineOrder: number;

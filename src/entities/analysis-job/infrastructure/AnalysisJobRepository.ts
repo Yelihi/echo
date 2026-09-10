@@ -16,8 +16,6 @@ import {
 } from "@/entities/analysis-job/models/mapper";
 import {
   AnalysisJobClaimError,
-  AnalysisJobCompleteError,
-  AnalysisJobFailError,
   AnalysisJobFetchError,
   AnalysisJobNotReturnedError,
   AnalysisJobRequestError,
@@ -25,7 +23,6 @@ import {
 import type {
   AnalysisJobRepositoryPort,
   ClaimNextAnalysisJobInput,
-  FailAnalysisJobInput,
   FindAnalysisJobsBySessionIdsInput,
   FindAnalysisJobBySessionInput,
   RequestAnalysisJobInput,
@@ -84,45 +81,6 @@ export class AnalysisJobRepository implements AnalysisJobRepositoryPort {
     }
 
     return data ? mapAnalysisJobRowToEntity(data) : null;
-  }
-
-  async completeAnalysisJob(id: AnalysisJobId): Promise<AnalysisJob> {
-    const { data, error } = await this.supabase
-      .rpc("complete_analysis_job", {
-        p_job_id: id,
-      })
-      .maybeSingle();
-
-    if (error) {
-      throw new AnalysisJobCompleteError({ cause: error });
-    }
-
-    if (!data) {
-      throw new AnalysisJobNotReturnedError("complete");
-    }
-
-    return mapAnalysisJobRowToEntity(data);
-  }
-
-  async failAnalysisJob(input: FailAnalysisJobInput): Promise<AnalysisJob> {
-    const { data, error } = await this.supabase
-      .rpc("fail_analysis_job", {
-        p_job_id: input.jobId,
-        p_error_code: input.errorCode,
-        p_error_message: input.errorMessage,
-        p_error_log_ref: input.errorLogRef ?? null,
-      })
-      .maybeSingle();
-
-    if (error) {
-      throw new AnalysisJobFailError({ cause: error });
-    }
-
-    if (!data) {
-      throw new AnalysisJobNotReturnedError("fail");
-    }
-
-    return mapAnalysisJobRowToEntity(data);
   }
 
   async findCurrentByRoleplaySessionId(

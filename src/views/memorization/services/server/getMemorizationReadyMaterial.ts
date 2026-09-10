@@ -3,7 +3,7 @@ import type { MaterialId } from "@/entities/value-object";
 
 // views
 import { convertMemorizationMaterialToReadyMaterial } from "@/views/memorization/models/converter/convertMemorizationReadyMaterial";
-import type { MemorizationReadyMaterial } from "@/views/memorization/models/ready";
+import type { MemorizationReadyMaterial } from "@/features/memorization-sessions/models/ready";
 import { getMemorizationMaterial } from "@/views/memorization/services/server/getMemorizationMaterial";
 
 export async function getMemorizationReadyMaterial(

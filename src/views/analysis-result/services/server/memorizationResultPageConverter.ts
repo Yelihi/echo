@@ -1,5 +1,6 @@
 import {
   createAnalysisResultDto,
+  AnalysisJobState,
   type AnalysisResultExpectedTargetDto,
 } from "@/entities/analysis-job";
 import { type MemorizationSession } from "@/entities/memorization-session";
@@ -28,7 +29,7 @@ export function createMemorizationResultPageViewModel(
     audio: audioBySentenceId.get(sentence.id),
   }));
   const result = createAnalysisResultDto({
-    job,
+    job: job ?? { state: AnalysisJobState.FAILED },
     expectedTargets,
     results: mapSourceResults(data.sourceResults),
   });
@@ -36,6 +37,7 @@ export function createMemorizationResultPageViewModel(
 
   return {
     kind: "memorization",
+    canRetry: job === null || job.state === AnalysisJobState.FAILED,
     title: session.materialTitleSnapshot,
     meta: createMeta(session.completedAt ?? session.updatedAt, sentences.length),
     result,

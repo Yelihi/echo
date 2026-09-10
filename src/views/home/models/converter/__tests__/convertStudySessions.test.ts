@@ -8,8 +8,8 @@ import {
   type RoleplaySession,
 } from "@/entities/roleplay-session";
 import type { MaterialId, SessionId, SpeakerId, UserId } from "@/entities/value-object";
-import { convertMemorizationStudySessions } from "@/views/home/models/converter/convertMemorizationStudySessions";
-import { convertRoleplayStudySessions } from "@/views/home/models/converter/convertRoleplayStudySessions";
+import { convertMemorizationStudySessions } from "@/widgets/latest-sessions/models/convertMemorizationStudySessions";
+import { convertRoleplayStudySessions } from "@/widgets/latest-sessions/models/convertRoleplayStudySessions";
 import type { GetLatestStudySession } from "@/views/home/models/interface";
 
 describe("convert study sessions", () => {
@@ -57,6 +57,7 @@ function createRoleplaySession(overrides: Partial<RoleplaySession> = {}): Rolepl
     tagsSnapshot: [],
     selectedLearnerSpeakerOrder: 1,
     partnerVoice: RoleplayPartnerVoice.EMMA,
+    evaluationMode: "exact",
     speechSpeed: 1,
     speakerSnapshots: [
       { id: "speaker-1" as SpeakerId, order: 1, displayName: "Staff" },

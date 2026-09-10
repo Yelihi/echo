@@ -24,7 +24,7 @@ import {
 import type {
   CreateMemorizationSessionRequest,
   CreateMemorizationSessionResult,
-} from "@/views/memorization/models/ready";
+} from "@/features/memorization-sessions/models/ready";
 
 export const createMemorizationSession = async (
   input: CreateMemorizationSessionRequest,

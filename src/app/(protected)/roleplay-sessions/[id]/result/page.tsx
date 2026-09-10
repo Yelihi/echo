@@ -1,10 +1,7 @@
+import { getRoleplayResultPageViewModel } from "@/views/analysis-result/server";
 import { notFound } from "next/navigation";
 
-import {
-  AnalysisResultView,
-  getRoleplayResultPageViewModel,
-  retryRoleplayAnalysis,
-} from "@/views/analysis-result";
+import { AnalysisResultView, retryRoleplayAnalysis } from "@/views/analysis-result";
 import type { SessionId } from "@/entities/value-object";
 import { isUuidString } from "@/shared/utils/uuid";
 import { PageContainer } from "@/widgets/app-shell";

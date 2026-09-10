@@ -1,5 +1,5 @@
 export { MIN_RECORDING_DURATION_MS } from "@/features/session-recording/config/const";
-export { useRecordingSession } from "@/features/session-recording/services/client/useRecordingSession";
+export { useRecordingSession } from "@/features/session-recording/services/hooks/useRecordingSession";
 export {
   discardTooShort,
   failRecording,
