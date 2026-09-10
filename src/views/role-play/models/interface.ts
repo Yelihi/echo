@@ -1,3 +1,16 @@
+import type {
+  RoleplayReadyEvaluationMode,
+  RoleplayReadyRole,
+  RoleplayReadyVoice,
+  RoleplayReadySettings,
+} from "@/features/roleplay-sessions/models/ready";
+export type {
+  RoleplayReadyRole,
+  RoleplayReadyEvaluationMode,
+  RoleplayReadyVoice,
+  RoleplayReadyMaterial,
+  RoleplayReadySettings,
+} from "@/features/roleplay-sessions/models/ready";
 // widgets
 import type { SourceCardProps } from "@/widgets/source-card/models/interface";
 
@@ -86,9 +99,6 @@ export interface RolePlayEditorStore {
 }
 
 // ready
-export type RoleplayReadyRole = "learner" | "partner";
-export type RoleplayReadyEvaluationMode = "exact" | "context";
-export type RoleplayReadyVoice = "emma" | "james" | "sofia";
 
 export interface CreateRolePlaySessionRequest {
   materialId: string;
@@ -97,27 +107,8 @@ export interface CreateRolePlaySessionRequest {
   speed: number;
 }
 
-export interface RoleplayReadyMaterial {
-  id: string;
-  tags: string[];
-  title: string;
-  description: string;
-  lineCount: number;
-  learnerTurnCount: number;
-  estimatedMinutes: number;
-  partnerRole?: string;
-  partnerLine?: string;
-}
-
 export interface RolePlayReadyViewProps {
   materialId: string;
-}
-
-export interface RoleplayReadySettings {
-  role: RoleplayReadyRole;
-  evaluationMode: RoleplayReadyEvaluationMode;
-  voice: RoleplayReadyVoice;
-  speed: number;
 }
 
 export interface RolePlayReadyStore {

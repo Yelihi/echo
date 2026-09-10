@@ -1,11 +1,13 @@
 import type { AudioCaptureErrorCode, AudioCaptureOptions, CapturedAudio } from "@/shared/lib/audio";
 import type { RecordingSessionState } from "@/features/session-recording/models/reducer/recording/interface";
+import type { RecordOperationEvent } from "@/shared/lib/logging/models";
 
 export type RecordingSessionErrorCode = AudioCaptureErrorCode | "unknown";
 
 export interface UseRecordingSessionOptions {
   readonly audioCaptureOptions?: AudioCaptureOptions;
   readonly now?: () => number;
+  readonly recordEvent?: RecordOperationEvent;
 }
 
 export interface UseRecordingSessionResult {

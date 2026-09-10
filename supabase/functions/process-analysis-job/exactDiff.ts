@@ -1,4 +1,4 @@
-import type { DiffSegment } from "./types.ts";
+import type { DiffSegment } from "./models/types.ts";
 
 // 이 파일은 `src/shared/lib/analysis-processor/exactDiff.ts`의 Edge Function 전용 복사본입니다.
 //
@@ -11,17 +11,7 @@ import type { DiffSegment } from "./types.ts";
 // 대신 작은 순수 함수 복사본을 유지합니다. 따라서 diff 알고리즘을 수정할 때는 반드시
 // 앱 쪽 원본과 이 Edge Function 복사본을 함께 변경해야 합니다. 한쪽만 바뀌면 결과 화면과
 // 비동기 processor가 서로 다른 diff를 저장/표시하는 drift가 생깁니다.
-type DiffToken = {
-  text: string;
-  comparable: string;
-};
-
-type DiffPart = {
-  op: "equal" | "insert" | "delete" | "replace";
-  expected: string[];
-  actual: string[];
-};
-
+import type { DiffToken, DiffPart } from "./models/diff.ts";
 export function createExactDiff(expectedText: string, actualText: string): DiffSegment[] {
   const expected = tokenize(expectedText);
   const actual = tokenize(actualText);

@@ -23,6 +23,9 @@ describe("convertRolePlaySessionToRecordingMaterial", () => {
       learnerTurnCount: 1,
       partnerRole: "Staff",
       partnerLine: "How can I help you?",
+      recordingTurns: [
+        { learnerLineId: session.lineSnapshots[1].id, partnerLine: "How can I help you?" },
+      ],
     });
   });
 
@@ -35,6 +38,13 @@ describe("convertRolePlaySessionToRecordingMaterial", () => {
       learnerTurnCount: 1,
       partnerRole: "Passenger",
       partnerLine: "I would like an aisle seat.",
+      recordingTurns: [
+        {
+          learnerLineId: session.lineSnapshots[0].id,
+          partnerLine: "",
+          closingPartnerLine: "I would like an aisle seat.",
+        },
+      ],
     });
   });
 });

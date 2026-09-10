@@ -11,7 +11,7 @@ import { PracticeType } from "@/entities/practice-target";
 import type { LineId, RecordingId, SessionId, UserId } from "@/entities/value-object";
 
 // features
-import type { RecordingStoragePort } from "@/features/recording-storage/services/server/types";
+import type { RecordingStoragePort } from "@/features/recording-storage/models/workflows";
 import { deleteUnacceptedDraftRecording } from "@/features/recording-storage/services/server/workflows";
 
 describe("deleteUnacceptedDraftRecording", () => {

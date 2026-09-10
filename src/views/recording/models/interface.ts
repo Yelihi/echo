@@ -5,4 +5,5 @@ export type RecordingPhase =
   | "user-ready"
   | "recording"
   | "recorded"
-  | "failed";
+  | "failed"
+  | "completed";

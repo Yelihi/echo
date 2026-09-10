@@ -1011,6 +1011,23 @@ export type Database = {
         };
         Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
       };
+      commit_roleplay_recording: {
+        Args: {
+          p_user_id: string;
+          p_session_id: string;
+          p_line_id: string;
+          p_recording_id: string;
+          p_object_path: string;
+          p_mime_type: string;
+          p_size_bytes: number;
+          p_duration_ms: number;
+        };
+        Returns: undefined;
+      };
+      finish_roleplay_recording: {
+        Args: { p_user_id: string; p_session_id: string };
+        Returns: undefined;
+      };
       complete_analysis_job: {
         Args: {
           p_job_id: string;

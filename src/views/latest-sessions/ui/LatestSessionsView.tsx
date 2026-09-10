@@ -1,7 +1,7 @@
-import { LATEST_SESSIONS } from "@/views/latest-sessions/config/mock";
 import { SessionSimplified } from "@/widgets/latest-sessions/ui/SessionSimplified";
+import type { LatestSessionsViewProps } from "../models/interface";
 
-export function LatestSessionsView() {
+export function LatestSessionsView({ sessions = [] }: LatestSessionsViewProps) {
   return (
     <section className="flex w-full flex-col gap-7">
       <header className="flex flex-col gap-1.5">
@@ -12,8 +12,11 @@ export function LatestSessionsView() {
       </header>
 
       <div className="flex w-full flex-col gap-2.5">
-        {LATEST_SESSIONS.map((session) => (
-          <SessionSimplified key={`${session.sessionType}-${session.title}`} {...session} />
+        {sessions.length === 0 && (
+          <p className="py-10 text-center text-gray-text">아직 학습 기록이 없습니다.</p>
+        )}
+        {sessions.map((session) => (
+          <SessionSimplified key={`${session.sessionType}-${session.id}`} {...session} />
         ))}
       </div>
     </section>

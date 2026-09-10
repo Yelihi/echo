@@ -5,7 +5,7 @@ import { decodeTtsAudioBase64 } from "@/shared/lib/tts/decodeTtsAudioBase64";
 
 // views
 import type { RoleplayReadyVoice } from "@/views/role-play/models/interface";
-import { speakRolePlayPartnerLine } from "@/views/role-play/services/action/speakRolePlayPartnerLine";
+import { speakRolePlayPartnerLine } from "@/features/roleplay-sessions/services/actions/speakRolePlayPartnerLine";
 
 let previewRequestId = 0;
 let previewAudio: HTMLAudioElement | null = null;

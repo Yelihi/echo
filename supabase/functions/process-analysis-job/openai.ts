@@ -1,5 +1,5 @@
 import { createExactDiff } from "./exactDiff.ts";
-import type { AcceptedRecording, Evaluation, PracticeType } from "./types.ts";
+import type { AcceptedRecording, Evaluation, PracticeType } from "./models/types.ts";
 
 export async function transcribe(audio: Blob, recording: AcceptedRecording): Promise<string> {
   const body = new FormData();
@@ -10,6 +10,7 @@ export async function transcribe(audio: Blob, recording: AcceptedRecording): Pro
 
   const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
     method: "POST",
+    signal: AbortSignal.timeout(60_000),
     headers: {
       authorization: `Bearer ${getOpenAIKey()}`,
     },
@@ -39,6 +40,7 @@ export async function evaluate(input: {
   // directly and still validate locally before persisting the result.
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
+    signal: AbortSignal.timeout(60_000),
     headers: {
       authorization: `Bearer ${getOpenAIKey()}`,
       "content-type": "application/json",

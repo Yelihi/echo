@@ -2,15 +2,9 @@ import type {} from "./deno.d.ts";
 // @ts-expect-error Deno import map resolves this in Supabase Edge Functions.
 import { createClient } from "supabase-js";
 
-import type { AcceptedRecording, AnalysisJob, Evaluation, Target } from "./types.ts";
+import type { AcceptedRecording, AnalysisJob, Evaluation, Target } from "./models/types.ts";
 
-export type Supabase = ReturnType<typeof createClient>;
-
-type SnapshotText = {
-  id: string;
-  text_snapshot: string;
-};
-
+import type { Supabase, SnapshotText } from "./models/repository.ts";
 export function createServiceClient(): Supabase {
   const url = Deno.env.get("SUPABASE_URL") ?? Deno.env.get("NEXT_PUBLIC_SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -73,20 +67,24 @@ export async function insertResult(
   transcript: string,
   evaluation: Evaluation,
 ): Promise<void> {
-  const { error } = await supabase.from("practice_target_analysis_results").insert({
-    user_id: job.user_id,
-    analysis_job_id: job.id,
-    roleplay_session_id: target.recording.roleplay_session_id,
-    roleplay_line_id: target.recording.roleplay_line_id,
-    memorization_session_id: target.recording.memorization_session_id,
-    memorization_sentence_id: target.recording.memorization_sentence_id,
-    transcript,
-    feedback: {
-      schema_version: "v1",
-      diff: evaluation.diff,
-      feedback: evaluation.feedback,
+  const { error } = await supabase.rpc("save_claimed_analysis_result", {
+    p_job_id: job.id,
+    p_claim_token: job.claim_token,
+    p_result: {
+      user_id: job.user_id,
+      analysis_job_id: job.id,
+      roleplay_session_id: target.recording.roleplay_session_id,
+      roleplay_line_id: target.recording.roleplay_line_id,
+      memorization_session_id: target.recording.memorization_session_id,
+      memorization_sentence_id: target.recording.memorization_sentence_id,
+      transcript,
+      feedback: {
+        schema_version: "v1",
+        diff: evaluation.diff,
+        feedback: evaluation.feedback,
+      },
+      score: evaluation.score,
     },
-    score: evaluation.score,
   });
 
   if (error) {
@@ -104,20 +102,28 @@ export async function filterUnprocessedTargets(
   return targets.filter((target) => !processedTargetKeys.has(targetKey(target)));
 }
 
-export function completeJob(supabase: Supabase, jobId: string): Promise<AnalysisJob> {
-  return rpcOne<AnalysisJob>(supabase, "complete_analysis_job", { p_job_id: jobId });
+export function completeJob(supabase: Supabase, job: AnalysisJob): Promise<AnalysisJob> {
+  return transitionJob(supabase, job, "completed");
 }
 
-export function requeueJob(supabase: Supabase, jobId: string): Promise<AnalysisJob> {
-  return rpcOne<AnalysisJob>(supabase, "requeue_analysis_job", { p_job_id: jobId });
+export function requeueJob(supabase: Supabase, job: AnalysisJob): Promise<AnalysisJob> {
+  return transitionJob(supabase, job, "queued");
 }
 
-export function failJob(supabase: Supabase, jobId: string, message: string): Promise<AnalysisJob> {
-  return rpcOne<AnalysisJob>(supabase, "fail_analysis_job", {
-    p_job_id: jobId,
-    p_error_code: "ANALYSIS_PROCESSOR_FAILED",
-    p_error_message: message,
-    p_error_log_ref: null,
+export function failJob(
+  supabase: Supabase,
+  job: AnalysisJob,
+  message: string,
+): Promise<AnalysisJob> {
+  return transitionJob(supabase, job, "failed", message);
+}
+
+function transitionJob(supabase: Supabase, job: AnalysisJob, status: string, message?: string) {
+  return rpcOne<AnalysisJob>(supabase, "transition_claimed_analysis_job", {
+    p_job_id: job.id,
+    p_claim_token: job.claim_token,
+    p_status: status,
+    p_error_message: message ?? null,
   });
 }
 

@@ -2,7 +2,7 @@
 import type { MemorizationMaterial, MemorizationParagraph } from "@/entities/memorization-material";
 
 // views
-import type { MemorizationReadyMaterial } from "@/views/memorization/models/ready";
+import type { MemorizationReadyMaterial } from "@/features/memorization-sessions/models/ready";
 
 export function convertMemorizationMaterialToReadyMaterial(
   material: MemorizationMaterial,

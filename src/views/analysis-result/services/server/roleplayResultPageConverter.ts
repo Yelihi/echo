@@ -1,5 +1,6 @@
 import {
   createAnalysisResultDto,
+  AnalysisJobState,
   type AnalysisResultExpectedTargetDto,
 } from "@/entities/analysis-job";
 import { PracticeType } from "@/entities/practice-target";
@@ -28,7 +29,7 @@ export function createRoleplayResultPageViewModel(
       audio: audioByLineId.get(line.id),
     }));
   const result = createAnalysisResultDto({
-    job,
+    job: job ?? { state: AnalysisJobState.FAILED },
     expectedTargets,
     results: mapSourceResults(data.sourceResults),
   });

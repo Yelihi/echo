@@ -1,17 +1,5 @@
-import type { CleanupFailureSource } from "@/entities/cleanup-failure-log";
-import type {
-  CleanupFailureLogRepositoryPort,
-  CreateCleanupFailureLogInput,
-} from "@/entities/cleanup-failure-log/models/repository";
-
-export interface RecordCleanupFailureInput extends CreateCleanupFailureLogInput {
-  readonly repository?: CleanupFailureLogRepositoryPort;
-}
-
-/**
- * Cleanup logging is best-effort.
- * A logging failure must not hide the storage failure that the caller needs to handle.
- */
+import type { RecordCleanupFailureInput, CreateCleanupFailureInput } from "../../models/cleanup";
+// 정리 실패 로그가 원래 저장 오류를 가리지 않도록 기록 실패는 전파하지 않는다.
 export async function recordCleanupFailure(input: RecordCleanupFailureInput): Promise<void> {
   try {
     await input.repository?.create({
@@ -25,7 +13,7 @@ export async function recordCleanupFailure(input: RecordCleanupFailureInput): Pr
       errorMessage: input.errorMessage,
     });
   } catch {
-    // Intentionally ignored. Cleanup retry visibility must not mask the primary failure.
+    // 로그 장애는 원래 저장 오류보다 우선하지 않는다.
   }
 }
 
@@ -34,11 +22,7 @@ export function getCleanupErrorMessage(error: unknown): string {
 }
 
 export function createCleanupFailureInput(
-  input: Omit<CreateCleanupFailureLogInput, "source" | "errorMessage"> & {
-    readonly source: CleanupFailureSource;
-    readonly error: unknown;
-    readonly repository?: CleanupFailureLogRepositoryPort;
-  },
+  input: CreateCleanupFailureInput,
 ): RecordCleanupFailureInput {
   return {
     repository: input.repository,

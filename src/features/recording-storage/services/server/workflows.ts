@@ -20,7 +20,7 @@ import type {
   CreateDraftRecordingWorkflowInput,
   DeleteUnacceptedDraftRecordingWorkflowInput,
   RecordingStoragePort,
-} from "./types";
+} from "../../models/workflows";
 
 const RECORDINGS_BUCKET = "recordings";
 const DRAFT_CLEANUP_SOURCE = CleanupFailureSource.DRAFT_RECORDING;
