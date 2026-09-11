@@ -5,12 +5,12 @@ import { AudioLines, CircleCheck, Clock, TriangleAlert } from "lucide-react";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const analysisBannerVariants = cva(
-  "group/analysis-banner flex w-full items-center gap-3 rounded-panel border px-5 py-4",
+  "group/analysis-banner flex w-full flex-wrap items-center gap-3 rounded-panel border px-5 py-4",
   {
     variants: {
       state: {
         pending: "border-card-line bg-card-surface",
-        analyzing: "border-accent-100 bg-accent-50",
+        analyzing: "border-control-line bg-gray-background",
         done: "border-green-secondary bg-green-secondary",
         partial: "border-yellow-secondary bg-yellow-secondary",
         failed: "border-red-secondary bg-red-secondary",
@@ -23,15 +23,15 @@ export const analysisBannerVariants = cva(
 );
 
 export const analysisBannerIconVariants = cva(
-  "flex size-10 shrink-0 items-center justify-center rounded-control [&_svg]:size-5",
+  "flex size-10 shrink-0 items-center justify-center rounded-full [&_svg]:size-5",
   {
     variants: {
       state: {
         pending: "bg-neutral-100 text-gray-text",
-        analyzing: "bg-accent-100 text-accent-700",
+        analyzing: "bg-accent-100 text-brand",
         done: "bg-green-secondary text-green-primary",
         partial: "bg-yellow-secondary text-yellow-primary",
-        failed: "bg-red-secondary text-red-primary",
+        failed: "bg-red-secondary text-danger-ink",
       },
     },
     defaultVariants: {
@@ -90,7 +90,7 @@ export const AnalysisBanner = ({
       <span className={cn(analysisBannerIconVariants({ state }))}>
         {icon ?? stateIcons[resolvedState]}
       </span>
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <p className="text-body-4 font-bold text-black-primary">{title}</p>
         {description ? <p className="text-body-2 text-gray-text">{description}</p> : null}
       </div>

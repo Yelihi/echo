@@ -22,7 +22,7 @@ import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlay
 
 export function RolePlayScriptEditor({ isPending }: RolePlayScriptEditorProps) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-card border border-card-line bg-white shadow-emphasize">
+    <div className="min-w-0 overflow-hidden rounded-card border border-card-line bg-white">
       <RolePlayScriptHeader />
       <RolePlayScriptLineList isPending={isPending} />
       {isPending ? null : <RolePlayScriptAddLineBar />}

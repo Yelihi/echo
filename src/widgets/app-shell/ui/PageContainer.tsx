@@ -11,7 +11,7 @@ export interface PageContainerProps {
  * 셸 안쪽 콘텐츠의 가로 폭과 여백을 맞추는 래퍼.
  *
  * 페이지마다 max-width 와 padding 을 각자 정하면 화면 간 정렬이 어긋나므로
- * 여기 한 곳에서만 정합니다. 내비게이션의 내부 폭(1280)과 같은 값을 씁니다.
+ * 여기 한 곳에서만 정합니다. 내비게이션과 동일한 page 폭·여백 토큰을 씁니다.
  */
 export const PageContainer = ({
   children,
@@ -22,7 +22,7 @@ export const PageContainer = ({
     <div
       data-slot="page-container"
       className={cn(
-        "mx-auto flex min-h-0 w-full max-w-320 flex-1 flex-col px-6 pt-10 pb-20",
+        "mx-auto flex min-h-0 w-full max-w-page flex-1 flex-col px-page-gutter pt-10 pb-section",
         className,
       )}
       {...props}

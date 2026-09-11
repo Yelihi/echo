@@ -48,10 +48,10 @@ export const ParagraphRow = ({
       className={cn(paragraphRowVariants({ mode }), className)}
       {...props}
     >
-      <span className="mt-2 flex size-6 shrink-0 items-center justify-center rounded-md bg-deep-blue-secondary text-body-1 font-black text-deep-blue-primary">
+      <span className="mt-2 flex size-6 shrink-0 items-center justify-center rounded-full bg-gray-background text-body-1 font-black text-brand">
         {index}
       </span>
-      <div className="flex-1">{children}</div>
+      <div className="min-w-0 flex-1">{children}</div>
       {resolvedMode === "edit" && actions ? (
         <div className="flex flex-col gap-1">{actions}</div>
       ) : null}

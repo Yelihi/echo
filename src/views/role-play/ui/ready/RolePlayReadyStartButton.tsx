@@ -48,13 +48,13 @@ export function RolePlayReadyStartButton({ materialId }: RolePlayReadyStartButto
   };
 
   return (
-    <Button
-      type="button"
-      className="h-9 w-full bg-accent-600 hover:bg-accent-700"
-      onClick={startSession}
-      disabled={isPending}
-    >
-      {isPending ? <Loader2 className="size-4 animate-spin" /> : <Play />} 연습 시작하기
+    <Button type="button" className="min-h-12 w-full" onClick={startSession} disabled={isPending}>
+      {isPending ? (
+        <Loader2 className="size-4 animate-spin motion-reduce:animate-none" />
+      ) : (
+        <Play />
+      )}{" "}
+      연습 시작하기
     </Button>
   );
 }

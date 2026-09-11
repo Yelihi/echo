@@ -31,15 +31,18 @@ export function AuthCallbackContent({ provider }: AuthCallbackContentProps) {
     <>
       {error ? (
         <>
-          <p className="text-body-2 font-semibold text-red-600">{error}</p>
+          <p className="text-body-2 font-semibold text-danger-ink">{error}</p>
           <Link className="text-body-3 font-medium text-black underline" href="/login">
             로그인으로 돌아가기
           </Link>
         </>
       ) : (
         <>
-          <Loader2 className="size-30 animate-spin text-black" aria-hidden="true" />
-          <p className="text-body-3 text-gray-600">잠시만 기다려주세요.</p>
+          <Loader2
+            className="size-10 animate-spin text-brand motion-reduce:animate-none"
+            aria-hidden="true"
+          />
+          <p className="text-body-3 text-gray-text">잠시만 기다려주세요.</p>
         </>
       )}
     </>

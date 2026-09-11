@@ -49,8 +49,8 @@ export function MemorizationReadyModeAside({ materialId }: MemorizationReadyMode
   return (
     <section className="flex flex-col gap-3.5">
       <div>
-        <h2 className="text-[17px] leading-normal font-bold">연습 모드</h2>
-        <p className="mt-1 text-[13.5px] text-gray-text">어떤 단서로 문장을 떠올릴지 골라보세요.</p>
+        <h2 className="text-heading-xs font-bold tracking-tight">연습 모드</h2>
+        <p className="mt-1 text-body-3 text-gray-text">어떤 단서로 문장을 떠올릴지 골라보세요.</p>
       </div>
 
       <div className="grid gap-3" role="radiogroup" aria-label="문장 암기 연습 모드 선택">
@@ -74,13 +74,13 @@ export function MemorizationReadyModeAside({ materialId }: MemorizationReadyMode
         })}
       </div>
 
-      <Button
-        type="button"
-        className="h-9 w-full bg-accent-600 hover:bg-accent-700"
-        onClick={startSession}
-        disabled={isPending}
-      >
-        {isPending ? <Loader2 className="size-4 animate-spin" /> : <Play />} 연습 시작하기
+      <Button type="button" className="min-h-12 w-full" onClick={startSession} disabled={isPending}>
+        {isPending ? (
+          <Loader2 className="size-4 animate-spin motion-reduce:animate-none" />
+        ) : (
+          <Play />
+        )}{" "}
+        연습 시작하기
       </Button>
     </section>
   );

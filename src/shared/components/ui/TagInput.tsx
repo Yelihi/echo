@@ -7,16 +7,16 @@ import { X } from "lucide-react";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const tagInputVariants = cva(
-  "group/tag-input flex w-full flex-wrap items-center gap-2 rounded-control border border-card-line-strong bg-card-surface px-2.5 py-2 focus-within:border-accent-500",
+  "group/tag-input flex w-full flex-wrap items-center gap-2 rounded-control border border-control-line bg-card-surface px-2.5 py-2 focus-within:border-brand focus-within:inset-ring-1 focus-within:inset-ring-brand",
 );
 
 export const tagInputChipVariants = cva(
-  "inline-flex h-7 shrink-0 items-center gap-1 rounded-full pr-2 pl-2.75 text-body-1 font-bold",
+  "inline-flex min-h-7 max-w-full items-center gap-1 rounded-full border border-card-line-strong pr-2 pl-2.75 text-body-1 font-medium",
   {
     variants: {
       theme: {
-        roleplay: "bg-blue-secondary text-blue-focus-title",
-        memo: "bg-deep-blue-secondary text-deep-blue-primary",
+        roleplay: "bg-gray-background text-brand",
+        memo: "bg-gray-background text-brand",
       },
     },
     defaultVariants: {
@@ -55,12 +55,12 @@ export const TagInput = ({
     <div data-slot="tag-input" className={cn(tagInputVariants(), className)} {...props}>
       {tags.map((tag) => (
         <span key={tag} data-slot="tag-input-chip" className={cn(tagInputChipVariants({ theme }))}>
-          {tag}
+          <span className="min-w-0 break-all">{tag}</span>
           <button
             type="button"
             aria-label={`${tag} 태그 삭제`}
             onClick={() => onRemoveTag?.(tag)}
-            className="inline-flex cursor-pointer items-center text-current opacity-70 transition-opacity hover:opacity-100 [&_svg]:size-3.25"
+            className="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-current outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 opacity-70 transition-opacity hover:opacity-100 [&_svg]:size-3.25"
           >
             <X />
           </button>
@@ -69,7 +69,7 @@ export const TagInput = ({
       <input
         type="text"
         placeholder={tags.length ? undefined : placeholder}
-        className="min-w-32 flex-1 basis-32 border-0 bg-transparent text-body-3 text-black-primary outline-none placeholder:text-gray-text-secondary"
+        className="min-w-0 flex-1 basis-32 border-0 bg-transparent text-body-3 text-black-primary outline-none placeholder:text-gray-text-secondary"
         {...inputProps}
       />
     </div>

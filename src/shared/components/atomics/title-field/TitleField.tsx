@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const titleFieldVariants = cva(
-  "group/title-field flex h-13.5 w-full min-w-0 border-0 bg-transparent px-0.5 text-heading-sm font-bold text-black-primary outline-none placeholder:text-gray-text-secondary disabled:cursor-not-allowed disabled:opacity-60",
+  "group/title-field flex h-13.5 w-full min-w-0 border-0 border-b border-transparent bg-transparent focus-visible:border-brand px-0.5 text-heading-md font-bold text-black-primary outline-none placeholder:text-gray-text-secondary disabled:cursor-not-allowed disabled:opacity-60",
 );
 
 /**

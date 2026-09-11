@@ -52,13 +52,13 @@ export const ImportDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent data-slot="import-dialog" className={cn(className)}>
         <DialogHeader>
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-chip bg-blue-secondary text-blue-focus-title [&_svg]:size-5">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-chip bg-gray-background text-brand [&_svg]:size-5">
             {icon}
           </span>
-          <div className="flex flex-1 flex-col gap-0.5">
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <DialogTitle>{title}</DialogTitle>
             {filename ? (
-              <span className="flex items-center gap-1.5 text-body-2 text-gray-text [&_svg]:size-3.25">
+              <span className="flex items-center gap-1.5 break-all text-body-2 text-gray-text [&_svg]:size-3.25">
                 <FileText />
                 {filename}
               </span>
@@ -66,13 +66,13 @@ export const ImportDialog = ({
           </div>
           <DialogClose
             aria-label="닫기"
-            className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-chip text-gray-text transition-colors outline-none hover:bg-gray-background [&_svg]:size-5"
+            className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-chip text-gray-text transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 hover:bg-gray-background [&_svg]:size-5"
           >
             <X />
           </DialogClose>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
 
         {footer ? <DialogFooter>{footer}</DialogFooter> : null}
       </DialogContent>

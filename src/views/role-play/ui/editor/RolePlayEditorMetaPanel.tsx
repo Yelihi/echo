@@ -65,7 +65,7 @@ function RolePlayTagsField() {
 export function RolePlayEditorMetaPanel({ txtImport }: { txtImport: RoleplayTxtImportProps }) {
   return (
     <aside className="flex min-w-0 flex-col gap-4">
-      <div className="rounded-card border border-card-line bg-white p-5 shadow-emphasize">
+      <div className="rounded-card border border-card-line bg-white p-5">
         <RolePlayTitleField />
         <RolePlaySituationField />
         <RolePlayTagsField />

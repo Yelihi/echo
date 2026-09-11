@@ -13,7 +13,7 @@ export function ResultTurn({ turn }: ResultTurnProps) {
       <ChatBubble
         speaker="partner"
         lang="en"
-        className="max-w-full break-words rounded-lg text-base leading-relaxed sm:max-w-[620px]"
+        className="max-w-full break-words rounded-panel text-base leading-relaxed sm:max-w-[620px]"
       >
         {turn.text}
       </ChatBubble>

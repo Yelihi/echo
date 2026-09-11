@@ -12,7 +12,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="w-130 overflow-hidden rounded-panel border border-card-line p-0">
+      <div className="w-full max-w-130 overflow-hidden rounded-panel border border-card-line p-0">
         <Story />
       </div>
     ),

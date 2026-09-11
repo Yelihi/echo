@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const roleCardVariants = cva(
-  "group/role-card relative flex w-full cursor-pointer flex-col gap-2 rounded-panel border p-4 text-left transition-all disabled:pointer-events-none disabled:opacity-50",
+  "group/role-card relative flex w-full cursor-pointer flex-col gap-2 rounded-panel border p-4 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       selected: {
-        false: "border-card-line bg-white",
-        true: "border-accent-500 bg-accent-50",
+        false: "border-control-line bg-card-surface hover:border-brand",
+        true: "border-brand bg-gray-background inset-ring-1 inset-ring-brand",
       },
     },
     defaultVariants: {
@@ -41,7 +41,7 @@ export const RoleCard = ({
       type="button"
       data-slot="role-card"
       data-selected={selected}
-      aria-pressed={selected}
+      aria-pressed={props.role === "radio" ? undefined : selected}
       className={cn(roleCardVariants({ selected }), className)}
       {...props}
     >

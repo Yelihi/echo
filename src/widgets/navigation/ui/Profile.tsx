@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { User } from "lucide-react";
 
 import { useClickOutside } from "@/shared/hooks/useClickOutside";
@@ -16,14 +16,14 @@ export const ProfileMenuItem = ({ icon: Icon, label, onClick }: ProfileMenuItemP
 
   return (
     <button
-      className="flex justify-between items-center w-full h-fit p-[2px] group cursor-pointer hover:bg-blue-secondary bg-white-secondary border-b border-gray-text-secondary last:border-none first:rounded-t-md last:rounded-b-md"
+      className="flex min-h-11 w-full items-center rounded-control px-2 text-left transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-brand"
       onClick={handleClick}
     >
       <div className="flex justify-start items-center gap-[5px]">
-        <div className="flex justify-center items-center size-10 text-black-primary group-hover:text-blue-primary">
-          <Icon className="size-6" />
+        <div className="flex justify-center items-center size-10 text-black-primary group-hover:text-brand">
+          <Icon className="size-5" />
         </div>
-        <span className="text-body-3 font-medium text-black-primary group-hover:text-blue-primary">
+        <span className="text-body-3 font-medium text-black-primary group-hover:text-brand">
           {label}
         </span>
       </div>
@@ -32,6 +32,7 @@ export const ProfileMenuItem = ({ icon: Icon, label, onClick }: ProfileMenuItemP
 };
 
 export const Profile = () => {
+  const menuId = useId();
   const [isActive, setIsActive] = useState(false);
   const profileRef = useClickOutside<HTMLDivElement>(() => setIsActive(false));
   const { requestLogout } = useLogout();
@@ -51,17 +52,33 @@ export const Profile = () => {
   };
 
   return (
-    <div ref={profileRef} className="relative size-[34px] z-10">
+    <div
+      ref={profileRef}
+      className="relative z-10 size-11"
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          setIsActive(false);
+          event.currentTarget.querySelector("button")?.focus();
+        }
+      }}
+    >
       <button
-        className="size-full rounded-full border border-blue-primary p-[1px] cursor-pointer hover:shadow-strong transition-all duration-100 active:scale-95"
+        type="button"
+        aria-label="프로필 메뉴"
+        aria-expanded={isActive}
+        aria-controls={menuId}
+        className="size-full cursor-pointer rounded-full border border-brand bg-brand text-on-brand transition-colors outline-none hover:bg-brand-hover focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
         onClick={toggleProfileMenu}
       >
-        <div className="bg-blue-primary rounded-full flex justify-center items-center size-full">
-          <User className="size-[18px] text-white" />
+        <div className="flex size-full items-center justify-center">
+          <User className="size-[18px] text-on-brand" />
         </div>
       </button>
       {isActive && (
-        <div className="absolute top-full right-0 translate-y-[5px] min-[1400px]:right-auto min-[1400px]:left-1/2 min-[1400px]:-translate-x-1/2 w-[150px] h-fit bg-white-secondary rounded-md shadow-emphasize">
+        <div
+          id={menuId}
+          className="absolute right-0 top-full mt-3 w-44 rounded-panel border border-card-line bg-card-surface p-2 shadow-strong"
+        >
           {PROFILE_MENU.map((menu) => (
             <ProfileMenuItem {...menu} key={menu.key} onClick={actions[menu.key]} />
           ))}

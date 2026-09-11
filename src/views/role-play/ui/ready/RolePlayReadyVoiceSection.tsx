@@ -29,12 +29,12 @@ export function RolePlayReadyVoiceSection() {
   };
 
   return (
-    <section className="flex flex-col gap-3.5">
+    <section className="flex flex-col gap-5">
       <RolePlayReadySectionTitle
         title="상대방 음성"
         description="컴퓨터가 읽어줄 목소리와 속도를 골라보세요."
       />
-      <Card variant="flat" className="px-[22px] py-5">
+      <Card variant="flat" className="px-5 sm:px-6 py-5">
         <RolePlayReadyVoicePills
           pendingVoice={pendingVoice}
           onSelectVoice={(voice) => runPreview(voice, () => selectRolePlayReadyVoice(voice))}
@@ -61,7 +61,7 @@ function RolePlayReadyVoicePills({
   const voice = useRolePlayReadyStore((state) => state.settings.voice);
 
   return (
-    <div className="flex gap-2.5" role="radiogroup" aria-label="TTS 목소리 선택">
+    <div className="flex flex-wrap gap-2.5" role="radiogroup" aria-label="TTS 목소리 선택">
       {ROLE_PLAY_READY_VOICE_OPTIONS.map((option) => (
         <VoicePill
           key={option.value}
@@ -69,7 +69,7 @@ function RolePlayReadyVoicePills({
           aria-checked={voice === option.value}
           aria-busy={pendingVoice === option.value}
           selected={voice === option.value}
-          className="h-[92px]"
+          className="min-h-28"
           icon={
             pendingVoice === option.value ? (
               <Spinner size="sm" className="text-current" aria-hidden="true" />

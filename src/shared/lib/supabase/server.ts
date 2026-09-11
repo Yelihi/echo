@@ -25,8 +25,9 @@ function getSupabaseServerConfig(): SupabaseServerConfig {
 }
 
 export async function createSupabaseServerClient(): Promise<SupabaseClient<Database>> {
-  const { url, publishableKey } = getSupabaseServerConfig();
+  // Establish request-time rendering before reading runtime configuration.
   const cookieStore = await cookies();
+  const { url, publishableKey } = getSupabaseServerConfig();
 
   return createServerClient<Database>(url, publishableKey, {
     cookies: {

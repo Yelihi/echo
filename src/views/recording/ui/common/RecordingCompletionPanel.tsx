@@ -24,7 +24,7 @@ export function RecordingCompletionPanel({
       {resultHref ? (
         <Link
           href={resultHref}
-          className="inline-flex min-h-12 items-center justify-center gap-3 rounded-lg bg-accent-600 px-6 py-3 font-semibold hover:bg-accent-700 focus-visible:outline-2 focus-visible:outline-offset-4"
+          className="inline-flex min-h-12 items-center justify-center gap-3 rounded-pill bg-silver text-black-primary px-6 py-3 font-semibold hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4"
         >
           분석 결과 확인 <ArrowRight className="size-5" />
         </Link>

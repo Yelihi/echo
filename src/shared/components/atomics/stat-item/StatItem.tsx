@@ -24,7 +24,7 @@ export const StatItem = ({
         {icon}
         {label}
       </span>
-      <span className="text-[24px] leading-none font-extrabold tracking-tight tabular-nums">
+      <span className="text-heading-md leading-none font-bold tracking-tight tabular-nums">
         {value}
       </span>
     </div>

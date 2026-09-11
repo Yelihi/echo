@@ -43,6 +43,7 @@ export const ProgressTrack = ({
 
   return (
     <ProgressPrimitive.Root
+      aria-label="진행률"
       data-slot="progress-track"
       data-size={size ?? "default"}
       value={percentage}
@@ -51,7 +52,7 @@ export const ProgressTrack = ({
     >
       <ProgressPrimitive.Indicator
         data-slot="progress-track-indicator"
-        className="size-full rounded-full bg-accent-600 transition-transform duration-300"
+        className="size-full rounded-full bg-brand transition-transform duration-300 motion-reduce:transition-none"
         /* 진행률은 런타임 값이라 유틸리티 클래스로 표현할 수 없는 유일한 인라인 스타일입니다. */
         style={{ transform: `translateX(-${100 - percentage}%)` }}
       />

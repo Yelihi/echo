@@ -21,7 +21,7 @@ function PaginationContent({ className, ...props }: React.ComponentProps<"ul">) 
   return (
     <ul
       data-slot="pagination-content"
-      className={cn("flex items-center gap-0.5", className)}
+      className={cn("flex items-center gap-1", className)}
       {...props}
     />
   );
@@ -67,7 +67,7 @@ function PaginationLink({
   return (
     <Button
       asChild
-      variant={isActive ? "default" : "ghost"}
+      variant={isActive ? "default" : "outline"}
       size={size}
       className={cn(!isActive && "text-gray-text hover:text-black-primary", className)}
     >
@@ -107,7 +107,7 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<"span"
       aria-hidden
       data-slot="pagination-ellipsis"
       className={cn(
-        "flex size-8 items-center justify-center text-gray-text-secondary [&_svg:not([class*='size-'])]:size-4",
+        "flex size-11 items-center justify-center text-gray-text-secondary [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}

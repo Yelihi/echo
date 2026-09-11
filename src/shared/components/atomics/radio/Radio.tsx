@@ -9,9 +9,8 @@ import { cn } from "@/shared/lib/tailwind/utils";
 export const radioGroupVariants = cva("group/radio-group grid gap-3");
 
 export const radioVariants = cva(
-  // 22px 원 + 2px 테두리, 선택 시 accent 로 가득 채우고 9px 흰 점을 뚫습니다.
-  // (22 - 9) / 2 = 6.5 → Figma 의 6.5px 링과 픽셀 단위로 동일합니다.
-  "group/radio relative inline-flex size-5.5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-card-line-strong bg-card-surface outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent-500/30 disabled:cursor-not-allowed disabled:opacity-60 data-[state=checked]:border-accent-600 data-[state=checked]:bg-accent-600",
+  // 선택 시 차콜 면과 흰 점으로 상태를 구분합니다.
+  "group/radio relative inline-flex size-5.5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-control-line bg-card-surface outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 data-[state=checked]:border-brand data-[state=checked]:bg-brand",
 );
 
 export interface RadioProps {

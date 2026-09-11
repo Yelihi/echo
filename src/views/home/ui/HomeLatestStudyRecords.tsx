@@ -9,12 +9,15 @@ import { HomeLatestStudyRecordList } from "@/views/home/ui/HomeLatestStudyRecord
 
 export function HomeLatestStudyRecords() {
   return (
-    <section className="flex w-full flex-col gap-3" aria-labelledby="recent-sessions-title">
+    <section className="flex w-full flex-col gap-5" aria-labelledby="recent-sessions-title">
       <div className="flex items-center justify-between gap-4">
         <h2 id="recent-sessions-title" className="text-heading-xs font-bold text-black-primary">
           최근 학습 기록
         </h2>
-        <Link href="/sessions" className="text-body-3 font-medium text-blue-primary">
+        <Link
+          href="/sessions"
+          className="text-body-3 font-medium text-brand underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
+        >
           전체 보기
         </Link>
       </div>

@@ -15,19 +15,19 @@ export function RolePlayReadyRoleSection() {
   const selectedRole = useRolePlayReadyStore((state) => state.settings.role);
 
   return (
-    <section className="flex flex-col gap-3.5">
+    <section className="flex flex-col gap-5">
       <RolePlayReadySectionTitle
         title="역할 선택"
         description="어느 쪽을 맡아 말할지 골라보세요. 상대방 대사는 컴퓨터가 읽어줘요."
       />
-      <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="역할 선택">
+      <div className="grid sm:grid-cols-2 gap-3" role="radiogroup" aria-label="역할 선택">
         {ROLE_PLAY_READY_ROLE_OPTIONS.map((option) => (
           <RoleCard
             key={option.value}
             role="radio"
             aria-checked={selectedRole === option.value}
             selected={selectedRole === option.value}
-            className="h-[100px] p-[18px]"
+            className="min-h-28 p-5"
             title={option.title}
             description={option.description}
             onClick={() => useRolePlayReadyStore.getState().setRole(option.value)}
@@ -37,7 +37,7 @@ export function RolePlayReadyRoleSection() {
       <Button
         type="button"
         variant="outline"
-        className="h-[42px] w-full border-dashed bg-white font-bold text-accent-700"
+        className="min-h-11 w-full border-dashed bg-white font-bold text-accent-700"
         onClick={() =>
           useRolePlayReadyStore
             .getState()

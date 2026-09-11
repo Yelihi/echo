@@ -13,7 +13,7 @@ const meta = {
   },
   args: {
     variant: "raised",
-    className: "w-75 p-5",
+    className: "w-full max-w-75 p-5",
     children: <p className="text-body-3 text-gray-text">콘텐츠 슬롯</p>,
   },
   decorators: [
@@ -33,7 +33,7 @@ export const Raised: Story = {};
 
 /** 리스트 행처럼 반복되는 컨테이너 — radius 16, 그림자 없음 */
 export const Flat: Story = {
-  args: { variant: "flat", className: "w-75 p-4" },
+  args: { variant: "flat", className: "w-full max-w-75 p-4" },
 };
 
 export const AllVariants: Story = {

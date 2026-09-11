@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={cn(notoSansKR.className, "font-sans")}>
+    <html lang="ko" className={cn(notoSansKR.variable, notoSansKR.className, "font-sans")}>
       <body>
         <QueryProvider>{children}</QueryProvider>
         <ErrorPopupProvider />

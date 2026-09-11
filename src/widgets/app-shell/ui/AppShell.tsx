@@ -30,8 +30,7 @@ export const AppShell = ({
       className={cn("flex min-h-lvh flex-col bg-gray-background", className)}
       {...props}
     >
-      {/* NavigationContainer 가 h-full 이라 높이를 여기서 확정합니다 */}
-      <header className="sticky top-0 z-50 h-15.5 shrink-0">
+      <header className="sticky top-0 z-50 shrink-0">
         <NavigationContainer />
       </header>
       <main className="flex min-h-0 flex-1 flex-col">{children}</main>

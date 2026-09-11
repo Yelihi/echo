@@ -17,7 +17,7 @@ export interface EmptyStateProps {
 
 /**
  * 목록이 비었을 때 쓰는 안내 화면.
- * 일러스트가 accent 계열이라 `data-pillar="memo"` 안에서는 네이비로 전환됩니다.
+ * 두 필라에서 동일한 중립 일러스트를 사용합니다.
  */
 export const EmptyState = ({
   title,

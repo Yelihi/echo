@@ -21,15 +21,15 @@ interface RecordTableRowProps {
 }
 
 const recordTableRowVariants = cva(
-  "w-full p-[12px] flex flex-wrap gap-3 justify-between items-center bg-white border-b border-gray-border",
+  "w-full p-5 flex flex-wrap gap-3 justify-between items-center bg-white border-b border-gray-border",
   {
     variants: {
       first: {
-        true: "rounded-t-[20px]",
+        true: "rounded-t-card",
         false: "",
       },
       last: {
-        true: "rounded-b-[20px] border-b-0",
+        true: "rounded-b-card border-b-0",
         false: "",
       },
     },
@@ -40,21 +40,21 @@ export function LeftSideIcon({ status }: { status: RecordStatus }) {
   switch (status) {
     case "connected": {
       return (
-        <div className="size-[40px] rounded-control flex justify-center items-center bg-gray-background">
+        <div className="size-[40px] rounded-full flex justify-center items-center bg-gray-background">
           <Waves className="size-[19px] text-gray-text" />
         </div>
       );
     }
     case "delete-failed": {
       return (
-        <div className="size-[40px] rounded-control flex justify-center items-center bg-red-secondary">
-          <FileWarning className="size-[19px] text-red-primary" />
+        <div className="size-[40px] rounded-full flex justify-center items-center bg-red-secondary">
+          <FileWarning className="size-[19px] text-danger-ink" />
         </div>
       );
     }
     case "orphaned": {
       return (
-        <div className="size-[40px] rounded-control flex justify-center items-center bg-yellow-secondary">
+        <div className="size-[40px] rounded-full flex justify-center items-center bg-yellow-secondary">
           <UnlinkIcon className="size-[19px] text-yellow-primary" />
         </div>
       );

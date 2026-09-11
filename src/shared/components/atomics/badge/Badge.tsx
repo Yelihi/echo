@@ -9,15 +9,16 @@ export interface SourceBadgeProps {
 export type BadgeTheme = VariantProps<typeof badgeVariants>["theme"];
 
 export const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-4xl border border-transparent font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-pill border border-transparent font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-danger-ink aria-invalid:ring-danger-ink dark:aria-invalid:ring-danger-ink [&>svg]:pointer-events-none [&>svg]:size-3!",
   {
     variants: {
       theme: {
-        blue: "bg-blue-secondary text-blue-primary [a]:hover:bg-blue-primary/70",
-        red: "bg-red-secondary text-red-primary [a]:hover:bg-red-primary/70",
-        green: "bg-green-secondary text-green-primary [a]:hover:bg-green-primary/70",
-        yellow: "bg-yellow-secondary text-yellow-primary [a]:hover:bg-yellow-primary/70",
-        black: "bg-gray-background text-black-primary [a]:hover:bg-black-primary/70",
+        blue: "border-card-line-strong bg-gray-background text-brand [&:is(a)]:hover:bg-silver/40",
+        red: "bg-red-secondary text-danger-ink [&:is(a)]:hover:bg-red-secondary",
+        green: "bg-green-secondary text-green-primary [&:is(a)]:hover:bg-green-secondary",
+        yellow: "bg-yellow-secondary text-yellow-primary [&:is(a)]:hover:bg-yellow-secondary",
+        black:
+          "border-control-line bg-card-surface text-black-primary [&:is(a)]:hover:bg-gray-background",
       },
       size: {
         small: "h-[22px] px-2 py-0.5 text-body-2",

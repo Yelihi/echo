@@ -9,8 +9,8 @@ export const inputVariants = cva(
     variants: {
       state: {
         default:
-          "border-card-line-strong focus-visible:border-accent-500 focus-visible:inset-ring-1 focus-visible:inset-ring-accent-500",
-        error: "border-red-primary inset-ring-1 inset-ring-red-primary",
+          "border-control-line hover:border-brand focus-visible:border-brand focus-visible:inset-ring-1 focus-visible:inset-ring-brand",
+        error: "border-danger-ink inset-ring-1 inset-ring-danger-ink",
       },
     },
     defaultVariants: {

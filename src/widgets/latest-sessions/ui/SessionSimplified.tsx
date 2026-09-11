@@ -21,12 +21,12 @@ export const SessionSimplified = ({
       <div className="flex min-w-0 justify-start items-center gap-[10px]">
         <div
           className={cn(
-            "size-[42px] shrink-0 rounded-control flex justify-center items-center",
-            sessionType === "role-playing" ? "bg-blue-secondary" : "bg-deep-blue-secondary",
+            "size-[42px] shrink-0 rounded-full flex justify-center items-center",
+            sessionType === "role-playing" ? "bg-gray-background" : "bg-gray-background",
           )}
         >
           {sessionType === "role-playing" ? (
-            <MessageSquare className={cn("size-[20px] text-blue-primary")} />
+            <MessageSquare className={cn("size-[20px] text-brand")} />
           ) : (
             <Layers className={cn("size-[20px] text-black-primary")} />
           )}
@@ -44,7 +44,7 @@ export const SessionSimplified = ({
     </>
   );
   const className = cn(
-    "w-full h-fit bg-white border border-gray-border rounded-lg p-[16px] flex flex-col gap-3 sm:flex-row justify-between sm:items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-primary",
+    "w-full h-fit bg-card-surface border border-card-line rounded-panel p-5 flex flex-col gap-3 sm:flex-row justify-between sm:items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
     href && !disabled ? "cursor-pointer hover:bg-gray-background" : "cursor-default opacity-70",
   );
 
@@ -68,17 +68,17 @@ export const SESSION_SIMPLIFIED_SKELETON_COUNT = 5;
 export const SessionSimplifiedSkeleton = () => {
   return (
     <div
-      className="flex h-fit w-full items-center justify-between rounded-panel border border-gray-border bg-white p-[16px]"
+      className="flex h-fit w-full items-center justify-between rounded-panel border border-card-line bg-card-surface p-5"
       aria-hidden
     >
       <div className="flex items-center justify-start gap-[10px]">
-        <div className="size-[42px] shrink-0 animate-pulse rounded-control bg-neutral-100" />
+        <div className="size-[42px] shrink-0 animate-pulse motion-reduce:animate-none rounded-full bg-neutral-100" />
         <div className="flex flex-col items-start justify-center gap-[4px]">
-          <div className="h-[16px] w-[140px] animate-pulse rounded-chip bg-neutral-100" />
-          <div className="h-[14px] w-[96px] animate-pulse rounded-chip bg-neutral-100" />
+          <div className="h-[16px] w-[140px] animate-pulse motion-reduce:animate-none rounded-chip bg-neutral-100" />
+          <div className="h-[14px] w-[96px] animate-pulse motion-reduce:animate-none rounded-chip bg-neutral-100" />
         </div>
       </div>
-      <div className="h-[25px] w-[100px] shrink-0 animate-pulse rounded-full bg-neutral-100" />
+      <div className="h-[25px] w-[100px] shrink-0 animate-pulse motion-reduce:animate-none rounded-full bg-neutral-100" />
     </div>
   );
 };

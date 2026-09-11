@@ -5,12 +5,12 @@ import { radioVariants } from "@/shared/components/atomics/radio/Radio";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const selectableOptionCardVariants = cva(
-  "group/selectable-option-card flex w-full cursor-pointer items-center gap-3.5 rounded-panel border px-4.5 py-4 text-left transition-all disabled:pointer-events-none disabled:opacity-50",
+  "group/selectable-option-card flex w-full cursor-pointer items-center gap-3.5 rounded-panel border px-4.5 py-4 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       selected: {
-        false: "border-card-line bg-card-surface",
-        true: "border-accent-500 bg-accent-50",
+        false: "border-control-line bg-card-surface hover:border-brand",
+        true: "border-brand bg-gray-background inset-ring-1 inset-ring-brand",
       },
     },
     defaultVariants: {
@@ -34,8 +34,7 @@ export interface SelectableOptionCardProps {
  * 아이콘 + 제목 + 설명 + 라디오점으로 이뤄진 선택형 카드.
  *
  * 롤플레잉 평가 모드, 문장 암기 연습 모드 선택에 함께 씁니다. 선택 상태는
- * 호출자가 소유하며, `accent-*` 를 쓰므로 `data-pillar="memo"` 안에서는
- * 자동으로 네이비 톤으로 바뀝니다.
+ * 호출자가 소유하며, 두 필라 모두 동일한 차콜 선택 상태를 사용합니다.
  */
 export const SelectableOptionCard = ({
   className,
@@ -54,24 +53,24 @@ export const SelectableOptionCard = ({
       type="button"
       data-slot="selectable-option-card"
       data-selected={selected}
-      aria-pressed={selected}
+      aria-pressed={props.role === "radio" ? undefined : selected}
       className={cn(selectableOptionCardVariants({ selected }), className)}
       {...props}
     >
       <span
         className={cn(
-          "relative flex size-10.5 shrink-0 items-center justify-center rounded-xl transition-colors [&_svg]:size-5.25",
-          selected ? "bg-accent-600 text-white" : "bg-neutral-100 text-gray-text-secondary",
+          "relative flex size-10.5 shrink-0 items-center justify-center rounded-full transition-colors [&_svg]:size-5.25",
+          selected ? "bg-brand text-white" : "bg-neutral-100 text-gray-text-secondary",
         )}
       >
         {icon}
         {badge && (
-          <span className="absolute -top-1.75 -left-1.75 flex size-5 items-center justify-center rounded-full border border-card-line bg-white text-body-1 font-black text-accent-700">
+          <span className="absolute -top-1.75 -left-1.75 flex size-5 items-center justify-center rounded-full border border-control-line bg-card-surface hover:border-brand text-body-1 font-black text-brand">
             {badge}
           </span>
         )}
       </span>
-      <span className="flex-1">
+      <span className="min-w-0 flex-1 break-words">
         <span className="block text-body-4 font-bold text-black-primary">{title}</span>
         <span className="mt-0.5 block text-body-3 text-gray-text">{description}</span>
         {extra}
