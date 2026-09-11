@@ -12,8 +12,7 @@ export default async function SessionsPage({ searchParams }: SessionsPageProps) 
   if (data.page !== query.page) redirect(historyHref({ ...query, page: data.page }));
   return (
     <PageContainer>
-      {(query.status === "inProgress" ||
-        data.sessions.some((session) => session.sessionState === "inProgress")) && (
+      {data.sessions.some((session) => session.sessionState === "inProgress") && (
         <ResultAutoRefresh />
       )}
       <LatestSessionsView {...data} query={query} />
