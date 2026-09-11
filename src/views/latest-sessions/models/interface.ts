@@ -24,19 +24,6 @@ export interface HistoryToolbarProps extends HistoryFiltersProps {
 export interface HistoryEmptyStateProps {
   filtered: boolean;
 }
-export interface HistorySelectOption {
-  value: string;
-  label: string;
-  dotClassName?: string;
-}
-export interface HistorySelectProps {
-  label: string;
-  value: string;
-  options: readonly HistorySelectOption[];
-  icon: import("lucide-react").LucideIcon;
-  disabled?: boolean;
-  onValueChange: (value: string) => void;
-}
 export interface HistoryFilterControlsProps extends HistoryFiltersProps {
   pending?: boolean;
   onChange: (changes: Partial<Pick<HistoryQuery, "status" | "sort">>) => void;

@@ -9,7 +9,6 @@ import { Button, Badge } from "@/shared/components";
 import { RecordRowViewModel } from "@/views/management-records/models/view/RecordRowViewModel";
 import type {
   RecordUIPresentation,
-  RecordingAction,
   RecordStatus,
 } from "@/views/management-records/models/interface";
 
@@ -17,10 +16,12 @@ interface RecordTableRowProps {
   record: RecordUIPresentation;
   first: boolean;
   last: boolean;
+  pending?: boolean;
+  onDelete?: () => void;
 }
 
 const recordTableRowVariants = cva(
-  "w-full p-[12px] flex justify-between items-center bg-white border-b border-gray-border",
+  "w-full p-[12px] flex flex-wrap gap-3 justify-between items-center bg-white border-b border-gray-border",
   {
     variants: {
       first: {
@@ -61,76 +62,35 @@ export function LeftSideIcon({ status }: { status: RecordStatus }) {
   }
 }
 
-export function ActionButton({ recordId, action }: { recordId: string; action: RecordingAction }) {
-  switch (action.type) {
-    case "connected": {
-      return (
-        <Button
-          variant="outline"
-          className="border-gray-border text-gray-text-secondary"
-          disabled={action.disabled}
-        >
-          <LockIcon className="size-[14px] text-gray-text-secondary" /> 보호됨
-        </Button>
-      );
-    }
-    case "delete-failed": {
-      return (
-        <Button
-          variant="outline"
-          className="border-gray-border text-red-primary"
-          onClick={() => action.action(recordId)}
-        >
-          <Repeat className="size-[14px] text-red-primary" />
-          재삭제
-        </Button>
-      );
-    }
-    case "orphaned": {
-      return (
-        <Button
-          variant="outline"
-          className="border-gray-border text-red-primary"
-          onClick={() => action.action(recordId)}
-        >
-          <Trash className="size-[14px] text-red-primary" />
-          연결 끊기
-        </Button>
-      );
-    }
-  }
-}
-
-export function RecordTableRow({ record, first, last }: RecordTableRowProps) {
+export function RecordTableRow({ record, first, last, pending, onDelete }: RecordTableRowProps) {
   const viewModel = new RecordRowViewModel(record);
 
-  const actionButton = viewModel.actionButton();
   const badge = viewModel.badge();
 
   const info = [
     record.fileSize,
     record.createdAt,
-    record.inSession ? `${record.inSession}세션` : "",
+    record.inSession ? `세션 ${record.inSession}` : "",
   ].filter(Boolean);
 
   return (
     <div className={cn(recordTableRowVariants({ first, last }))}>
-      <div className="flex justify-start items-center gap-[12px]">
-        <div className="size-fit">
+      <div className="flex min-w-0 flex-1 justify-start items-center gap-3">
+        <div className="shrink-0">
           <LeftSideIcon status={record.status} />
         </div>
-        <div className="flex flex-col items-start justify-start gap-[5px] w-full">
-          <div className="flex justify-start items-center gap-[5px]">
-            <p className="text-body-3 font-semibold text-black-primary">{record.name}</p>
+        <div className="flex flex-col items-start justify-start gap-[5px] min-w-0 w-full">
+          <div className="flex min-w-0 flex-wrap items-center gap-1">
+            <p className="break-all text-body-3 font-semibold text-black-primary">{record.name}</p>
             <Badge theme={badge.theme} value={badge.label} size="small">
               {badge.label}
             </Badge>
           </div>
-          <div className="flex justify-start items-center gap-[2px]">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             {info.map((value, index) => (
               <p
                 key={`${value}-${index}`}
-                className="text-body-1 text-gray-text-secondary font-normal"
+                className="break-all text-body-1 text-gray-text font-normal"
               >
                 {value}
               </p>
@@ -139,7 +99,28 @@ export function RecordTableRow({ record, first, last }: RecordTableRowProps) {
         </div>
       </div>
       <div className="w-fit">
-        <ActionButton recordId={record.id} action={actionButton} />
+        <Button
+          variant="outline"
+          disabled={record.status === "connected" || pending || !onDelete}
+          onClick={onDelete}
+          aria-label={`${record.name} ${record.status === "connected" ? "보호됨" : "삭제"}`}
+          className="border-gray-border text-black-primary"
+        >
+          {record.status === "connected" ? (
+            <LockIcon aria-hidden className="size-3.5" />
+          ) : record.status === "delete-failed" ? (
+            <Repeat aria-hidden className="size-3.5" />
+          ) : (
+            <Trash aria-hidden className="size-3.5" />
+          )}
+          {record.status === "connected"
+            ? "보호됨"
+            : pending
+              ? "삭제 중…"
+              : record.status === "delete-failed"
+                ? "재삭제"
+                : "삭제"}
+        </Button>
       </div>
     </div>
   );

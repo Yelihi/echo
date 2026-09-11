@@ -1,16 +1,23 @@
 "use client";
 import { Select } from "radix-ui";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
-import type { HistorySelectProps } from "../models/interface";
+export interface FilterSelectProps {
+  label: string;
+  value: string;
+  options: readonly { value: string; label: string; dotClassName?: string }[];
+  icon: import("lucide-react").LucideIcon;
+  disabled?: boolean;
+  onValueChange: (value: string) => void;
+}
 
-export function HistorySelect({
+export function FilterSelect({
   label,
   value,
   options,
   icon: Icon,
   disabled,
   onValueChange,
-}: HistorySelectProps) {
+}: FilterSelectProps) {
   return (
     <Select.Root value={value} onValueChange={onValueChange} disabled={disabled}>
       <Select.Trigger

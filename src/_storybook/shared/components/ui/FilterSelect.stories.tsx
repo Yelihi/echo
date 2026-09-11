@@ -2,12 +2,12 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
 import { ListFilter } from "lucide-react";
-import { HistorySelect } from "@/views/latest-sessions/ui/HistorySelect";
+import { FilterSelect } from "@/shared/components/ui/FilterSelect";
 import { historyStatusOptions } from "@/widgets/latest-sessions/models/history";
 
 const meta = {
-  title: "views/latest-sessions/ui/HistorySelect",
-  component: HistorySelect,
+  title: "shared/components/ui/FilterSelect",
+  component: FilterSelect,
   args: {
     label: "분석 상태",
     value: "all",
@@ -22,13 +22,13 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof HistorySelect>;
+} satisfies Meta<typeof FilterSelect>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: function Interactive(args) {
     const [value, setValue] = useState(args.value);
-    return <HistorySelect {...args} value={value} onValueChange={setValue} />;
+    return <FilterSelect {...args} value={value} onValueChange={setValue} />;
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

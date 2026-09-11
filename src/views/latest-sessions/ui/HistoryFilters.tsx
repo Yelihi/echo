@@ -3,7 +3,7 @@ import { ArrowDownWideNarrow, ListFilter } from "lucide-react";
 import { historyStatusOptions } from "@/widgets/latest-sessions/models/history";
 import type { HistoryFilterControlsProps, HistoryFiltersProps } from "../models/interface";
 import { useHistoryFilters } from "../services/hooks/useHistoryFilters";
-import { HistorySelect } from "./HistorySelect";
+import { FilterSelect } from "@/shared/components/ui/FilterSelect";
 
 const statusOptions = historyStatusOptions.map((option) => ({
   ...option,
@@ -28,7 +28,7 @@ export function HistoryFilterControls({ query, pending, onChange }: HistoryFilte
       aria-busy={pending}
       className="flex flex-wrap items-center gap-2"
     >
-      <HistorySelect
+      <FilterSelect
         label="분석 상태"
         value={query.status}
         options={statusOptions}
@@ -39,7 +39,7 @@ export function HistoryFilterControls({ query, pending, onChange }: HistoryFilte
           if (status) onChange({ status });
         }}
       />
-      <HistorySelect
+      <FilterSelect
         label="정렬 순서"
         value={query.sort}
         options={sortOptions}

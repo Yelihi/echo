@@ -27,8 +27,6 @@ function RecordIconContainer({ className, children }: React.HTMLAttributes<"div"
   );
 }
 
-// 해당 컴포넌트 내에서 데이터를 서버에서 받아와 그대로 렌더링
-// Loading 은 추후 skeleton 처리 예정
 function SummaryDataView({ recordsSummary }: SummaryDataViewProps) {
   return (
     <section className="w-full grid grid-cols-1 gap-[15px] md:grid-cols-2 lg:grid-cols-4">
@@ -47,7 +45,7 @@ function SummaryDataView({ recordsSummary }: SummaryDataViewProps) {
           <LucideFileWarning className="size-[20px] text-red-primary" />
         </RecordIconContainer>
       </RecordSummaryCard>
-      <RecordSummaryCard count={recordsSummary.orphaned} title="orphan 파일">
+      <RecordSummaryCard count={recordsSummary.orphaned} title="미채택 파일">
         <RecordIconContainer className="bg-yellow-secondary">
           <LucideUnlink className="size-[20px] text-yellow-primary" />
         </RecordIconContainer>
