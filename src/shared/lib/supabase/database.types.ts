@@ -1011,6 +1011,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      list_study_sessions: {
+        Args: { p_page?: number; p_status?: string; p_sort?: string };
+        Returns: Json;
+      };
       claim_next_analysis_job: {
         Args: {
           p_provider?: string;
