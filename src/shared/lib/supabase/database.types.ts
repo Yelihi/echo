@@ -1008,7 +1008,18 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      recording_management_records: {
+        Row: {
+          id: string;
+          user_id: string;
+          object_path: string;
+          size_bytes: number;
+          created_at: string;
+          session_id: string | null;
+          status: string;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       list_study_sessions: {

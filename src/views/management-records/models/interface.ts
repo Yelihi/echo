@@ -35,27 +35,3 @@ export interface RecordUIPresentation {
    */
   inSession?: string;
 }
-
-export type RecordingAction =
-  | {
-      type: Extract<RecordStatus, "connected">;
-      disabled: boolean;
-    }
-  | {
-      type: Extract<RecordStatus, "orphaned">;
-      disabled: boolean;
-      action: (recordId: string) => Promise<void>;
-    }
-  | {
-      type: Extract<RecordStatus, "delete-failed">;
-      disabled: boolean;
-      action: (recordId: string) => Promise<void>;
-    };
-
-export interface RecordingRowViewModel {
-  status: {
-    type: RecordStatus;
-    label: string;
-  };
-  action: RecordingAction;
-}

@@ -1,8 +1,5 @@
 import type { BadgeTheme } from "@/shared/components/atomics/badge/Badge";
-import type {
-  RecordUIPresentation,
-  RecordingAction,
-} from "@/views/management-records/models/interface";
+import type { RecordUIPresentation } from "@/views/management-records/models/interface";
 
 export class RecordRowViewModel {
   constructor(private readonly record: RecordUIPresentation) {}
@@ -26,38 +23,7 @@ export class RecordRowViewModel {
       case "orphaned": {
         return {
           theme: "yellow",
-          label: "orphan",
-        };
-      }
-    }
-  }
-
-  actionButton(): RecordingAction {
-    const { status } = this.record;
-
-    switch (status) {
-      case "connected": {
-        return {
-          type: "connected",
-          disabled: false,
-        };
-      }
-      case "delete-failed": {
-        return {
-          type: "delete-failed",
-          disabled: false,
-          action: async () => {
-            // TODO: 함수 연결
-          },
-        };
-      }
-      case "orphaned": {
-        return {
-          type: "orphaned",
-          disabled: false,
-          action: async () => {
-            // TODO: 함수 연결
-          },
+          label: "미채택",
         };
       }
     }
