@@ -9,10 +9,10 @@ import type {
 
 function RecordSummaryCard({ count, title, children }: RecordSummaryCardProps) {
   return (
-    <div className="rounded-panel w-full py-[16px] px-[18px] flex justify-start items-center gap-[10px] bg-white border border-gray-border rounded-chip">
+    <div className="flex w-full items-center gap-4 rounded-card border border-card-line bg-white p-6">
       {children}
       <div className="flex flex-col items-start justify-start gap-[3px]">
-        <p className="text-heading-sm font-extrabold text-black-primary">{count}</p>
+        <p className="text-heading-lg font-bold tracking-tight text-black-primary">{count}</p>
         <p className="text-body-1 font-normal text-gray-text">{title}</p>
       </div>
     </div>
@@ -21,7 +21,7 @@ function RecordSummaryCard({ count, title, children }: RecordSummaryCardProps) {
 
 function RecordIconContainer({ className, children }: React.HTMLAttributes<"div">) {
   return (
-    <div className={cn("flex justify-center items-center size-[40px] rounded-[11px]", className)}>
+    <div className={cn("flex justify-center items-center size-[40px] rounded-full", className)}>
       {children}
     </div>
   );
@@ -42,7 +42,7 @@ function SummaryDataView({ recordsSummary }: SummaryDataViewProps) {
       </RecordSummaryCard>
       <RecordSummaryCard count={recordsSummary.failDelete} title="삭제 실패">
         <RecordIconContainer className="bg-red-secondary">
-          <LucideFileWarning className="size-[20px] text-red-primary" />
+          <LucideFileWarning className="size-[20px] text-danger-ink" />
         </RecordIconContainer>
       </RecordSummaryCard>
       <RecordSummaryCard count={recordsSummary.orphaned} title="미채택 파일">

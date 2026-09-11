@@ -7,7 +7,7 @@ const diffSegmentVariants = cva("", {
     op: {
       equal: "",
       insert: "text-green-primary",
-      delete: "text-red-primary line-through",
+      delete: "text-danger-ink line-through",
       replace: "text-yellow-primary",
     },
   },

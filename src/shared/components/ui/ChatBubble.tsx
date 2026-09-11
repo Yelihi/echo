@@ -4,14 +4,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const chatBubbleVariants = cva(
-  "group/chat-bubble w-fit max-w-4/5 px-4.25 py-3.25 text-body-4 leading-normal",
+  "group/chat-bubble w-fit max-w-4/5 px-5 py-4 text-body-4 leading-normal",
   {
     variants: {
       speaker: {
-        // 말꼬리 쪽 모서리만 작게. Figma 18px → 토큰이 없어 panel(16)로 정규화.
+        // 말꼬리 쪽 모서리를 작게 두어 화자 방향을 유지합니다.
         partner:
           "rounded-t-panel rounded-br-panel rounded-bl-md border border-card-line bg-card-surface text-black-secondary",
-        me: "rounded-t-panel rounded-bl-panel rounded-br-md bg-accent-600 text-white",
+        me: "rounded-t-panel rounded-bl-panel rounded-br-md bg-brand text-white",
       },
     },
     defaultVariants: {

@@ -6,8 +6,8 @@ interface RolePlayReadySectionTitleProps {
 export function RolePlayReadySectionTitle({ title, description }: RolePlayReadySectionTitleProps) {
   return (
     <div>
-      <h2 className="text-[17px] leading-normal font-bold">{title}</h2>
-      <p className="mt-1 text-[13.5px] text-gray-text">{description}</p>
+      <h2 className="text-heading-xs font-bold tracking-tight">{title}</h2>
+      <p className="mt-1 text-body-3 text-gray-text">{description}</p>
     </div>
   );
 }

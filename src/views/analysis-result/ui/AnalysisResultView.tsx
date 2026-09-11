@@ -15,12 +15,12 @@ export function AnalysisResultView({ viewModel, retryAction }: AnalysisResultVie
   return (
     <div data-pillar={kind === "memorization" ? "memo" : undefined} className="pb-20">
       {(result.state === "pending" || result.state === "analyzing") && <ResultAutoRefresh />}
-      <header className="mb-7 flex flex-wrap items-start justify-between gap-4">
+      <header className="mb-10 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="mb-2 text-sm font-semibold text-gray-text">
             {kind === "roleplay" ? "롤플레잉" : "암기"} · 학습 결과
           </p>
-          <h1 className="break-words text-2xl font-bold leading-snug text-black-primary">
+          <h1 className="break-words text-heading-lg font-bold tracking-tight leading-snug text-black-primary">
             {viewModel.title}
           </h1>
           <p className="mt-1.5 text-body-3 text-gray-text">{viewModel.meta}</p>

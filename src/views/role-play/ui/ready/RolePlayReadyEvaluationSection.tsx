@@ -14,7 +14,7 @@ export function RolePlayReadyEvaluationSection() {
   const evaluationMode = useRolePlayReadyStore((state) => state.settings.evaluationMode);
 
   return (
-    <section className="flex flex-col gap-3.5">
+    <section className="flex flex-col gap-5">
       <RolePlayReadySectionTitle
         title="평가 모드"
         description="얼마나 엄격하게 비교할지 골라보세요. 틀려도 괜찮아요."
@@ -26,7 +26,7 @@ export function RolePlayReadyEvaluationSection() {
             role="radio"
             aria-checked={evaluationMode === option.value}
             selected={evaluationMode === option.value}
-            className="h-[74px] px-[18px] py-4"
+            className="min-h-20 px-5 py-4"
             icon={option.value === "exact" ? <Target /> : <MessageSquare />}
             title={option.title}
             description={option.description}

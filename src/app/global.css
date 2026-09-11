@@ -6,37 +6,36 @@
 
 /* ============================================================
    Echo Design System — primitives
-   Source of truth: Figma "Echo Design System" › Primitives collection
-   https://www.figma.com/design/4hKG57XYIE01IrrfDQT7eE
+   Silver & Ink — reference-image direction.
+   Source of truth: this file; usage contract: docs/design-system.md
 
    These are raw ramp values. They are intentionally NOT in @theme,
    so Tailwind does not generate utilities for them — always use the
    semantic tokens below (bg-blue-primary, text-gray-text, …).
    ============================================================ */
 :root {
-  /* Roleplay pillar — also the brand ramp */
-  --rp-50: #eff6fc;
-  --rp-100: #dcebf7;
-  --rp-200: #c2dcf0;
-  --rp-300: #a7d0eb;
-  --rp-400: #7db5df;
-  --rp-500: #5b9bd5;
-  --rp-600: #4585c4;
-  --rp-700: #2f6196;
-  --rp-800: #244b75;
-  --rp-glow: #8fc6f2;
+  /* Shared steel / ink ramp. Legacy pillar names remain compatible. */
+  --rp-50: #f9f9f9;
+  --rp-100: #eef0f2;
+  --rp-200: #d9dee2;
+  --rp-300: #b6bec6;
+  --rp-400: #89949e;
+  --rp-500: #454d54;
+  --rp-600: #343b41;
+  --rp-700: #272c31;
+  --rp-800: #1e1d1d;
+  --rp-glow: #b6bec6;
 
-  /* Memorization pillar */
-  --mem-50: #eef1f5;
-  --mem-100: #dce3eb;
-  --mem-200: #bcc8d6;
-  --mem-300: #8e9fb3;
-  --mem-400: #5e7290;
-  --mem-500: #3e5168;
-  --mem-600: #2d3a4b;
-  --mem-700: #243040;
-  --mem-800: #1a232f;
-  --mem-glow: #86a2c0;
+  --mem-50: var(--rp-50);
+  --mem-100: var(--rp-100);
+  --mem-200: var(--rp-200);
+  --mem-300: var(--rp-300);
+  --mem-400: var(--rp-400);
+  --mem-500: var(--rp-500);
+  --mem-600: var(--rp-600);
+  --mem-700: var(--rp-700);
+  --mem-800: var(--rp-800);
+  --mem-glow: var(--rp-glow);
 
   /* Yellow — highlight, use sparingly */
   --yl-50: #fff8e3;
@@ -47,12 +46,12 @@
   --yl-ink: #6b5200;
 
   /* Ink */
-  --ink-900: #222222;
-  --ink-700: #4c545e;
+  --ink-900: #1e1d1d;
+  --ink-700: #454545;
 
   /* Neutral ramp */
-  --neutral-50: #f7f7f8;
-  --neutral-100: #f4f4f5;
+  --neutral-50: #f9f9f9;
+  --neutral-100: #f2f3f4;
   --neutral-150: #eaebec;
   --neutral-200: #e1e2e4;
   --neutral-300: #c2c4c8;
@@ -67,15 +66,15 @@
   --red-700: #e52222;
   --red-subtle: #feecec;
   --green-600: #00bf40;
-  --green-700: #009632;
+  --green-700: #16713b;
   --green-subtle: #d9ffe6;
   --amber-600: #ff9200;
   --amber-700: #9a5b00;
   --amber-subtle: #fef4e6;
 
   /* Surfaces */
-  --surface-app: #f2f4f6;
-  --surface-app-warm: #fafbfc;
+  --surface-app: #f9f9f9;
+  --surface-app-warm: #ffffff;
   --surface-card: #ffffff;
 
   /* Alpha overlays — slate (#2d3a4b) and foreground (#37383c) */
@@ -90,7 +89,7 @@
   --alpha-black-50: #00000080;
 
   /* Immersive session stage */
-  --session-bg: #141a24;
+  --session-bg: #1e1d1d;
   --session-glass: #ffffff12;
   --session-glass-line: #ffffff24;
 }
@@ -137,7 +136,7 @@
    Active accent ramp.
    Defaults to the roleplay pillar; set data-pillar="memo" on any
    container to switch the whole subtree to the memorization ramp.
-   This mirrors the Roleplay / Memo modes in the Figma Color collection.
+   Both pillars share the Silver & Ink palette; the attribute contract remains.
    ------------------------------------------------------------ */
 :root {
   --ac-50: var(--rp-50);
@@ -167,30 +166,36 @@
 
 @theme {
   /** ── color · semantic ─────────────────────────────────────
-      Names match the Figma Color collection 1:1, so Dev Mode
-      hands developers exactly these variables. */
+      Legacy color names remain aliases during the component migration. */
+  --color-brand: var(--ink-900);
+  --color-brand-hover: var(--rp-600);
+  --color-silver: var(--rp-300);
+  --color-on-brand: var(--surface-card);
+  --color-control-line: var(--rp-400);
+
   --color-black-primary: var(--ink-900);
   --color-black-secondary: var(--ink-700);
   --color-black-tertiary: var(--mem-600);
 
+  --color-danger-ink: #b42318;
   --color-red-primary: var(--red-500);
   --color-red-secondary: var(--red-subtle);
 
   --color-gray-background: var(--surface-app);
   --color-gray-background-element: var(--alpha-slate-6);
-  --color-gray-text: var(--alpha-fg-61);
-  --color-gray-text-secondary: var(--alpha-fg-28);
+  --color-gray-text: #595959;
+  --color-gray-text-secondary: #666666;
   --color-gray-border: var(--alpha-slate-16);
 
-  --color-deep-blue-primary: var(--mem-700);
+  --color-deep-blue-primary: var(--ink-900);
   --color-deep-blue-secondary: var(--mem-50);
 
-  --color-blue-primary: var(--rp-500);
+  --color-blue-primary: var(--ink-900);
   --color-blue-focus-title: var(--rp-700);
   --color-blue-sub-paragraph: var(--rp-600);
   --color-blue-secondary: var(--rp-50);
   --color-blue-border: var(--rp-300);
-  --color-blue-hover: var(--rp-800);
+  --color-blue-hover: var(--rp-600);
   --color-blue-step: var(--rp-glow);
 
   --color-green-primary: var(--green-700);
@@ -244,8 +249,12 @@
   --color-session-glass-line: var(--session-glass-line);
 
   /** ── typography ───────────────────────────────────────────
-      size / line-height / letter-spacing come from the Figma
-      text styles of the same name. */
+      Noto Sans KR stays in use. Display styles are for spacious page introductions;
+      the existing body scale stays stable for dense practice interfaces. */
+  --text-display: clamp(2.5rem, 5vw, 4.5rem);
+  --text-display--line-height: 1.12;
+  --text-display--letter-spacing: -0.045em;
+  --text-display--font-weight: 700;
   --text-heading-lg: 32px;
   --text-heading-lg--line-height: 43px;
   --text-heading-lg--letter-spacing: -0.027em;
@@ -290,24 +299,32 @@
 
   /** ── radius ───────────────────────────────────────────────
       Echo 고유 반경. shadcn의 --radius-sm/md/lg/xl과 충돌하지 않도록
-      역할 기반 이름을 씁니다. 값은 Figma Spacing 컬렉션과 동일합니다. */
-  --radius-chip: 10px;
+      역할 기반 이름을 씁니다. 입력은 control, 버튼·탭은 pill, 콘텐츠는 card를 사용합니다. */
+  --radius-pill: 9999px;
+  --radius-chip: 9999px;
   --radius-control: 12px;
-  --radius-panel: 16px;
-  --radius-card: 20px;
-  --radius-hero: 24px;
+  --radius-panel: 20px;
+  --radius-card: 28px;
+  --radius-hero: 36px;
 
   /** ── elevation ────────────────────────────────────────────
-      Matches the Figma effect styles of the same name. */
-  --shadow-button: 0 1px 2px rgb(23 23 23 / 0.06);
-  --shadow-emphasize: 0 1px 2px rgb(23 23 23 / 0.06), 0 4px 12px rgb(23 23 23 / 0.07);
+      Quiet elevation; use borders and surface contrast for ordinary cards. */
+  --shadow-button: 0 1px 2px rgb(30 29 29 / 0.03);
+  --shadow-emphasize: 0 4px 16px rgb(30 29 29 / 0.05);
   --shadow-strong: 0 1px 2px rgb(23 23 23 / 0.06), 0 8px 24px rgb(23 23 23 / 0.1);
   --shadow-heavy: 0 2px 4px rgb(0 0 0 / 0.08), 0 16px 32px rgb(0 0 0 / 0.12);
   --shadow-modal: 0 8px 16px rgb(0 0 0 / 0.08), 0 24px 48px rgb(0 0 0 / 0.16);
 
+  /** Layout rhythm on top of Tailwind’s existing 4px spacing scale. */
+  --spacing-page-gutter: clamp(1.25rem, 4vw, 4rem);
+  --spacing-section: clamp(2.5rem, 6vw, 5rem);
+  --container-page: 75rem;
+  --default-transition-duration: 180ms;
+
   /** animation */
 
-  --animate-login-ring: login-ring var(--duration, 4.2s) ease-in-out var(--delay, 0s) infinite;
+  /* Negative delays render each ring mid-cycle on the first paint. */
+  --animate-login-ring: login-ring 4.2s ease-in-out var(--login-ring-delay, -0.7s) infinite;
 
   @keyframes login-ring {
     0%,
@@ -323,7 +340,8 @@
   }
 }
 
-[data-theme="dark"] {
+@theme inline {
+  --font-sans: var(--font-noto-sans-kr), system-ui, sans-serif;
 }
 
 @layer utilities {
@@ -355,6 +373,8 @@ body {
 }
 
 body {
+  color: var(--ink-900);
+  background: var(--surface-app);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

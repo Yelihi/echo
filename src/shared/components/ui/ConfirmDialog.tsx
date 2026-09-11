@@ -64,7 +64,7 @@ export const ConfirmDialog = ({
         data-slot="confirm-dialog"
         data-tone={tone}
         className={cn(
-          "w-full max-w-105 gap-2 rounded-card border-card-line p-6.5 shadow-modal",
+          "max-w-105 gap-4 rounded-card border-card-line p-6 sm:p-8 shadow-modal",
           className,
         )}
       >

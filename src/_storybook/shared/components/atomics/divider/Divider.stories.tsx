@@ -7,7 +7,7 @@ const meta = {
   component: Divider,
   decorators: [
     (Story) => (
-      <div className="w-64 p-4">
+      <div className="w-full max-w-64 p-4">
         <Story />
       </div>
     ),

@@ -29,6 +29,7 @@ export const RolePlay: Story = {
     type: "role-play",
     title: "Role Play",
     subTitle: "2024.01.01",
+    href: "/role-playing",
   },
 };
 
@@ -47,10 +48,12 @@ export const Skeleton: StoryObj = {
 
 export const SkeletonList: StoryObj = {
   render: () => (
-    <div className="flex w-[360px] flex-col gap-[5px]">
+    <div className="flex w-full max-w-sm flex-col gap-[5px]">
       {Array.from({ length: SOURCE_ITEM_SKELETON_COUNT }, (_, index) => (
         <SourceItemSkeleton key={index} />
       ))}
     </div>
   ),
 };
+
+export const Unavailable: Story = { args: { ...RolePlay.args, href: undefined } };

@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const voicePillVariants = cva(
-  "group/voice-pill relative flex flex-1 cursor-pointer flex-col items-center gap-1.5 rounded-xl border py-3.25 text-center transition-all disabled:pointer-events-none disabled:opacity-50",
+  "group/voice-pill relative flex flex-1 cursor-pointer flex-col items-center gap-1.5 rounded-panel border px-3 py-4 text-center transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       selected: {
-        false: "border-card-line-strong bg-white",
-        true: "border-accent-500 bg-accent-50",
+        false: "border-control-line bg-card-surface hover:border-brand",
+        true: "border-brand bg-gray-background inset-ring-1 inset-ring-brand",
       },
     },
     defaultVariants: {
@@ -43,13 +43,11 @@ export const VoicePill = ({
       type="button"
       data-slot="voice-pill"
       data-selected={selected}
-      aria-pressed={selected}
+      aria-pressed={props.role === "radio" ? undefined : selected}
       className={cn(voicePillVariants({ selected }), className)}
       {...props}
     >
-      <span
-        className={cn("[&_svg]:size-5", selected ? "text-accent-700" : "text-gray-text-secondary")}
-      >
+      <span className={cn("[&_svg]:size-5", selected ? "text-brand" : "text-gray-text-secondary")}>
         {icon}
       </span>
       <span className="text-body-4 font-bold text-black-primary">{label}</span>

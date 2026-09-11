@@ -28,7 +28,7 @@ function ParagraphActionButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="inline-flex size-7.5 cursor-pointer items-center justify-center rounded-md text-gray-text transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-accent-500/30 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-3.75"
+      className="inline-flex size-9 cursor-pointer items-center justify-center rounded-full text-gray-text transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-3.75"
     >
       {children}
     </button>
@@ -51,7 +51,7 @@ function MemorizationParagraphList() {
 
   if (paragraphIndexes.length === 0) {
     return (
-      <div className="flex min-h-0 flex-1 items-center justify-center rounded-control border border-dashed border-card-line-strong bg-card-surface px-6 text-center text-body-3 text-gray-text">
+      <div className="flex min-h-48 flex-1 items-center justify-center rounded-control border border-dashed border-card-line-strong bg-card-surface px-6 text-center text-body-3 text-gray-text">
         본문을 입력한 뒤 AI 문단 제안 요청을 눌러 초안을 만드세요.
       </div>
     );
@@ -136,7 +136,7 @@ function MemorizationParagraphConfirmBar() {
 
 export function MemorizationParagraphReviewPanel() {
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-card border border-card-line bg-white shadow-emphasize">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-card border border-card-line bg-white">
       <EditorPanelHeader
         className="shrink-0"
         title="문단 검수"

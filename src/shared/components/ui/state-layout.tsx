@@ -8,14 +8,14 @@ import { cn } from "@/shared/lib/tailwind/utils";
  * 세 컴포넌트의 골격이 동일해 중복을 막으려고 분리했으며, 배럴로 내보내지 않습니다.
  */
 export const stateLayoutVariants = cva(
-  "flex w-full flex-col items-center gap-5 px-5 py-17.5 text-center",
+  "flex w-full flex-col items-center gap-6 px-5 py-16 text-center",
 );
 
 export const stateIllustrationVariants = cva("flex shrink-0 items-center justify-center", {
   variants: {
     tone: {
       empty:
-        "size-24 rounded-hero border border-accent-100 bg-accent-50 text-accent-500 [&_svg]:size-9.5",
+        "size-24 rounded-hero border border-card-line-strong bg-gray-background text-brand [&_svg]:size-9.5",
       error: "size-22 rounded-hero bg-yellow-secondary text-yellow-primary [&_svg]:size-9",
       loading: "size-16 rounded-full",
     },

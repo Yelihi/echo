@@ -22,7 +22,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="w-40 p-4">
+      <div className="w-full max-w-40 p-4">
         <Story />
       </div>
     ),
@@ -42,7 +42,7 @@ export const Selected: Story = {
 export const AllVariants: Story = {
   decorators: [
     (Story) => (
-      <div className="flex w-120 gap-2.5 p-4">
+      <div className="flex w-full max-w-120 gap-2.5 p-4">
         <Story />
       </div>
     ),

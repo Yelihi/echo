@@ -1,3 +1,5 @@
+import { expect, fn, userEvent, within } from "storybook/test";
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 // widgets
@@ -10,16 +12,7 @@ import {
 
 // views
 import { ROLE_PLAY_INNER_MENU_ITEMS } from "@/views/role-play/config/const";
-import { RolePlayCardActionStrategyRegistry } from "@/views/role-play/services/RolePlayCardActionStrategy";
-
-const registry = new RolePlayCardActionStrategyRegistry({
-  onNavigatePatch: (id) => alert(`수정하기: ${id}`),
-  onDelete: (id) => alert(`삭제하기: ${id}`),
-});
-
-const onMenuAction = (value: string, id: string) => {
-  registry.execute(value, id);
-};
+const onMenuAction = fn();
 
 const sampleCard: Omit<SourceCardProps, "innerMenuItems" | "onMenuAction"> = {
   id: "11111111-1111-4111-8111-111111111111",
@@ -46,6 +39,7 @@ const sampleCards = [
 const meta = {
   title: "widgets/source-card/ui/SourceCard",
   component: SourceCard,
+  parameters: { a11y: { test: "error" } },
   decorators: [
     (Story) => (
       <div className="p-4">
@@ -86,7 +80,7 @@ export const List: Story = {
     onMenuAction,
   },
   render: () => (
-    <div className="grid grid-cols-2 gap-[10px]">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       {sampleCards.map((source) => (
         <SourceCard
           key={source.id}
@@ -101,7 +95,7 @@ export const List: Story = {
 
 export const Skeleton: StoryObj = {
   render: () => (
-    <div className="w-[280px]">
+    <div className="w-full max-w-sm">
       <SourceCardSkeleton />
     </div>
   ),
@@ -109,10 +103,34 @@ export const Skeleton: StoryObj = {
 
 export const SkeletonList: StoryObj = {
   render: () => (
-    <div className="grid grid-cols-2 gap-[15px]">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       {Array.from({ length: SOURCE_CARD_SKELETON_COUNT }, (_, index) => (
         <SourceCardSkeleton key={index} />
       ))}
     </div>
   ),
+};
+
+export const MenuInteraction: Story = {
+  args: {
+    ...sampleCard,
+    href: "/role-playing",
+    innerMenuItems: ROLE_PLAY_INNER_MENU_ITEMS,
+    onMenuAction,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole("button", { name: "자료 메뉴" });
+    await userEvent.click(trigger);
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await userEvent.keyboard("{Escape}");
+    await expect(trigger).toHaveFocus();
+    await userEvent.click(trigger);
+    await userEvent.click(canvas.getByRole("button", { name: ROLE_PLAY_INNER_MENU_ITEMS[0].text }));
+    await expect(onMenuAction).toHaveBeenCalledWith(
+      ROLE_PLAY_INNER_MENU_ITEMS[0].value,
+      sampleCard.id,
+    );
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  },
 };

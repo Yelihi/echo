@@ -13,17 +13,17 @@ interface SessionReadyHeroProps {
 
 export function SessionReadyHero({ tags, title, description, stats }: SessionReadyHeroProps) {
   return (
-    <Card className="flex flex-col gap-5 p-6">
+    <Card className="flex flex-col gap-6 p-6 sm:p-8">
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
           <Badge key={tag} value={tag} size="small" />
         ))}
       </div>
       <div>
-        <h1 className="text-heading-md font-bold text-black-primary">{title}</h1>
+        <h1 className="text-heading-lg font-bold text-black-primary">{title}</h1>
         <p className="mt-2 text-body-3 text-gray-text">{description}</p>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-5 border-t border-card-line pt-6 sm:grid-cols-3">
         {stats.map((stat) => (
           <StatItem key={stat.label} {...stat} />
         ))}

@@ -18,8 +18,8 @@ import { SourceCardsWrapperSkeleton } from "@/views/role-play/ui/view/SourceCard
 function RolePlayViewHeader() {
   return (
     <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-heading-md font-bold text-black-primary">롤플레잉</h1>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-display break-keep text-black-primary">롤플레잉</h1>
         <p className="text-body-4 text-gray-text">연습할 2인 대화 자료를 선택하세요.</p>
       </div>
       <Button size="lg" asChild>

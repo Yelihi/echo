@@ -4,15 +4,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const chatBubbleInputVariants = cva(
-  "group/chat-bubble-input field-sizing-content w-full min-w-60 max-w-full resize-none overflow-hidden border px-4 py-3 text-body-4 leading-normal text-black-primary shadow-button transition-colors outline-none placeholder:text-gray-text-secondary",
+  "group/chat-bubble-input field-sizing-content w-full min-w-0 max-w-full resize-none overflow-hidden border px-4 py-3 text-body-4 leading-normal text-black-primary transition-colors outline-none focus-visible:ring-1 focus-visible:ring-brand placeholder:text-gray-text-secondary",
   {
     variants: {
       speaker: {
         // 말꼬리 쪽 모서리만 작게 잡아 방향을 만듭니다.
-        // Figma 는 18px 이지만 대응 토큰이 없어 panel(16)로 정규화했습니다.
         partner:
-          "rounded-t-panel rounded-br-panel rounded-bl-md border-card-line-strong bg-card-surface",
-        me: "rounded-t-panel rounded-bl-panel rounded-br-md border-2 border-accent-200 bg-accent-50",
+          "rounded-t-panel rounded-br-panel rounded-bl-md border-control-line bg-card-surface",
+        me: "rounded-t-panel rounded-bl-panel rounded-br-md border-brand bg-gray-background",
       },
     },
     defaultVariants: {

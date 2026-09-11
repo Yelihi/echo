@@ -12,8 +12,8 @@ export function LatestSessionsView({
 }: LatestSessionsViewProps) {
   return (
     <section className="flex w-full flex-col gap-6">
-      <header className="flex flex-col gap-1.5">
-        <h1 className="text-heading-md font-bold text-black-primary">학습 기록</h1>
+      <header className="flex flex-col gap-4">
+        <h1 className="text-display break-keep text-black-primary">학습 기록</h1>
         <p className="text-body-4 text-gray-text">나의 연습과 분석 결과</p>
       </header>
       <HistoryToolbar query={query} totalCount={totalCount} />

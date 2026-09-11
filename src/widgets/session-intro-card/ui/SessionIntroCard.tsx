@@ -10,12 +10,12 @@ import { Button } from "@/shared/components";
 import { SessionIntroCardProps } from "@/widgets/session-intro-card/models/interface";
 
 const sessionIntroCardVariants = cva(
-  "relative w-full cursor-pointer rounded-hero p-[20px] transition-all duration-300 hover:shadow-strong",
+  "relative w-full overflow-hidden rounded-hero border border-card-line p-6 sm:p-8",
   {
     variants: {
       type: {
-        "role-play": "bg-blue-primary",
-        memorization: "bg-deep-blue-primary",
+        "role-play": "bg-silver text-brand",
+        memorization: "bg-brand text-on-brand",
       },
     },
   },
@@ -51,18 +51,27 @@ export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProp
 
   return (
     <div className={cn(sessionIntroCardVariants({ type }))}>
-      <div className="flex w-full flex-col justify-items-center gap-[30px]">
+      <div className="flex w-full flex-col justify-items-center gap-10">
         <div className="flex flex-col justify-start items-start gap-[8px]">
-          <p className="text-body-1 font-bold text-white">{textByType[type].info}</p>
-          <h2 className="text-heading-md font-bold text-white">{textByType[type].title}</h2>
-          <p className="text-body-3 font-normal text-white">{textByType[type].subTitle}</p>
+          <p className="text-subtitle-sm font-medium tracking-widest text-current">
+            {textByType[type].info}
+          </p>
+          <h2 className="text-heading-lg font-bold text-current">{textByType[type].title}</h2>
+          <p className="max-w-sm text-body-4 font-normal text-current">
+            {textByType[type].subTitle}
+          </p>
         </div>
         <div className="w-full flex justify-between items-center">
-          <p className="text-body-2 text-white font-semibold">자료 {currentSessions}개</p>
+          <p className="text-body-2 text-current font-semibold">자료 {currentSessions}개</p>
           <Button
             variant={"ghost"}
             size={"lg"}
-            className="apple-glass border-white text-white z-10"
+            className={cn(
+              "z-10",
+              type === "role-play"
+                ? "bg-brand text-on-brand hover:bg-brand-hover hover:text-on-brand"
+                : "bg-card-surface text-brand hover:bg-silver hover:text-brand",
+            )}
             onClick={routeStartSession}
           >
             시작하기
@@ -70,11 +79,14 @@ export const SessionIntroCard = ({ type, currentSessions }: SessionIntroCardProp
           </Button>
         </div>
       </div>
-      <div className="absolute bottom-[5%] right-[2%] h-[50%] aspect-square flex justify-center items-center opacity-30">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-6 top-10 flex size-40 items-center justify-center opacity-10"
+      >
         {type === "role-play" ? (
-          <MessageSquare className="size-full text-white" />
+          <MessageSquare className="size-full text-current" />
         ) : (
-          <Layers className="size-full text-white" />
+          <Layers className="size-full text-current" />
         )}
       </div>
     </div>

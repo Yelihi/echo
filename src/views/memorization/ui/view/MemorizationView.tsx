@@ -18,8 +18,8 @@ import { SourceCardsWrapperSkeleton } from "@/views/memorization/ui/view/SourceC
 function MemorizationViewHeader() {
   return (
     <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-heading-md font-bold text-black-primary">문장 암기</h1>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-display break-keep text-black-primary">문장 암기</h1>
         <p className="text-body-4 text-gray-text">외울 문장 묶음을 선택하고 연습을 시작하세요.</p>
       </div>
       <Button size="lg" asChild>

@@ -14,30 +14,15 @@ export const NavigationMenuItem = ({ icon: Icon, link, label }: NavigationMenuIt
     <Link
       href={link}
       aria-current={isCurrentHref ? "page" : undefined}
-      className="flex justify-center items-center shrink-0"
+      className={cn(
+        "flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-pill border px-4 text-body-2 font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
+        isCurrentHref
+          ? "border-brand bg-brand text-on-brand hover:bg-brand-hover"
+          : "border-control-line bg-card-surface text-gray-text hover:border-brand hover:text-brand",
+      )}
     >
-      <button
-        className={cn(
-          "w-fit px-3 h-[33px] rounded-chip group  flex justify-center items-center gap-[10px] hover:bg-blue-secondary active:scale-98 transition-all duration-100 cursor-pointer",
-          "whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-primary",
-          isCurrentHref ? "bg-blue-secondary" : "bg-white-secondary",
-        )}
-      >
-        <Icon
-          className={cn(
-            "size-[18px] shrink-0 group-hover:text-blue-primary",
-            isCurrentHref ? "text-blue-primary" : "text-gray-text",
-          )}
-        />
-        <span
-          className={cn(
-            "text-body-2 font-normal group-hover:text-blue-primary",
-            isCurrentHref ? "text-blue-primary" : "text-gray-text",
-          )}
-        >
-          {label}
-        </span>
-      </button>
+      <Icon aria-hidden className="size-4 shrink-0" />
+      <span>{label}</span>
     </Link>
   );
 };

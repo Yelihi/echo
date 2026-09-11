@@ -28,21 +28,24 @@ export const ChatMessage = ({ id, order, text, changeOrder, changeMessage }: Cha
   };
 
   return (
-    <div className="w-full flex flex-col items-start gap-[5px]">
+    <div className="w-full flex flex-col items-start gap-2">
       <div className="w-fit flex justify-start items-center gap-[3px]">
         <p className="text-body-1 font-extrabold text-gray-text">{order === 1 ? "상대방" : "나"}</p>
         <button
-          className="size-[12px] flex justify-center items-center"
+          className="size-8 flex justify-center items-center rounded-pill border border-control-line outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          type="button"
+          aria-label="화자 바꾸기"
           onClick={switchSpeakerThisMessage}
         >
           <ArrowRightLeft className="size-[12px] text-gray-text" />
         </button>
       </div>
       <input
+        aria-label={order === 1 ? "상대방 대사" : "내 대사"}
         type="text"
         value={text}
         onChange={changeThisMessageText}
-        className="w-full max-w-[300px] h-fit p-[10px] text-body-4 font-normal text-black-primary border-[1.5px] border-gray-border"
+        className="w-full min-w-0 max-w-xl rounded-panel border border-control-line bg-card-surface px-4 py-3 text-body-4 text-black-primary outline-none focus-visible:ring-1 focus-visible:ring-brand"
       />
     </div>
   );

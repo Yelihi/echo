@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ui/toggle-grou
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const segmentedControlVariants = cva(
-  "group/segmented-control w-fit rounded-control bg-neutral-100 p-0.75",
+  "group/segmented-control w-fit max-w-full rounded-pill border border-card-line-strong bg-gray-background p-1",
 );
 
 export const segmentedControlItemVariants = cva("px-3.75 text-body-2");
@@ -54,7 +54,7 @@ export const SegmentedControl = ({
       type="single"
       theme="segmented"
       // 0 을 쓰면 ToggleGroupItem 의 group-data-[spacing=0] 복합 선택자가 켜지면서
-      // 모서리·패딩 재정의를 덮어쓸 수 없게 됩니다. 0.5(=2px)가 Figma 간격이기도 합니다.
+      // 모서리·패딩 재정의를 덮어쓸 수 없게 됩니다. 0.5(=2px)로 항목 간 여백을 둡니다.
       spacing={0.5}
       size={size}
       value={value}

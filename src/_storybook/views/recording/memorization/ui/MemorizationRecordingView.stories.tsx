@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import type { MemorizationReadyMaterial } from "@/features/memorization-sessions/models/ready";
 import { MemorizationRecordingView } from "@/views/recording/ui/memorization/MemorizationRecordingView";
@@ -38,7 +38,7 @@ export const Preview: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole("button", { name: "단락 미리 보기" }));
     const dialog = await within(canvasElement.ownerDocument.body).findByRole("dialog");
-    await expect(within(dialog).getByText("문단 2", { exact: false })).toBeVisible();
+    await waitFor(() => expect(within(dialog).getByText("문단 2", { exact: false })).toBeVisible());
   },
 };
 

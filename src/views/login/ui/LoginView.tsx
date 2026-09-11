@@ -5,13 +5,13 @@ import { ButtonSection } from "@/views/login/ui/ButtonSection";
 
 export function LoginView() {
   return (
-    <main className="w-full h-full flex flex-col justify-center items-center gap-[2rem] z-10">
-      <div className="flex justify-center items-center rounded-card size-[66px] bg-blue-primary shadow-emphasize">
+    <main className="relative z-10 flex w-full flex-col items-center justify-center gap-8 px-page-gutter py-12">
+      <div className="flex justify-center items-center rounded-full size-16 bg-brand">
         <Pluse className="size-[28px] text-white" />
       </div>
       <div className="flex flex-col justify-center items-center gap-3">
-        <h2 className="text-heading-lg font-extrabold tracking-tight text-black-primary">Echo</h2>
-        <p className="text-body-5 font-normal tracking-tight text-black-secondary text-center">
+        <h1 className="text-display text-black-primary">Echo</h1>
+        <p className="text-body-4 leading-relaxed font-normal tracking-tight text-black-secondary text-center">
           혼자서도 실제 대화처럼.
           <br />
           롤플레잉으로 말하고, 긴 문장은 암기로 다져요.

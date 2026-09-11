@@ -14,14 +14,14 @@ const mappedLabel = {
 };
 
 const sessionStateBadgeGroupVariant = cva(
-  "w-[100px] h-[25px] rounded-full flex justify-center items-center gap-[10px]",
+  "min-w-25 h-7 px-3 rounded-pill flex justify-center items-center gap-[10px]",
   {
     variants: {
       state: {
         completed: "bg-green-secondary text-green-primary",
         failed: "bg-yellow-secondary text-yellow-primary",
         partial: "bg-yellow-secondary text-yellow-primary",
-        inProgress: "bg-blue-secondary text-blue-primary",
+        inProgress: "bg-gray-background text-brand",
         pending: "border border-card-line-strong bg-card-surface text-gray-text",
       },
     },

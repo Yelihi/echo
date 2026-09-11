@@ -6,11 +6,11 @@ import { ProgressTrack } from "@/shared/components/atomics/progress-track/Progre
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const playPillVariants = cva(
-  "group/play-pill inline-flex w-fit items-center gap-2 rounded-full border border-card-line-strong bg-card-surface py-1.5 pr-3.5 pl-1.5",
+  "group/play-pill inline-flex w-fit items-center gap-2 rounded-full border border-control-line bg-card-surface py-1.5 pr-3.5 pl-1.5",
 );
 
 const playPillButtonVariants = cva(
-  "inline-flex size-7.5 shrink-0 cursor-pointer items-center justify-center rounded-full bg-accent-600 text-white transition-colors outline-none hover:bg-accent-700 focus-visible:ring-2 focus-visible:ring-accent-500/30 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-3.25 [&_svg]:fill-current",
+  "inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-brand text-white transition-colors outline-none hover:bg-brand-hover focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-3.25 [&_svg]:fill-current",
 );
 
 /** 재생/일시정지 버튼. PlayPill 내부 전용이라 내보내지 않습니다. */

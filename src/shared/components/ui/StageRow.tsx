@@ -9,7 +9,7 @@ export const stageRowVariants = cva(
   {
     variants: {
       state: {
-        pending: "opacity-40",
+        pending: "opacity-70",
         active: "opacity-100",
         done: "opacity-85",
       },
@@ -27,7 +27,7 @@ export const stageRowIconVariants = cva(
       state: {
         pending: "border-session-glass-line text-white",
         active: "border-accent-glow text-accent-glow",
-        done: "border-accent-600 bg-accent-600 text-white",
+        done: "border-silver bg-silver text-brand",
       },
     },
     defaultVariants: {

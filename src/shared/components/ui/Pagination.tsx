@@ -63,13 +63,13 @@ export function Pagination({ page, totalPages, className, ...props }: Pagination
 export function PaginationSkeleton({ className }: { className?: string }) {
   return (
     <div
-      className={cn("mx-auto flex w-full items-center justify-center gap-0.5", className)}
+      className={cn("mx-auto flex w-full items-center justify-center gap-1", className)}
       aria-hidden
     >
       {Array.from({ length: 5 }, (_, index) => (
         <div
           key={index}
-          className="size-8 shrink-0 animate-pulse rounded-lg border border-card-line-strong bg-white"
+          className="size-11 shrink-0 animate-pulse motion-reduce:animate-none rounded-pill border border-card-line-strong bg-white"
         />
       ))}
     </div>

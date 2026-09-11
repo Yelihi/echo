@@ -4,19 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const chipVariants = cva(
-  "group/chip inline-flex h-6.75 w-fit shrink-0 items-center gap-1.5 rounded-full px-3 text-body-1 font-bold whitespace-nowrap [&_svg]:size-3 [&_svg]:shrink-0",
+  "group/chip inline-flex h-6.75 w-fit shrink-0 items-center gap-1.5 rounded-full px-3 text-body-1 font-medium whitespace-nowrap [&_svg]:size-3 [&_svg]:shrink-0",
   {
     variants: {
       tone: {
         neutral: "bg-neutral-100 text-gray-text",
         /** 활성 필라를 따라갑니다 */
-        accent: "bg-accent-50 text-accent-700",
-        roleplay: "bg-blue-secondary text-blue-focus-title",
-        memo: "bg-deep-blue-secondary text-deep-blue-primary",
+        accent: "bg-accent-50 text-brand",
+        roleplay: "bg-gray-background text-brand",
+        memo: "bg-gray-background text-brand",
         positive: "bg-green-secondary text-green-primary",
         warning: "bg-yellow-secondary text-yellow-primary",
-        negative: "bg-red-secondary text-red-primary",
-        outline: "border border-card-line-strong text-gray-text",
+        negative: "bg-red-secondary text-danger-ink",
+        outline: "border border-control-line text-gray-text",
       },
     },
     defaultVariants: {

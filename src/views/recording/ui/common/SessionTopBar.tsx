@@ -18,11 +18,11 @@ export function SessionTopBar({ backHref, close, current, total }: SessionTopBar
       </Link>
       <div className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full bg-session-glass-line">
         <div
-          className="h-full rounded-full bg-accent-glow transition-[width]"
+          className="h-full rounded-full bg-accent-glow transition-[width] motion-reduce:transition-none"
           style={{ width: `${getRecordingProgress(current, total)}%` }}
         />
       </div>
-      <p className="w-8 shrink-0 text-right text-body-3 font-medium text-white">
+      <p className="min-w-12 shrink-0 whitespace-nowrap text-right text-body-3 font-medium text-white">
         {current} / {total}
       </p>
     </header>
