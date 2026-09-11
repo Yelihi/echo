@@ -18,10 +18,10 @@ export const SessionSimplified = ({
 }: SessionSimplifiedProps) => {
   const content = (
     <>
-      <div className="flex justify-start items-center gap-[10px]">
+      <div className="flex min-w-0 justify-start items-center gap-[10px]">
         <div
           className={cn(
-            "size-[42px] rounded-control flex justify-center items-center",
+            "size-[42px] shrink-0 rounded-control flex justify-center items-center",
             sessionType === "role-playing" ? "bg-blue-secondary" : "bg-deep-blue-secondary",
           )}
         >
@@ -31,18 +31,20 @@ export const SessionSimplified = ({
             <Layers className={cn("size-[20px] text-black-primary")} />
           )}
         </div>
-        <div className="flex flex-col items-start justify-center gap-[4px]">
-          <p className="text-body-4 font-bold text-black-primary">{title}</p>
-          <p className="text-body-3 font-normal text-gray-text-secondary">{`${convertFormatDate(sessionDate)}·${description}`}</p>
+        <div className="flex min-w-0 flex-col items-start justify-center gap-[4px]">
+          <p className="text-body-4 font-bold text-black-primary break-words [overflow-wrap:anywhere]">
+            {title}
+          </p>
+          <p className="text-body-3 font-normal text-gray-text break-words">{`${convertFormatDate(sessionDate)}·${description}`}</p>
         </div>
       </div>
-      <div className="size-fit">
+      <div className="shrink-0 self-start sm:self-auto">
         <SessionStateBadge state={sessionState} />
       </div>
     </>
   );
   const className = cn(
-    "w-full h-fit bg-white border border-gray-border rounded-panel p-[16px] flex justify-between items-center transition-colors",
+    "w-full h-fit bg-white border border-gray-border rounded-lg p-[16px] flex flex-col gap-3 sm:flex-row justify-between sm:items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-primary",
     href && !disabled ? "cursor-pointer hover:bg-gray-background" : "cursor-default opacity-70",
   );
 

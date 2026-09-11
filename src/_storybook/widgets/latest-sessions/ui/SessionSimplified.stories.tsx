@@ -11,7 +11,7 @@ const meta = {
   component: SessionSimplified,
   decorators: [
     (Story) => (
-      <div className="w-[1020px] p-4">
+      <div className="w-full max-w-[1020px] p-4">
         <Story />
       </div>
     ),
@@ -67,4 +67,22 @@ export const SkeletonList: StoryObj = {
       ))}
     </div>
   ),
+};
+
+export const Partial: Story = { args: { ...RolePlaying.args, sessionState: "partial" } };
+export const LongTitle: Story = {
+  args: {
+    ...RolePlaying.args,
+    title: "카페에서 처음 만난 동료와 주말 여행 계획에 대해 대화하며 자연스러운 영어 표현 연습하기",
+  },
+};
+export const Mobile: Story = {
+  args: RolePlaying.args,
+  decorators: [
+    (Story) => (
+      <div className="max-w-[375px]">
+        <Story />
+      </div>
+    ),
+  ],
 };

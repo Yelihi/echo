@@ -5,6 +5,7 @@ import { LatestSessionsView } from "@/views/latest-sessions";
 const meta = {
   title: "views/latest-sessions/ui/LatestSessionsView",
   component: LatestSessionsView,
+  parameters: { nextjs: { appDirectory: true, navigation: { pathname: "/sessions" } } },
   args: {
     sessions: [
       {
@@ -41,3 +42,28 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const Empty: Story = { args: { sessions: [] } };
+export const Paginated: Story = {
+  args: {
+    query: { page: 2, status: "all", sort: "newest" },
+    totalCount: 25,
+    totalPages: 3,
+    sessions: Array.from({ length: 10 }, (_, index) => ({
+      id: String(index),
+      title:
+        index === 0
+          ? "카페에서 처음 만난 동료와 주말 여행 계획에 대해 길게 대화하기"
+          : `연습 기록 ${index + 1}`,
+      sessionDate: new Date("2026-09-10"),
+      description: "문장 10개",
+      sessionType: index % 2 ? ("memorization" as const) : ("role-playing" as const),
+      sessionState: index % 2 ? ("partial" as const) : ("completed" as const),
+      href: `/roleplay-sessions/${index}/result`,
+    })),
+  },
+  parameters: {
+    nextjs: { appDirectory: true, navigation: { pathname: "/sessions", query: { page: "2" } } },
+  },
+};
+export const FilteredEmpty: Story = {
+  args: { sessions: [], query: { page: 1, status: "failed", sort: "newest" } },
+};
