@@ -14,6 +14,7 @@ export interface ListContainerProps {
 }
 
 export interface SourceItemProps {
+  href?: string;
   icon: LucideIcon;
   type: "role-play" | "memorization";
   title: string;

@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import { cn } from "@/shared/utils/cn";
 
@@ -6,14 +7,9 @@ import type { SourceItemProps } from "@/widgets/latest-sources/models/interface"
 
 export const SOURCE_ITEM_SKELETON_COUNT = 4;
 
-export const SourceItem = ({ icon: Icon, type, title, subTitle }: SourceItemProps) => {
-  return (
-    <div
-      className={cn(
-        "w-fit bg-white flex justify-start items-center gap-[15px] p-[10px] rounded-card cursor-pointer hover:shadow-emphasize transition-shadow duration-300 active:scale-96",
-        type === "role-play" ? "active:bg-blue-secondary" : "active:bg-deep-blue-secondary",
-      )}
-    >
+export const SourceItem = ({ icon: Icon, type, title, subTitle, href }: SourceItemProps) => {
+  const content = (
+    <>
       <div
         className={cn(
           "size-[42px] flex justify-center items-center rounded-chip",
@@ -34,6 +30,23 @@ export const SourceItem = ({ icon: Icon, type, title, subTitle }: SourceItemProp
       <div className="flex justify-items-center">
         <ArrowRight className="size-[16px] text-gray-text-secondary" />
       </div>
+    </>
+  );
+  const className = cn(
+    "w-fit bg-white flex justify-start items-center gap-[15px] p-[10px] rounded-card",
+    href
+      ? "cursor-pointer hover:shadow-emphasize transition-shadow duration-300 active:scale-96 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-primary"
+      : "cursor-default opacity-70",
+    href && (type === "role-play" ? "active:bg-blue-secondary" : "active:bg-deep-blue-secondary"),
+  );
+
+  return href ? (
+    <Link href={href} className={className}>
+      {content}
+    </Link>
+  ) : (
+    <div className={className} aria-disabled>
+      {content}
     </div>
   );
 };
