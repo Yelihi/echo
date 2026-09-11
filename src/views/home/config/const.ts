@@ -1,1 +1,1 @@
-export const HOME_LATEST_SESSION_LIMIT = 2;
+export const HOME_LATEST_SESSION_LIMIT = 5;

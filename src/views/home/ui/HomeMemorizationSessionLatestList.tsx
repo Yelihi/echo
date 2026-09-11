@@ -30,6 +30,11 @@ export async function HomeMemorizationSessionLatestList() {
       {sessions.map((session) => (
         <SourceItem
           key={session.id}
+          href={
+            session.sourceMaterialId
+              ? `/sentence-memorization/${session.sourceMaterialId}/ready`
+              : undefined
+          }
           icon={Layers}
           type="memorization"
           title={session.materialTitleSnapshot}

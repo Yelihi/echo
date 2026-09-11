@@ -29,6 +29,9 @@ export async function HomeRoleplaySessionLatestList() {
       {sessions.map((session) => (
         <SourceItem
           key={session.id}
+          href={
+            session.sourceMaterialId ? `/role-playing/${session.sourceMaterialId}/ready` : undefined
+          }
           icon={MessageSquare}
           type="role-play"
           title={session.materialTitleSnapshot}
