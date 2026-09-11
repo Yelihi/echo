@@ -1,8 +1,6 @@
 /** @jest-environment node */
 
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
-import { createSupabaseServerClient } from "../server";
+import { afterEach, beforeEach, expect, jest, test } from "@jest/globals";
 
 jest.mock("server-only", () => ({}));
 jest.mock("next/headers", () => ({ cookies: jest.fn() }));
@@ -22,6 +20,9 @@ afterEach(() => {
 });
 
 test("allows Next.js to stop prerendering at the request boundary without Supabase config", async () => {
+  const { cookies } = await import("next/headers");
+  const { createServerClient } = await import("@supabase/ssr");
+  const { createSupabaseServerClient } = await import("../server");
   const requestBoundary = new Error("request cookies are unavailable during prerendering");
   jest.mocked(cookies).mockRejectedValue(requestBoundary);
 
@@ -30,6 +31,9 @@ test("allows Next.js to stop prerendering at the request boundary without Supaba
 });
 
 test("still rejects missing Supabase config once request cookies are available", async () => {
+  const { cookies } = await import("next/headers");
+  const { createServerClient } = await import("@supabase/ssr");
+  const { createSupabaseServerClient } = await import("../server");
   jest
     .mocked(cookies)
     .mockResolvedValue(new Map() as unknown as Awaited<ReturnType<typeof cookies>>);
