@@ -9,6 +9,7 @@ const statusOptions = historyStatusOptions.map((option) => ({
   ...option,
   dotClassName: {
     all: "bg-neutral-400",
+    practicing: "bg-blue-500",
     pending: "bg-neutral-400",
     inProgress: "bg-blue-500",
     completed: "bg-emerald-500",
@@ -29,7 +30,7 @@ export function HistoryFilterControls({ query, pending, onChange }: HistoryFilte
       className="flex flex-wrap items-center gap-2"
     >
       <FilterSelect
-        label="분석 상태"
+        label="학습 상태"
         value={query.status}
         options={statusOptions}
         icon={ListFilter}

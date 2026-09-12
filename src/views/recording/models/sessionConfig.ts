@@ -10,6 +10,7 @@ export interface RecordingSessionClientConfig {
     title: string;
     description: readonly string[];
     meta: readonly string[];
+    startLabel?: string;
     previewLabel: string;
     previewLines: readonly { label: string; text: string }[];
   };

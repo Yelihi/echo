@@ -14,6 +14,7 @@ export const SessionSimplified = ({
   sessionType,
   sessionState,
   href,
+  actionLabel = "이어서 연습",
   disabled = false,
 }: SessionSimplifiedProps) => {
   const content = (
@@ -38,8 +39,11 @@ export const SessionSimplified = ({
           <p className="text-body-3 font-normal text-gray-text break-words">{`${convertFormatDate(sessionDate)}·${description}`}</p>
         </div>
       </div>
-      <div className="shrink-0 self-start sm:self-auto">
+      <div className="flex shrink-0 items-center gap-3 self-start sm:self-auto">
         <SessionStateBadge state={sessionState} />
+        {sessionState === "practicing" && href && !disabled && (
+          <span className="text-body-3 font-bold text-blue-primary">{actionLabel} →</span>
+        )}
       </div>
     </>
   );

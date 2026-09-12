@@ -34,6 +34,7 @@ export function createRolePlayRecordingSessionStore(
   return createStoreApi<RolePlayRecordingSessionStore>("rolePlayRecordingSession", (set) => ({
     ...createRecordingSessionBaseSlice<RolePlayRecordingSessionStore>(set, initial),
     ...ROLE_PLAY_INITIAL_STATE,
+    currentStep: clampRecordingStep(initial.activeStep, initial.totalSteps),
     closingPartner,
     canReplayPartner: initial.initialPhase === "user-ready" || initial.initialPhase === "recorded",
     partnerPlaySucceeded: () =>

@@ -2,6 +2,7 @@ import type { GetLatestStudySession } from "./studySession";
 
 export const historyStatusOptions = [
   { value: "all", label: "전체 상태" },
+  { value: "practicing", label: "연습 중" },
   { value: "pending", label: "분석 전" },
   { value: "inProgress", label: "분석 중" },
   { value: "completed", label: "분석 완료" },

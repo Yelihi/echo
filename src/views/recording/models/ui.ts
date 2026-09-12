@@ -46,6 +46,9 @@ export interface SessionTopBarProps {
   close: boolean;
   current: number;
   total: number;
+  hasUnsavedRecording?: boolean;
+  saving?: boolean;
+  resumable?: boolean;
 }
 export interface MemorizationRecordingClientProps {
   config: RecordingSessionClientConfig;
@@ -76,7 +79,7 @@ export interface RolePlayRecordingViewProps {
   initialPhase?: RecordingPhase;
   autoAdvancePartner?: boolean;
   saveRecording?: (audio: CapturedAudio) => Promise<void>;
-  resume?: { phase: RecordingPhase; step: number; closingPartner: boolean };
+  resume?: { phase: RecordingPhase; step: number; closingPartner: boolean; savedCount?: number };
 }
 
 export interface RecordingCompletionPanelProps {

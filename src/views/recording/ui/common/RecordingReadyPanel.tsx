@@ -34,7 +34,7 @@ export function RecordingReadyPanel({ content, onStart }: RecordingReadyPanelPro
           <RecordingPreviewDialog content={content} />
           <GlassButton emphasis="primary" onClick={onStart}>
             <Play />
-            시작하기
+            {content.startLabel ?? "시작하기"}
           </GlassButton>
         </div>
       </div>

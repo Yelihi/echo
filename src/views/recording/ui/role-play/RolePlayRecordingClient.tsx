@@ -18,8 +18,15 @@ export function RolePlayRecordingClient(props: RolePlayRecordingClientProps) {
       <SessionTopBar
         backHref={turn.phase === "ready" ? config.navigation.backHref : config.navigation.closeHref}
         close={turn.phase !== "ready"}
-        current={turn.phase === "ready" ? 0 : session.currentStep}
+        current={
+          turn.phase === "ready" && !session.closingPartner
+            ? Math.max(0, session.currentStep - 1)
+            : session.currentStep
+        }
         total={config.initial.totalSteps}
+        hasUnsavedRecording={turn.phase === "recording" || Boolean(turn.recordedAudio)}
+        saving={session.saving || persistence.completionStatus === "submitting"}
+        resumable={Boolean(partner.sessionId)}
       />
       {turn.phase === "ready" ? (
         <RecordingReadyPanel content={config.ready} onStart={beginTurn} />
