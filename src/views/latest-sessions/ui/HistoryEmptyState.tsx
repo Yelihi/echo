@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Inbox, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { EmptyIllustration } from "@/shared/components/motion/EmptyIllustration";
 import type { HistoryEmptyStateProps } from "../models/interface";
 
 export function HistoryEmptyState({ filtered }: HistoryEmptyStateProps) {
   return (
     <div className="flex flex-col items-center gap-3 py-20 text-center" role="status">
-      <Inbox className="mb-2 size-9 text-neutral-400" strokeWidth={1.25} aria-hidden />
+      <EmptyIllustration />
       <p className="text-sm font-medium text-neutral-700">
         {filtered ? "해당 상태의 학습 기록이 없습니다." : "아직 학습 기록이 없습니다."}
       </p>

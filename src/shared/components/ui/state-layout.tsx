@@ -14,8 +14,7 @@ export const stateLayoutVariants = cva(
 export const stateIllustrationVariants = cva("flex shrink-0 items-center justify-center", {
   variants: {
     tone: {
-      empty:
-        "size-24 rounded-hero border border-card-line-strong bg-gray-background text-brand [&_svg]:size-9.5",
+      empty: "min-h-24 min-w-24 text-brand [&_svg]:size-9.5",
       error: "size-22 rounded-hero bg-yellow-secondary text-yellow-primary [&_svg]:size-9",
       loading: "size-16 rounded-full",
     },

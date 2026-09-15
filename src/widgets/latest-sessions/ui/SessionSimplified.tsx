@@ -50,7 +50,7 @@ export const SessionSimplified = ({
 
   if (href && !disabled) {
     return (
-      <Link href={href} className={className}>
+      <Link data-motion-card="true" href={href} className={className}>
         {content}
       </Link>
     );

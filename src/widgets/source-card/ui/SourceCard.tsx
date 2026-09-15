@@ -46,7 +46,10 @@ export const SourceCard = ({
   );
 
   return (
-    <div className="w-full min-w-0 rounded-card border border-card-line bg-card-surface p-6 transition-colors hover:border-control-line">
+    <div
+      data-motion-card={href ? "true" : undefined}
+      className="w-full min-w-0 rounded-card border border-card-line bg-card-surface p-6 transition-colors hover:border-control-line"
+    >
       <div className="size-full flex flex-col justify-start items-center gap-6">
         <div className="w-full flex justify-between items-center">
           <div className="w-full min-w-0 max-w-[200px] overflow-x-auto scrollbar-none scroll-smooth flex justify-start items-center gap-[10px]">

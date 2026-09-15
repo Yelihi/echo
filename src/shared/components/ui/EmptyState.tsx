@@ -1,12 +1,12 @@
 import * as React from "react";
-import { Inbox } from "lucide-react";
+import { EmptyIllustration } from "@/shared/components/motion/EmptyIllustration";
 
 import { StateLayout } from "@/shared/components/ui/state-layout";
 
 export interface EmptyStateProps {
   title: React.ReactNode;
   description?: React.ReactNode;
-  /** 기본 아이콘(Inbox)을 바꾸고 싶을 때 */
+  /** 기본 dotLottie 일러스트를 바꾸고 싶을 때 */
   icon?: React.ReactNode;
   /**
    * 하단 액션 슬롯. 문구·핸들러·버튼 종류를 컴포넌트가 정하지 않도록
@@ -22,7 +22,7 @@ export interface EmptyStateProps {
 export const EmptyState = ({
   title,
   description,
-  icon = <Inbox />,
+  icon = <EmptyIllustration />,
   action,
   ...props
 }: EmptyStateProps & React.ComponentProps<"div">) => {

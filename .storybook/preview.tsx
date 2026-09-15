@@ -16,6 +16,7 @@ const notoSansKR = Noto_Sans_KR({
 
 // Storybook must never sign out a real account or require Supabase credentials.
 sb.mock(import("../src/features/logout/services/service/useLogout.ts"));
+sb.mock(import("../src/features/login/services/query/useAuthWithSupabase.ts"));
 
 const preview: Preview = {
   beforeEach: () => {

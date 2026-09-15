@@ -26,6 +26,12 @@ export const Login: Story = {
     </LoginLayout>
   ),
   play: async ({ canvasElement }) => {
+    await Promise.all(
+      canvasElement
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => {})),
+    );
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("heading", { level: 1, name: "Echo" })).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: "Google로 시작하기" }));
@@ -53,6 +59,12 @@ export const RoleplayEditor: Story = {
     </AppShell>
   ),
   play: async ({ canvasElement }) => {
+    await Promise.all(
+      canvasElement
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => {})),
+    );
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "내 대사" }));
     const line = canvas.getByRole("textbox", { name: "3번째 내 대사" });
@@ -89,6 +101,12 @@ export const MemorizationEditor: Story = {
     </AppShell>
   ),
   play: async ({ canvasElement }) => {
+    await Promise.all(
+      canvasElement
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => {})),
+    );
     const canvas = within(canvasElement);
     const paragraph = canvas.getByRole("textbox", { name: "문단 1" });
     await userEvent.clear(paragraph);
@@ -117,6 +135,12 @@ export const RoleplayReady: Story = {
     </RolePlayReadyLayout>
   ),
   play: async ({ canvasElement }) => {
+    await Promise.all(
+      canvasElement
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => {})),
+    );
     const canvas = within(canvasElement);
     const partner = canvas.getByRole("radio", { name: /상대방 컴퓨터/ });
     await userEvent.click(partner);
@@ -147,6 +171,12 @@ export const MemorizationReady: Story = {
     </MemorizationReadyLayout>
   ),
   play: async ({ canvasElement }) => {
+    await Promise.all(
+      canvasElement
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => {})),
+    );
     const canvas = within(canvasElement);
     const title = canvas.getByRole("radio", { name: /제목만 보고 말하기/ });
     await userEvent.click(title);
@@ -191,6 +221,12 @@ export const RecordingManagement: Story = {
     </AppShell>
   ),
   play: async ({ canvasElement }) => {
+    await Promise.all(
+      canvasElement
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => {})),
+    );
     const canvas = within(canvasElement);
     await expect(
       canvas.getByRole("button", { name: "cafe-conversation.wav 보호됨" }),

@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatedMenu } from "@/shared/components/motion/AnimatedMenu";
 import React, { useId, useState } from "react";
 import { User } from "lucide-react";
 
@@ -74,16 +75,15 @@ export const Profile = () => {
           <User className="size-[18px] text-on-brand" />
         </div>
       </button>
-      {isActive && (
-        <div
-          id={menuId}
-          className="absolute right-0 top-full mt-3 w-44 rounded-panel border border-card-line bg-card-surface p-2 shadow-strong"
-        >
-          {PROFILE_MENU.map((menu) => (
-            <ProfileMenuItem {...menu} key={menu.key} onClick={actions[menu.key]} />
-          ))}
-        </div>
-      )}
+      <AnimatedMenu
+        open={isActive}
+        id={menuId}
+        className="absolute right-0 top-full mt-3 w-44 rounded-panel border border-card-line bg-card-surface p-2 shadow-strong"
+      >
+        {PROFILE_MENU.map((menu) => (
+          <ProfileMenuItem {...menu} key={menu.key} onClick={actions[menu.key]} />
+        ))}
+      </AnimatedMenu>
     </div>
   );
 };

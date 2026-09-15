@@ -1,4 +1,5 @@
 import * as React from "react";
+import { PageEnter } from "@/shared/components/motion/PageEnter";
 
 // shared
 import { cn } from "@/shared/lib/tailwind/utils";
@@ -33,7 +34,9 @@ export const AppShell = ({
       <header className="sticky top-0 z-50 shrink-0">
         <NavigationContainer />
       </header>
-      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+      <main className="flex min-h-0 flex-1 flex-col">
+        <PageEnter>{children}</PageEnter>
+      </main>
     </div>
   );
 };

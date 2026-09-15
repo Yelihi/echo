@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { EmptyIllustration } from "@/shared/components/motion/EmptyIllustration";
 
 // features
 import { useAuthWithSupabase } from "@/features/login";
@@ -37,13 +37,22 @@ export function AuthCallbackContent({ provider }: AuthCallbackContentProps) {
           </Link>
         </>
       ) : (
-        <>
-          <Loader2
-            className="size-10 animate-spin text-brand motion-reduce:animate-none"
-            aria-hidden="true"
-          />
-          <p className="text-body-3 text-gray-text">잠시만 기다려주세요.</p>
-        </>
+        <section
+          className="flex w-full max-w-sm flex-col items-center rounded-card border border-card-line bg-card-surface px-6 py-10"
+          role="status"
+          aria-live="polite"
+        >
+          <span className="text-body-3 font-bold tracking-tight text-brand">Echo</span>
+          <div className="my-6">
+            <EmptyIllustration loop />
+          </div>
+          <h1 className="text-heading-sm font-bold text-black-primary">로그인 준비 중이에요</h1>
+          <p className="mt-3 text-body-3 leading-relaxed text-gray-text">
+            Google 로그인 화면으로 연결하고 있어요.
+            <br />
+            잠시만 기다려주세요.
+          </p>
+        </section>
       )}
     </>
   );

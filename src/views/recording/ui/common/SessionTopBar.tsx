@@ -18,7 +18,7 @@ export function SessionTopBar({ backHref, close, current, total }: SessionTopBar
       </Link>
       <div className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full bg-session-glass-line">
         <div
-          className="h-full rounded-full bg-accent-glow transition-[width] motion-reduce:transition-none"
+          className="h-full rounded-full bg-accent-glow transition-[width] duration-200 motion-reduce:transition-none"
           style={{ width: `${getRecordingProgress(current, total)}%` }}
         />
       </div>

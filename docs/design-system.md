@@ -18,20 +18,20 @@ OpenDesign은 사용하지 않는다.
 
 ## 토큰 계약
 
-| 역할           | 토큰 / 값                                           | 사용                                          |
-| -------------- | --------------------------------------------------- | --------------------------------------------- |
-| 주요 동작·잉크 | `brand`, `on-brand`, `brand-hover`                  | 차콜 배경 / 흰 글자                           |
-| 큰 중립 면     | `silver`                                            | 장식, 히어로 배경. 흰색 작은 글자 금지        |
-| 기본 면        | `card-surface`, `gray-background`                   | 흰 카드 / Mist 앱 배경                        |
-| 본문·보조      | `black-primary`, `gray-text`, `gray-text-secondary` | #1E1D1D / #595959 / #666666                   |
-| 컨트롤 경계    | `control-line`                                      | #89949E; 입력·outline 컨트롤에 사용           |
-| 장식 구분선    | `card-line`, `card-line-strong`                     | 콘텐츠 구분용, 입력 경계와 구분               |
-| 강조 제목      | `text-display`                                      | 40–72px 반응형 / 1.12 / -0.045em / Bold       |
-| 일반 제목·본문 | 기존 `heading-*`, `body-*`                          | 밀도 높은 화면의 기존 크기 유지               |
-| 반경           | `control`, `panel`, `card`, `hero`, `pill`          | 12 / 20 / 28 / 36 / 9999px                    |
-| 여백           | 기본 4px 단위, `page-gutter`, `section`             | 20–64px 좌우 / 40–80px 섹션                   |
-| 최대 폭        | `max-w-page`                                        | 1200px                                        |
-| 모션           | 기본 180ms, 로그인 파동 4.2s                        | 첫 화면부터 음수 지연; reduced-motion 시 정지 |
+| 역할           | 토큰 / 값                                           | 사용                                       |
+| -------------- | --------------------------------------------------- | ------------------------------------------ |
+| 주요 동작·잉크 | `brand`, `on-brand`, `brand-hover`                  | 차콜 배경 / 흰 글자                        |
+| 큰 중립 면     | `silver`                                            | 장식, 히어로 배경. 흰색 작은 글자 금지     |
+| 기본 면        | `card-surface`, `gray-background`                   | 흰 카드 / Mist 앱 배경                     |
+| 본문·보조      | `black-primary`, `gray-text`, `gray-text-secondary` | #1E1D1D / #595959 / #666666                |
+| 컨트롤 경계    | `control-line`                                      | #89949E; 입력·outline 컨트롤에 사용        |
+| 장식 구분선    | `card-line`, `card-line-strong`                     | 콘텐츠 구분용, 입력 경계와 구분            |
+| 강조 제목      | `text-display`                                      | 40–72px 반응형 / 1.12 / -0.045em / Bold    |
+| 일반 제목·본문 | 기존 `heading-*`, `body-*`                          | 밀도 높은 화면의 기존 크기 유지            |
+| 반경           | `control`, `panel`, `card`, `hero`, `pill`          | 12 / 20 / 28 / 36 / 9999px                 |
+| 여백           | 기본 4px 단위, `page-gutter`, `section`             | 20–64px 좌우 / 40–80px 섹션                |
+| 최대 폭        | `max-w-page`                                        | 1200px                                     |
+| 모션           | 기본 180ms, 로그인 파동 3.6s                        | 안쪽부터 0.6s 간격; reduced-motion 시 정지 |
 
 `blue-*`, `deep-blue-*`, `rp-*`, `mem-*`은 단계적 이행을 위한 호환 이름이다.
 두 필라 모두 동일한 Steel 램프를 사용한다. 신규 코드에는 역할 기반 토큰을 우선한다.
@@ -80,7 +80,7 @@ OpenDesign은 사용하지 않는다.
 - 홈·자료 목록·학습 기록·녹음 관리에는 반응형 display 제목을 적용한다.
   편집기·학습 결과에는 더 작은 heading 토큰을 사용해 콘텐츠 밀도를 유지한다.
 - 로그인 카드의 410px 고정 너비를 제거하고 작은 화면과 짧은 화면에서도 스크롤할 수 있게 한다.
-  기존 파동의 음수 animation delay와 reduced-motion 처리는 유지한다.
+  파동은 안쪽부터 0s·0.6s·1.2s 지연으로 순차 등장·퇴장하며, reduced-motion에서는 정지한다.
 - 자료 카드 목록은 1 / 2 / 3열이다. 카드 개수와 무관하게 모바일에서 1865px을 차지하던
   최소 높이를 제거하고 빈 상태는 256px을 사용한다.
 - 연습 옵션은 콘텐츠 높이에 맞춰 늘어난다. 녹음 준비 화면도 일반 문서 흐름에서 배치한다.
@@ -94,3 +94,32 @@ OpenDesign은 사용하지 않는다.
 - 새 여섯 페이지를 1440px·390px에서 확인했으며 가로 넘침이 없다.
   서버에서 데이터를 불러오는 홈·자료 목록의 실제 계정 연결은 별도 앱 확인 범위다.
 - 기존 description 없는 다이얼로그 stories의 Radix 경고와 정적 빌드 청크 크기 경고는 남아 있다.
+
+### 앱 모션
+
+- 색상·경계는 240ms, 버튼 press는 0.98배, 클릭 가능한 자료·기록 카드는 hover 시 2px 상승한다.
+  hover 진입에 40ms 지연을 두며 press·키보드 포커스는 지연하지 않는다. 카드 hover 효과는 정밀 포인터에만 적용하며 메뉴가 열려 있으면 카드 상승을 멈춘다.
+- `PageEnter`는 pathname 변경에 8px/420ms 진입 효과를 재생한다. 검색 파라미터·일반 리렌더에는 재생하지 않는다.
+  첫 paint 전에 기존 DOM에 Web Animations API를 적용하므로 children을 key로 재마운트하지 않는다.
+  AppShell 본문·로그인·몰입형 세션에 적용하며 헤더는 별도로 유지한다.
+- 다이얼로그는 Radix presence를 유지하면서 200ms 등장 / 140ms 퇴장한다.
+- 프로필·자료 메뉴는 Motion의 AnimatePresence로 160ms 등장 / 120ms 퇴장한다.
+  퇴장 중에는 inert 및 aria-hidden으로 추가 조작을 막고 내부 포커스를 트리거로 돌려준다.
+- 모션 감소 설정에서는 공간 이동·확대·진행률 보간을 생략한다. 페이지 진입 중 설정이 바뀌어도 애니메이션을 취소한다.
+- `foundations/App Motion`에서 상태 유지, 진행률, 메뉴와 팝업을 확인할 수 있다.
+- 검증: 전체 Storybook 259개, Jest 313개, 타입·린트, Next.js 및 Storybook 프로덕션 빌드 통과.
+  1440px·390px에서 일반/모션 감소, 메뉴 연속 토글, 팝업 위치와 가로 넘침을 검사했다.
+  실제 프로덕션 앱의 callback → login 클라이언트 이동과 보호 경로의 로그인 리다이렉트를 확인했다.
+  실제 계정의 녹음·저장 흐름과 느린 서버 응답을 동반한 보호 페이지 이동은 이번 자동 검증에 포함하지 않았다.
+
+### 빈 상태 dotLottie
+
+- 공통 EmptyState, 홈의 빈 목록, 학습 기록 빈 화면은 `EmptyIllustration`을 사용한다. 명시적인 커스텀 아이콘은 유지한다.
+- [LottieFiles의 Empty Status](https://lottiefiles.com/free-animation/empty-status-GjWIOf38YR) 고래 애니메이션을 사용한다. 원본 JSON을 dotLottie v2로 압축했으며 그림은 변경하지 않았다.
+- `public/animations/empty-status.lottie`와 공식 플레이어 WASM을 자체 호스팅한다. 원본 출처·Lottie Simple License·플레이어 라이선스를 같은 폴더에 보관한다. 플레이어 업그레이드 시 WASM도 함께 갱신한다.
+- 160×120 영역에서 0.85배속으로 한 번 재생한다. 모션 감소 시 25번 프레임에 정지하며 실행 중 설정 변경도 반영한다. 캔버스는 장식으로 처리하고 파일 로딩 실패 시에도 안내 문구·동작은 유지한다.
+- Storybook도 public을 제공하며 `shared/components/ui/EmptyState`에서 실제 파일 렌더링을 확인한다.
+
+- 이번 조정 검증: 관련 Storybook 13개, 타입·린트, Next.js·Storybook 빌드 통과. 브라우저에서 실제 dotLottie 픽셀 렌더링·재생·실행 중 모션 감소·390px 표시·파일 실패 시 문구 유지를 확인했다.
+
+- Google 로그인 연결 화면은 동일 고래를 반복 재생하며 실버 배경·흰 카드·Echo 워드마크를 사용한다. 인증 로직은 유지하며 `views/callback/AuthCallbackContent`에서 로딩·잘못된 provider 상태를 확인한다. 모션 감소 시 반복 재생도 중지한다.
