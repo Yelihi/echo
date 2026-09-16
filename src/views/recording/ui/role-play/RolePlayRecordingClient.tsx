@@ -32,6 +32,8 @@ export function RolePlayRecordingClient(props: RolePlayRecordingClientProps) {
         <RecordingReadyPanel content={config.ready} onStart={beginTurn} />
       ) : turn.phase === "completed" ? (
         <RecordingCompletionPanel
+          title={config.ready.title}
+          savedCount={config.initial.totalSteps}
           status={persistence.completionStatus}
           resultHref={
             persistence.completionStatus === "succeeded" && partner.sessionId

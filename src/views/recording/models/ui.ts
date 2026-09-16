@@ -83,6 +83,8 @@ export interface RolePlayRecordingViewProps {
 }
 
 export interface RecordingCompletionPanelProps {
+  title?: string;
+  savedCount?: number;
   status?: RecordingCompletionStatus;
   resultHref?: string;
   onRetry?: () => void;

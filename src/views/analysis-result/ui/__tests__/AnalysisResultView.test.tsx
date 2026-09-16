@@ -68,6 +68,7 @@ describe("실패한 분석 결과", () => {
       const bubble = screen
         .getByText(transcript || "녹음의 발화를 문장으로 표시하지 못했습니다.")
         .closest('[data-slot="chat-bubble"]');
+      expect(screen.getByText("녹음 파일을 불러올 수 없어 재생할 수 없습니다.")).toBeTruthy();
       expect(bubble).toBeTruthy();
       expect(bubble?.getAttribute("lang")).toBe(transcript ? "en" : "ko");
       expect(bubble?.classList.contains("bg-red-50")).toBe(!transcript);

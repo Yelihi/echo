@@ -40,7 +40,11 @@ export function RolePlayRecordingView({
                   : `${resume.step}번째 문장부터 이어서 연습합니다. 저장하지 않은 녹음은 복원되지 않습니다.`
                 : "준비가 되면 시작을 눌러 첫 문장을 들어보세요.",
             ],
-            startLabel: resume ? "이어서 연습" : "시작하기",
+            startLabel: resume?.closingPartner
+              ? "마지막 대사 듣고 마무리"
+              : resume
+                ? "이어서 연습"
+                : "시작하기",
             meta: [
               resume
                 ? `${resume.savedCount ?? Math.max(0, resume.step - 1)}/${material.learnerTurnCount}문장 저장`
