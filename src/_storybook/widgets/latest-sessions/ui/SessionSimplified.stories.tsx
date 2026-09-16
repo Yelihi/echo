@@ -86,3 +86,15 @@ export const Mobile: Story = {
     ),
   ],
 };
+
+export const ResumePractice: Story = {
+  args: {
+    ...RolePlaying.args,
+    sessionState: "practicing",
+    description: "2/5문장 저장",
+    href: "/role-playing/material/session/session",
+  },
+};
+export const ConfirmCompletion: Story = {
+  args: { ...ResumePractice.args, description: "5/5문장 저장", actionLabel: "완료 확인" },
+};

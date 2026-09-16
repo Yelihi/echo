@@ -35,3 +35,5 @@ export const InProgress: Story = {
     state: "inProgress",
   },
 };
+
+export const Practicing: Story = { args: { state: "practicing" } };

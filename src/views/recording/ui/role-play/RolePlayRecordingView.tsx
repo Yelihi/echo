@@ -23,18 +23,32 @@ export function RolePlayRecordingView({
   return (
     <RecordingSessionView pillar="roleplay">
       <RolePlayRecordingClient
-        key={`${sessionId ?? material.id}:${phase}:${material.lineCount}`}
+        key={`${sessionId ?? material.id}:${phase}:${resume?.step ?? 1}:${material.lineCount}`}
         config={{
           navigation: {
-            backHref: `/role-playing/${material.id}/ready`,
+            backHref: sessionId ? "/sessions" : `/role-playing/${material.id}/ready`,
             closeHref: "/role-playing",
           },
           ready: {
             label: "롤플레잉",
             title: material.title,
-            description: [material.description, "준비가 되면 시작을 눌러 첫 문장을 들어보세요."],
+            description: [
+              material.description,
+              resume
+                ? resume.closingPartner
+                  ? "모든 문장을 저장했습니다. 마지막 상대방 대사를 듣고 연습을 마무리하세요."
+                  : `${resume.step}번째 문장부터 이어서 연습합니다. 저장하지 않은 녹음은 복원되지 않습니다.`
+                : "준비가 되면 시작을 눌러 첫 문장을 들어보세요.",
+            ],
+            startLabel: resume?.closingPartner
+              ? "마지막 대사 듣고 마무리"
+              : resume
+                ? "이어서 연습"
+                : "시작하기",
             meta: [
-              `문장 ${material.lineCount}개`,
+              resume
+                ? `${resume.savedCount ?? Math.max(0, resume.step - 1)}/${material.learnerTurnCount}문장 저장`
+                : `문장 ${material.lineCount}개`,
               `약 ${material.estimatedMinutes}분`,
               ...settingsSummary,
             ],

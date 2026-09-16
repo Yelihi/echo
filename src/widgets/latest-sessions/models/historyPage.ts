@@ -11,6 +11,9 @@ export const historyPageSchema = z.object({
       title: z.string(),
       createdAt: z.string().datetime({ offset: true }),
       kind: z.enum(["role-playing", "memorization"]),
+      sourceMaterialId: z.string().uuid().nullable(),
+      targetCount: z.number().int().nonnegative(),
+      savedCount: z.number().int().nonnegative(),
       itemCount: z.number().int().nonnegative(),
       state: z.enum(["pending", "inProgress", "completed", "partial", "failed"]),
       recordingCompleted: z.boolean(),
@@ -29,12 +32,20 @@ export function mapHistoryPage(input: unknown): StudySessionPage {
       title: item.title,
       sessionDate: new Date(item.createdAt),
       sessionType: item.kind,
-      sessionState: item.state,
-      description: `${item.kind === "role-playing" ? "문장" : "문단"} ${item.itemCount}개${item.recordingCompleted ? "" : " · 녹음 미완료"}`,
-      disabled: !item.recordingCompleted,
+      sessionState: item.recordingCompleted ? item.state : "practicing",
+      description: item.recordingCompleted
+        ? `${item.kind === "role-playing" ? "문장" : "문단"} ${item.itemCount}개`
+        : `${item.savedCount}/${item.targetCount}문장 저장`,
+      actionLabel:
+        !item.recordingCompleted && item.savedCount === item.targetCount && item.targetCount > 0
+          ? "완료 확인"
+          : undefined,
+      disabled: !item.recordingCompleted && item.kind !== "role-playing",
       href: item.recordingCompleted
         ? `/${item.kind === "role-playing" ? "roleplay" : "memorization"}-sessions/${item.id}/result`
-        : undefined,
+        : item.kind === "role-playing"
+          ? `/role-playing/${item.sourceMaterialId ?? item.id}/session/${item.id}`
+          : undefined,
     })),
   };
 }

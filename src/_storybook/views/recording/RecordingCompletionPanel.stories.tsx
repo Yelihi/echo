@@ -23,3 +23,13 @@ export const Completing: Story = {
 export const Failed: Story = {
   args: { resultHref: undefined, status: "failed", onRetry: () => {} },
 };
+
+export const PendingConfirmation: Story = {
+  args: {
+    resultHref: undefined,
+    status: "idle",
+    title: "카페에서 주문하기",
+    savedCount: 3,
+    onRetry: () => {},
+  },
+};

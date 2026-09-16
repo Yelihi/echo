@@ -6,7 +6,7 @@ import type { RecordingStorageService } from "@/shared/lib/recording-storage/ser
 import { createAudioDto } from "./audioDto";
 
 export async function createMemorizationAudioBySentenceId(
-  storage: RecordingStorageService,
+  storage: Pick<RecordingStorageService, "createSignedPlaybackUrl">,
   recordings: ReadonlyArray<AcceptedRecording>,
 ) {
   const entries = await Promise.all(
@@ -15,16 +15,16 @@ export async function createMemorizationAudioBySentenceId(
         return null;
       }
 
-      return [
-        recording.target.sentenceSnapshotId,
-        await createAudioDto(storage, recording),
-      ] as const;
+      const audio = await createAudioDto(storage, recording);
+      return audio ? ([recording.target.sentenceSnapshotId, audio] as const) : null;
     }),
   );
 
   return new Map(
     entries.filter(
-      (entry): entry is readonly [SentenceId, Awaited<ReturnType<typeof createAudioDto>>] =>
+      (
+        entry,
+      ): entry is readonly [SentenceId, NonNullable<Awaited<ReturnType<typeof createAudioDto>>>] =>
         Boolean(entry),
     ),
   );

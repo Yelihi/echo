@@ -5,6 +5,8 @@ import { GlassButton } from "./RecordingControls";
 
 export function RecordingCompletionPanel({
   status = "idle",
+  title,
+  savedCount,
   resultHref,
   onRetry,
 }: RecordingCompletionPanelProps) {
@@ -13,12 +15,22 @@ export function RecordingCompletionPanel({
   return (
     <section className="mx-auto flex w-full max-w-xl flex-col items-center px-6 py-16 text-center text-white sm:py-24">
       <Check className="mb-6 size-14 text-emerald-300" aria-hidden="true" />
-      <p className="mb-3 text-sm font-semibold text-accent-glow">연습 완료</p>
-      <h1 className="text-3xl font-bold leading-snug">녹음을 마쳤습니다</h1>
+      <p className="mb-3 text-sm font-semibold text-accent-glow">
+        {resultHref ? "연습 완료" : "완료 확인"}
+      </p>
+      <h1 className="text-3xl font-bold leading-snug">
+        {resultHref ? "녹음을 마쳤습니다" : "저장한 연습을 마무리하세요"}
+      </h1>
+      {title && <p className="mt-4 text-lg font-semibold">{title}</p>}
+      {savedCount !== undefined && (
+        <p className="mt-2 text-sm text-white/75">
+          {savedCount}/{savedCount}문장 저장 완료
+        </p>
+      )}
       <p className="mb-8 mt-4 max-w-sm break-keep text-base leading-7 text-white/70">
         {resultHref
           ? "녹음이 모두 저장되었습니다. 분석은 백그라운드에서 진행되며, 완료된 결과는 학습 기록에서 확인할 수 있습니다."
-          : "마지막 녹음까지 마쳤습니다. 완료 처리가 확인되면 분석 결과를 확인할 수 있습니다."}
+          : "모든 문장 녹음이 저장되었습니다. 연습을 완료하면 저장된 녹음으로 분석을 시작합니다. 다시 녹음할 필요는 없습니다."}
       </p>
       {failed && <p role="alert">완료 처리를 확인하지 못했습니다. 다시 시도해주세요.</p>}
       {resultHref ? (
@@ -32,7 +44,7 @@ export function RecordingCompletionPanel({
         onRetry && (
           <GlassButton onClick={onRetry} disabled={busy} emphasis="primary">
             {busy ? <LoaderCircle className="animate-spin" /> : <RotateCcw />}
-            {busy ? "완료 처리 중" : failed ? "완료 다시 시도" : "완료 확인"}
+            {busy ? "완료 처리 중" : failed ? "완료 다시 시도" : "연습 완료하고 분석하기"}
           </GlassButton>
         )
       )}

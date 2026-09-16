@@ -37,6 +37,8 @@ export function MemorizationRecordingClient({
         close={turn.phase !== "ready"}
         current={turn.phase === "ready" ? 0 : session.currentStep}
         total={config.initial.totalSteps}
+        hasUnsavedRecording={turn.phase === "recording" || Boolean(turn.recordedAudio)}
+        saving={session.saving}
       />
       {turn.phase === "ready" ? (
         <RecordingReadyPanel content={config.ready} onStart={beginTurn} />

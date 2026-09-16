@@ -67,3 +67,17 @@ export const Paginated: Story = {
 export const FilteredEmpty: Story = {
   args: { sessions: [], query: { page: 1, status: "failed", sort: "newest" } },
 };
+
+export const ResumePractice: Story = {
+  args: {
+    sessions: [
+      {
+        ...meta.args.sessions[0],
+        sessionState: "practicing",
+        description: "2/5문장 저장",
+        href: "/role-playing/material/session/session",
+      },
+      ...meta.args.sessions,
+    ],
+  },
+};

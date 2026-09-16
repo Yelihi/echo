@@ -13,6 +13,7 @@ import type { RoleplayReadySettings } from "@/views/role-play/models/interface";
 import { convertRolePlaySessionToRecordingMaterial } from "@/views/role-play/models/converter/convertRolePlaySessionToRecordingMaterial";
 import { getRolePlaySession } from "@/features/roleplay-sessions/services/server/getRolePlaySession";
 import { RolePlayRecordingView } from "@/views/recording/ui/role-play/RolePlayRecordingView";
+import { getRoleplayResume } from "@/views/recording/models/roleplayResume";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 
 interface RolePlayingSessionPageProps {
@@ -46,31 +47,15 @@ export default async function RolePlayingSessionPage({ params }: RolePlayingSess
     .select("roleplay_line_id")
     .eq("roleplay_session_id", session.id);
   if (error) throw error;
-  const savedIds = new Set(accepted.map((recording) => recording.roleplay_line_id));
-  const turns = material.recordingTurns ?? [];
-  const pending = turns.findIndex((turn) => !savedIds.has(turn.learnerLineId));
-  const closing = pending === -1 && Boolean(turns.at(-1)?.closingPartnerLine);
 
   return (
     <RolePlayRecordingView
       sessionId={session.id}
       material={material}
-      resume={
-        savedIds.size
-          ? {
-              step: pending === -1 ? turns.length : pending + 1,
-              closingPartner: closing,
-              phase:
-                pending === -1
-                  ? closing
-                    ? "partner-speaking"
-                    : "completed"
-                  : turns[pending].partnerLine
-                    ? "partner-speaking"
-                    : "user-ready",
-            }
-          : undefined
-      }
+      resume={getRoleplayResume(
+        material.recordingTurns ?? [],
+        accepted.map((recording) => recording.roleplay_line_id),
+      )}
       settings={settingsFromSession(session)}
     />
   );

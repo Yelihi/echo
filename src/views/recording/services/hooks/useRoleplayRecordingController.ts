@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { useStore } from "zustand";
 import type { CapturedAudio } from "@/shared/lib/audio";
 import { decodeTtsAudioBase64 } from "@/shared/lib/tts/decodeTtsAudioBase64";
@@ -17,6 +18,11 @@ export function useRoleplayRecordingController({
   partner,
   saveRecording,
 }: RolePlayRecordingClientProps) {
+  const router = useRouter();
+  React.useEffect(() => {
+    // Browser Back can restore Next.js's cached route. Re-read the saved position.
+    if (partner.sessionId) router.refresh();
+  }, [partner.sessionId, router]);
   const [store] = React.useState(() =>
     createRolePlayRecordingSessionStore(config.initial, partner.closingPartner),
   );

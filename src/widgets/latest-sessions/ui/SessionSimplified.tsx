@@ -1,6 +1,7 @@
-import { MessageSquare, Layers } from "lucide-react";
+import { MessageSquare, Layers, Play, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
+import { buttonVariants } from "@/shared/components/atomics/button/Button";
 import { cn } from "@/shared/utils/cn";
 import { SessionStateBadge } from "@/shared/components/ui";
 import type { SessionSimplifiedProps } from "@/widgets/latest-sessions/models";
@@ -14,6 +15,7 @@ export const SessionSimplified = ({
   sessionType,
   sessionState,
   href,
+  actionLabel = "이어서 연습",
   disabled = false,
 }: SessionSimplifiedProps) => {
   const content = (
@@ -38,8 +40,23 @@ export const SessionSimplified = ({
           <p className="text-body-3 font-normal text-gray-text break-words">{`${convertFormatDate(sessionDate)}·${description}`}</p>
         </div>
       </div>
-      <div className="shrink-0 self-start sm:self-auto">
+      <div className="flex shrink-0 items-center gap-3 self-start sm:self-auto">
         <SessionStateBadge state={sessionState} />
+        {sessionState === "practicing" && href && !disabled && (
+          <span
+            className={buttonVariants({
+              variant: actionLabel === "완료 확인" ? "outline" : "default",
+              size: "sm",
+            })}
+          >
+            {actionLabel === "완료 확인" ? (
+              <CheckCircle2 aria-hidden className="size-4" />
+            ) : (
+              <Play aria-hidden className="size-4" />
+            )}
+            {actionLabel}
+          </span>
+        )}
       </div>
     </>
   );
