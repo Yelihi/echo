@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatedMenu } from "@/shared/components/motion/AnimatedMenu";
 import { useId, useState } from "react";
 import { EllipsisVertical } from "lucide-react";
 
@@ -16,11 +17,12 @@ import {
 
 const InnerMenuContainer = ({ children, isOpen }: InnerMenuContainerProps) => {
   return (
-    isOpen && (
-      <div className="absolute right-0 top-full z-20 mt-2 min-w-44 rounded-panel border border-card-line bg-card-surface p-2 shadow-strong">
-        {children}
-      </div>
-    )
+    <AnimatedMenu
+      open={isOpen}
+      className="absolute right-0 top-full z-20 mt-2 min-w-44 rounded-panel border border-card-line bg-card-surface p-2 shadow-strong"
+    >
+      {children}
+    </AnimatedMenu>
   );
 };
 

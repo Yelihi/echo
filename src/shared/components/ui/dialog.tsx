@@ -20,10 +20,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
-      className={cn(
-        "fixed inset-0 z-50 bg-scrim motion-reduce:animate-none! data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        className,
-      )}
+      className={cn("fixed inset-0 z-50 bg-scrim echo-overlay-motion", className)}
       {...props}
     />
   );
@@ -39,7 +36,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex max-h-[88vh] w-[calc(100%-2rem)] max-w-155 -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-card border border-card-line bg-card-surface text-black-primary shadow-modal outline-none motion-reduce:animate-none! data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "fixed top-1/2 left-1/2 z-50 flex max-h-[88vh] w-[calc(100%-2rem)] max-w-155 -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-card border border-card-line bg-card-surface text-black-primary shadow-modal outline-none echo-dialog-motion",
           className,
         )}
         {...props}

@@ -19,23 +19,39 @@ export const FirstPaint: Story = {
     await expect(rings).toHaveLength(3);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    for (const ring of rings) {
-      const [animation] = ring.getAnimations();
-      if (reducedMotion) {
-        await expect(animation).toBeUndefined();
+    if (reducedMotion) {
+      for (const ring of rings) {
+        await expect(ring.getAnimations()).toHaveLength(0);
         await expect(Number(getComputedStyle(ring).opacity)).toBeGreaterThan(0);
-        continue;
       }
+      return;
+    }
 
+    const animations = Array.from(rings, (ring) => ring.getAnimations()[0]);
+    for (const animation of animations) {
       await expect(animation).toBeDefined();
       animation.pause();
-      try {
+    }
+    const seek = (time: number) => {
+      for (const animation of animations) animation.currentTime = time;
+      return Array.from(rings, (ring) => Number(getComputedStyle(ring).opacity));
+    };
+    try {
+      await expect(seek(0)).toEqual([0, 0, 0]);
+      for (let index = 0; index < rings.length; index++) {
+        const opacities = seek(540 + index * 600);
+        await expect(opacities[index]).toBeGreaterThan(0.6);
+        for (let next = index + 1; next < rings.length; next++) {
+          await expect(opacities[next]).toBe(0);
+        }
+      }
+      await expect(seek(3400)).toEqual([0, 0, 0]);
+      const repeated = seek(4140);
+      await expect(repeated[0]).toBeGreaterThan(0.6);
+      await expect(repeated.slice(1)).toEqual([0, 0]);
+    } finally {
+      for (const animation of animations) {
         animation.currentTime = 0;
-        const initial = getComputedStyle(ring).transform;
-        await expect(Number(getComputedStyle(ring).opacity)).toBeGreaterThan(0.05);
-        animation.currentTime = 500;
-        await expect(getComputedStyle(ring).transform).not.toBe(initial);
-      } finally {
         animation.play();
       }
     }

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Plus, Search } from "lucide-react";
+import { expect, waitFor } from "storybook/test";
 
 import { Button } from "@/shared/components/atomics/button/Button";
 import { EmptyState } from "@/shared/components/ui/EmptyState";
@@ -24,7 +25,21 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () => {
+        const canvas = canvasElement.querySelector("canvas");
+        const pixels = canvas
+          ?.getContext("2d")
+          ?.getImageData(0, 0, canvas.width, canvas.height).data;
+        expect(pixels?.some((value, index) => index % 4 === 3 && value > 0)).toBe(true);
+      },
+      { timeout: 10000 },
+    );
+    await expect(canvasElement).toHaveTextContent("아직 학습 자료가 없어요");
+  },
+};
 
 /** 액션은 슬롯이라 버튼 종류와 문구를 호출자가 정합니다. */
 export const WithAction: Story = {

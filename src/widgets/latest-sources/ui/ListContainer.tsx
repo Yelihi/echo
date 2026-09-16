@@ -1,5 +1,5 @@
 import { Children } from "react";
-import { Sparkles } from "lucide-react";
+import { EmptyIllustration } from "@/shared/components/motion/EmptyIllustration";
 
 import { cn } from "@/shared/utils/cn";
 import { Divider } from "@/shared/components";
@@ -9,25 +9,13 @@ import type {
   ListContainerProps,
 } from "@/widgets/latest-sources/models/interface";
 
-function EmptyColorMark() {
-  return (
-    <span className="relative block size-[48px]" aria-hidden>
-      <span className="absolute top-0 left-0 size-[34px] rounded-[14px] bg-silver" />
-      <span className="absolute right-0 bottom-0 size-[28px] rounded-full bg-gray-background" />
-      <span className="absolute top-[14px] left-[14px] size-[22px] rounded-chip bg-silver" />
-      <Sparkles className="absolute top-[2px] right-[2px] size-[14px] text-brand" />
-      <Sparkles className="absolute bottom-[8px] left-[8px] size-[12px] text-brand" />
-    </span>
-  );
-}
-
 export const EmptyContainer = ({ title, description }: EmptyContainerProps) => {
   return (
     <div
       className="flex w-full flex-col items-center justify-center gap-3 px-4 py-10 text-center"
       role="status"
     >
-      <EmptyColorMark />
+      <EmptyIllustration />
       <p className="text-body-3 font-medium text-black-primary">{title}</p>
       {description ? (
         <p className="text-body-1 font-normal text-gray-text-secondary">{description}</p>
