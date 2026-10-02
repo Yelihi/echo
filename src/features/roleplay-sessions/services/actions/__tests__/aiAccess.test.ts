@@ -12,12 +12,10 @@ const rpc = jest.fn();
 beforeEach(async () => {
   jest.clearAllMocks();
   const { createSupabaseServerClient } = await import("@/shared/lib/supabase/server");
-  jest
-    .mocked(createSupabaseServerClient)
-    .mockResolvedValue({
-      auth: { getUser: async () => ({ data: { user: { id: "owner" } } }) },
-      rpc,
-    } as never);
+  jest.mocked(createSupabaseServerClient).mockResolvedValue({
+    auth: { getUser: async () => ({ data: { user: { id: "owner" } } }) },
+    rpc,
+  } as never);
 });
 
 it.each(["not_invited", "rate_limited", "database_failure"])(

@@ -1022,8 +1022,6 @@ export type Database = {
       };
     };
     Functions: {
-      consume_ai_request: { Args: { p_operation: string; p_user_id?: string }; Returns: string };
-      can_use_ai: { Args: { p_user_id?: string }; Returns: boolean };
       list_study_sessions: {
         Args: { p_page?: number; p_status?: string; p_sort?: string };
         Returns: Json;
@@ -1075,6 +1073,8 @@ export type Database = {
         };
         Returns: Database["public"]["Tables"]["analysis_jobs"]["Row"][];
       };
+      consume_ai_request: { Args: { p_operation: string; p_user_id?: string }; Returns: string };
+      can_use_ai: { Args: { p_user_id?: string }; Returns: boolean };
       consume_tts_generation: {
         Args: {
           p_limit?: number;
