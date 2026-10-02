@@ -1,6 +1,7 @@
 name: Pull Request Checks
 
 on:
+  workflow_call:
   pull_request:
     branches:
       - main
@@ -33,8 +34,39 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Check Release Sequence
+        run: node --test scripts/__tests__/deploy-analysis-processor.test.mjs
+
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://ci-placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_ci_placeholder' }}
+          NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:storybook
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run supabase:start
+      - run: npx supabase db lint --local --fail-on error
+      - run: npx supabase test db
+      - run: node scripts/check-recording-database.mjs
+      - if: always()
+        run: npm run supabase:stop -- --no-backup
