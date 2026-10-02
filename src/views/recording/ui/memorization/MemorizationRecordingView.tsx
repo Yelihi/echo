@@ -17,6 +17,8 @@ export function MemorizationRecordingView({
   return (
     <RecordingSessionView pillar="memo">
       <MemorizationRecordingClient
+        mode={settings?.mode ?? "read"}
+        paragraphs={material.previewLines}
         key={`${material.id}:${phase}:${material.paragraphCount}`}
         config={{
           navigation: {

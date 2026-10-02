@@ -28,12 +28,28 @@ export function RecordingPanel({
       <section className="relative z-10 mx-auto flex w-full max-w-[640px] flex-col items-center gap-6 px-5 pb-6 pt-20 text-center sm:gap-8">
         {content.kind === "partner" ? (
           <PartnerCard role={content.role}>{content.line}</PartnerCard>
+        ) : content.kind === "prompt" ? (
+          <div aria-live="polite" className="max-h-[40vh] overflow-y-auto text-left">
+            <h1 className="mb-3 text-sm text-white/70">{content.label}</h1>
+            <p
+              lang={content.lang}
+              className="whitespace-pre-wrap text-xl leading-relaxed text-white"
+            >
+              {content.text}
+            </p>
+          </div>
         ) : (
           <h1 className="text-heading-md font-bold text-white">{content.title}</h1>
         )}
         <RecordOrb
           phase={phase}
-          disabled={phase === "partner-speaking" || recorded || phase === "completed" || saving}
+          disabled={
+            phase === "partner-speaking" ||
+            recorded ||
+            phase === "completed" ||
+            saving ||
+            (content.kind === "prompt" && content.unavailable === true)
+          }
           onClick={actions.toggle}
         />
         <div className="flex flex-col items-center gap-[13px]">
