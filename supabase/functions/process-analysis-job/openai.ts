@@ -1,10 +1,11 @@
 import type {} from "./deno.d.ts";
+import { analysisModels } from "./reuseKey.ts";
 import { createExactDiff } from "./exactDiff.ts";
 import type { AcceptedRecording, Evaluation, EvaluationInput } from "./models/types.ts";
 
 export async function transcribe(audio: Blob, recording: AcceptedRecording): Promise<string> {
   const body = new FormData();
-  body.append("model", Deno.env.get("OPENAI_STT_MODEL")?.trim() || "gpt-4o-mini-transcribe");
+  body.append("model", analysisModels().stt);
   body.append("language", "en");
   body.append("response_format", "json");
   body.append("file", audio, filenameFromPath(recording.object_path));
@@ -69,7 +70,7 @@ export async function evaluate(input: EvaluationInput): Promise<Evaluation> {
 
 function buildEvaluationRequestBody(input: EvaluationInput) {
   return {
-    model: Deno.env.get("OPENAI_EVALUATION_MODEL")?.trim() || "gpt-5.4-mini",
+    model: analysisModels().evaluation,
     messages: [
       {
         role: "system",

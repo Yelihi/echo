@@ -25,11 +25,7 @@ export function AnalysisResultView({ viewModel, retryAction }: AnalysisResultVie
           </h1>
           <p className="mt-1.5 text-body-3 text-gray-text">{viewModel.meta}</p>
         </div>
-        {showRetry ? (
-          <form action={retryAction}>
-            <AnalysisRetryButton />
-          </form>
-        ) : null}
+        {showRetry ? <AnalysisRetryButton retryAction={retryAction} /> : null}
       </header>
 
       <AnalysisBanner

@@ -1,6 +1,7 @@
 import type { Supabase } from "./models/repository.ts";
 import { processClaimedJob } from "./processClaimedJob.ts";
 import { authorize, corsHeaders, json } from "./http.ts";
+import { analysisReuseKey } from "./reuseKey.ts";
 import { evaluate, transcribe } from "./openai.ts";
 import { observeAnalysisOperation } from "./logging.ts";
 import {
@@ -13,6 +14,7 @@ import {
   insertResult,
   loadTargets,
   requeueJob,
+  reuseAnalysisResult,
 } from "./repository.ts";
 import type { AnalysisJob, PracticeType, Target } from "./models/types.ts";
 
@@ -34,6 +36,11 @@ export async function handleProcessAnalysisJob(request: Request): Promise<Respon
   }
 
   const supabase = createServiceClient();
+  // A worker-first rollout must leave queued jobs untouched until its RPC is installed.
+  const { error: schemaError } = await supabase.rpc("can_use_ai", {
+    p_user_id: "00000000-0000-0000-0000-000000000000",
+  });
+  if (schemaError) return json({ error: "AI access schema unavailable" }, 503);
   const job = await claimNextJob(supabase);
 
   if (!job) {
@@ -67,6 +74,8 @@ async function processTarget(supabase: Supabase, job: AnalysisJob, target: Targe
     operation: "audio.download",
     execute: () => downloadAudio(supabase, target.recording),
   });
+  const reuseKey = await analysisReuseKey(job, target, audio);
+  if (await reuseAnalysisResult(supabase, job, target, reuseKey)) return;
   const transcript = await observeAnalysisOperation({
     ...context,
     operation: "audio.transcribe",
@@ -87,7 +96,7 @@ async function processTarget(supabase: Supabase, job: AnalysisJob, target: Targe
   await observeAnalysisOperation({
     ...context,
     operation: "result.save",
-    execute: () => insertResult(supabase, job, target, transcript, evaluation),
+    execute: () => insertResult(supabase, job, target, transcript, evaluation, reuseKey),
   });
 }
 

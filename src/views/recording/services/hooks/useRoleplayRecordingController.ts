@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useStore } from "zustand";
 import type { CapturedAudio } from "@/shared/lib/audio";
 import { decodeTtsAudioBase64 } from "@/shared/lib/tts/decodeTtsAudioBase64";
+import { showPartnerSpeechError } from "@/features/roleplay-sessions/services/showPartnerSpeechError";
 import { speakRolePlayPartnerLine } from "@/features/roleplay-sessions/services/actions/speakRolePlayPartnerLine";
 import { createRolePlayRecordingSessionStore } from "../../models/stores/rolePlayRecordingSessionStore";
 import { resolveRoleplayTurn } from "../../models/roleplayTurn";
@@ -72,6 +73,7 @@ export function useRoleplayRecordingController({
       learnerLineId: activeTurn?.learnerLineId,
       closing: session.closingPartner,
     });
+    if (result.code !== "SUCCESS") showPartnerSpeechError(result.code);
     return result.code === "SUCCESS"
       ? decodeTtsAudioBase64(result.audioBase64, result.mimeType)
       : null;

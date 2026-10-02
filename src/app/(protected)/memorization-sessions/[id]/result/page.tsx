@@ -24,7 +24,7 @@ export default async function MemorizationResultPage({ params }: MemorizationRes
   async function retryAction() {
     "use server";
 
-    await retryMemorizationAnalysis(sessionId);
+    return retryMemorizationAnalysis(sessionId);
   }
 
   return (

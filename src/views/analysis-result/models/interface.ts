@@ -30,7 +30,7 @@ export interface AnalysisResultPageViewModel {
 
 export interface AnalysisResultViewProps {
   readonly viewModel: AnalysisResultPageViewModel;
-  readonly retryAction: () => Promise<void>;
+  readonly retryAction: () => Promise<string | void>;
 }
 
 export interface ResultTurnProps {

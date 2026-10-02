@@ -24,7 +24,7 @@ export default async function RoleplayResultPage({ params }: RoleplayResultPageP
   async function retryAction() {
     "use server";
 
-    await retryRoleplayAnalysis(sessionId);
+    return retryRoleplayAnalysis(sessionId);
   }
 
   return (

@@ -47,16 +47,16 @@ export const speakRolePlayPartnerLine = async (
     return { code: speechRequest.code };
   }
 
-  const { data: allowed, error: quotaError } = await supabase.rpc("consume_tts_generation", {
-    p_limit: 20,
-    p_window_seconds: 60,
+  const { data: allowed, error: quotaError } = await supabase.rpc("consume_ai_request", {
+    p_operation: "tts",
   });
 
   if (quotaError) {
     return { code: "TTS-003" };
   }
 
-  if (!allowed) {
+  if (allowed === "not_invited") return { code: "TTS-005" };
+  if (allowed !== "allowed") {
     return { code: "TTS-004" };
   }
 

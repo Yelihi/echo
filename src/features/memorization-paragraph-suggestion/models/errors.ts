@@ -69,10 +69,27 @@ export class MemorizationParagraphSuggestionUnauthorizedError extends Memorizati
   }
 }
 
+export class MemorizationParagraphSuggestionAccessError extends MemorizationParagraphSuggestionError {
+  readonly title = "AI 이용 권한을 확인해주세요";
+  constructor() {
+    super("MPS-006", "AI 기능은 초대된 계정에서 사용할 수 있습니다.");
+  }
+}
+export class MemorizationParagraphSuggestionLimitError extends MemorizationParagraphSuggestionError {
+  readonly title = "요청 한도에 도달했습니다";
+  constructor() {
+    super("MPS-007", "문단 제안은 시간당 5회까지 가능합니다. 잠시 후 다시 시도해주세요.");
+  }
+}
+
 export function createMemorizationParagraphSuggestionErrorFromCode(
   code: string,
 ): MemorizationParagraphSuggestionError {
   switch (code) {
+    case "MPS-006":
+      return new MemorizationParagraphSuggestionAccessError();
+    case "MPS-007":
+      return new MemorizationParagraphSuggestionLimitError();
     case MemorizationParagraphSuggestionEmptyTextError.CODE:
       return new MemorizationParagraphSuggestionEmptyTextError();
     case MemorizationParagraphSuggestionTextTooLongError.CODE:
