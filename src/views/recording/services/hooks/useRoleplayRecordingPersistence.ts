@@ -3,7 +3,11 @@
 import { useCallback, useRef, useState } from "react";
 import type { RecordingCompletionStatus } from "../../models/ui";
 import type { CapturedAudio } from "@/shared/lib/audio";
-import { assertRecordingResponse } from "@/features/recording-storage/models/recordingRequestError";
+import {
+  assertRecordingResponse,
+  MAX_RECORDING_UPLOAD_BYTES,
+  RecordingRequestError,
+} from "@/features/recording-storage/models/recordingRequestError";
 
 export function useRoleplayRecordingPersistence(sessionId?: string) {
   const recordingIdByBlob = useRef(new WeakMap<Blob, string>());
@@ -30,6 +34,9 @@ export function useRoleplayRecordingPersistence(sessionId?: string) {
   const saveLearnerRecording = useCallback(
     async (audio: CapturedAudio, lineId: string) => {
       if (!sessionId) return;
+      if (audio.blob.size > MAX_RECORDING_UPLOAD_BYTES) {
+        throw new RecordingRequestError("RECORDING_TOO_LARGE");
+      }
       let recordingId = recordingIdByBlob.current.get(audio.blob);
       if (!recordingId) {
         recordingId = crypto.randomUUID();

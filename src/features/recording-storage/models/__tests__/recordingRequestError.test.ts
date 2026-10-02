@@ -19,6 +19,11 @@ describe("녹음 저장 오류 분류", () => {
       classifyRecordingRpcFailure({ code: "XX000", message: "database unavailable" }).status,
     ).toBe(500);
   });
+  it("호스팅 서버의 비 JSON 413 응답도 크기 제한으로 안내한다", async () => {
+    await expect(
+      assertRecordingResponse(new Response("too large", { status: 413 })),
+    ).rejects.toMatchObject({ code: "RECORDING_TOO_LARGE" });
+  });
   it("비 JSON 응답도 사용자 안내가 가능한 오류로 변환한다", async () => {
     await expect(
       assertRecordingResponse(new Response("unavailable", { status: 502 })),

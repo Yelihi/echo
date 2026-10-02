@@ -56,3 +56,18 @@ describe("세션 완료 요청", () => {
     expect(request).toHaveBeenCalledTimes(2);
   });
 });
+
+it("용량 초과 녹음은 전송하지 않고 원본을 보존한다", async () => {
+  const request = jest.fn<typeof fetch>();
+  globalThis.fetch = request;
+  const { result } = renderHook(() => useRoleplayRecordingPersistence("session"));
+  const blob = new Blob([new Uint8Array(4_000_001)], { type: "audio/webm" });
+  await expect(
+    result.current.saveLearnerRecording(
+      { blob, mimeType: "audio/webm", extension: "webm", durationMs: 1000 },
+      "line",
+    ),
+  ).rejects.toMatchObject({ code: "RECORDING_TOO_LARGE" });
+  expect(request).not.toHaveBeenCalled();
+  expect(blob.size).toBe(4_000_001);
+});
