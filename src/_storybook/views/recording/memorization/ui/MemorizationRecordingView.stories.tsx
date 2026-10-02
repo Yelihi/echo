@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import type { MemorizationReadyMaterial } from "@/features/memorization-sessions/models/ready";
 import { MemorizationRecordingView } from "@/views/recording/ui/memorization/MemorizationRecordingView";
@@ -27,6 +27,8 @@ const meta = {
   },
   args: {
     material,
+    // This adapter simulates persistence only in Storybook.
+    saveRecording: fn(async () => {}),
   },
 } satisfies Meta<typeof MemorizationRecordingView>;
 

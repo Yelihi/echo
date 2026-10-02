@@ -17,13 +17,11 @@ const audio: CapturedAudio = {
 beforeEach(async () => {
   jest.clearAllMocks();
   const { useRecordingSession } = await import("@/features/session-recording");
-  jest
-    .mocked(useRecordingSession)
-    .mockReturnValue({
-      state: { status: "recorded" },
-      recordedAudio: audio,
-      retry: reset,
-    } as never);
+  jest.mocked(useRecordingSession).mockReturnValue({
+    state: { status: "recorded" },
+    recordedAudio: audio,
+    retry: reset,
+  } as never);
 });
 
 it("저장 어댑터가 없으면 녹음을 유지하고 완료로 진행하지 않는다", async () => {
