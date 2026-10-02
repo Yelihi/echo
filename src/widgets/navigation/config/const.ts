@@ -1,12 +1,4 @@
-import {
-  FolderOpenDot,
-  Home,
-  Layers,
-  ListChecks,
-  LogOut,
-  MessageSquare,
-  Settings,
-} from "lucide-react";
+import { FolderOpenDot, Home, Layers, ListChecks, LogOut, MessageSquare } from "lucide-react";
 
 import type {
   NavigationMenuItemProps,
@@ -43,11 +35,6 @@ export const NAVIGATION_MENU: NavigationMenuItemProps[] = [
 ];
 
 export const PROFILE_MENU: ProfileMenuItem[] = [
-  {
-    key: "settings",
-    icon: Settings,
-    label: "개인 설정",
-  },
   {
     key: "logout",
     icon: LogOut,

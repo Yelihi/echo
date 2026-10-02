@@ -21,17 +21,22 @@ import {
   MemorizationMaterialSaveFailedError,
 } from "@/views/memorization/models/errors";
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
-import { createMemorizationMaterial } from "@/views/memorization/services/action/createMemorizationMaterial";
+import { saveMemorizationMaterial } from "@/views/memorization/services/action/saveMemorizationMaterial";
 import { MemorizationEditorHeader } from "@/views/memorization/ui/editor/MemorizationEditorHeader";
 import { MemorizationEditorSourcePanel } from "@/views/memorization/ui/editor/MemorizationEditorSourcePanel";
 import { MemorizationParagraphReviewPanel } from "@/views/memorization/ui/editor/MemorizationParagraphReviewPanel";
 
 interface MemorizationEditorClientProps {
   mode: MemorizationEditorMode;
+  materialId?: string;
   initialDraft?: MemorizationEditorDraft;
 }
 
-export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEditorClientProps) {
+export function MemorizationEditorClient({
+  mode,
+  initialDraft,
+  materialId,
+}: MemorizationEditorClientProps) {
   const router = useRouter();
   const [isSaving, startSaveTransition] = useTransition();
   const paragraphSuggestion = useSuggestMemorizationParagraphs((suggestion) => {
@@ -79,20 +84,24 @@ export function MemorizationEditorClient({ mode, initialDraft }: MemorizationEdi
       return;
     }
 
-    if (mode !== "create") {
+    if (mode === "edit" && !materialId) {
       errorPopupManager.open({
-        title: "아직 수정 저장을 지원하지 않습니다",
-        message: "지금은 새 자료 만들기만 저장할 수 있습니다. 수정 저장은 곧 연결됩니다.",
+        title: "수정할 자료를 찾지 못했습니다",
+        message: "자료 목록에서 다시 열어주세요.",
       });
       return;
     }
 
     startSaveTransition(async () => {
       try {
-        const result = await createMemorizationMaterial(draft);
+        const result = await saveMemorizationMaterial(
+          draft,
+          mode === "edit" ? materialId : undefined,
+        );
 
         if (result.code === "SUCCESS") {
           router.push("/sentence-memorization");
+          router.refresh();
           return;
         }
 

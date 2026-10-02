@@ -32,5 +32,7 @@ export interface RoleplayMaterialRepositoryPort {
   countActive(): Promise<number>;
   count(params?: FindRoleplayMaterialsParams): Promise<number>;
   findDistinctTags(state?: MaterialState): Promise<TagValue[]>;
+  update(id: MaterialId, input: CreateRoleplayMaterialInput): Promise<void>;
+  softDelete(id: MaterialId, ownerId: UserId): Promise<void>;
   create(input: CreateRoleplayMaterialInput): Promise<RoleplayMaterial>;
 }

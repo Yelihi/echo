@@ -16,7 +16,7 @@ import type {
   FindRoleplayMaterialsParams,
   RoleplayMaterialRepositoryPort,
 } from "@/entities/roleplay-material/models/repository";
-import type { MaterialId, TagValue } from "@/entities/value-object";
+import type { MaterialId, TagValue, UserId } from "@/entities/value-object";
 
 export class RoleplayMaterialRepository implements RoleplayMaterialRepositoryPort {
   constructor(private readonly supabase: SupabaseClient<Database>) {}
@@ -225,6 +225,30 @@ export class RoleplayMaterialRepository implements RoleplayMaterialRepositoryPor
       await this.supabase.from("roleplay_materials").delete().eq("id", material.id);
       throw error;
     }
+  }
+
+  async update(id: MaterialId, input: CreateRoleplayMaterialInput): Promise<void> {
+    const { error } = await this.supabase.rpc("update_roleplay_material", {
+      p_material_id: id,
+      p_content: {
+        title: input.title,
+        tags: input.tags.map((tag) => ({ ...tag })),
+        situation: input.situation,
+        lines: input.lines.map((line) => ({ ...line })),
+      },
+    });
+    if (error) throw new Error(error.message);
+  }
+
+  async softDelete(id: MaterialId, ownerId: UserId): Promise<void> {
+    const { data, error } = await this.supabase
+      .from("roleplay_materials")
+      .update({ status: "deleted", deleted_at: new Date().toISOString() })
+      .eq("id", id)
+      .eq("user_id", ownerId)
+      .select("id")
+      .single();
+    if (error || !data) throw new Error("Material unavailable");
   }
 
   private async findMaterialIdsByTags(

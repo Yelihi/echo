@@ -26,5 +26,5 @@ export async function RolePlayEditorView({ mode, materialId }: RolePlayEditorVie
     notFound();
   }
 
-  return <RolePlayEditorClient mode="edit" initialDraft={initialDraft} />;
+  return <RolePlayEditorClient mode="edit" materialId={materialId} initialDraft={initialDraft} />;
 }
