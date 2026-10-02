@@ -1,4 +1,5 @@
 "use client";
+import { RecordingRequestError } from "@/features/recording-storage/models/recordingRequestError";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "zustand";
@@ -42,6 +43,8 @@ export function useRoleplayRecordingController({
       else if (partner.sessionId) {
         if (!activeTurn) throw new Error("Missing recording target");
         await saveLearnerRecording(audio, activeTurn.learnerLineId);
+      } else {
+        throw new RecordingRequestError("RECORDING_SERVER_NOT_READY");
       }
       // 녹음 확정 이후 완료 요청이 실패해도 이미 저장한 문장의 재녹음은 허용하지 않는다.
       if (isLastTurn && !activeTurn?.closingPartnerLine)
