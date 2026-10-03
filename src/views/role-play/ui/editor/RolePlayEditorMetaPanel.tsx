@@ -17,7 +17,7 @@ function RolePlayTitleField() {
 
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">제목</span>
+      <span className="text-body-2 font-medium text-gray-text">제목</span>
       <TitleField
         value={title}
         placeholder="예: Ordering at a Cafe"
@@ -33,7 +33,7 @@ function RolePlaySituationField() {
 
   return (
     <label className="mt-4 flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">상황 설명</span>
+      <span className="text-body-2 font-medium text-gray-text">상황 설명</span>
       <Input
         value={situation}
         placeholder="예: 카페에서 주문하기"
@@ -50,7 +50,7 @@ function RolePlayTagsField() {
 
   return (
     <div className="mt-4 flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">태그</span>
+      <span className="text-body-2 font-medium text-gray-text">태그</span>
       <TagInputField
         theme="roleplay"
         tags={tags}
@@ -65,7 +65,7 @@ function RolePlayTagsField() {
 export function RolePlayEditorMetaPanel({ txtImport }: { txtImport: RoleplayTxtImportProps }) {
   return (
     <aside className="flex min-w-0 flex-col gap-4">
-      <div className="rounded-card border border-card-line bg-white p-5">
+      <div className="border-t border-card-line bg-transparent py-6">
         <RolePlayTitleField />
         <RolePlaySituationField />
         <RolePlayTagsField />

@@ -13,7 +13,7 @@ export const badgeVariants = cva(
   {
     variants: {
       theme: {
-        blue: "border-card-line-strong bg-gray-background text-brand [&:is(a)]:hover:bg-silver/40",
+        blue: "border-card-line-strong bg-gray-background text-black-primary [&:is(a)]:hover:bg-silver/40",
         red: "bg-red-secondary text-danger-ink [&:is(a)]:hover:bg-red-secondary",
         green: "bg-green-secondary text-green-primary [&:is(a)]:hover:bg-green-secondary",
         yellow: "bg-yellow-secondary text-yellow-primary [&:is(a)]:hover:bg-yellow-secondary",

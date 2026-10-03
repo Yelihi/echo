@@ -6,7 +6,7 @@
 
 /* ============================================================
    Echo Design System — primitives
-   Silver & Ink — reference-image direction.
+   Editorial · Red & Paper — reference-image direction.
    Source of truth: this file; usage contract: docs/design-system.md
 
    These are raw ramp values. They are intentionally NOT in @theme,
@@ -46,7 +46,7 @@
   --yl-ink: #6b5200;
 
   /* Ink */
-  --ink-900: #1e1d1d;
+  --ink-900: #202020;
   --ink-700: #454545;
 
   /* Neutral ramp */
@@ -73,7 +73,7 @@
   --amber-subtle: #fef4e6;
 
   /* Surfaces */
-  --surface-app: #f9f9f9;
+  --surface-app: #fafaf9;
   --surface-app-warm: #ffffff;
   --surface-card: #ffffff;
 
@@ -136,7 +136,7 @@
    Active accent ramp.
    Defaults to the roleplay pillar; set data-pillar="memo" on any
    container to switch the whole subtree to the memorization ramp.
-   Both pillars share the Silver & Ink palette; the attribute contract remains.
+   Both pillars share the Editorial · Red & Paper palette; the attribute contract remains.
    ------------------------------------------------------------ */
 :root {
   --ac-50: var(--rp-50);
@@ -167,8 +167,8 @@
 @theme {
   /** ── color · semantic ─────────────────────────────────────
       Legacy color names remain aliases during the component migration. */
-  --color-brand: var(--ink-900);
-  --color-brand-hover: var(--rp-600);
+  --color-brand: #e51e2a;
+  --color-brand-hover: #c91520;
   --color-silver: var(--rp-300);
   --color-on-brand: var(--surface-card);
   --color-control-line: var(--rp-400);
@@ -183,7 +183,7 @@
 
   --color-gray-background: var(--surface-app);
   --color-gray-background-element: var(--alpha-slate-6);
-  --color-gray-text: #595959;
+  --color-gray-text: #666666;
   --color-gray-text-secondary: #666666;
   --color-gray-border: var(--alpha-slate-16);
 
@@ -223,8 +223,8 @@
 
   /** ── color · surface & line ───────────────────────────────*/
   --color-card-surface: var(--surface-card);
-  --color-card-line: var(--alpha-slate-10);
-  --color-card-line-strong: var(--alpha-slate-16);
+  --color-card-line: #e5e5e3;
+  --color-card-line-strong: #d5d5d3;
   --color-surface-app-warm: var(--surface-app-warm);
   --color-wash-6: var(--alpha-slate-6);
   --color-wash-9: var(--alpha-slate-9);
@@ -254,7 +254,7 @@
   --text-display: clamp(2.5rem, 5vw, 4.5rem);
   --text-display--line-height: 1.12;
   --text-display--letter-spacing: -0.045em;
-  --text-display--font-weight: 700;
+  --text-display--font-weight: 400;
   --text-heading-lg: 32px;
   --text-heading-lg--line-height: 43px;
   --text-heading-lg--letter-spacing: -0.027em;
@@ -287,7 +287,7 @@
   --text-body-3: 14px;
   --text-body-3--line-height: 21px;
   --text-body-3--letter-spacing: 0.006em;
-  --text-body-4: 15px;
+  --text-body-4: 16px;
   --text-body-4--line-height: 23px;
   --text-body-4--letter-spacing: 0.006em;
   --text-body-5: 16px;
@@ -300,12 +300,12 @@
   /** ── radius ───────────────────────────────────────────────
       Echo 고유 반경. shadcn의 --radius-sm/md/lg/xl과 충돌하지 않도록
       역할 기반 이름을 씁니다. 입력은 control, 버튼·탭은 pill, 콘텐츠는 card를 사용합니다. */
-  --radius-pill: 9999px;
+  --radius-pill: 8px;
   --radius-chip: 9999px;
-  --radius-control: 12px;
-  --radius-panel: 20px;
-  --radius-card: 28px;
-  --radius-hero: 36px;
+  --radius-control: 8px;
+  --radius-panel: 10px;
+  --radius-card: 10px;
+  --radius-hero: 10px;
 
   /** ── elevation ────────────────────────────────────────────
       Quiet elevation; use borders and surface contrast for ordinary cards. */
@@ -346,7 +346,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-noto-sans-kr), system-ui, sans-serif;
+  --font-sans: var(--font-inter), var(--font-noto-sans-kr), system-ui, sans-serif;
 }
 
 @layer utilities {
@@ -412,8 +412,7 @@ body {
     transition-delay: 40ms;
   }
   [data-motion-card="true"]:hover:not(:has([aria-expanded="true"])) {
-    translate: 0 -2px;
-    box-shadow: var(--shadow-emphasize);
+    border-color: var(--color-card-line-strong);
   }
 }
 

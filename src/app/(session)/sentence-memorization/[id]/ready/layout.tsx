@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { AppShell } from "@/widgets/app-shell";
+import { Wordmark } from "@/shared/components/ui/Wordmark";
 
 export default function SentenceMemorizationReadyLayout({
   children,
@@ -8,15 +8,20 @@ export default function SentenceMemorizationReadyLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AppShell>
+    <main className="min-h-lvh bg-card-surface">
+      <header className="border-b border-card-line px-page-gutter py-6">
+        <Link href="/home" aria-label="Echo 홈">
+          <Wordmark />
+        </Link>
+      </header>
       <div
         data-pillar="memo"
         className="min-h-full bg-surface-app-warm px-page-gutter py-10 sm:py-14 text-black-primary"
       >
-        <div className="mx-auto w-full max-w-3xl">
+        <div className="mx-auto w-full max-w-page">
           <Link
             href="/sentence-memorization"
-            aria-label="문장 암기 목록으로 돌아가기"
+            aria-label="문단 암기 목록으로 돌아가기"
             className="mb-8 inline-flex min-h-11 items-center gap-1 rounded-pill px-2.5 text-body-2 font-medium text-black-secondary hover:bg-wash-6 focus-visible:outline-2 focus-visible:outline-offset-4"
           >
             <span aria-hidden="true">←</span>
@@ -25,6 +30,6 @@ export default function SentenceMemorizationReadyLayout({
           <div className="flex flex-col gap-10">{children}</div>
         </div>
       </div>
-    </AppShell>
+    </main>
   );
 }

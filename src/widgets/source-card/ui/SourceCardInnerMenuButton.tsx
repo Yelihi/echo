@@ -87,7 +87,7 @@ export const SourceCardInnerMenuButton = ({
     >
       <button
         type="button"
-        className="flex size-9 cursor-pointer items-center justify-center rounded-pill border border-card-line transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+        className="flex size-11 cursor-pointer items-center justify-center rounded-pill border border-card-line transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
         onClick={toggleInnerMenu}
         aria-expanded={open}
         aria-label="자료 메뉴"

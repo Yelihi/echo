@@ -158,16 +158,16 @@ export function TestAnalysisView() {
 
   return (
     <main className="min-h-screen bg-gray-background px-6 py-8 text-black-primary">
-      <div className="mx-auto flex max-w-3xl flex-col gap-5">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8">
         <header>
-          <h1 className="text-heading-md font-semibold">Analysis Processor Test</h1>
+          <h1 className="text-display font-normal">Analysis Processor Test</h1>
         </header>
 
-        <section className="grid gap-3 rounded-lg border border-gray-border bg-white p-4">
+        <section className="grid gap-3 rounded-lg border border-control-line bg-white p-4">
           <label className="grid gap-1 text-body-3">
             Practice type
             <select
-              className="h-10 rounded-md border border-gray-border px-3"
+              className="min-h-11 rounded-control border border-control-line px-3"
               value={practiceType}
               onChange={(event) => setPracticeType(event.target.value as PracticeType)}
             >
@@ -187,42 +187,42 @@ export function TestAnalysisView() {
 
         <section className="flex flex-wrap gap-2">
           <button
-            className="h-10 rounded-md border border-gray-border bg-white px-4 disabled:opacity-50"
+            className="min-h-11 rounded-control border border-control-line bg-white px-4 disabled:opacity-50"
             disabled={isBusy}
             onClick={createTestFixture}
           >
             테스트 UUID 생성
           </button>
           <button
-            className="h-10 rounded-md bg-blue-primary px-4 text-white disabled:opacity-50"
+            className="min-h-11 rounded-control bg-brand px-4 text-white disabled:opacity-50"
             disabled={isRecording || isBusy}
             onClick={startRecording}
           >
             녹음 시작
           </button>
           <button
-            className="h-10 rounded-md border border-gray-border bg-white px-4 disabled:opacity-50"
+            className="min-h-11 rounded-control border border-control-line bg-white px-4 disabled:opacity-50"
             disabled={!isRecording || isBusy}
             onClick={stopRecording}
           >
             녹음 정지
           </button>
           <button
-            className="h-10 rounded-md bg-green-primary px-4 text-white disabled:opacity-50"
+            className="min-h-11 rounded-control bg-green-primary px-4 text-white disabled:opacity-50"
             disabled={!capturedAudio || isBusy}
             onClick={uploadAndRequest}
           >
             업로드 + Job 요청
           </button>
           <button
-            className="h-10 rounded-md bg-black-primary px-4 text-white disabled:opacity-50"
+            className="min-h-11 rounded-control bg-black-primary px-4 text-white disabled:opacity-50"
             disabled={isBusy}
             onClick={invokeProcessor}
           >
             Processor 실행
           </button>
           <button
-            className="h-10 rounded-md border border-gray-border bg-white px-4 disabled:opacity-50"
+            className="min-h-11 rounded-control border border-control-line bg-white px-4 disabled:opacity-50"
             disabled={!jobId || isBusy}
             onClick={refreshStatus}
           >
@@ -233,7 +233,7 @@ export function TestAnalysisView() {
         <label className="grid gap-1 text-body-3">
           Job ID
           <input
-            className="h-10 rounded-md border border-gray-border px-3"
+            className="min-h-11 rounded-control border border-control-line px-3"
             value={jobId}
             onChange={(event) => setJobId(event.target.value)}
           />
@@ -241,7 +241,7 @@ export function TestAnalysisView() {
 
         {message ? <p className="text-body-4 text-blue-focus-title">{message}</p> : null}
 
-        <pre className="min-h-64 overflow-auto rounded-lg border border-gray-border bg-white p-4 text-body-2">
+        <pre className="min-h-64 overflow-auto rounded-lg border border-control-line bg-white p-4 text-body-2">
           {payload ? JSON.stringify(payload, null, 2) : "No payload"}
         </pre>
       </div>
@@ -262,7 +262,7 @@ function TextInput({
     <label className="grid gap-1 text-body-3">
       {label}
       <input
-        className="h-10 rounded-md border border-gray-border px-3"
+        className="min-h-11 rounded-control border border-control-line px-3"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />

@@ -38,7 +38,7 @@ describe("실패한 분석 결과", () => {
     expect(
       screen
         .getByText("녹음의 발화를 문장으로 표시하지 못했습니다.")
-        .closest('[data-slot="chat-bubble"]'),
+        .closest('[data-slot="recorded-speech"]'),
     ).toBeTruthy();
     expect(screen.getByRole("navigation", { name: "결과 페이지 이동" })).toBeTruthy();
     expect(screen.getByLabelText("저장된 내 녹음 듣기").getAttribute("src")).toBe(
@@ -48,7 +48,7 @@ describe("실패한 분석 결과", () => {
   });
 
   it.each(["I said hello.", ""])(
-    "STT 결과 %s를 발화 말풍선 또는 실패 안내로 표시한다",
+    "STT 결과 %s를 발화 영역 또는 실패 안내로 표시한다",
     (transcript) => {
       render(
         <AnalysisItem
@@ -67,7 +67,7 @@ describe("실패한 분석 결과", () => {
       );
       const bubble = screen
         .getByText(transcript || "녹음의 발화를 문장으로 표시하지 못했습니다.")
-        .closest('[data-slot="chat-bubble"]');
+        .closest('[data-slot="recorded-speech"]');
       expect(screen.getByText("녹음 파일을 불러올 수 없어 재생할 수 없습니다.")).toBeTruthy();
       expect(bubble).toBeTruthy();
       expect(bubble?.getAttribute("lang")).toBe(transcript ? "en" : "ko");

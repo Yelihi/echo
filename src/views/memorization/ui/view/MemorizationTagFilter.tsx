@@ -34,7 +34,7 @@ export function MemorizationTagFilterList({
   filterTags,
 }: MemorizationTagFilterListProps) {
   return (
-    <nav aria-label="문장 암기 태그 필터" className="flex w-full gap-2 overflow-x-auto">
+    <nav aria-label="문단 암기 태그 필터" className="flex w-full gap-2 overflow-x-auto">
       <TagChip asChild selected={selectedTags.length === 0}>
         <Link href="/sentence-memorization">{MEMORIZATION_ALL_TAG}</Link>
       </TagChip>

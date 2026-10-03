@@ -23,7 +23,7 @@ const sessionStateBadgeGroupVariant = cva(
         completed: "bg-green-secondary text-green-primary",
         failed: "bg-yellow-secondary text-yellow-primary",
         partial: "bg-yellow-secondary text-yellow-primary",
-        inProgress: "bg-gray-background text-brand",
+        inProgress: "bg-gray-background text-brand-hover",
         pending: "border border-card-line-strong bg-card-surface text-gray-text",
       },
     },

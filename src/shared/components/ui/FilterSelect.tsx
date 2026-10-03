@@ -22,7 +22,7 @@ export function FilterSelect({
     <Select.Root value={value} onValueChange={onValueChange} disabled={disabled}>
       <Select.Trigger
         aria-label={label}
-        className="group inline-flex h-10 min-w-36 items-center gap-2.5 rounded-pill border border-control-line bg-card-surface px-4 text-sm font-medium text-black-primary outline-none transition-colors hover:border-neutral-400 hover:bg-gray-background focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-50 data-[state=open]:border-brand"
+        className="group inline-flex h-11 min-w-36 items-center gap-2.5 rounded-pill border border-control-line bg-card-surface px-4 text-sm font-medium text-black-primary outline-none transition-colors hover:border-neutral-400 hover:bg-gray-background focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-50 data-[state=open]:border-brand"
       >
         <Icon aria-hidden className="size-4 shrink-0 text-gray-text" strokeWidth={1.75} />
         <span className="flex-1 whitespace-nowrap text-left">
@@ -54,7 +54,7 @@ export function FilterSelect({
                 <Select.Item
                   key={option.value}
                   value={option.value}
-                  className="relative flex min-h-10 cursor-default select-none items-center gap-2.5 rounded-control py-2 pl-2.5 pr-9 text-sm text-black-primary outline-none data-[highlighted]:bg-neutral-100 data-[state=checked]:bg-gray-background/50 data-[state=checked]:font-semibold"
+                  className="relative flex min-h-11 cursor-default select-none items-center gap-2.5 rounded-control py-2 pl-2.5 pr-9 text-sm text-black-primary outline-none data-[highlighted]:bg-neutral-100 data-[state=checked]:bg-gray-background/50 data-[state=checked]:font-semibold"
                 >
                   {option.dotClassName && (
                     <span

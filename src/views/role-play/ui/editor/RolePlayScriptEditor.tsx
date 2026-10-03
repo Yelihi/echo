@@ -49,7 +49,7 @@ function RolePlayScriptLineList({ isPending }: RolePlayScriptLineListProps) {
   );
 
   return (
-    <div className="flex h-100 flex-col overflow-y-auto bg-gray-background">
+    <div className="flex min-h-100 flex-col bg-card-surface">
       {isPending ? (
         <RolePlayScriptPending />
       ) : lineIds.length === 0 ? (

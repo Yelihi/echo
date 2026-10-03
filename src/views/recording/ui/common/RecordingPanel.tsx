@@ -25,21 +25,21 @@ export function RecordingPanel({
 
   return (
     <>
-      <section className="relative z-10 mx-auto flex w-full max-w-[640px] flex-col items-center gap-6 px-5 pb-6 pt-20 text-center sm:gap-8">
+      <section className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-5 pb-6 pt-20 text-center sm:gap-8">
         {content.kind === "partner" ? (
           <PartnerCard role={content.role}>{content.line}</PartnerCard>
         ) : content.kind === "prompt" ? (
-          <div aria-live="polite" className="max-h-[40vh] overflow-y-auto text-left">
-            <h1 className="mb-3 text-sm text-white/70">{content.label}</h1>
+          <div aria-live="polite" className="max-h-[45vh] overflow-y-auto text-left">
+            <h1 className="mb-3 text-sm text-gray-text">{content.label}</h1>
             <p
               lang={content.lang}
-              className="whitespace-pre-wrap text-xl leading-relaxed text-white"
+              className="whitespace-pre-wrap text-2xl leading-relaxed sm:text-3xl text-black-primary"
             >
               {content.text}
             </p>
           </div>
         ) : (
-          <h1 className="text-heading-md font-bold text-white">{content.title}</h1>
+          <h1 className="text-heading-lg font-normal text-black-primary">{content.title}</h1>
         )}
         <RecordOrb
           phase={phase}
@@ -54,7 +54,7 @@ export function RecordingPanel({
         />
         <div className="flex flex-col items-center gap-[13px]">
           <TimerPill recording={recording}>{durationLabel}</TimerPill>
-          <p className="break-keep text-sm leading-6 text-white/70">{message}</p>
+          <p className="break-keep text-sm leading-6 text-gray-text">{message}</p>
           {(phase === "user-ready" || phase === "partner-speaking") &&
           content.kind === "partner" &&
           content.canReplay ? (

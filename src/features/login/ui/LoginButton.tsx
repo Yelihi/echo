@@ -17,7 +17,7 @@ export function LoginButton({ children, provider }: LoginButtonProps) {
     <Button
       size="lg"
       className="w-full min-h-12 px-5 text-body-4 font-semibold"
-      variant="outline"
+      variant="default"
       onClick={requestLogin}
     >
       {children}

@@ -10,7 +10,7 @@ interface MemorizationReadyContentProps {
 
 export function MemorizationReadyContent({ material }: MemorizationReadyContentProps) {
   return (
-    <>
+    <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
       <SessionReadyHero
         tags={material.tags}
         title={material.title}
@@ -22,7 +22,9 @@ export function MemorizationReadyContent({ material }: MemorizationReadyContentP
         ]}
       />
 
-      <MemorizationReadyModeAside materialId={material.id} />
-    </>
+      <div className="border-t border-card-line pt-8 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
+        <MemorizationReadyModeAside materialId={material.id} />
+      </div>
+    </div>
   );
 }

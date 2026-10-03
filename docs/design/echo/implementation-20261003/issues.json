@@ -1,0 +1,58 @@
+[
+  {
+    "order": 1,
+    "number": 128,
+    "title": "[Design] Echo 공통 테마·타이포그래피·UI 규격 적용",
+    "url": "https://github.com/Yelihi/echo/issues/128",
+    "status": "implemented; review in PR #136"
+  },
+  {
+    "order": 2,
+    "number": 129,
+    "title": "[Design] 반응형 사이드바와 앱 탐색 구조 적용",
+    "url": "https://github.com/Yelihi/echo/issues/129",
+    "status": "implemented; review in PR #136"
+  },
+  {
+    "order": 3,
+    "number": 130,
+    "title": "[Design] 로그인·콜백·404·개발 테스트 화면 적용",
+    "url": "https://github.com/Yelihi/echo/issues/130",
+    "status": "implemented; review in PR #136"
+  },
+  {
+    "order": 4,
+    "number": 131,
+    "title": "[Design] 홈과 두 연습 자료 목록 개편",
+    "url": "https://github.com/Yelihi/echo/issues/131",
+    "status": "implemented; review in PR #136"
+  },
+  {
+    "order": 5,
+    "number": 132,
+    "title": "[Design] 대본·암기 자료 작성 및 수정 화면 개편",
+    "url": "https://github.com/Yelihi/echo/issues/132",
+    "status": "implemented; review in PR #136"
+  },
+  {
+    "order": 6,
+    "number": 133,
+    "title": "[Design] 연습 준비와 녹음 화면 개편",
+    "url": "https://github.com/Yelihi/echo/issues/133",
+    "status": "implemented; review in PR #136"
+  },
+  {
+    "order": 7,
+    "number": 134,
+    "title": "[Design] 분석 결과·학습 기록·녹음 관리 개편",
+    "url": "https://github.com/Yelihi/echo/issues/134",
+    "status": "implemented; review in PR #136"
+  },
+  {
+    "order": 8,
+    "number": 135,
+    "title": "[Design] 전체 라우트 반응형·접근성·회귀 검증",
+    "url": "https://github.com/Yelihi/echo/issues/135",
+    "status": "implemented; review in PR #136"
+  }
+]
