@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import "./global.css";
 
 // font
-import { Noto_Sans_KR } from "next/font/google";
+import { Inter, Noto_Sans_KR } from "next/font/google";
 import { QueryProvider } from "./providers/QueryProvider";
 import { cn } from "@/shared/lib/tailwind/utils";
 import { ErrorPopupProvider } from "@/shared/lib/error-popup";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={cn(notoSansKR.variable, notoSansKR.className, "font-sans")}>
+    <html lang="ko" className={cn(inter.variable, notoSansKR.variable, "font-sans")}>
       <body>
         <QueryProvider>{children}</QueryProvider>
         <ErrorPopupProvider />
