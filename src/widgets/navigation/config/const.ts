@@ -20,7 +20,7 @@ export const NAVIGATION_MENU: NavigationMenuItemProps[] = [
   {
     icon: Layers,
     link: "/sentence-memorization",
-    label: "문장 암기",
+    label: "문단 암기",
   },
   {
     icon: ListChecks,
