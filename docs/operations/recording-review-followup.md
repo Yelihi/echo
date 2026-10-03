@@ -16,3 +16,31 @@ migration 이후 이전 워커의 결과 저장과 상태 변경은 거부된다
 
 로컬 DB 테스트 명령: `node scripts/check-recording-database.mjs`.
 Docker가 실행되지 않아 실제 RPC 회귀 검증은 별도 실행이 필요하다.
+
+## 수동 출시 워크플로
+
+`Echo Release`는 main의 선택한 커밋에 대해 운영자가 `workflow_dispatch`로 시작한다.
+`staging`과 `production` GitHub Environment에 서로 다른 Supabase/Vercel 프로젝트의
+시크릿을 설정한다. 두 Vercel 프로젝트 모두 자신의 production 환경으로 배포한다.
+워크플로에 필요한 키 이름은 `.github/workflows/deploy.yml`에 있으며 값은 커밋하지 않는다.
+분석 worker의 API 키와 PROCESS_ANALYSIS_SECRET은 해당 Supabase 프로젝트에 사전 설정한다.
+Vercel Git 연동의 별도 자동 배포는 비활성화해야 이 출시 순서가 유지된다.
+
+1. 동일 커밋의 포맷·린트·타입·Jest·앱 빌드, Storybook 브라우저 검사,
+   로컬 Supabase pgTAP/RPC 검사를 모두 통과한다.
+2. Vercel 앱을 먼저 빌드하여 빌드 실패 시 DB 변경을 시작하지 않는다.
+3. migration dry-run 후 호환 worker를 배포하고 DB migration을 적용한다.
+4. worker OPTIONS 응답을 확인한 후 준비된 앱을 게시한다.
+
+단계 실패 시 다음 단계는 실행하지 않는다. OPTIONS는 실행 가능 여부만 확인하며,
+인증·실제 녹음·분석 성공을 보장하지 않는다. 배포 후 초대 계정으로 별도 확인한다.
+기존 POST smoke test처럼 대기 중 유료 분석 작업을 임의로 소비하지 않는다.
+
+동일 환경 배포는 직렬화한다. migration 적용 후 앱 게시가 실패하면 DB/worker가
+앞선 버전인 상태로 남으므로 원인을 수정하고 다시 배포한다. 자동 DB 롤백은 하지 않는다.
+앱 롤백 전 DB/worker 호환성을 확인하며, 파괴적 migration은 이 경로에 포함하지 않는다.
+
+로컬 무변경 순서 검사: `node --test scripts/__tests__/deploy-analysis-processor.test.mjs`.
+CI의 로컬 DB는 운영 시크릿을 사용하지 않으며, 원격 DB로 대체 실행하지 않는다.
+참고: [Supabase CI 검사](https://supabase.com/docs/guides/deployment/ci/testing),
+[Vercel prebuilt 배포](https://vercel.com/docs/cli/deploy).

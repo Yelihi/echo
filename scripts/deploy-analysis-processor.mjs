@@ -15,7 +15,6 @@ const env = readRequiredEnv([
   "SUPABASE_PROJECT_REF",
   "SUPABASE_DB_PASSWORD",
   "NEXT_PUBLIC_SUPABASE_URL",
-  "PROCESS_ANALYSIS_SECRET",
 ]);
 
 await runSupabase(["db", "push", "--dry-run", "--linked", "--password", env.SUPABASE_DB_PASSWORD]);
@@ -25,7 +24,6 @@ if (mode === MODE_CHECK) {
   process.exit(0);
 }
 
-await runSupabase(["db", "push", "--linked", "--password", env.SUPABASE_DB_PASSWORD]);
 await runSupabase([
   "functions",
   "deploy",
@@ -35,6 +33,7 @@ await runSupabase([
   "--no-verify-jwt",
   "--use-api",
 ]);
+await runSupabase(["db", "push", "--linked", "--password", env.SUPABASE_DB_PASSWORD]);
 await smokeTest(env);
 
 console.log("\nAnalysis processor deploy completed.");
@@ -159,13 +158,10 @@ function formatCommand(command, args, options) {
 async function smokeTest(env) {
   const url = `${env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/${FUNCTION_NAME}`;
 
-  console.log(`\n$ POST ${url}`);
+  console.log(`\n$ OPTIONS ${url}`);
 
   const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${env.PROCESS_ANALYSIS_SECRET}`,
-    },
+    method: "OPTIONS",
   });
   const text = await response.text();
 

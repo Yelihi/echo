@@ -105,8 +105,10 @@ export const ResumeSavedPractice: Story = {
   args: { resume: { phase: "ready", step: 2, closingPartner: false, savedCount: 1 } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("button", { name: "이어서 연습" })).toBeVisible();
-    await expect(canvas.getByText(/2번째 문장부터 이어서/)).toBeVisible();
+    await waitFor(() => {
+      expect(canvas.getByRole("button", { name: "이어서 연습" })).toBeVisible();
+      expect(canvas.getByText(/2번째 문장부터 이어서/)).toBeVisible();
+    });
   },
 };
 
@@ -115,6 +117,8 @@ export const ConfirmExit: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole("button", { name: "연습 나가기" }));
     const dialog = await within(canvasElement.ownerDocument.body).findByRole("alertdialog");
-    await expect(within(dialog).getByRole("button", { name: "계속 연습" })).toBeVisible();
+    await waitFor(() =>
+      expect(within(dialog).getByRole("button", { name: "계속 연습" })).toBeVisible(),
+    );
   },
 };
