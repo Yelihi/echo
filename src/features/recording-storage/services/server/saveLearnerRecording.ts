@@ -4,6 +4,7 @@ import {
   learnerRecordingSchema,
   type RoleplayRecordingContext,
 } from "../../models/roleplayRecording";
+import { MAX_RECORDING_UPLOAD_BYTES } from "../../models/recordingRequestError";
 import { recordingRpcFailureResponse } from "./recordingRpcFailure";
 export async function saveLearnerRecording(
   form: FormData,
@@ -11,8 +12,11 @@ export async function saveLearnerRecording(
 ): Promise<Response> {
   const recording = learnerRecordingSchema.safeParse(Object.fromEntries(form));
   const file = form.get("file");
-  if (!recording.success || !(file instanceof File) || !file.size || file.size > 25 * 1024 * 1024) {
+  if (!recording.success || !(file instanceof File) || !file.size) {
     return Response.json({ error: "Invalid audio" }, { status: 400 });
+  }
+  if (file.size > MAX_RECORDING_UPLOAD_BYTES) {
+    return Response.json({ code: "RECORDING_TOO_LARGE" }, { status: 413 });
   }
   const mime = file.type.split(";")[0];
   if (!["audio/webm", "audio/mp4", "audio/aac", "audio/wav"].includes(mime)) {
