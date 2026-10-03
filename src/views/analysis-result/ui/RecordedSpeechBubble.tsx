@@ -1,5 +1,4 @@
 import { TriangleAlert } from "lucide-react";
-import { ChatBubble } from "@/shared/components/ui";
 import { cn } from "@/shared/lib/tailwind/utils";
 import type { AnalysisItemProps } from "../models";
 
@@ -8,12 +7,12 @@ export function RecordedSpeechBubble({ item }: AnalysisItemProps) {
   const unavailable = !pending && !item.transcript?.trim();
   return (
     <>
-      <p className="text-xs font-semibold text-gray-text">실제 발화</p>
-      <ChatBubble
-        speaker="me"
+      <p className="pt-1 text-body-3 text-gray-text">실제 발화</p>
+      <div
+        data-slot="recorded-speech"
         lang={!pending && !unavailable ? "en" : "ko"}
         className={cn(
-          "max-w-full whitespace-pre-wrap break-words text-base leading-relaxed",
+          "min-w-0 whitespace-pre-wrap break-words text-xl leading-relaxed text-black-primary",
           pending && "border border-card-line bg-card-surface text-gray-text",
           unavailable && "border border-red-200 bg-red-50 text-red-800",
         )}
@@ -33,7 +32,7 @@ export function RecordedSpeechBubble({ item }: AnalysisItemProps) {
         ) : (
           item.transcript
         )}
-      </ChatBubble>
+      </div>
     </>
   );
 }

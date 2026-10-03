@@ -85,7 +85,7 @@ export const Done: Story = {
     await expect(canvas.getByText("실제 발화")).toBeVisible();
     const spokenBubble = canvas
       .getAllByText(readyItem.transcript, { exact: true })
-      .find((element) => element.getAttribute("data-slot") === "chat-bubble");
+      .find((element) => element.getAttribute("data-slot") === "recorded-speech");
     await expect(spokenBubble).toBeVisible();
     await expect(canvas.getByRole("navigation", { name: "결과 페이지 이동" })).toBeVisible();
   },

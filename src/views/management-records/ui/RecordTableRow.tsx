@@ -21,15 +21,15 @@ interface RecordTableRowProps {
 }
 
 const recordTableRowVariants = cva(
-  "w-full p-5 flex flex-wrap gap-3 justify-between items-center bg-white border-b border-gray-border",
+  "w-full py-5 flex flex-wrap gap-3 justify-between items-center bg-transparent border-b border-card-line",
   {
     variants: {
       first: {
-        true: "rounded-t-card",
+        true: "",
         false: "",
       },
       last: {
-        true: "rounded-b-card border-b-0",
+        true: "",
         false: "",
       },
     },
@@ -81,7 +81,7 @@ export function RecordTableRow({ record, first, last, pending, onDelete }: Recor
         </div>
         <div className="flex flex-col items-start justify-start gap-[5px] min-w-0 w-full">
           <div className="flex min-w-0 flex-wrap items-center gap-1">
-            <p className="break-all text-body-3 font-semibold text-black-primary">{record.name}</p>
+            <p className="break-all text-body-3 font-medium text-black-primary">{record.name}</p>
             <Badge theme={badge.theme} value={badge.label} size="small">
               {badge.label}
             </Badge>

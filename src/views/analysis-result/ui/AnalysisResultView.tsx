@@ -20,7 +20,7 @@ export function AnalysisResultView({ viewModel, retryAction }: AnalysisResultVie
           <p className="mb-2 text-sm font-semibold text-gray-text">
             {kind === "roleplay" ? "롤플레잉" : "암기"} · 학습 결과
           </p>
-          <h1 className="break-words text-heading-lg font-bold tracking-tight leading-snug text-black-primary">
+          <h1 className="break-words text-display font-normal tracking-tight leading-snug text-black-primary">
             {viewModel.title}
           </h1>
           <p className="mt-1.5 text-body-3 text-gray-text">{viewModel.meta}</p>
@@ -45,7 +45,7 @@ export function AnalysisResultView({ viewModel, retryAction }: AnalysisResultVie
         문장을 기준으로 비교한 결과입니다.
       </p>
       {!analyzing && (
-        <section className="flex flex-col gap-8" aria-label="분석 결과 대화">
+        <section className="flex flex-col gap-0" aria-label="분석 결과 대화">
           {viewModel.turns.map((turn) => (
             <ResultTurn key={turn.id} turn={turn} />
           ))}
