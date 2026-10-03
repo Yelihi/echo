@@ -18,10 +18,10 @@ export const NavigationMenuItem = ({ icon: Icon, link, label }: NavigationMenuIt
       href={link}
       aria-current={isCurrentHref ? "page" : undefined}
       className={cn(
-        "flex min-h-12 items-center gap-3 rounded-control px-3 text-body-3 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
+        "flex min-h-12 items-center gap-3 rounded-control border-l-2 px-3 text-body-3 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
         isCurrentHref
-          ? "bg-brand/5 text-brand-hover font-medium"
-          : "text-gray-text hover:bg-gray-background hover:text-black-primary",
+          ? "border-brand bg-brand/5 text-brand-hover font-medium"
+          : "border-transparent text-gray-text hover:bg-gray-background hover:text-black-primary",
       )}
     >
       <Icon aria-hidden className="size-4 shrink-0" />

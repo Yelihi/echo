@@ -72,7 +72,7 @@ export function TimerPill({ children, recording }: TimerPillProps) {
 export function PartnerCard({ role, children }: PartnerCardProps) {
   return (
     <div className="flex w-full flex-col items-center gap-3 rounded-card  px-5 py-6 text-center  sm:px-8">
-      <p className="text-sm font-semibold text-gray-text">{role}</p>
+      <h1 className="text-sm font-medium text-gray-text">{role}</h1>
       <p
         lang="en"
         className="w-full whitespace-pre-wrap break-words text-2xl font-normal leading-relaxed text-black-primary sm:text-4xl"

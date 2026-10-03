@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Dialog } from "radix-ui";
 import { Menu, X } from "lucide-react";
@@ -13,6 +14,10 @@ import { NAVIGATION_MENU } from "@/widgets/navigation/config/const";
 
 export const NavigationContainer = () => {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const pageTitle =
+    NAVIGATION_MENU.find((menu) => pathname === menu.link || pathname.startsWith(`${menu.link}/`))
+      ?.label ?? "학습 결과";
   const links = NAVIGATION_MENU.map((menu) => <NavigationMenuItem {...menu} key={menu.link} />);
   return (
     <>
@@ -36,7 +41,7 @@ export const NavigationContainer = () => {
       </aside>
       <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-card-line bg-card-surface px-page-gutter lg:ml-60">
         <div className="hidden text-body-2 tracking-widest text-gray-text lg:block">
-          YOUR DAILY ENGLISH PRACTICE
+          {pageTitle}
         </div>
         <div className="flex items-center gap-3 lg:hidden">
           <Dialog.Root open={open} onOpenChange={setOpen}>

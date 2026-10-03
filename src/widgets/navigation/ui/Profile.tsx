@@ -68,11 +68,11 @@ export const Profile = () => {
         aria-label="프로필 메뉴"
         aria-expanded={isActive}
         aria-controls={menuId}
-        className="size-full cursor-pointer rounded-full border border-brand bg-brand text-on-brand transition-colors outline-none hover:bg-brand-hover focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+        className="size-full cursor-pointer rounded-full border border-card-line bg-neutral-100 text-black-primary transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
         onClick={toggleProfileMenu}
       >
         <div className="flex size-full items-center justify-center">
-          <User className="size-[18px] text-on-brand" />
+          <User className="size-[18px] text-black-primary" />
         </div>
       </button>
       <AnimatedMenu

@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Echo · 전체 라우트 디자인 시안</title
+  ><style>
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      scroll-padding-top: 24px;
+    }
+    body {
+      margin: 0;
+      background: #fafaf9;
+      color: #202020;
+      font:
+        16px/1.65 -apple-system,
+        BlinkMacSystemFont,
+        "Noto Sans KR",
+        sans-serif;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    a:focus-visible {
+      outline: 3px solid #d71c29;
+      outline-offset: 4px;
+    }
+    aside {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 260px;
+      overflow: auto;
+      padding: 28px 22px;
+      border-right: 1px solid #e5e5e3;
+      background: #fff;
+    }
+    .brand {
+      font-size: 38px;
+      font-weight: 650;
+      letter-spacing: -2px;
+    }
+    .brand span {
+      color: #d71c29;
+    }
+    nav {
+      display: grid;
+      gap: 3px;
+      margin-top: 25px;
+    }
+    nav a {
+      font-size: 14px;
+      padding: 7px 8px;
+    }
+    nav a:hover {
+      background: #f9eeee;
+      color: #b11521;
+    }
+    main {
+      margin-left: 260px;
+      padding: 48px clamp(20px, 4vw, 64px);
+      max-width: 1900px;
+    }
+    h1 {
+      font-weight: 400;
+      letter-spacing: -1.5px;
+      font-size: clamp(30px, 4vw, 52px);
+      margin: 10px 0 20px;
+    }
+    h2 {
+      font-size: 26px;
+      font-weight: 500;
+      margin: 0;
+    }
+    .intro {
+      max-width: 850px;
+      margin-bottom: 56px;
+    }
+    .muted,
+    .routes {
+      color: #666;
+    }
+    .routes {
+      overflow-wrap: anywhere;
+    }
+    section {
+      margin: 0 0 64px;
+      padding-top: 24px;
+      border-top: 1px solid #ddd;
+    }
+    section header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .number {
+      color: #b11521;
+      font-size: 13px;
+      margin: 0;
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: white;
+      border: 1px solid #e5e5e3;
+    }
+    .original {
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      padding: 8px 14px;
+      white-space: nowrap;
+      font-size: 14px;
+    }
+    .foot {
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+      font-size: 14px;
+    }
+    code {
+      font-size: 13px;
+    }
+    details {
+      margin: 20px 0;
+    }
+    summary {
+      cursor: pointer;
+    }
+    @media (max-width: 800px) {
+      aside {
+        position: static;
+        width: auto;
+        max-height: 260px;
+        border-right: 0;
+        border-bottom: 1px solid #ddd;
+      }
+      nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 12px;
+      }
+      main {
+        margin: 0;
+        padding: 28px 18px;
+      }
+      .original {
+        padding: 6px 9px;
+      }
+      h2 {
+        font-size: 22px;
+      }
+    }
+    @media print {
+      aside,
+      .original {
+        display: none;
+      }
+      main {
+        margin: 0;
+        padding: 0;
+      }
+      section {
+        break-inside: avoid;
+      }
+      img {
+        max-height: 80vh;
+        object-fit: contain;
+      }
+    }
+  </style>
+  <aside>
+    <a class="brand" href="#top">echo<span>.</span></a>
+    <div class="muted">전체 화면 시안 · 2026.10.03</div>
+    <nav>
+      <a href="#01-home">01 · 홈</a><a href="#02-login">02 · 로그인</a
+      ><a href="#03-callback">03 · 로그인 연결</a
+      ><a href="#04-roleplay-list">04 · 롤플레잉 자료 목록</a
+      ><a href="#05-roleplay-new">05 · 새 롤플레잉 대본</a
+      ><a href="#06-roleplay-edit">06 · 롤플레잉 대본 수정</a
+      ><a href="#07-roleplay-ready">07 · 롤플레잉 연습 준비</a
+      ><a href="#08-roleplay-session">08 · 롤플레잉 녹음</a
+      ><a href="#09-roleplay-result">09 · 롤플레잉 분석 결과</a
+      ><a href="#10-memorization-list">10 · 문단 암기 자료 목록</a
+      ><a href="#11-memorization-new">11 · 새 암기 자료</a
+      ><a href="#12-memorization-edit">12 · 암기 자료 수정·문단 검수</a
+      ><a href="#13-memorization-ready">13 · 문단 암기 연습 준비</a
+      ><a href="#14-memorization-session">14 · 문단 암기 녹음</a
+      ><a href="#15-memorization-result">15 · 문단 암기 분석 결과</a
+      ><a href="#16-history">16 · 학습 기록</a><a href="#17-recordings">17 · 녹음 관리</a
+      ><a href="#18-test">18 · 분석 개발 테스트</a><a href="#19-not-found">19 · 세션 경로 없음</a>
+    </nav>
+  </aside>
+  <main id="top">
+    <div class="intro">
+      <p class="number">APPROVED DESIGN / 2026-10-03</p>
+      <h1>하나의 Echo, 연결되는 화면들.</h1>
+      <p>
+        참고 이미지 1–3의 흰색·차콜·레드, 큰 타이포그래피와 얇은 구분선을 이미지 4의 사이드바 중심
+        작업 구조에 적용한 데스크톱 시안입니다.
+      </p>
+      <p>
+        <strong>현재 페이지 경로 21개 → 시안 19장.</strong> 사용자 화면 17장, 개발 테스트 1장, 공통
+        404 제안 1장입니다. 이미지를 누르면 원본을 확대할 수 있습니다.
+      </p>
+      <p class="muted">
+        디자인 논의용 생성 이미지이며 실제 실행 화면이나 구현 결과가 아닙니다. 문구·샘플 수치·세부
+        세부 표현보다 실제 기능과 접근성을 우선합니다. 구현 화면은 Storybook의 Route Gallery에서
+        확인할 수 있습니다.
+      </p>
+      <details>
+        <summary>참고 이미지와 검토 범위</summary>
+        <p>
+          <a href="references/reference-01.png">참고 1</a> ·
+          <a href="references/reference-02.png">참고 2</a> ·
+          <a href="references/reference-03.png">참고 3</a> ·
+          <a href="references/reference-04.png">참고 4</a>
+        </p>
+        <p>
+          기존 페이지와 해당 view 코드를 읽어 화면별 역할을 대응했습니다. 새 AI 회화·문장 연습장 등
+          아직 연결되지 않은 기능은 이 라우트 세트에 포함하지 않았습니다. 두 연습의 준비·녹음 화면은
+          사이드바를 접는 방향입니다.
+        </p>
+        <p>
+          구현 규격은 implementation-20261003/design-contract.md에 기록합니다. 문단 AI 기능은 입력한
+          원문의 문단 나누기 제안이며 새 원문 생성 기능을 뜻하지 않습니다. 결과의 비교 표시는 음성
+          인식 문장을 기준으로 하며 발음 점수가 아닙니다.
+        </p>
+      </details>
+    </div>
+    <section id="01-home">
+      <header>
+        <div>
+          <p class="number">01</p>
+          <h2>홈</h2>
+        </div>
+        <a class="original" href="01-home.png" target="_blank" rel="noopener">원본 확대 ↗</a>
+      </header>
+      <p class="routes"><code>/home</code> · <code>/</code></p>
+      <p>루트 /는 /home으로 이동합니다.</p>
+      <a href="01-home.png" target="_blank" rel="noopener"
+        ><img src="01-home.png" alt="홈 디자인 시안" width="1487" height="1058" loading="lazy"
+      /></a>
+    </section>
+    <section id="02-login">
+      <header>
+        <div>
+          <p class="number">02</p>
+          <h2>로그인</h2>
+        </div>
+        <a class="original" href="02-login.png" target="_blank" rel="noopener">원본 확대 ↗</a>
+      </header>
+      <p class="routes"><code>/login</code></p>
+      <p></p>
+      <a href="02-login.png" target="_blank" rel="noopener"
+        ><img src="02-login.png" alt="로그인 디자인 시안" width="1487" height="1058" loading="lazy"
+      /></a>
+    </section>
+    <section id="03-callback">
+      <header>
+        <div>
+          <p class="number">03</p>
+          <h2>로그인 연결</h2>
+        </div>
+        <a class="original" href="03-callback.png" target="_blank" rel="noopener">원본 확대 ↗</a>
+      </header>
+      <p class="routes"><code>/callback</code></p>
+      <p></p>
+      <a href="03-callback.png" target="_blank" rel="noopener"
+        ><img
+          src="03-callback.png"
+          alt="로그인 연결 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="04-roleplay-list">
+      <header>
+        <div>
+          <p class="number">04</p>
+          <h2>롤플레잉 자료 목록</h2>
+        </div>
+        <a class="original" href="04-roleplay-list.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/role-playing</code></p>
+      <p></p>
+      <a href="04-roleplay-list.png" target="_blank" rel="noopener"
+        ><img
+          src="04-roleplay-list.png"
+          alt="롤플레잉 자료 목록 디자인 시안"
+          width="1486"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="05-roleplay-new">
+      <header>
+        <div>
+          <p class="number">05</p>
+          <h2>새 롤플레잉 대본</h2>
+        </div>
+        <a class="original" href="05-roleplay-new.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/role-playing/new</code></p>
+      <p></p>
+      <a href="05-roleplay-new.png" target="_blank" rel="noopener"
+        ><img
+          src="05-roleplay-new.png"
+          alt="새 롤플레잉 대본 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="06-roleplay-edit">
+      <header>
+        <div>
+          <p class="number">06</p>
+          <h2>롤플레잉 대본 수정</h2>
+        </div>
+        <a class="original" href="06-roleplay-edit.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/role-playing/[id]/edit</code></p>
+      <p></p>
+      <a href="06-roleplay-edit.png" target="_blank" rel="noopener"
+        ><img
+          src="06-roleplay-edit.png"
+          alt="롤플레잉 대본 수정 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="07-roleplay-ready">
+      <header>
+        <div>
+          <p class="number">07</p>
+          <h2>롤플레잉 연습 준비</h2>
+        </div>
+        <a class="original" href="07-roleplay-ready.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/role-playing/[id]/ready</code></p>
+      <p></p>
+      <a href="07-roleplay-ready.png" target="_blank" rel="noopener"
+        ><img
+          src="07-roleplay-ready.png"
+          alt="롤플레잉 연습 준비 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="08-roleplay-session">
+      <header>
+        <div>
+          <p class="number">08</p>
+          <h2>롤플레잉 녹음</h2>
+        </div>
+        <a class="original" href="08-roleplay-session.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/role-playing/[id]/session/[sessionId]</code></p>
+      <p></p>
+      <a href="08-roleplay-session.png" target="_blank" rel="noopener"
+        ><img
+          src="08-roleplay-session.png"
+          alt="롤플레잉 녹음 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="09-roleplay-result">
+      <header>
+        <div>
+          <p class="number">09</p>
+          <h2>롤플레잉 분석 결과</h2>
+        </div>
+        <a class="original" href="09-roleplay-result.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/roleplay-sessions/[id]/result</code></p>
+      <p></p>
+      <a href="09-roleplay-result.png" target="_blank" rel="noopener"
+        ><img
+          src="09-roleplay-result.png"
+          alt="롤플레잉 분석 결과 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="10-memorization-list">
+      <header>
+        <div>
+          <p class="number">10</p>
+          <h2>문단 암기 자료 목록</h2>
+        </div>
+        <a class="original" href="10-memorization-list.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/sentence-memorization</code></p>
+      <p></p>
+      <a href="10-memorization-list.png" target="_blank" rel="noopener"
+        ><img
+          src="10-memorization-list.png"
+          alt="문단 암기 자료 목록 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="11-memorization-new">
+      <header>
+        <div>
+          <p class="number">11</p>
+          <h2>새 암기 자료</h2>
+        </div>
+        <a class="original" href="11-memorization-new.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/sentence-memorization/new</code></p>
+      <p></p>
+      <a href="11-memorization-new.png" target="_blank" rel="noopener"
+        ><img
+          src="11-memorization-new.png"
+          alt="새 암기 자료 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="12-memorization-edit">
+      <header>
+        <div>
+          <p class="number">12</p>
+          <h2>암기 자료 수정·문단 검수</h2>
+        </div>
+        <a class="original" href="12-memorization-edit.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/sentence-memorization/[id]/edit</code></p>
+      <p></p>
+      <a href="12-memorization-edit.png" target="_blank" rel="noopener"
+        ><img
+          src="12-memorization-edit.png"
+          alt="암기 자료 수정·문단 검수 디자인 시안"
+          width="1486"
+          height="1059"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="13-memorization-ready">
+      <header>
+        <div>
+          <p class="number">13</p>
+          <h2>문단 암기 연습 준비</h2>
+        </div>
+        <a class="original" href="13-memorization-ready.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/sentence-memorization/[id]/ready</code></p>
+      <p></p>
+      <a href="13-memorization-ready.png" target="_blank" rel="noopener"
+        ><img
+          src="13-memorization-ready.png"
+          alt="문단 암기 연습 준비 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="14-memorization-session">
+      <header>
+        <div>
+          <p class="number">14</p>
+          <h2>문단 암기 녹음</h2>
+        </div>
+        <a class="original" href="14-memorization-session.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/sentence-memorization/[id]/session/[sessionId]</code></p>
+      <p></p>
+      <a href="14-memorization-session.png" target="_blank" rel="noopener"
+        ><img
+          src="14-memorization-session.png"
+          alt="문단 암기 녹음 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="15-memorization-result">
+      <header>
+        <div>
+          <p class="number">15</p>
+          <h2>문단 암기 분석 결과</h2>
+        </div>
+        <a class="original" href="15-memorization-result.png" target="_blank" rel="noopener"
+          >원본 확대 ↗</a
+        >
+      </header>
+      <p class="routes"><code>/memorization-sessions/[id]/result</code></p>
+      <p></p>
+      <a href="15-memorization-result.png" target="_blank" rel="noopener"
+        ><img
+          src="15-memorization-result.png"
+          alt="문단 암기 분석 결과 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="16-history">
+      <header>
+        <div>
+          <p class="number">16</p>
+          <h2>학습 기록</h2>
+        </div>
+        <a class="original" href="16-history.png" target="_blank" rel="noopener">원본 확대 ↗</a>
+      </header>
+      <p class="routes"><code>/sessions</code></p>
+      <p></p>
+      <a href="16-history.png" target="_blank" rel="noopener"
+        ><img
+          src="16-history.png"
+          alt="학습 기록 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="17-recordings">
+      <header>
+        <div>
+          <p class="number">17</p>
+          <h2>녹음 관리</h2>
+        </div>
+        <a class="original" href="17-recordings.png" target="_blank" rel="noopener">원본 확대 ↗</a>
+      </header>
+      <p class="routes"><code>/recording-management</code></p>
+      <p></p>
+      <a href="17-recordings.png" target="_blank" rel="noopener"
+        ><img
+          src="17-recordings.png"
+          alt="녹음 관리 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="18-test">
+      <header>
+        <div>
+          <p class="number">18</p>
+          <h2>분석 개발 테스트</h2>
+        </div>
+        <a class="original" href="18-test.png" target="_blank" rel="noopener">원본 확대 ↗</a>
+      </header>
+      <p class="routes"><code>/test</code></p>
+      <p>환경 설정으로 접근을 제한하는 개발 진단 페이지입니다.</p>
+      <a href="18-test.png" target="_blank" rel="noopener"
+        ><img
+          src="18-test.png"
+          alt="분석 개발 테스트 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <section id="19-not-found">
+      <header>
+        <div>
+          <p class="number">19</p>
+          <h2>세션 경로 없음</h2>
+        </div>
+        <a class="original" href="19-not-found.png" target="_blank" rel="noopener">원본 확대 ↗</a>
+      </header>
+      <p class="routes">
+        <code>/role-playing/[id]/session</code> · <code>/sentence-memorization/[id]/session</code>
+      </p>
+      <p>현재 두 경로는 Next.js notFound()를 호출합니다. 이 이미지는 공통 404 외형 제안입니다.</p>
+      <a href="19-not-found.png" target="_blank" rel="noopener"
+        ><img
+          src="19-not-found.png"
+          alt="세션 경로 없음 디자인 시안"
+          width="1487"
+          height="1058"
+          loading="lazy"
+      /></a>
+    </section>
+    <div class="foot">
+      <p>
+        독립 화면이 없는 API 경로: <code>/api/auth/callback</code> ·
+        <code>/api/roleplay-recordings</code> · <code>/api/test-analysis</code> ·
+        <code>/api/test-analysis/fixture</code> · <code>/api/test-analysis/invoke</code> ·
+        <code>/api/test-analysis/status</code>
+      </p>
+      <p><a href="manifest.json">경로·생성 명세 보기</a> · 제품 코드는 변경하지 않았습니다.</p>
+    </div>
+  </main>
+</html>

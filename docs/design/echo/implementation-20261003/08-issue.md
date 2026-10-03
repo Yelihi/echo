@@ -19,9 +19,9 @@
 
 ## 완료 조건
 
-- [ ] 390·834·1440px, 접근성·키보드·모션 감소·실패 상태 및 전체 자동 검사
-- [ ] 변경 범위 타입·린트·포맷, 관련 Jest/Storybook 검사
-- [ ] 시각 검토 및 검증 한계 기록
+- [x] 390·834·1440px, 접근성·키보드·모션 감소·실패 상태 및 전체 자동 검사
+- [x] 변경 범위 타입·린트·포맷, 관련 Jest/Storybook 검사
+- [x] 시각 검토 및 검증 한계 기록
 
 ## 진행
 
@@ -30,3 +30,8 @@
 최종 검사: `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test -- --runInBand`, `npm run test:storybook`, `npm run build-storybook`, `npm run build`.
 
 Depends on: #134
+
+## 구현 결과
+
+순차 구현 완료. [통합 PR #136](https://github.com/Yelihi/echo/pull/136)에서 리뷰합니다.
+검증 근거와 제한은 [verification.md](verification.md)에 기록했습니다. 병합 시 이슈를 닫습니다.

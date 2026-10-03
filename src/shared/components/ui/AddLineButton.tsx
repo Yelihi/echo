@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const addLineButtonVariants = cva(
-  "group/add-line-button inline-flex h-9.25 cursor-pointer items-center justify-center gap-1.5 rounded-chip border border-control-line bg-transparent px-3.5 text-body-2 font-bold text-gray-text transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "group/add-line-button inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-control-line bg-transparent px-3.5 text-body-2 font-medium text-gray-text transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       // 평상시 모습은 같고 hover 시 화자별로 다른 강조가 들어옵니다.

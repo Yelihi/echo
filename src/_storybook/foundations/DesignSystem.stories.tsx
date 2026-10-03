@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Button } from "@/shared/components/atomics/button/Button";
 import { Input } from "@/shared/components/atomics/input/Input";
 
-/** Silver & Ink. Tokens live in global.css; adoption rules in docs/design-system.md. */
+/** Editorial. Tokens live in global.css; adoption rules in docs/design-system.md. */
 const meta = {
   title: "foundations/Design System",
   parameters: {
@@ -49,7 +49,7 @@ const SEMANTIC: Array<[string, string, string]> = [
   ["bg-brand", "Ink · #1E1D1D", "--color-brand"],
   ["bg-silver", "Silver · #B6BEC6", "--color-silver"],
   ["bg-card-surface", "Paper · #FFFFFF", "--color-card-surface"],
-  ["bg-gray-background", "Mist · #F9F9F9", "--color-gray-background"],
+  ["bg-gray-background", "Mist · #FAFAF9", "--color-gray-background"],
   ["bg-blue-primary", "blue-primary", "--color-blue-primary"],
   ["bg-blue-secondary", "blue-secondary", "--color-blue-secondary"],
   ["bg-blue-border", "blue-border", "--color-blue-border"],
@@ -90,7 +90,7 @@ const TYPE: Array<[string, string, string]> = [
   ["text-subtitle-sm", "Subtitle SM", "12 / 16 / 0.024em"],
   ["text-body-6", "Body 6", "30 / 45"],
   ["text-body-5", "Body 5", "16 / 24"],
-  ["text-body-4", "Body 4", "15 / 23"],
+  ["text-body-4", "Body 4", "16 / 23"],
   ["text-body-3", "Body 3", "14 / 21"],
   ["text-body-2", "Body 2", "13 / 20"],
   ["text-body-1", "Body 1", "12 / 18"],
@@ -110,7 +110,7 @@ export const Overview: Story = {
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-card-line-strong pb-6">
         <span className="text-heading-sm font-bold tracking-tight">Echo / Design System</span>
         <span className="rounded-pill border border-control-line px-4 py-2 text-body-2">
-          Silver & Ink · 01
+          Editorial · 01
         </span>
       </header>
       <section className="grid gap-8 py-section md:grid-cols-[1.4fr_1fr] md:items-center">
@@ -124,7 +124,7 @@ export const Overview: Story = {
             집중할 수 있도록.
           </h1>
           <p className="mt-6 max-w-md text-body-5 text-gray-text">
-            흰 여백, 차분한 실버, 또렷한 차콜.
+            흰 여백, 가는 구분선, 선명한 레드.
             <br />
             장식은 줄이고 연습의 내용과 다음 행동을 선명하게 보여줍니다.
           </p>
@@ -143,9 +143,9 @@ export const Overview: Story = {
       <section aria-label="핵심 팔레트" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
           ["Paper", "#FFFFFF", "bg-card-surface text-black-primary"],
-          ["Mist", "#F9F9F9", "bg-gray-background text-black-primary"],
-          ["Silver", "#B6BEC6", "bg-silver text-black-primary"],
-          ["Ink", "#1E1D1D", "bg-brand text-on-brand"],
+          ["Mist", "#FAFAF9", "bg-gray-background text-black-primary"],
+          ["Ink", "#202020", "bg-black-primary text-white"],
+          ["Red", "#E51E2A", "bg-brand text-on-brand"],
         ].map(([name, hex, cls]) => (
           <div
             key={name}
@@ -166,10 +166,7 @@ export const Overview: Story = {
 export const Geometry: Story = {
   render: () => (
     <main className="flex flex-col gap-section bg-card-surface p-page-gutter">
-      <Section
-        title="Shape & Space"
-        hint="4px 간격 단위 · 입력 12px · 패널 20px · 카드 28px · 히어로 36px · 버튼과 칩은 pill"
-      >
+      <Section title="Shape & Space" hint="4px 간격 단위 · 입력·버튼 8px · 패널·카드 10px">
         <div className="flex flex-wrap gap-6">
           {["rounded-control", "rounded-panel", "rounded-card", "rounded-hero", "rounded-pill"].map(
             (radius) => (
@@ -185,7 +182,7 @@ export const Geometry: Story = {
       </Section>
       <Section
         title="기존 컴포넌트에 적용된 토큰"
-        hint="기존 API와 동작을 유지합니다. shared/Silver & Ink에서 컴포넌트 조합과 상호작용을 확인할 수 있습니다."
+        hint="기존 API와 동작을 유지합니다. shared/Editorial에서 컴포넌트 조합과 상호작용을 확인할 수 있습니다."
       >
         <div className="flex flex-wrap gap-3">
           <Button>기본 동작</Button>
@@ -206,7 +203,7 @@ export const Colors: Story = {
     <div className="flex flex-col gap-10 bg-gray-background p-page-gutter">
       <Section
         title="Semantic"
-        hint="실버는 큰 배경과 장식에, 차콜은 본문과 주요 동작에 사용합니다. blue 계열 이름은 기존 코드 호환용입니다."
+        hint="레드는 주요 동작에, 차콜은 본문에 사용합니다. blue 계열 이름은 기존 코드 호환용입니다."
       >
         <div className="flex flex-wrap gap-4">
           {SEMANTIC.map(([cls, name, token]) => (
@@ -237,7 +234,7 @@ export const Typography: Story = {
     <div className="flex flex-col gap-6 bg-gray-background p-page-gutter">
       <Section
         title="Typography"
-        hint="Noto Sans KR 유지. 큰 제목은 Bold와 조밀한 자간, 본문은 Regular와 여유 있는 행간을 사용합니다."
+        hint="Inter + Noto Sans KR. 큰 제목은 Regular와 조밀한 자간, 본문은 Regular와 여유 있는 행간을 사용합니다."
       >
         <div className="divide-y divide-card-line rounded-2xl border border-card-line bg-card-surface">
           {TYPE.map(([cls, name, spec]) => (

@@ -38,7 +38,7 @@ const preview: Preview = {
         app: { name: "App", value: "#fafaf9" },
         card: { name: "Paper", value: "#ffffff" },
         silver: { name: "Silver", value: "#b6bec6" },
-        session: { name: "Session", value: "#1e1d1d" },
+        session: { name: "Session", value: "#202020" },
       },
     },
   },
@@ -48,7 +48,7 @@ const preview: Preview = {
   },
   globalTypes: {
     pillar: {
-      description: "필라 호환성 확인 — 두 모드 모두 Silver & Ink 팔레트를 사용합니다",
+      description: "필라 호환성 확인 — 두 모드 모두 Editorial 팔레트를 사용합니다",
       toolbar: {
         title: "Pillar",
         icon: "circlehollow",

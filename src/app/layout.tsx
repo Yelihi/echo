@@ -17,8 +17,8 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "english-speaking-practice",
-  description: "FSD(Feature-Sliced Design) 기반 Next.js 프로젝트",
+  title: "Echo | 나의 영어 연습",
+  description: "말하고, 반복하고, 나의 영어로 만드는 연습 공간",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
