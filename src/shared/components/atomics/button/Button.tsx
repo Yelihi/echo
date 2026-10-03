@@ -13,7 +13,7 @@ const buttonVariants = cva(
         outline:
           "border-control-line bg-card-surface hover:bg-gray-background hover:text-black-primary aria-expanded:bg-gray-background aria-expanded:text-black-primary",
         secondary:
-          "bg-neutral-100 text-brand hover:bg-silver/40 aria-expanded:bg-gray-background aria-expanded:text-brand",
+          "bg-neutral-100 text-black-primary hover:bg-silver/40 aria-expanded:bg-gray-background aria-expanded:text-black-primary",
         ghost:
           "hover:bg-gray-background hover:text-brand aria-expanded:bg-gray-background aria-expanded:text-black-primary",
         destructive:

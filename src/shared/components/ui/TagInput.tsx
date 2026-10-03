@@ -15,8 +15,8 @@ export const tagInputChipVariants = cva(
   {
     variants: {
       theme: {
-        roleplay: "bg-gray-background text-brand",
-        memo: "bg-gray-background text-brand",
+        roleplay: "bg-gray-background text-black-primary",
+        memo: "bg-gray-background text-black-primary",
       },
     },
     defaultVariants: {
