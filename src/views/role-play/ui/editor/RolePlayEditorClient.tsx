@@ -15,17 +15,22 @@ import { convertRoleplayTxtImportToEditorLines } from "@/views/role-play/models/
 import { createRolePlayMaterialErrorFromCode } from "@/views/role-play/models/errors";
 import type { RoleplayEditorDraft, RoleplayEditorMode } from "@/views/role-play/models/interface";
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
-import { createRolePlayMaterial } from "@/views/role-play/services/action/createRolePlayMaterial";
+import { saveRolePlayMaterial } from "@/views/role-play/services/action/saveRolePlayMaterial";
 import { RolePlayEditorHeader } from "@/views/role-play/ui/editor/RolePlayEditorHeader";
 import { RolePlayEditorMetaPanel } from "@/views/role-play/ui/editor/RolePlayEditorMetaPanel";
 import { RolePlayScriptEditor } from "@/views/role-play/ui/editor/RolePlayScriptEditor";
 
 interface RolePlayEditorClientProps {
   mode: RoleplayEditorMode;
+  materialId?: string;
   initialDraft?: RoleplayEditorDraft;
 }
 
-export function RolePlayEditorClient({ mode, initialDraft }: RolePlayEditorClientProps) {
+export function RolePlayEditorClient({
+  mode,
+  initialDraft,
+  materialId,
+}: RolePlayEditorClientProps) {
   const router = useRouter();
   const [isSaving, startSaveTransition] = useTransition();
   const txtImport = useTransferTextFile((imported) => {
@@ -73,28 +78,36 @@ export function RolePlayEditorClient({ mode, initialDraft }: RolePlayEditorClien
       return;
     }
 
-    if (mode !== "create") {
+    if (mode === "edit" && !materialId) {
       errorPopupManager.open({
-        title: "아직 수정 저장을 지원하지 않습니다",
-        message: "지금은 새 자료 만들기만 저장할 수 있습니다. 수정 저장은 곧 연결됩니다.",
+        title: "수정할 자료를 찾지 못했습니다",
+        message: "자료 목록에서 다시 열어주세요.",
       });
       return;
     }
 
     startSaveTransition(async () => {
-      const result = await createRolePlayMaterial(draft);
+      try {
+        const result = await saveRolePlayMaterial(draft, mode === "edit" ? materialId : undefined);
 
-      if (result.code === "SUCCESS") {
-        router.push("/role-playing");
-        return;
+        if (result.code === "SUCCESS") {
+          router.push("/role-playing");
+          router.refresh();
+          return;
+        }
+
+        const error = createRolePlayMaterialErrorFromCode(result.code);
+        errorPopupManager.open({
+          title: error.title,
+          message: error.message,
+          code: error.code,
+        });
+      } catch {
+        errorPopupManager.open({
+          title: "저장에 실패했습니다",
+          message: "입력 내용은 유지됩니다. 잠시 후 다시 시도해주세요.",
+        });
       }
-
-      const error = createRolePlayMaterialErrorFromCode(result.code);
-      errorPopupManager.open({
-        title: error.title,
-        message: error.message,
-        code: error.code,
-      });
     });
   };
 

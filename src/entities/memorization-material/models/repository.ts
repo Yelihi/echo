@@ -34,5 +34,7 @@ export interface MemorizationMaterialRepositoryPort {
   countActive(): Promise<number>;
   count(params?: FindMemorizationMaterialsParams): Promise<number>;
   findDistinctTags(state?: MaterialState): Promise<TagValue[]>;
+  update(id: MaterialId, input: CreateMemorizationMaterialInput): Promise<void>;
+  softDelete(id: MaterialId, ownerId: UserId): Promise<void>;
   create(input: CreateMemorizationMaterialInput): Promise<MemorizationMaterial>;
 }

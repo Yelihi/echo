@@ -1022,6 +1022,14 @@ export type Database = {
       };
     };
     Functions: {
+      update_roleplay_material: {
+        Args: { p_material_id: string; p_content: Json };
+        Returns: undefined;
+      };
+      update_memorization_material: {
+        Args: { p_material_id: string; p_content: Json };
+        Returns: undefined;
+      };
       list_study_sessions: {
         Args: { p_page?: number; p_status?: string; p_sort?: string };
         Returns: Json;

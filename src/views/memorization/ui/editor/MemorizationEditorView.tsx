@@ -26,5 +26,7 @@ export async function MemorizationEditorView({ mode, materialId }: MemorizationE
     notFound();
   }
 
-  return <MemorizationEditorClient mode="edit" initialDraft={initialDraft} />;
+  return (
+    <MemorizationEditorClient mode="edit" materialId={materialId} initialDraft={initialDraft} />
+  );
 }
