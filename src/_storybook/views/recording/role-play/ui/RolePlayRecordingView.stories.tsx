@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 // views
 import type { RoleplayReadyMaterial } from "@/views/role-play/models/interface";
@@ -42,6 +42,8 @@ const meta = {
   },
   args: {
     material,
+    // This adapter simulates persistence only in Storybook.
+    saveRecording: fn(async () => {}),
     autoAdvancePartner: false,
   },
 } satisfies Meta<typeof RolePlayRecordingView>;

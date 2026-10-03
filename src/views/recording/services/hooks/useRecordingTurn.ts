@@ -1,6 +1,7 @@
 "use client";
 import type { UseRecordingTurnInput } from "@/views/recording/models/hooks";
 
+import { RecordingRequestError } from "@/features/recording-storage/models/recordingRequestError";
 import * as React from "react";
 
 import { useRecordingSession } from "@/features/session-recording";
@@ -84,7 +85,8 @@ export function useRecordingTurn({
     operationInProgress.current = true;
     try {
       saveStarted();
-      await saveRecording?.(audio);
+      if (!saveRecording) throw new RecordingRequestError("RECORDING_SERVER_NOT_READY");
+      await saveRecording(audio);
       resetRecording();
       startedAtRef.current = null;
       saveSucceeded(totalSteps, nextPhase);
