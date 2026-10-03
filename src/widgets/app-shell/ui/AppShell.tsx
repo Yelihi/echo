@@ -1,4 +1,8 @@
+"use client";
+
 import * as React from "react";
+import { usePathname } from "next/navigation";
+import { EditorialShell } from "@/widgets/editorial-shell/ui/EditorialShell";
 import { PageEnter } from "@/shared/components/motion/PageEnter";
 
 // shared
@@ -9,6 +13,7 @@ import { NavigationContainer } from "@/widgets/navigation/ui/NavigationContainer
 
 export interface AppShellProps {
   children: React.ReactNode;
+  initials?: string;
 }
 
 /**
@@ -22,9 +27,12 @@ export interface AppShellProps {
  */
 export const AppShell = ({
   children,
+  initials,
   className,
   ...props
 }: AppShellProps & React.ComponentProps<"div">) => {
+  const pathname = usePathname();
+  if (pathname === "/home") return <EditorialShell initials={initials}>{children}</EditorialShell>;
   return (
     <div
       data-slot="app-shell"

@@ -1,11 +1,9 @@
 export type { GetLatestStudySession } from "@/widgets/latest-sessions/models/studySession";
 
-export interface GetLatestRoleplaySessionsParams {
-  page: number;
-  limit?: number;
-}
-
-export interface GetLatestMemorizationSessionsParams {
-  page: number;
-  limit?: number;
+export interface HomeMaterialItem {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+  href: string;
 }

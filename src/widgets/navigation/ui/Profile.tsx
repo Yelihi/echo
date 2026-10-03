@@ -32,7 +32,7 @@ export const ProfileMenuItem = ({ icon: Icon, label, onClick }: ProfileMenuItemP
   );
 };
 
-export const Profile = () => {
+export const Profile = ({ initials }: { initials?: string }) => {
   const menuId = useId();
   const [isActive, setIsActive] = useState(false);
   const profileRef = useClickOutside<HTMLDivElement>(() => setIsActive(false));
@@ -72,7 +72,7 @@ export const Profile = () => {
         onClick={toggleProfileMenu}
       >
         <div className="flex size-full items-center justify-center">
-          <User className="size-[18px] text-on-brand" />
+          {initials || <User className="size-[18px] text-on-brand" />}
         </div>
       </button>
       <AnimatedMenu

@@ -20,5 +20,16 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     redirect("/login");
   }
 
-  return <AppShell>{children}</AppShell>;
+  const name = user.user_metadata?.full_name;
+  const initials =
+    typeof name === "string"
+      ? name
+          .trim()
+          .split(/\s+/)
+          .map((part) => Array.from(part)[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase()
+      : undefined;
+  return <AppShell initials={initials}>{children}</AppShell>;
 }
