@@ -1,11 +1,12 @@
 "use client";
+import styles from "@/shared/components/editor/Editor.module.css";
 
 import { useShallow } from "zustand/react/shallow";
 import { Check, ChevronUp, Trash } from "lucide-react";
 
 // shared
 import { Button, Textarea } from "@/shared/components";
-import { EditorPanelHeader, ParagraphRow } from "@/shared/components/ui";
+import { ParagraphRow } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 
 // views
@@ -51,9 +52,7 @@ function MemorizationParagraphList() {
 
   if (paragraphIndexes.length === 0) {
     return (
-      <div className="flex min-h-48 flex-1 items-center justify-center rounded-control border border-dashed border-card-line-strong bg-card-surface px-6 text-center text-body-3 text-gray-text">
-        본문을 입력한 뒤 AI 문단 제안 요청을 눌러 초안을 만드세요.
-      </div>
+      <div className={styles.empty}>본문을 입력한 뒤 AI 문단 제안 요청을 눌러 초안을 만드세요.</div>
     );
   }
 
@@ -125,7 +124,7 @@ function MemorizationParagraphConfirmBar() {
   };
 
   return (
-    <div className="flex shrink-0 justify-end border-t border-card-line bg-card-surface px-4 py-3">
+    <div className={styles.confirmBar}>
       <Button type="button" variant="secondary" size="lg" onClick={confirm}>
         <Check className="size-4" />
         문단 확정
@@ -136,16 +135,17 @@ function MemorizationParagraphConfirmBar() {
 
 export function MemorizationParagraphReviewPanel() {
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-card border border-card-line bg-white">
-      <EditorPanelHeader
-        className="shrink-0"
-        title="문단 검수"
-        meta={<MemorizationParagraphMeta />}
-      />
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto bg-gray-background px-4 py-5 md:px-6">
+    <section className={styles.panel} aria-labelledby="memo-review-title">
+      <div className={styles.panelHeading}>
+        <h2 id="memo-review-title">문단 검수</h2>
+        <span>
+          <MemorizationParagraphMeta />
+        </span>
+      </div>
+      <div className={styles.reviewList}>
         <MemorizationParagraphList />
       </div>
       <MemorizationParagraphConfirmBar />
-    </div>
+    </section>
   );
 }

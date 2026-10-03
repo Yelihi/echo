@@ -1,9 +1,10 @@
 "use client";
+import styles from "@/shared/components/editor/Editor.module.css";
 
 import { Sparkles } from "lucide-react";
 
 // shared
-import { Textarea, TitleField } from "@/shared/components";
+import { Textarea, Input } from "@/shared/components";
 import { DashedActionButton, TagInputField } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 
@@ -21,9 +22,9 @@ function MemorizationTitleField() {
   const setTitle = useMemorizationEditorStore((state) => state.setTitle);
 
   return (
-    <label className="flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">제목</span>
-      <TitleField
+    <label className={styles.field}>
+      <span className={styles.fieldLabel}>제목</span>
+      <Input
         value={title}
         placeholder="예: Business Email Openings"
         onChange={(event) => setTitle(event.target.value)}
@@ -38,8 +39,8 @@ function MemorizationTagsField() {
   const markDirty = useMemorizationEditorStore((state) => state.markDirty);
 
   return (
-    <div className="mt-4 flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">태그</span>
+    <div className={styles.field}>
+      <span className={styles.fieldLabel}>태그</span>
       <TagInputField
         theme="memo"
         tags={tags}
@@ -58,14 +59,15 @@ function MemorizationRawTextField() {
   const wordCount = rawText.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div className="rounded-card border border-card-line bg-white p-5">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-body-2 font-bold text-gray-text">본문</span>
+    <div className={styles.field}>
+      <div className={styles.bodyHeading}>
+        <span className={styles.fieldLabel}>본문</span>
         <span className="text-body-1 font-bold text-gray-text-secondary">{wordCount} words</span>
       </div>
       <Textarea
         aria-label="암기할 영어 본문"
-        rows={14}
+        rows={10}
+        className={styles.bodyInput}
         value={rawText}
         placeholder="암기할 영어 본문을 입력하세요."
         onChange={(event) => setRawText(event.target.value)}
@@ -111,14 +113,18 @@ export function MemorizationEditorSourcePanel({
   paragraphSuggestion: MemorizationParagraphSuggestionProps;
 }) {
   return (
-    <aside className="flex min-w-0 flex-col gap-4">
-      <div className="rounded-card border border-card-line bg-white p-5">
+    <section className={styles.panel} aria-labelledby="memo-source-title">
+      <div className={styles.panelHeading}>
+        <h2 id="memo-source-title">원문 입력</h2>
+      </div>
+      <div className={styles.sourceFields}>
         <MemorizationTitleField />
         <MemorizationTagsField />
+        <MemorizationRawTextField />
       </div>
-
-      <MemorizationRawTextField />
-      <MemorizationParagraphSuggestButton paragraphSuggestion={paragraphSuggestion} />
-    </aside>
+      <div className={styles.suggest}>
+        <MemorizationParagraphSuggestButton paragraphSuggestion={paragraphSuggestion} />
+      </div>
+    </section>
   );
 }

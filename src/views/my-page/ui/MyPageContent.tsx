@@ -2,17 +2,15 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import type { GetLatestStudySession } from "@/widgets/latest-sessions/models/studySession";
-import styles from "./HomeContent.module.css";
+import styles from "./MyPageContent.module.css";
 
-import type { HomeMaterialItem } from "@/views/home/models/interface";
+import type { MyPageMaterialItem } from "@/views/my-page/models/interface";
 
-export function HomeContent({
-  date,
+export function MyPageContent({
   roleplay,
   memorization,
   history,
 }: {
-  date: Date;
   roleplay: ReactNode;
   memorization: ReactNode;
   history: ReactNode;
@@ -20,49 +18,13 @@ export function HomeContent({
   return (
     <div className={styles.home}>
       <header className={styles.greeting}>
-        <div>
-          <h1>오늘도 한 문장씩.</h1>
-          <p>말하고, 기억하고, 다시 연습하세요.</p>
-        </div>
-        <div className={styles.today}>
-          <time dateTime={date.toISOString()}>
-            {new Intl.DateTimeFormat("ko-KR", {
-              timeZone: "Asia/Seoul",
-              year: "numeric",
-              month: "long",
-              day: "2-digit",
-            }).format(date)}{" "}
-            (
-            {new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", weekday: "short" }).format(
-              date,
-            )}
-            )
-          </time>
-          <p>꾸준한 연습이 더 나은 대화를 만듭니다.</p>
-        </div>
+        <p className={styles.eyebrow}>MY PRACTICE</p>
+        <h1>마이페이지</h1>
+        <p>나의 자료와 쌓아온 연습을 한눈에 확인하세요.</p>
+        <Link href="/recording-management" className={styles.recordings}>
+          녹음 관리 <ArrowRight size={16} aria-hidden />
+        </Link>
       </header>
-      <section className={styles.practice} aria-label="연습 선택">
-        <div className={styles.practiceColumn}>
-          <span className={styles.number}>01</span>
-          <h2>롤플레잉</h2>
-          <p>준비된 대본으로 대화를 연습해요.</p>
-          <Link href="/role-playing" className={styles.primary} aria-label="롤플레잉 연습하기">
-            연습하기 <ArrowRight size={21} strokeWidth={1.5} aria-hidden />
-          </Link>
-        </div>
-        <div className={styles.practiceColumn}>
-          <span className={styles.number}>02</span>
-          <h2>문단 암기</h2>
-          <p>긴 글을 나만의 문장으로 기억해요.</p>
-          <Link
-            href="/sentence-memorization"
-            className={styles.secondary}
-            aria-label="문단 암기 연습하기"
-          >
-            연습하기 <ArrowRight size={21} strokeWidth={1.5} aria-hidden />
-          </Link>
-        </div>
-      </section>
       <div className={styles.materials}>
         <section aria-labelledby="home-roleplay">
           <SectionHeading id="home-roleplay" title="최근 롤플레잉 자료" href="/role-playing" />
@@ -96,7 +58,7 @@ function SectionHeading({ id, title, href }: { id: string; title: string; href: 
   );
 }
 
-export function HomeMaterialRows({ items }: { items: readonly HomeMaterialItem[] }) {
+export function MyPageMaterialRows({ items }: { items: readonly MyPageMaterialItem[] }) {
   if (!items.length)
     return (
       <p className={styles.empty}>아직 자료가 없어요. 새 자료를 만들어 연습을 시작해보세요.</p>
@@ -127,7 +89,7 @@ const states = {
   inProgress: "분석 중",
   pending: "분석 전",
 };
-export function HomeHistoryRows({ sessions }: { sessions: readonly GetLatestStudySession[] }) {
+export function MyPageHistoryRows({ sessions }: { sessions: readonly GetLatestStudySession[] }) {
   if (!sessions.length)
     return <p className={styles.empty}>아직 학습 기록이 없어요. 첫 연습을 시작해보세요.</p>;
   return (
@@ -194,7 +156,7 @@ function formatDate(date: Date) {
     .replaceAll(" ", "")
     .replace(/\.$/, "");
 }
-export function HomeRowsLoading() {
+export function MyPageRowsLoading() {
   return (
     <div className={styles.empty} role="status">
       불러오는 중이에요…

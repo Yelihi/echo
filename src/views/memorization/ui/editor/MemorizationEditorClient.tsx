@@ -1,4 +1,5 @@
 "use client";
+import styles from "@/shared/components/editor/Editor.module.css";
 
 import { useLayoutEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -125,23 +126,13 @@ export function MemorizationEditorClient({
   };
 
   return (
-    <section
-      className="flex min-h-0 w-full flex-1 flex-col gap-7 lg:h-full lg:overflow-hidden"
-      data-pillar="memo"
-      aria-busy={isBusy}
-    >
+    <section className={styles.editor} data-pillar="memo" aria-busy={isBusy}>
       <MemorizationEditorHeader mode={mode} isSaving={isSaving} isBusy={isBusy} onSave={save} />
-      <div className="grid min-h-0 w-full flex-1 gap-5 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
-        <div
-          className={cn("min-h-0 lg:h-full lg:overflow-y-auto", isBusy && "opacity-60")}
-          inert={isBusy}
-        >
+      <div className={styles.columns}>
+        <div className={cn("min-w-0", isBusy && "opacity-60")} inert={isBusy}>
           <MemorizationEditorSourcePanel paragraphSuggestion={paragraphSuggestion} />
         </div>
-        <div
-          className={cn("flex min-h-0 flex-1 flex-col lg:h-full", isBusy && "opacity-60")}
-          inert={isBusy}
-        >
+        <div className={cn("min-w-0", isBusy && "opacity-60")} inert={isBusy}>
           <MemorizationParagraphReviewPanel />
         </div>
       </div>

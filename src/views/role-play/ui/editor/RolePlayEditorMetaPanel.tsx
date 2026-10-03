@@ -1,7 +1,8 @@
 "use client";
+import styles from "@/shared/components/editor/Editor.module.css";
 
 // shared
-import { Input, TitleField } from "@/shared/components";
+import { Input } from "@/shared/components";
 import { TagInputField } from "@/shared/components/ui";
 
 // features
@@ -16,9 +17,9 @@ function RolePlayTitleField() {
   const setTitle = useRolePlayEditorStore((state) => state.setTitle);
 
   return (
-    <label className="flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">제목</span>
-      <TitleField
+    <label className={styles.field}>
+      <span>제목</span>
+      <Input
         value={title}
         placeholder="예: Ordering at a Cafe"
         onChange={(event) => setTitle(event.target.value)}
@@ -32,8 +33,8 @@ function RolePlaySituationField() {
   const setSituation = useRolePlayEditorStore((state) => state.setSituation);
 
   return (
-    <label className="mt-4 flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">상황 설명</span>
+    <label className={styles.field}>
+      <span>상황 설명</span>
       <Input
         value={situation}
         placeholder="예: 카페에서 주문하기"
@@ -49,8 +50,8 @@ function RolePlayTagsField() {
   const markDirty = useRolePlayEditorStore((state) => state.markDirty);
 
   return (
-    <div className="mt-4 flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">태그</span>
+    <div className={styles.field}>
+      <span>태그</span>
       <TagInputField
         theme="roleplay"
         tags={tags}
@@ -64,14 +65,19 @@ function RolePlayTagsField() {
 
 export function RolePlayEditorMetaPanel({ txtImport }: { txtImport: RoleplayTxtImportProps }) {
   return (
-    <aside className="flex min-w-0 flex-col gap-4">
-      <div className="rounded-card border border-card-line bg-white p-5">
+    <section className={styles.panel} aria-labelledby="roleplay-meta-title">
+      <div className={styles.panelHeading}>
+        <h2 id="roleplay-meta-title">기본 정보</h2>
+        <RolePlayImportTxtButton {...txtImport} />
+      </div>
+      <div className={styles.fieldGrid}>
         <RolePlayTitleField />
         <RolePlaySituationField />
-        <RolePlayTagsField />
+        <div className={styles.fullWidth}>
+          <RolePlayTagsField />
+        </div>
       </div>
-
-      <RolePlayImportTxtButton {...txtImport} />
-    </aside>
+      <p className={styles.caption}>태그를 추가하면 자료를 쉽게 찾을 수 있어요.</p>
+    </section>
   );
 }

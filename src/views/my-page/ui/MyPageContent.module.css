@@ -1,93 +1,37 @@
 .home {
-  padding-top: 42px;
-  padding-bottom: 38px;
+  max-width: 1280px;
+  margin: auto;
+  padding: 48px 52px 64px;
 }
 .greeting {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-}
-.greeting h1 {
-  font-size: 58px;
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: -2.8px;
-}
-.greeting > div > p {
-  color: var(--editorial-muted);
-  font-size: 28px;
-  line-height: 1.5;
-  letter-spacing: -1px;
-}
-.today {
-  text-align: right;
-  color: var(--editorial-muted);
-  padding-top: 10px;
-  flex-shrink: 0;
-  font-size: 18px;
-}
-.greeting .today p {
-  font-size: 17px;
-  margin-top: 12px;
-  letter-spacing: -0.4px;
-}
-.practice {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 54px;
-  padding-bottom: 37px;
+  position: relative;
+  padding-bottom: 36px;
   border-bottom: 1px solid var(--editorial-line);
 }
-.practiceColumn {
-  padding: 10px 0 8px 5px;
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #6e6e6a;
 }
-.practiceColumn + .practiceColumn {
-  border-left: 1px solid var(--editorial-line);
-  padding-left: 50px;
-}
-.number {
-  color: var(--editorial-muted);
-  font-size: 18px;
-}
-.practice h2 {
-  font-size: 54px;
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: -2px;
+.greeting h1 {
+  font-size: 36px;
+  font-weight: 500;
   margin-top: 14px;
-}
-.practice p {
-  color: var(--editorial-muted);
-  font-size: 27px;
   letter-spacing: -1px;
-  line-height: 1.5;
-  margin-top: 0;
 }
-.primary,
-.secondary {
+.greeting > p:last-of-type {
+  font-size: 14px;
+  color: #6e6e6a;
+  margin-top: 12px;
+}
+.recordings {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 15px;
-  height: 56px;
-  min-width: 176px;
-  padding: 0 24px;
-  border: 1px solid #999;
-  border-radius: 6px;
-  font-size: 20px;
-}
-.primary {
-  background: var(--editorial-accent);
-  color: white;
-  border-color: var(--editorial-accent);
-}
-.primary:hover {
-  background: #be1720;
-}
-.secondary:hover {
-  background: #efefed;
+  gap: 14px;
+  font-size: 13px;
+  position: absolute;
+  right: 0;
+  bottom: 40px;
 }
 .materials {
   display: grid;
@@ -113,7 +57,7 @@
   margin-bottom: 7px;
 }
 .sectionHeading h2 {
-  font-size: 23px;
+  font-size: 20px;
   line-height: 1.5;
   font-weight: 500;
   letter-spacing: -0.65px;
@@ -142,13 +86,13 @@
   flex: 1;
 }
 .materialText p {
-  font-size: 21px;
+  font-size: 16px;
   line-height: 1.5;
   overflow-wrap: anywhere;
   letter-spacing: -0.3px;
 }
 .materialText span {
-  font-size: 17px;
+  font-size: 14px;
   line-height: 1.5;
   color: var(--editorial-muted);
   display: block;
@@ -182,7 +126,7 @@
   align-items: center;
   gap: 0;
   border-bottom: 1px solid var(--editorial-line);
-  font-size: 18px;
+  font-size: 16px;
 }
 .historyRow time,
 .kind {
@@ -221,113 +165,25 @@
   display: flex;
   align-items: center;
   color: var(--editorial-muted);
-  font-size: 17px;
+  font-size: 14px;
   line-height: 1.7;
 }
 .history .empty {
   min-height: 120px;
 }
-@media (max-width: 1279px) {
-  .greeting h1 {
-    font-size: 46px;
-  }
-  .greeting > div > p {
-    font-size: 23px;
-  }
-  .today {
-    font-size: 15px;
-  }
-  .greeting .today p {
-    font-size: 14px;
-  }
-  .practice h2 {
-    font-size: 42px;
-  }
-  .practice p {
-    font-size: 19px;
-  }
-  .sectionHeading h2 {
-    font-size: 19px;
-  }
-  .sectionHeading > a {
-    font-size: 14px;
-  }
-  .materials > section {
-    padding-right: 26px;
-  }
-  .materials > section + section {
-    padding-left: 26px;
-  }
-  .materialText p {
-    font-size: 18px;
-  }
-  .materialText span {
-    font-size: 15px;
-  }
-  .materialRow time {
-    font-size: 13px;
-  }
-  .historyRow {
-    font-size: 16px;
-    grid-template-columns: 16% 30% 1fr 105px 18px;
-  }
-}
 @media (max-width: 767px) {
   .home {
-    padding-top: 28px;
-  }
-  .greeting {
-    align-items: start;
-    flex-direction: column;
-    gap: 15px;
+    padding: 28px 22px 48px;
   }
   .greeting h1 {
-    font-size: 38px;
-    letter-spacing: -1.8px;
+    font-size: 30px;
   }
-  .greeting > div > p {
-    font-size: 19px;
-    letter-spacing: -0.7px;
-  }
-  .today {
-    text-align: left;
-    padding-top: 0;
-    font-size: 14px;
-  }
-  .greeting .today p {
-    display: none;
-  }
-  .practice {
-    margin-top: 32px;
-    gap: 28px;
-    grid-template-columns: 1fr;
-    padding-bottom: 28px;
-  }
-  .practiceColumn {
-    padding: 0;
-  }
-  .practiceColumn + .practiceColumn {
-    border-left: 0;
-    border-top: 1px solid var(--editorial-line);
-    padding: 24px 0 0;
-  }
-  .practice h2 {
-    font-size: 36px;
-    margin-top: 8px;
-  }
-  .practice p {
-    font-size: 19px;
-  }
-  .primary,
-  .secondary {
-    height: 48px;
-    min-width: 152px;
-    font-size: 17px;
-    margin-top: 18px;
+  .recordings {
+    position: static;
+    margin-top: 20px;
   }
   .materials {
     grid-template-columns: 1fr;
-    padding-block: 24px;
     gap: 24px;
   }
   .materials > section {
@@ -338,15 +194,21 @@
     border-top: 1px solid var(--editorial-line);
     padding: 24px 0 0;
   }
-  .sectionHeading {
-    margin-bottom: 5px;
-    gap: 8px;
+  .sectionHeading h2 {
+    font-size: 16px;
+  }
+  .sectionHeading > a {
+    font-size: 12px;
+    gap: 6px;
   }
   .materialText p {
-    font-size: 18px;
+    font-size: 14px;
+  }
+  .materialText span {
+    font-size: 14px;
   }
   .materialRow time {
-    font-size: 13px;
+    font-size: 12px;
   }
   .historyRow {
     grid-template-columns: 1fr auto 18px;
@@ -355,24 +217,24 @@
     padding: 16px 0;
   }
   .historyRow time {
-    font-size: 13px;
+    font-size: 12px;
     grid-column: 1;
   }
   .historyTitle {
     grid-column: 1;
     grid-row: 2;
+    font-size: 16px;
     padding: 0;
   }
   .kind {
     grid-column: 1;
     grid-row: 3;
-    font-size: 14px;
+    font-size: 13px;
   }
   .status {
     grid-column: 2;
     grid-row: 2;
-    font-size: 13px;
-    padding: 5px 8px;
+    font-size: 12px;
   }
   .historyRow > svg {
     grid-column: 3;

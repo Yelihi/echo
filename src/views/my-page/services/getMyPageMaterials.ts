@@ -2,11 +2,11 @@ import "server-only";
 import { createRoleplayMaterialRepository } from "@/entities/roleplay-material";
 import { createMemorizationMaterialRepository } from "@/entities/memorization-material";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
-import type { HomeMaterialItem } from "@/views/home/models/interface";
+import type { MyPageMaterialItem } from "@/views/my-page/models/interface";
 
-export async function getHomeMaterials(
+export async function getMyPageMaterials(
   type: "roleplay" | "memorization",
-): Promise<HomeMaterialItem[]> {
+): Promise<MyPageMaterialItem[]> {
   const supabase = await createSupabaseServerClient();
   if (type === "roleplay") {
     const materials = await createRoleplayMaterialRepository(supabase).findMany({

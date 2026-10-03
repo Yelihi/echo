@@ -1,4 +1,5 @@
 "use client";
+import styles from "@/shared/components/editor/Editor.module.css";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -39,14 +40,12 @@ export function RolePlayEditorHeader({
 
   return (
     <>
-      <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <header className={styles.header}>
         <div className="flex min-w-0 flex-col gap-3">
-          <h1 className="text-heading-lg font-bold tracking-tight break-keep text-black-primary">
-            {mode === "create" ? "롤플레잉 자료 만들기" : "롤플레잉 자료 수정"}
-          </h1>
-          <p className="text-body-4 text-gray-text">상대방과 내 대사를 채팅 흐름으로 정리하세요.</p>
+          <h1>{mode === "create" ? "롤플레잉 자료 만들기" : "롤플레잉 자료 수정"}</h1>
+          <p>연습할 상황과 주고받을 대사를 차례로 입력하세요.</p>
         </div>
-        <div className="flex gap-2">
+        <div className={styles.actions}>
           <Button type="button" variant="outline" size="lg" onClick={cancel} disabled={isBusy}>
             취소
           </Button>

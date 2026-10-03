@@ -1,4 +1,5 @@
 import { fn, mocked, sb } from "storybook/test";
+import { useSuggestMemorizationParagraphs } from "../src/features/memorization-paragraph-suggestion/services/hooks/useSuggestMemorizationParagraphs";
 import { useLogout } from "../src/features/logout/services/service/useLogout";
 
 import type { Preview } from "@storybook/react";
@@ -18,8 +19,18 @@ const notoSansKR = Noto_Sans_KR({
 sb.mock(import("../src/features/logout/services/service/useLogout.ts"));
 sb.mock(import("../src/features/login/services/query/useAuthWithSupabase.ts"));
 
+// Isolated editor previews never call real writing or AI actions.
+sb.mock(import("../src/views/role-play/services/action/saveRolePlayMaterial.ts"));
+sb.mock(import("../src/views/memorization/services/action/saveMemorizationMaterial.ts"));
+sb.mock(
+  import("../src/features/memorization-paragraph-suggestion/services/hooks/useSuggestMemorizationParagraphs.ts"),
+);
+sb.mock(import("../src/views/role-play/services/action/createRolePlaySession.ts"));
+sb.mock(import("../src/views/memorization/services/action/createMemorizationSession.ts"));
+
 const preview: Preview = {
   beforeEach: () => {
+    mocked(useSuggestMemorizationParagraphs).mockReturnValue({ isPending: false, suggest: fn() });
     mocked(useLogout).mockReturnValue({ isPending: false, requestLogout: fn(async () => {}) });
   },
   parameters: {
