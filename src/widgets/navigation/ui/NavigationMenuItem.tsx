@@ -8,20 +8,17 @@ import type { NavigationMenuItemProps } from "@/widgets/navigation/models/interf
 
 export const NavigationMenuItem = ({ icon: Icon, link, label }: NavigationMenuItemProps) => {
   const pathname = usePathname();
-  const isCurrentHref =
-    pathname === link ||
-    (link !== "/home" && pathname.startsWith(`${link}/`)) ||
-    (link === "/sessions" && /^\/(roleplay-sessions|memorization-sessions)\//.test(pathname));
+  const isCurrentHref = link === "/home" ? pathname === link : pathname.startsWith(link);
 
   return (
     <Link
       href={link}
       aria-current={isCurrentHref ? "page" : undefined}
       className={cn(
-        "flex min-h-12 items-center gap-3 rounded-control border-l-2 px-3 text-body-3 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
+        "flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-pill border px-4 text-body-2 font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
         isCurrentHref
-          ? "border-brand bg-brand/5 text-brand-hover font-medium"
-          : "border-transparent text-gray-text hover:bg-gray-background hover:text-black-primary",
+          ? "border-brand bg-brand text-on-brand hover:bg-brand-hover"
+          : "border-control-line bg-card-surface text-gray-text hover:border-brand hover:text-brand",
       )}
     >
       <Icon aria-hidden className="size-4 shrink-0" />

@@ -28,7 +28,7 @@ export const ListContainer = ({ type, icon: Icon, title, empty, children }: List
   const isEmpty = Children.count(children) === 0;
 
   return (
-    <div className="bg-transparent w-full min-w-0 py-2 flex flex-col justify-start items-start gap-[10px]">
+    <div className="bg-card-surface border border-card-line w-full min-w-0 rounded-card p-6 flex flex-col justify-start items-start gap-[10px]">
       <div className="w-full flex justify-start items-center gap-[10px]">
         <div className="h-[24px] flex justify-center items-start">
           <Icon
@@ -38,7 +38,7 @@ export const ListContainer = ({ type, icon: Icon, title, empty, children }: List
             )}
           />
         </div>
-        <p className="text-heading-xs font-medium text-black-primary">{title}</p>
+        <p className="text-heading-xs font-bold text-black-primary">{title}</p>
       </div>
       <Divider />
       <div className="flex w-full flex-col justify-items-start gap-[5px]">

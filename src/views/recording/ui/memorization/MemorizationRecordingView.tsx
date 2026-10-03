@@ -26,7 +26,7 @@ export function MemorizationRecordingView({
             closeHref: "/sentence-memorization",
           },
           ready: {
-            label: "문단 암기",
+            label: "문장 암기",
             title: material.title,
             description: [material.description, "준비가 되면 시작을 눌러 단락 녹음을 시작하세요."],
             meta: [

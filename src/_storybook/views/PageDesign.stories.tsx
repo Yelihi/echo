@@ -40,7 +40,6 @@ export const Login: Story = {
 };
 
 export const RoleplayEditor: Story = {
-  parameters: { nextjs: { navigation: { pathname: "/role-playing/new" } } },
   render: () => (
     <AppShell>
       <PageContainer>
@@ -85,7 +84,6 @@ export const RoleplayEditor: Story = {
 };
 
 export const MemorizationEditor: Story = {
-  parameters: { nextjs: { navigation: { pathname: "/sentence-memorization/new" } } },
   render: () => (
     <AppShell>
       <PageContainer>
@@ -187,7 +185,6 @@ export const MemorizationReady: Story = {
 };
 
 export const RecordingManagement: Story = {
-  parameters: { nextjs: { navigation: { pathname: "/recording-management" } } },
   render: () => (
     <AppShell>
       <PageContainer>

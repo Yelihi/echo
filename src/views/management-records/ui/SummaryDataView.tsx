@@ -9,10 +9,10 @@ import type {
 
 function RecordSummaryCard({ count, title, children }: RecordSummaryCardProps) {
   return (
-    <div className="flex w-full items-center gap-4 border-y border-card-line bg-transparent py-6">
+    <div className="flex w-full items-center gap-4 rounded-card border border-card-line bg-white p-6">
       {children}
       <div className="flex flex-col items-start justify-start gap-[3px]">
-        <p className="text-heading-lg font-normal tracking-tight text-black-primary">{count}</p>
+        <p className="text-heading-lg font-bold tracking-tight text-black-primary">{count}</p>
         <p className="text-body-1 font-normal text-gray-text">{title}</p>
       </div>
     </div>
@@ -29,7 +29,7 @@ function RecordIconContainer({ className, children }: React.HTMLAttributes<"div"
 
 function SummaryDataView({ recordsSummary }: SummaryDataViewProps) {
   return (
-    <section className="w-full grid grid-cols-2 gap-4 xl:grid-cols-4">
+    <section className="w-full grid grid-cols-1 gap-[15px] md:grid-cols-2 lg:grid-cols-4">
       <RecordSummaryCard count={recordsSummary.total} title="전체 파일">
         <RecordIconContainer className="bg-gray-background">
           <Folder className="size-[20px] text-gray-text" />

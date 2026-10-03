@@ -1,4 +1,3 @@
-import { AppShell, PageContainer } from "@/widgets/app-shell";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import { LatestSessionsView } from "@/views/latest-sessions";
@@ -31,11 +30,9 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <AppShell>
-        <PageContainer>
-          <Story />
-        </PageContainer>
-      </AppShell>
+      <main className="mx-auto max-w-320 px-6 py-10">
+        <Story />
+      </main>
     ),
   ],
 } satisfies Meta<typeof LatestSessionsView>;
@@ -76,7 +73,6 @@ export const ResumePractice: Story = {
     sessions: [
       {
         ...meta.args.sessions[0],
-        id: "resumed-practice",
         sessionState: "practicing",
         description: "2/5문장 저장",
         href: "/role-playing/material/session/session",

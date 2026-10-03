@@ -21,13 +21,13 @@ export function HomeView() {
   return (
     <section className="flex w-full flex-col items-start gap-10 sm:gap-12">
       <header className="flex flex-col items-start gap-4">
-        <h1 className="text-display break-keep text-black-primary">오늘도, 한 문장 더.</h1>
+        <h1 className="text-display break-keep text-black-primary">오늘도 한 문장씩 말해볼까요?</h1>
         <p className="text-body-4 text-gray-text">
-          대화로 익히고, 반복으로 나만의 표현을 만드세요.
+          롤플레잉으로 대화하고, 긴 문장은 암기로 다져요.
         </p>
       </header>
 
-      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2">
         <Suspense fallback={<HomeSessionIntroCardFallback type="role-play" />}>
           <HomeSessionIntroCard type="role-play" />
         </Suspense>
@@ -36,7 +36,7 @@ export function HomeView() {
         </Suspense>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2">
         <Suspense fallback={<HomeRoleplaySessionLatestListFallback />}>
           <HomeRoleplaySessionLatestList />
         </Suspense>

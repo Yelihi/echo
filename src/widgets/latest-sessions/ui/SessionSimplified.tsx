@@ -23,7 +23,7 @@ export const SessionSimplified = ({
       <div className="flex min-w-0 justify-start items-center gap-[10px]">
         <div
           className={cn(
-            "size-[42px] shrink-0 rounded-control flex justify-center items-center",
+            "size-[42px] shrink-0 rounded-full flex justify-center items-center",
             sessionType === "role-playing" ? "bg-gray-background" : "bg-gray-background",
           )}
         >
@@ -34,7 +34,7 @@ export const SessionSimplified = ({
           )}
         </div>
         <div className="flex min-w-0 flex-col items-start justify-center gap-[4px]">
-          <p className="text-body-4 font-medium text-black-primary break-words [overflow-wrap:anywhere]">
+          <p className="text-body-4 font-bold text-black-primary break-words [overflow-wrap:anywhere]">
             {title}
           </p>
           <p className="text-body-3 font-normal text-gray-text break-words">{`${convertFormatDate(sessionDate)}·${description}`}</p>
@@ -61,7 +61,7 @@ export const SessionSimplified = ({
     </>
   );
   const className = cn(
-    "w-full h-fit bg-transparent border-b border-card-line py-6 flex flex-col gap-3 sm:flex-row justify-between sm:items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
+    "w-full h-fit bg-card-surface border border-card-line rounded-panel p-5 flex flex-col gap-3 sm:flex-row justify-between sm:items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
     href && !disabled ? "cursor-pointer hover:bg-gray-background" : "cursor-default opacity-70",
   );
 

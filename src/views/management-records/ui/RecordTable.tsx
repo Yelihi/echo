@@ -47,7 +47,7 @@ export function RecordTable({ records }: RecordTableProps) {
       <p role={failed ? "alert" : "status"} className="text-body-3 text-black-primary">
         {message}
       </p>
-      <div className="border-t border-card-line">
+      <div className="rounded-card ring-1 ring-card-line">
         {records.map((record, index) => (
           <RecordTableRow
             key={record.id}

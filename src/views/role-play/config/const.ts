@@ -14,7 +14,7 @@ export const ROLE_PLAY_LIST_PAGE_SIZE = 8;
 
 export const ROLE_PLAY_SOURCE_CARDS_MIN_HEIGHT_CLASSNAME = "min-h-64";
 
-export const ROLE_PLAY_SOURCE_CARDS_GRID_CLASSNAME = `grid w-full grid-cols-1 items-start gap-6 md:grid-cols-2 ${ROLE_PLAY_SOURCE_CARDS_MIN_HEIGHT_CLASSNAME}`;
+export const ROLE_PLAY_SOURCE_CARDS_GRID_CLASSNAME = `grid w-full grid-cols-1 items-start gap-6 md:grid-cols-2 xl:grid-cols-3 ${ROLE_PLAY_SOURCE_CARDS_MIN_HEIGHT_CLASSNAME}`;
 
 export {
   ROLE_PLAY_READY_ROLE_OPTIONS,

@@ -19,7 +19,7 @@ export function HomeSessionIntroCardFallback({ type }: Pick<SessionIntroCardProp
     <div
       className={cn(
         "min-h-64 w-full animate-pulse motion-reduce:animate-none rounded-hero",
-        type === "role-play" ? "bg-neutral-100" : "bg-neutral-100",
+        type === "role-play" ? "bg-silver" : "bg-brand",
       )}
       aria-hidden
     />

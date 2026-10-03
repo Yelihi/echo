@@ -48,7 +48,7 @@ export const ParagraphRow = ({
       className={cn(paragraphRowVariants({ mode }), className)}
       {...props}
     >
-      <span className="mt-2 flex size-6 shrink-0 items-center justify-center rounded-full bg-gray-background text-body-1 font-medium text-black-primary">
+      <span className="mt-2 flex size-6 shrink-0 items-center justify-center rounded-full bg-gray-background text-body-1 font-black text-brand">
         {index}
       </span>
       <div className="min-w-0 flex-1">{children}</div>

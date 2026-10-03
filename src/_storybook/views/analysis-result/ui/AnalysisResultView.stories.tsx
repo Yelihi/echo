@@ -1,6 +1,5 @@
-import { AppShell, PageContainer } from "@/widgets/app-shell";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, waitFor, within } from "storybook/test";
+import { expect, within } from "storybook/test";
 
 import { AnalysisResultView } from "@/views/analysis-result/ui/AnalysisResultView";
 import { PracticeType } from "@/entities/practice-target";
@@ -62,20 +61,16 @@ const doneViewModel = {
 const meta = {
   title: "views/analysis-result/ui/AnalysisResultView",
   component: AnalysisResultView,
-  parameters: {
-    nextjs: { appDirectory: true, navigation: { pathname: "/roleplay-sessions/demo/result" } },
-  },
+  parameters: { nextjs: { appDirectory: true } },
   args: {
     viewModel: doneViewModel,
     retryAction: async () => {},
   },
   decorators: [
     (Story) => (
-      <AppShell>
-        <PageContainer>
-          <Story />
-        </PageContainer>
-      </AppShell>
+      <main className="mx-auto max-w-[760px] px-5 py-8">
+        <Story />
+      </main>
     ),
   ],
 } satisfies Meta<typeof AnalysisResultView>;
@@ -86,11 +81,11 @@ type Story = StoryObj<typeof meta>;
 export const Done: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await waitFor(() => expect(canvas.getByText("원본 문장")).toBeVisible());
+    await expect(canvas.getByText("원본 문장")).toBeVisible();
     await expect(canvas.getByText("실제 발화")).toBeVisible();
     const spokenBubble = canvas
       .getAllByText(readyItem.transcript, { exact: true })
-      .find((element) => element.getAttribute("data-slot") === "recorded-speech");
+      .find((element) => element.getAttribute("data-slot") === "chat-bubble");
     await expect(spokenBubble).toBeVisible();
     await expect(canvas.getByRole("navigation", { name: "결과 페이지 이동" })).toBeVisible();
   },

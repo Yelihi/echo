@@ -7,8 +7,6 @@ export default defineConfig({
   test: {
     projects: [
       {
-        optimizeDeps: { include: ["@storybook/nextjs-vite"] },
-        define: { __ECHO_VIEWPORT_WIDTH__: process.env.ECHO_VIEWPORT_WIDTH ?? "1440" },
         plugins: [
           storybookTest({
             configDir: path.resolve(__dirname, ".storybook"),

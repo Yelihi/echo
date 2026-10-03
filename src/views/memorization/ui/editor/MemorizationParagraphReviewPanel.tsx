@@ -28,7 +28,7 @@ function ParagraphActionButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full text-gray-text transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-3.75"
+      className="inline-flex size-9 cursor-pointer items-center justify-center rounded-full text-gray-text transition-colors outline-none hover:bg-gray-background focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-3.75"
     >
       {children}
     </button>
@@ -142,7 +142,7 @@ export function MemorizationParagraphReviewPanel() {
         title="문단 검수"
         meta={<MemorizationParagraphMeta />}
       />
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto bg-card-surface px-4 py-5 md:px-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto bg-gray-background px-4 py-5 md:px-6">
         <MemorizationParagraphList />
       </div>
       <MemorizationParagraphConfirmBar />

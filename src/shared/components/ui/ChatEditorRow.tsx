@@ -53,7 +53,7 @@ export const ChatEditorRow = ({
     >
       <div
         className={cn(
-          "flex w-full max-w-full flex-col gap-1.25",
+          "flex w-full max-w-full sm:max-w-4/5 flex-col gap-1.25",
           isMe ? "items-end" : "items-start",
         )}
       >
@@ -63,8 +63,8 @@ export const ChatEditorRow = ({
             onClick={onFlipSpeaker}
             aria-label="화자 바꾸기"
             className={cn(
-              "inline-flex min-h-11 cursor-pointer items-center gap-1 text-body-1 font-medium tracking-wider uppercase transition-colors rounded-pill outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 [&_svg]:size-2.75",
-              isMe ? "text-brand-hover" : "text-gray-text",
+              "inline-flex cursor-pointer items-center gap-1 text-body-1 font-black tracking-wider uppercase transition-colors rounded-pill outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 [&_svg]:size-2.75",
+              isMe ? "text-brand" : "text-gray-text",
             )}
           >
             {speakerLabel}
@@ -74,7 +74,7 @@ export const ChatEditorRow = ({
             type="button"
             onClick={onDelete}
             aria-label="대사 삭제"
-            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-gray-text-secondary opacity-100 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 group-hover/chat-editor-row:opacity-100 focus-visible:opacity-100 [&_svg]:size-3.75"
+            className="inline-flex size-6.5 cursor-pointer items-center justify-center rounded-md text-gray-text-secondary opacity-100 sm:opacity-0 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 group-hover/chat-editor-row:opacity-100 focus-visible:opacity-100 [&_svg]:size-3.75"
           >
             <Trash />
           </button>

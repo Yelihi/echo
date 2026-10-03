@@ -10,9 +10,9 @@ export const chipVariants = cva(
       tone: {
         neutral: "bg-neutral-100 text-gray-text",
         /** 활성 필라를 따라갑니다 */
-        accent: "bg-accent-50 text-black-primary",
-        roleplay: "bg-gray-background text-black-primary",
-        memo: "bg-gray-background text-black-primary",
+        accent: "bg-accent-50 text-brand",
+        roleplay: "bg-gray-background text-brand",
+        memo: "bg-gray-background text-brand",
         positive: "bg-green-secondary text-green-primary",
         warning: "bg-yellow-secondary text-yellow-primary",
         negative: "bg-red-secondary text-danger-ink",

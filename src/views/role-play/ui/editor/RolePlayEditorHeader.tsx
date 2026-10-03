@@ -41,7 +41,7 @@ export function RolePlayEditorHeader({
     <>
       <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="flex min-w-0 flex-col gap-3">
-          <h1 className="text-heading-lg font-normal tracking-tight break-keep text-black-primary">
+          <h1 className="text-heading-lg font-bold tracking-tight break-keep text-black-primary">
             {mode === "create" ? "롤플레잉 자료 만들기" : "롤플레잉 자료 수정"}
           </h1>
           <p className="text-body-4 text-gray-text">상대방과 내 대사를 채팅 흐름으로 정리하세요.</p>

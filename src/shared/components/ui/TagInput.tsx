@@ -15,8 +15,8 @@ export const tagInputChipVariants = cva(
   {
     variants: {
       theme: {
-        roleplay: "bg-gray-background text-black-primary",
-        memo: "bg-gray-background text-black-primary",
+        roleplay: "bg-gray-background text-brand",
+        memo: "bg-gray-background text-brand",
       },
     },
     defaultVariants: {
@@ -60,7 +60,7 @@ export const TagInput = ({
             type="button"
             aria-label={`${tag} 태그 삭제`}
             onClick={() => onRemoveTag?.(tag)}
-            className="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-current outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 opacity-70 transition-opacity hover:opacity-100 [&_svg]:size-3.25"
+            className="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-current outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 opacity-70 transition-opacity hover:opacity-100 [&_svg]:size-3.25"
           >
             <X />
           </button>

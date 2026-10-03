@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Wordmark } from "@/shared/components/ui/Wordmark";
-import { LoaderCircle } from "lucide-react";
+import { EmptyIllustration } from "@/shared/components/motion/EmptyIllustration";
 
 // features
 import { useAuthWithSupabase } from "@/features/login";
@@ -32,29 +31,22 @@ export function AuthCallbackContent({ provider }: AuthCallbackContentProps) {
     <>
       {error ? (
         <>
-          <Wordmark />
-          <h1 className="text-heading-md font-normal">로그인을 완료하지 못했어요</h1>
-          <p role="alert" className="text-body-3 text-danger-ink">
-            {error}
-          </p>
+          <p className="text-body-2 font-semibold text-danger-ink">{error}</p>
           <Link className="text-body-3 font-medium text-black underline" href="/login">
             로그인으로 돌아가기
           </Link>
         </>
       ) : (
         <section
-          className="flex w-full max-w-lg flex-col items-center bg-card-surface px-6 py-16"
+          className="flex w-full max-w-sm flex-col items-center rounded-card border border-card-line bg-card-surface px-6 py-10"
           role="status"
           aria-live="polite"
         >
-          <Wordmark />
+          <span className="text-body-3 font-bold tracking-tight text-brand">Echo</span>
           <div className="my-6">
-            <LoaderCircle
-              aria-hidden
-              className="size-7 animate-spin text-brand motion-reduce:animate-none"
-            />
+            <EmptyIllustration loop />
           </div>
-          <h1 className="text-heading-md font-normal text-black-primary">로그인 준비 중이에요</h1>
+          <h1 className="text-heading-sm font-bold text-black-primary">로그인 준비 중이에요</h1>
           <p className="mt-3 text-body-3 leading-relaxed text-gray-text">
             Google 로그인 화면으로 연결하고 있어요.
             <br />

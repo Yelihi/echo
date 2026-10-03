@@ -49,11 +49,11 @@ export function MemorizationReadyModeAside({ materialId }: MemorizationReadyMode
   return (
     <section className="flex flex-col gap-3.5">
       <div>
-        <h2 className="text-heading-xs font-medium tracking-tight">연습 모드</h2>
+        <h2 className="text-heading-xs font-bold tracking-tight">연습 모드</h2>
         <p className="mt-1 text-body-3 text-gray-text">어떤 단서로 문장을 떠올릴지 골라보세요.</p>
       </div>
 
-      <div className="grid gap-3" role="radiogroup" aria-label="문단 암기 연습 모드 선택">
+      <div className="grid gap-3" role="radiogroup" aria-label="문장 암기 연습 모드 선택">
         {MEMORIZATION_READY_MODE_OPTIONS.map((option, index) => {
           const Icon = option.icon;
 

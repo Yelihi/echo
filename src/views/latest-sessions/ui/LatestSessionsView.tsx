@@ -20,7 +20,7 @@ export function LatestSessionsView({
       {sessions.length === 0 ? (
         <HistoryEmptyState filtered={query.status !== "all"} />
       ) : (
-        <ul className="flex flex-col" aria-label="학습 기록 목록">
+        <ul className="flex flex-col gap-2.5" aria-label="학습 기록 목록">
           {sessions.map((session) => (
             <li key={`${session.sessionType}-${session.id}`}>
               <SessionSimplified {...session} />

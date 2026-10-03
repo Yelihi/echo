@@ -76,7 +76,7 @@ export const Overview: Story = {
               icon={Layers}
               type="memorization"
               title="나를 소개하는 짧은 문장"
-              subTitle="문단 암기 · 문단 3개"
+              subTitle="문장 암기 · 문단 3개"
               href="/sentence-memorization"
             />
           </ListContainer>

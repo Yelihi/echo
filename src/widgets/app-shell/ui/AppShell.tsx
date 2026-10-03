@@ -31,18 +31,10 @@ export const AppShell = ({
       className={cn("flex min-h-lvh flex-col bg-gray-background", className)}
       {...props}
     >
-      <a
-        href="#main-content"
-        className="sr-only z-50 bg-card-surface p-4 focus:not-sr-only focus:fixed"
-      >
-        본문으로 이동
-      </a>
-      <NavigationContainer />
-      <main
-        id="main-content"
-        tabIndex={-1}
-        className="flex min-h-0 min-w-0 flex-1 flex-col lg:ml-60"
-      >
+      <header className="sticky top-0 z-50 shrink-0">
+        <NavigationContainer />
+      </header>
+      <main className="flex min-h-0 flex-1 flex-col">
         <PageEnter>{children}</PageEnter>
       </main>
     </div>

@@ -11,7 +11,7 @@ export const analysisBannerVariants = cva(
       state: {
         pending: "border-card-line bg-card-surface",
         analyzing: "border-control-line bg-gray-background",
-        done: "border-green-primary/15 bg-green-secondary/30",
+        done: "border-green-secondary bg-green-secondary",
         partial: "border-yellow-secondary bg-yellow-secondary",
         failed: "border-red-secondary bg-red-secondary",
       },
@@ -91,7 +91,7 @@ export const AnalysisBanner = ({
         {icon ?? stateIcons[resolvedState]}
       </span>
       <div className="flex min-w-0 flex-1 flex-col">
-        <p className="text-body-4 font-medium text-black-primary">{title}</p>
+        <p className="text-body-4 font-bold text-black-primary">{title}</p>
         {description ? <p className="text-body-2 text-gray-text">{description}</p> : null}
       </div>
       {action}

@@ -6,7 +6,7 @@ import { Slot } from "radix-ui";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const tagChipVariants = cva(
-  "group/tag-chip inline-flex h-11 w-fit shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-4 text-body-2 font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-3.5 [&_svg]:shrink-0",
+  "group/tag-chip inline-flex h-9 w-fit shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-4 text-body-2 font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-3.5 [&_svg]:shrink-0",
   {
     variants: {
       selected: {
@@ -64,7 +64,7 @@ export const TagChipSkeleton = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        "h-11 w-16 shrink-0 animate-pulse motion-reduce:animate-none rounded-full border border-control-line bg-white",
+        "h-9 w-16 shrink-0 animate-pulse motion-reduce:animate-none rounded-full border border-control-line bg-white",
         className,
       )}
       aria-hidden

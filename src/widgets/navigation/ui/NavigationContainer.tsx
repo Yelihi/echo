@@ -1,92 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Dialog } from "radix-ui";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/shared/components";
-import { Wordmark } from "@/shared/components/ui/Wordmark";
+import { Pluse } from "@/shared/components";
 
 import { NavigationMenuItem } from "@/widgets/navigation/ui/NavigationMenuItem";
 import { Profile } from "@/widgets/navigation/ui/Profile";
 import { NAVIGATION_MENU } from "@/widgets/navigation/config/const";
 
 export const NavigationContainer = () => {
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const pageTitle =
-    NAVIGATION_MENU.find((menu) => pathname === menu.link || pathname.startsWith(`${menu.link}/`))
-      ?.label ?? "학습 결과";
-  const links = NAVIGATION_MENU.map((menu) => <NavigationMenuItem {...menu} key={menu.link} />);
   return (
-    <>
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-card-line bg-card-surface px-6 py-8 lg:flex">
+    <nav aria-label="주요 메뉴" className="w-full border-b border-card-line bg-card-surface">
+      <div className="mx-auto grid w-full max-w-page grid-cols-[1fr_auto] items-center gap-x-6 gap-y-4 px-page-gutter py-4 lg:grid-cols-[auto_1fr_auto] lg:py-6">
         <Link
+          className="flex w-fit items-center gap-2 rounded-pill outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4"
           href="/home"
-          aria-label="Echo 홈"
-          className="w-fit rounded-control focus-visible:outline-brand"
         >
-          <Wordmark />
+          <span aria-hidden>
+            <Pluse className="size-6 text-brand" />
+          </span>
+          <span className="text-heading-md font-extrabold tracking-tight text-brand">Echo</span>
         </Link>
-        <p className="mt-14 mb-4 text-body-1 tracking-widest text-gray-text">MY PRACTICE</p>
-        <nav aria-label="주요 메뉴" className="flex flex-col gap-2">
-          {links}
-        </nav>
-        <p className="mt-auto pt-10 text-body-2 leading-relaxed text-gray-text">
-          Speak. Repeat.
-          <br />
-          Make it yours.
-        </p>
-      </aside>
-      <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-card-line bg-card-surface px-page-gutter lg:ml-60">
-        <div className="hidden text-body-2 tracking-widest text-gray-text lg:block">
-          {pageTitle}
+        <div className="col-span-2 row-start-2 flex min-w-0 gap-1 overflow-x-auto p-1 lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:justify-center">
+          {NAVIGATION_MENU.map((menu) => (
+            <NavigationMenuItem {...menu} key={menu.link} />
+          ))}
         </div>
-        <div className="flex items-center gap-3 lg:hidden">
-          <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Trigger asChild>
-              <Button variant="ghost" size="icon" aria-label="메뉴 열기">
-                <Menu />
-              </Button>
-            </Dialog.Trigger>
-            <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 z-50 bg-scrim" />
-              <Dialog.Content className="fixed inset-y-0 left-0 z-50 flex w-80 max-w-[85vw] flex-col bg-card-surface p-6 shadow-modal">
-                <Dialog.Title>
-                  <Wordmark />
-                </Dialog.Title>
-                <Dialog.Description className="mt-3 text-body-3 text-gray-text">
-                  매일 조금씩, 나의 영어 연습
-                </Dialog.Description>
-                <Dialog.Close asChild>
-                  <Button
-                    className="absolute top-5 right-4"
-                    variant="ghost"
-                    size="icon"
-                    aria-label="메뉴 닫기"
-                  >
-                    <X />
-                  </Button>
-                </Dialog.Close>
-                <nav
-                  aria-label="모바일 주요 메뉴"
-                  className="mt-10 flex flex-col gap-2"
-                  onClick={(event) => {
-                    if ((event.target as HTMLElement).closest("a")) setOpen(false);
-                  }}
-                >
-                  {links}
-                </nav>
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
-          <Link href="/home" aria-label="Echo 홈">
-            <Wordmark />
-          </Link>
+        <div className="col-start-2 row-start-1 justify-self-end lg:col-start-3">
+          <Profile />
         </div>
-        <Profile />
-      </header>
-    </>
+      </div>
+    </nav>
   );
 };

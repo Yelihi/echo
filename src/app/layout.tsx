@@ -3,12 +3,10 @@ import type { Metadata } from "next";
 import "./global.css";
 
 // font
-import { Inter, Noto_Sans_KR } from "next/font/google";
+import { Noto_Sans_KR } from "next/font/google";
 import { QueryProvider } from "./providers/QueryProvider";
 import { cn } from "@/shared/lib/tailwind/utils";
 import { ErrorPopupProvider } from "@/shared/lib/error-popup";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -17,13 +15,13 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "Echo | 나의 영어 연습",
-  description: "말하고, 반복하고, 나의 영어로 만드는 연습 공간",
+  title: "english-speaking-practice",
+  description: "FSD(Feature-Sliced Design) 기반 Next.js 프로젝트",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={cn(inter.variable, notoSansKR.variable, "font-sans")}>
+    <html lang="ko" className={cn(notoSansKR.variable, notoSansKR.className, "font-sans")}>
       <body>
         <QueryProvider>{children}</QueryProvider>
         <ErrorPopupProvider />

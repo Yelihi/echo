@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, fn, mocked, within } from "storybook/test";
+import { expect, fn, mocked, waitFor, within } from "storybook/test";
 import { useAuthWithSupabase } from "@/features/login/services/query/useAuthWithSupabase";
 import { AuthCallbackContent } from "@/views/callback/ui/AuthCallbackContent";
 
@@ -30,6 +30,16 @@ export const Loading: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("status")).toHaveTextContent("로그인 준비 중이에요");
     await expect(login).toHaveBeenCalledWith("google");
+    await waitFor(
+      () => {
+        const element = canvasElement.querySelector("canvas");
+        const pixels = element
+          ?.getContext("2d")
+          ?.getImageData(0, 0, element.width, element.height).data;
+        expect(pixels?.some((value, index) => index % 4 === 3 && value > 0)).toBe(true);
+      },
+      { timeout: 10000 },
+    );
   },
 };
 
