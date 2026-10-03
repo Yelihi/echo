@@ -56,6 +56,7 @@ async function createUser() {
 try {
   const ownerId = await createUser();
   const otherUserId = await createUser();
+  accepted(await admin.from("ai_access_grants").insert({ user_id: ownerId }));
   const owner = createClient(config.API_URL, config.ANON_KEY, { auth: { persistSession: false } });
   accepted(await owner.auth.signInWithPassword(credentialsByUser.get(ownerId)));
   const snapshotInput = {

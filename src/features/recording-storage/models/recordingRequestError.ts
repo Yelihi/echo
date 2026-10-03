@@ -2,6 +2,9 @@
 export const MAX_RECORDING_UPLOAD_BYTES = 4_000_000;
 
 export const recordingErrorMessages = {
+  AI_NOT_INVITED: "AI 분석은 초대된 계정에서 사용할 수 있습니다. 저장된 녹음은 유지됩니다.",
+  AI_RATE_LIMIT: "오늘의 분석 요청 한도에 도달했습니다. 저장된 녹음은 유지됩니다.",
+  AI_RETRY_LIMIT: "이 세션은 분석을 3회 요청했습니다. 기존 녹음과 결과를 확인해주세요.",
   RECORDING_SERVER_NOT_READY:
     "녹음 저장 서버가 아직 준비되지 않았습니다. 녹음은 현재 화면에 남아 있습니다. 관리자에게 문의해주세요.",
   RECORDING_CONFLICT:
@@ -27,7 +30,11 @@ export async function assertRecordingResponse(response: Response): Promise<void>
   const body: unknown = await response.json().catch(() => null);
   const code = body && typeof body === "object" && "code" in body ? body.code : null;
   throw new RecordingRequestError(
-    code === "RECORDING_SERVER_NOT_READY" || code === "RECORDING_CONFLICT"
+    code === "RECORDING_SERVER_NOT_READY" ||
+      code === "RECORDING_CONFLICT" ||
+      code === "AI_NOT_INVITED" ||
+      code === "AI_RATE_LIMIT" ||
+      code === "AI_RETRY_LIMIT"
       ? code
       : "RECORDING_SAVE_FAILED",
   );

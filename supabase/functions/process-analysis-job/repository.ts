@@ -34,6 +34,10 @@ export async function claimNextJob(supabase: Supabase): Promise<AnalysisJob | nu
 }
 
 export async function loadTargets(supabase: Supabase, job: AnalysisJob): Promise<Target[]> {
+  const { data: invited, error: accessError } = await supabase.rpc("can_use_ai", {
+    p_user_id: job.user_id,
+  });
+  if (accessError || invited !== true) throw new Error("AI_NOT_INVITED");
   if (job.roleplay_session_id) {
     return loadRoleplayTargets(supabase, job.user_id, job.roleplay_session_id);
   }
@@ -66,6 +70,7 @@ export async function insertResult(
   target: Target,
   transcript: string,
   evaluation: Evaluation,
+  reuseKey: string,
 ): Promise<void> {
   const { error } = await supabase.rpc("save_claimed_analysis_result", {
     p_job_id: job.id,
@@ -79,6 +84,7 @@ export async function insertResult(
       memorization_sentence_id: target.recording.memorization_sentence_id,
       transcript,
       feedback: {
+        reuse_key: reuseKey,
         schema_version: "v1",
         diff: evaluation.diff,
         feedback: evaluation.feedback,
@@ -90,6 +96,46 @@ export async function insertResult(
   if (error) {
     throw error;
   }
+}
+
+// Reuse only fenced results matching owner, session, target, audio bytes and evaluation identity.
+export async function reuseAnalysisResult(
+  supabase: Supabase,
+  job: AnalysisJob,
+  target: Target,
+  reuseKey: string,
+): Promise<boolean> {
+  const sessionColumn = job.roleplay_session_id ? "roleplay_session_id" : "memorization_session_id";
+  const [previous] = await selectRows<{
+    transcript: string;
+    feedback: unknown;
+    score: number | null;
+  }>(
+    supabase
+      .from("practice_target_analysis_results")
+      .select("transcript,feedback,score")
+      .eq("user_id", job.user_id)
+      .eq(sessionColumn, job.roleplay_session_id ?? job.memorization_session_id)
+      .eq("feedback->>reuse_key", reuseKey)
+      .neq("analysis_job_id", job.id)
+      .limit(1),
+  );
+  if (!previous) return false;
+  const { error: saveError } = await supabase.rpc("save_claimed_analysis_result", {
+    p_job_id: job.id,
+    p_claim_token: job.claim_token,
+    p_result: {
+      roleplay_session_id: target.recording.roleplay_session_id,
+      roleplay_line_id: target.recording.roleplay_line_id,
+      memorization_session_id: target.recording.memorization_session_id,
+      memorization_sentence_id: target.recording.memorization_sentence_id,
+      transcript: previous.transcript,
+      feedback: previous.feedback,
+      score: previous.score,
+    },
+  });
+  if (saveError) throw saveError;
+  return true;
 }
 
 export async function filterUnprocessedTargets(

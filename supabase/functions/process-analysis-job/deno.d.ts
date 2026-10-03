@@ -19,6 +19,8 @@ declare module "supabase-js" {
   type QueryBuilder = PromiseLike<{ data: unknown[] | null; error: unknown }> & {
     select(columns?: string): QueryBuilder;
     eq(column: string, value: unknown): QueryBuilder;
+    neq(column: string, value: unknown): QueryBuilder;
+    limit(count: number): QueryBuilder;
     order(column: string, options?: { ascending?: boolean }): QueryBuilder;
     insert(value: unknown): QueryResult<unknown>;
     maybeSingle(): QueryResult<unknown>;

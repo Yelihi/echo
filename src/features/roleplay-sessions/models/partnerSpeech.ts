@@ -4,7 +4,8 @@ export type SpeakRolePlayPartnerLineResult =
   | { code: "TTS-001" }
   | { code: "TTS-002" }
   | { code: "TTS-003" }
-  | { code: "TTS-004" };
+  | { code: "TTS-004" }
+  | { code: "TTS-005" };
 
 export type SpeakRolePlayPartnerLineInput =
   | { mode: "preview"; voice: `${RoleplayPartnerVoice}`; speed: number }

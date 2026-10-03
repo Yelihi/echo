@@ -5,6 +5,7 @@ import { decodeTtsAudioBase64 } from "@/shared/lib/tts/decodeTtsAudioBase64";
 
 // views
 import type { RoleplayReadyVoice } from "@/views/role-play/models/interface";
+import { showPartnerSpeechError } from "@/features/roleplay-sessions/services/showPartnerSpeechError";
 import { speakRolePlayPartnerLine } from "@/features/roleplay-sessions/services/actions/speakRolePlayPartnerLine";
 
 let previewRequestId = 0;
@@ -35,7 +36,9 @@ export async function playRolePlayVoicePreview(input: {
     speed: input.speed,
   });
 
-  if (requestId !== previewRequestId || result.code !== "SUCCESS") {
+  if (requestId !== previewRequestId) return;
+  if (result.code !== "SUCCESS") {
+    showPartnerSpeechError(result.code);
     return;
   }
 

@@ -4,6 +4,9 @@ import type {
 } from "@/features/recording-storage/models/recordingRequestError";
 
 export function classifyRecordingRpcFailure(error: RecordingRpcFailure): RecordingFailureResponse {
+  if (error.message === "AI_NOT_INVITED") return { status: 403, code: "AI_NOT_INVITED" };
+  if (error.message === "AI_RATE_LIMIT" || error.message === "AI_RETRY_LIMIT")
+    return { status: 429, code: error.message };
   if (error.code === "PGRST202" || error.code === "42883") {
     return { status: 503, code: "RECORDING_SERVER_NOT_READY" };
   }
