@@ -14,8 +14,10 @@ export function RecordingReadyPanel({ content, onStart }: RecordingReadyPanelPro
         <span className="inline-flex h-[27px] items-center rounded-full bg-accent-50 px-3 text-body-1 font-bold text-accent-700">
           {label}
         </span>
-        <h1 className="text-heading-lg font-bold tracking-tight break-words text-white">{title}</h1>
-        <div className="text-body-5 text-white/62">
+        <h1 className="text-display font-normal tracking-tight break-words text-black-primary">
+          {title}
+        </h1>
+        <div className="text-body-5 text-gray-text">
           {description.map((line) => (
             <p key={line}>{line}</p>
           ))}
@@ -24,7 +26,7 @@ export function RecordingReadyPanel({ content, onStart }: RecordingReadyPanelPro
           {meta.map((item) => (
             <span
               key={item}
-              className="inline-flex h-[27px] items-center rounded-full border border-card-line-strong px-3 text-body-1 font-bold text-white"
+              className="inline-flex h-[27px] items-center rounded-full border border-card-line-strong px-3 text-body-1 font-bold text-black-primary"
             >
               {item}
             </span>

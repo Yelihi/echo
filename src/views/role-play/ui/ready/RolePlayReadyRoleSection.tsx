@@ -37,7 +37,7 @@ export function RolePlayReadyRoleSection() {
       <Button
         type="button"
         variant="outline"
-        className="min-h-11 w-full border-dashed bg-white font-bold text-accent-700"
+        className="min-h-11 w-full border-dashed bg-white font-medium text-accent-700"
         onClick={() =>
           useRolePlayReadyStore
             .getState()

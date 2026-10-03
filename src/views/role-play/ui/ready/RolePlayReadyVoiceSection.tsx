@@ -69,7 +69,7 @@ function RolePlayReadyVoicePills({
           aria-checked={voice === option.value}
           aria-busy={pendingVoice === option.value}
           selected={voice === option.value}
-          className="min-h-28"
+          className="min-h-20"
           icon={
             pendingVoice === option.value ? (
               <Spinner size="sm" className="text-current" aria-hidden="true" />

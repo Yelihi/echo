@@ -23,12 +23,14 @@ export function RolePlayReadyClient({ material }: RolePlayReadyClientProps) {
   }, [material.id]);
 
   return (
-    <>
+    <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
       <RolePlayReadyHero material={material} />
-      <RolePlayReadyRoleSection />
-      <RolePlayReadyEvaluationSection />
-      <RolePlayReadyVoiceSection />
-      <RolePlayReadyStartButton materialId={material.id} />
-    </>
+      <div className="flex min-w-0 flex-col gap-8 border-t border-card-line pt-8 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
+        <RolePlayReadyRoleSection />
+        <RolePlayReadyEvaluationSection />
+        <RolePlayReadyVoiceSection />
+        <RolePlayReadyStartButton materialId={material.id} />
+      </div>
+    </div>
   );
 }
