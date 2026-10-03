@@ -22,7 +22,7 @@ function MemorizationTitleField() {
 
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">제목</span>
+      <span className="text-body-2 font-medium text-gray-text">제목</span>
       <TitleField
         value={title}
         placeholder="예: Business Email Openings"
@@ -39,7 +39,7 @@ function MemorizationTagsField() {
 
   return (
     <div className="mt-4 flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">태그</span>
+      <span className="text-body-2 font-medium text-gray-text">태그</span>
       <TagInputField
         theme="memo"
         tags={tags}
@@ -58,10 +58,10 @@ function MemorizationRawTextField() {
   const wordCount = rawText.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div className="rounded-card border border-card-line bg-white p-5">
+    <div className="border-t border-card-line bg-transparent py-6">
       <div className="mb-3 flex items-center justify-between">
-        <span className="text-body-2 font-bold text-gray-text">본문</span>
-        <span className="text-body-1 font-bold text-gray-text-secondary">{wordCount} words</span>
+        <span className="text-body-2 font-medium text-gray-text">본문</span>
+        <span className="text-body-1 font-medium text-gray-text-secondary">{wordCount} words</span>
       </div>
       <Textarea
         aria-label="암기할 영어 본문"
@@ -112,7 +112,7 @@ export function MemorizationEditorSourcePanel({
 }) {
   return (
     <aside className="flex min-w-0 flex-col gap-4">
-      <div className="rounded-card border border-card-line bg-white p-5">
+      <div className="border-t border-card-line bg-transparent py-6">
         <MemorizationTitleField />
         <MemorizationTagsField />
       </div>

@@ -114,7 +114,7 @@ export function RolePlayEditorClient({
   return (
     <section className="flex w-full flex-col gap-7" data-pillar="roleplay" aria-busy={isBusy}>
       <RolePlayEditorHeader mode={mode} isSaving={isSaving} isBusy={isBusy} onSave={save} />
-      <div className="grid w-full gap-5 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+      <div className="grid w-full gap-8 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
         <div className={cn(isBusy && "opacity-60")} inert={isBusy}>
           <RolePlayEditorMetaPanel txtImport={txtImport} />
         </div>
