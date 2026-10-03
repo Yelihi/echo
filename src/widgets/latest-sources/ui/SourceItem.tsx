@@ -21,7 +21,7 @@ export const SourceItem = ({ icon: Icon, type, title, subTitle, href }: SourceIt
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-items-start gap-[5px]">
-        <p className="text-body-4 font-bold text-black-primary break-words [overflow-wrap:anywhere]">
+        <p className="text-body-4 font-medium text-black-primary break-words [overflow-wrap:anywhere]">
           {title}
         </p>
         <p className="text-body-1 font-normal text-gray-text-secondary">{subTitle}</p>
@@ -32,7 +32,7 @@ export const SourceItem = ({ icon: Icon, type, title, subTitle, href }: SourceIt
     </>
   );
   const className = cn(
-    "w-full min-w-0 bg-card-surface flex items-center gap-3 p-3 rounded-panel",
+    "w-full min-w-0 bg-card-surface flex items-center gap-3 py-4 border-b border-card-line",
     href
       ? "cursor-pointer hover:bg-gray-background transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       : "cursor-default opacity-70",

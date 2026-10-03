@@ -24,7 +24,7 @@ export const SourceCard = ({
   const body = (
     <>
       <div className="w-full flex flex-col items-start gap-[8px]">
-        <p className="w-full text-heading-xs text-black-primary font-bold line-clamp-2 wrap-break-word leading-[24px] h-[48px]">
+        <p className="w-full text-heading-xs text-black-primary font-medium line-clamp-2 wrap-break-word leading-[24px] h-[48px]">
           {title}
         </p>
         <p className="text-body-2 font-normal text-gray-text line-clamp-2 wrap-break-word leading-[18px] h-[36px]">
@@ -48,9 +48,9 @@ export const SourceCard = ({
   return (
     <div
       data-motion-card={href ? "true" : undefined}
-      className="w-full min-w-0 rounded-card border border-card-line bg-card-surface p-6 transition-colors hover:border-control-line"
+      className="w-full min-w-0 border-t border-card-line bg-transparent py-6 transition-colors hover:border-control-line"
     >
-      <div className="size-full flex flex-col justify-start items-center gap-6">
+      <div className="size-full flex flex-col justify-start items-center gap-5">
         <div className="w-full flex justify-between items-center">
           <div className="w-full min-w-0 max-w-[200px] overflow-x-auto scrollbar-none scroll-smooth flex justify-start items-center gap-[10px]">
             {tags.map((tag) => (
@@ -87,10 +87,10 @@ export const SOURCE_CARD_SKELETON_COUNT = 8;
 export const SourceCardSkeleton = () => {
   return (
     <div
-      className="min-h-60 w-full min-w-0 rounded-card border border-card-line bg-card-surface p-6"
+      className="min-h-60 w-full min-w-0 border-t border-card-line bg-transparent py-6"
       aria-hidden
     >
-      <div className="flex size-full flex-col items-center justify-start gap-6">
+      <div className="flex size-full flex-col items-center justify-start gap-5">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-[10px]">
             <div className="h-[22px] w-[52px] animate-pulse motion-reduce:animate-none rounded-full bg-neutral-100" />

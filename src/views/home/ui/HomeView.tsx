@@ -27,7 +27,7 @@ export function HomeView() {
         </p>
       </header>
 
-      <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
         <Suspense fallback={<HomeSessionIntroCardFallback type="role-play" />}>
           <HomeSessionIntroCard type="role-play" />
         </Suspense>
@@ -36,7 +36,7 @@ export function HomeView() {
         </Suspense>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
         <Suspense fallback={<HomeRoleplaySessionLatestListFallback />}>
           <HomeRoleplaySessionLatestList />
         </Suspense>
