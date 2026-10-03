@@ -21,6 +21,11 @@ export function convertMemorizationSessionToRecordingMaterial(
     estimatedMinutes: Math.max(1, Math.ceil(Math.max(sentences.length, 1) / 3)),
     difficulty: session.tagsSnapshot.at(-1)?.displayName ?? "기본",
     previewLines: session.paragraphSnapshots.map((paragraph, index) => ({
+      translation:
+        paragraph.sentences.length > 0 &&
+        paragraph.sentences.every((sentence) => sentence.translation?.trim())
+          ? paragraph.sentences.map((sentence) => sentence.translation!.trim()).join(" ")
+          : null,
       label: `문단 ${index + 1}`,
       text: paragraph.sentences.map((sentence) => sentence.text).join(" "),
     })),

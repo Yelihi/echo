@@ -9,7 +9,7 @@ export interface MemorizationReadyMaterial {
   wordCount: number;
   estimatedMinutes: number;
   difficulty: string;
-  previewLines?: readonly { label: string; text: string }[];
+  previewLines?: readonly { label: string; text: string; translation?: string | null }[];
 }
 
 export interface MemorizationReadyViewProps {

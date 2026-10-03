@@ -1,6 +1,7 @@
 "use client";
 import type { MemorizationRecordingClientProps } from "@/views/recording/models/ui";
 
+import { getMemorizationPrompt } from "../../models/memorizationPrompt";
 import * as React from "react";
 import { useStore } from "zustand";
 
@@ -14,6 +15,8 @@ import { RecordingCompletionPanel } from "@/views/recording/ui/common/RecordingC
 
 export function MemorizationRecordingClient({
   config,
+  mode = "read",
+  paragraphs,
   saveRecording,
 }: MemorizationRecordingClientProps) {
   const [store] = React.useState(() => createMemorizationRecordingSessionStore(config.initial));
@@ -46,7 +49,11 @@ export function MemorizationRecordingClient({
         <RecordingCompletionPanel />
       ) : (
         <RecordingPanel
-          content={{ kind: "title", title: config.ready.title }}
+          content={getMemorizationPrompt(
+            mode,
+            config.ready.title,
+            (paragraphs ?? config.ready.previewLines)[session.currentStep - 1],
+          )}
           phase={turn.phase}
           durationLabel={turn.durationLabel}
           message={getRecordingSessionHint(turn.phase, turn.recordingState, session.saveFailed)}

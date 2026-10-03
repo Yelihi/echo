@@ -6,6 +6,7 @@ import type {
   RoleplayReadySettings,
 } from "@/features/roleplay-sessions/models/ready";
 import type {
+  MemorizationReadyMode,
   MemorizationReadyMaterial,
   MemorizationReadySettings,
 } from "@/features/memorization-sessions/models/ready";
@@ -13,6 +14,7 @@ import type { RecordingPhase, RecordingPillar } from "./interface";
 import type { RecordingSessionClientConfig } from "./sessionConfig";
 export type RecordingPanelContent =
   | { kind: "title"; title: string }
+  | { kind: "prompt"; label: string; text: string; lang: "en" | "ko"; unavailable?: boolean }
   | {
       kind: "partner";
       role: string;
@@ -51,6 +53,8 @@ export interface SessionTopBarProps {
   resumable?: boolean;
 }
 export interface MemorizationRecordingClientProps {
+  mode?: MemorizationReadyMode;
+  paragraphs?: MemorizationReadyMaterial["previewLines"];
   config: RecordingSessionClientConfig;
   saveRecording?: (audio: CapturedAudio) => Promise<void>;
 }

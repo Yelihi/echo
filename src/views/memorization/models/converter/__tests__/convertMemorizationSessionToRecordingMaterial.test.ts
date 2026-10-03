@@ -22,8 +22,12 @@ describe("convertMemorizationSessionToRecordingMaterial", () => {
     expect(convertMemorizationSessionToRecordingMaterial(session, routeMaterialId)).toEqual({
       id: routeMaterialId,
       previewLines: [
-        { label: "문단 1", text: "English is a daily habit. I practice speaking every day." },
-        { label: "문단 2", text: "Small progress compounds." },
+        {
+          translation: null,
+          label: "문단 1",
+          text: "English is a daily habit. I practice speaking every day.",
+        },
+        { translation: null, label: "문단 2", text: "Small progress compounds." },
       ],
       tags: ["Speech", "Daily"],
       title: "Daily Speaking",
