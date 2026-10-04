@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { cn } from "../utils";
 
 describe("cn radius overrides", () => {
