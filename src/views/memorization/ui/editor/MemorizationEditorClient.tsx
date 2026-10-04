@@ -13,10 +13,7 @@ import { useSuggestMemorizationParagraphs } from "@/features/memorization-paragr
 
 // views
 import { convertMemorizationParagraphSuggestionToEditorParagraphs } from "@/views/memorization/models/converter/convertMemorizationParagraphSuggestionToEditorParagraphs";
-import type {
-  MemorizationEditorDraft,
-  MemorizationEditorMode,
-} from "@/views/memorization/models/editor";
+import type { MemorizationEditorClientProps } from "@/views/memorization/models/editor";
 import {
   createMemorizationMaterialErrorFromCode,
   MemorizationMaterialSaveFailedError,
@@ -26,12 +23,6 @@ import { saveMemorizationMaterial } from "@/views/memorization/services/action/s
 import { MemorizationEditorHeader } from "@/views/memorization/ui/editor/MemorizationEditorHeader";
 import { MemorizationEditorSourcePanel } from "@/views/memorization/ui/editor/MemorizationEditorSourcePanel";
 import { MemorizationParagraphReviewPanel } from "@/views/memorization/ui/editor/MemorizationParagraphReviewPanel";
-
-interface MemorizationEditorClientProps {
-  mode: MemorizationEditorMode;
-  materialId?: string;
-  initialDraft?: MemorizationEditorDraft;
-}
 
 export function MemorizationEditorClient({
   mode,

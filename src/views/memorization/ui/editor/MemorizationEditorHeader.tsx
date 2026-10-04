@@ -9,15 +9,8 @@ import { Button, Spinner } from "@/shared/components";
 import { ConfirmDialog } from "@/shared/components/ui";
 
 // views
-import type { MemorizationEditorMode } from "@/views/memorization/models/editor";
+import type { MemorizationEditorHeaderProps } from "@/views/memorization/models/editor";
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
-
-interface MemorizationEditorHeaderProps {
-  mode: MemorizationEditorMode;
-  isSaving: boolean;
-  isBusy: boolean;
-  onSave: () => void;
-}
 
 export function MemorizationEditorHeader({
   mode,

@@ -12,7 +12,7 @@ import { errorPopupManager } from "@/shared/lib/error-popup";
 import { createTagValue } from "@/entities/value-object";
 
 // features
-import type { MemorizationParagraphSuggestionProps } from "@/features/memorization-paragraph-suggestion/models/interface";
+import type { MemorizationEditorSourcePanelProps } from "@/views/memorization/models/editor";
 
 // views
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
@@ -78,9 +78,7 @@ function MemorizationRawTextField() {
 
 function MemorizationParagraphSuggestButton({
   paragraphSuggestion,
-}: {
-  paragraphSuggestion: MemorizationParagraphSuggestionProps;
-}) {
+}: MemorizationEditorSourcePanelProps) {
   const requestSuggestion = () => {
     const rawText = useMemorizationEditorStore.getState().draft.rawText;
 
@@ -109,9 +107,7 @@ function MemorizationParagraphSuggestButton({
 
 export function MemorizationEditorSourcePanel({
   paragraphSuggestion,
-}: {
-  paragraphSuggestion: MemorizationParagraphSuggestionProps;
-}) {
+}: MemorizationEditorSourcePanelProps) {
   return (
     <section className={styles.panel} aria-labelledby="memo-source-title">
       <div className={styles.panelHeading}>

@@ -427,3 +427,46 @@ export const RoleplayInvalidSave: Story = {
     );
   },
 };
+
+export const MemorizationSaveFlow: Story = {
+  name: "11 문단 암기 · 검수 및 저장 실패 복구",
+  globals: { viewport: { value: "desktop" } },
+  render: () => <Walkthrough initialPath="/sentence-memorization/habit/edit" populated />,
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    mocked(saveMemorizationMaterial).mockClear();
+    await userEvent.click(c.getByRole("button", { name: "저장" }));
+    let popup = await within(document.body).findByRole("alertdialog");
+    await waitFor(() => expect(within(popup).getByText("문단을 확정해주세요")).toBeVisible());
+    await expect(saveMemorizationMaterial).not.toHaveBeenCalled();
+    await userEvent.click(within(popup).getByRole("button", { name: "확인" }));
+    await waitFor(() =>
+      expect(within(document.body).queryByRole("alertdialog")).not.toBeInTheDocument(),
+    );
+    await userEvent.click(c.getByRole("button", { name: "AI 문단 제안 요청" }));
+    const paragraph = c.getByRole("textbox", { name: "문단 1" });
+    await userEvent.clear(paragraph);
+    await userEvent.type(paragraph, "Small habits matter.");
+    await userEvent.click(c.getByRole("button", { name: "문단 확정" }));
+    await expect(c.getByText("확정됨")).toBeVisible();
+    mocked(saveMemorizationMaterial).mockRejectedValueOnce(new Error("Network unavailable"));
+    await userEvent.click(c.getByRole("button", { name: "저장" }));
+    popup = await within(document.body).findByRole("alertdialog");
+    await waitFor(() => expect(popup).toBeVisible());
+    await userEvent.click(within(popup).getByRole("button", { name: "확인" }));
+    await waitFor(() =>
+      expect(within(document.body).queryByRole("alertdialog")).not.toBeInTheDocument(),
+    );
+    await expect(c.getByText("Small habits matter.")).toBeVisible();
+    await expect(c.getByRole("textbox", { name: "제목" })).toHaveValue("A Small Daily Habit");
+    await userEvent.click(c.getByRole("button", { name: "저장" }));
+    await waitFor(() => expect(c.getByRole("heading", { name: "문단 암기" })).toBeVisible());
+    await expect(saveMemorizationMaterial).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        confirmed: true,
+        paragraphs: expect.arrayContaining(["Small habits matter."]),
+      }),
+      "habit",
+    );
+  },
+};

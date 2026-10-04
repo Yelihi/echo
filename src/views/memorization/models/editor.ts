@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+import type { MemorizationParagraphSuggestionProps } from "@/features/memorization-paragraph-suggestion/models/interface";
 export type MemorizationEditorMode = "create" | "edit";
 
 export interface MemorizationEditorDraft {
@@ -34,3 +36,27 @@ export type CreateMemorizationMaterialResult =
   | { code: "MEM-001" }
   | { code: "MEM-002" }
   | { code: "MEM-003" };
+
+export interface MemorizationEditorClientProps {
+  mode: MemorizationEditorMode;
+  materialId?: string;
+  initialDraft?: MemorizationEditorDraft;
+}
+export interface MemorizationEditorHeaderProps {
+  mode: MemorizationEditorMode;
+  isSaving: boolean;
+  isBusy: boolean;
+  onSave: () => void;
+}
+export interface MemorizationEditorSourcePanelProps {
+  paragraphSuggestion: MemorizationParagraphSuggestionProps;
+}
+export interface ParagraphActionButtonProps {
+  label: string;
+  disabled?: boolean;
+  children: ReactNode;
+  onClick: () => void;
+}
+export interface MemorizationParagraphItemProps {
+  index: number;
+}

@@ -1,6 +1,10 @@
 "use client";
 import styles from "@/shared/components/editor/Editor.module.css";
 
+import type {
+  ParagraphActionButtonProps,
+  MemorizationParagraphItemProps,
+} from "@/views/memorization/models/editor";
 import { useShallow } from "zustand/react/shallow";
 import { Check, ChevronUp, Trash } from "lucide-react";
 
@@ -12,17 +16,7 @@ import { errorPopupManager } from "@/shared/lib/error-popup";
 // views
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
 
-function ParagraphActionButton({
-  label,
-  disabled,
-  children,
-  onClick,
-}: {
-  label: string;
-  disabled?: boolean;
-  children: React.ReactNode;
-  onClick: () => void;
-}) {
+function ParagraphActionButton({ label, disabled, children, onClick }: ParagraphActionButtonProps) {
   return (
     <button
       type="button"
@@ -59,7 +53,7 @@ function MemorizationParagraphList() {
   return paragraphIndexes.map((index) => <MemorizationParagraphItem key={index} index={index} />);
 }
 
-function MemorizationParagraphItem({ index }: { index: number }) {
+function MemorizationParagraphItem({ index }: MemorizationParagraphItemProps) {
   const paragraph = useMemorizationEditorStore((state) => state.draft.paragraphs[index]);
   const confirmed = useMemorizationEditorStore((state) => state.draft.confirmed);
 
