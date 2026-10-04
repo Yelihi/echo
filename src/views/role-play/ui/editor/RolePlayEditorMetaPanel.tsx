@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/shared/components/editor/Editor.module.css";
+import { editorStyles as styles } from "@/shared/components/editor/styles";
 
 // shared
 import { Input } from "@/shared/components";
@@ -20,6 +20,7 @@ function RolePlayTitleField() {
     <label className={styles.field}>
       <span>제목</span>
       <Input
+        className={styles.input}
         value={title}
         placeholder="예: Ordering at a Cafe"
         onChange={(event) => setTitle(event.target.value)}
@@ -36,6 +37,7 @@ function RolePlaySituationField() {
     <label className={styles.field}>
       <span>상황 설명</span>
       <Input
+        className={styles.input}
         value={situation}
         placeholder="예: 카페에서 주문하기"
         onChange={(event) => setSituation(event.target.value)}
@@ -53,6 +55,7 @@ function RolePlayTagsField() {
     <div className={styles.field}>
       <span>태그</span>
       <TagInputField
+        className={styles.tagInput}
         theme="roleplay"
         tags={tags}
         placeholder="태그 입력 후 Enter"

@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ArrowLeftRight, Trash2, Plus } from "lucide-react";
 import { Textarea } from "@/shared/components";
 import { LoadingState } from "@/shared/components/ui";
-import styles from "@/shared/components/editor/Editor.module.css";
+import { editorStyles as styles } from "@/shared/components/editor/styles";
 import type {
   RolePlayScriptEditorProps,
   RolePlayScriptLineProps,

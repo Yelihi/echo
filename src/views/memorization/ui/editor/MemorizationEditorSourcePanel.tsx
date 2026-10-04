@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/shared/components/editor/Editor.module.css";
+import { editorStyles as styles } from "@/shared/components/editor/styles";
 
 import { Sparkles } from "lucide-react";
 
@@ -25,6 +25,7 @@ function MemorizationTitleField() {
     <label className={styles.field}>
       <span className={styles.fieldLabel}>제목</span>
       <Input
+        className={styles.input}
         value={title}
         placeholder="예: Business Email Openings"
         onChange={(event) => setTitle(event.target.value)}
@@ -42,6 +43,7 @@ function MemorizationTagsField() {
     <div className={styles.field}>
       <span className={styles.fieldLabel}>태그</span>
       <TagInputField
+        className={styles.tagInput}
         theme="memo"
         tags={tags}
         placeholder="태그 입력 후 Enter"

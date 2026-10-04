@@ -23,7 +23,7 @@
 - features/logout: 계정 메뉴와 기존 logout hook. navigation/app-shell은 이 feature를 재사용.
 - widgets/material-library: 모드에 대한 판단 없이 props를 렌더링. view/config가 문구·경로를 소유.
 - 편집기: 기존 Zustand store, Zod/Server Action, TXT/문단 제안 feature 유지. 모델 계약은 각 view/models.
-- shared: 도메인 조회나 상위 레이어 import 없이 입력/버튼/CSS 담당.
+- shared: 도메인 조회나 상위 레이어 import 없이 입력/버튼/Tailwind 스타일 담당.
 
 새로운 계층·라이브러리·DB 변경이나 새 연습 기능은 추가하지 않았다. 캐시 갱신은 성공한 작업 뒤에만 실행하며 서버에서 진행하는 비동기 분석 완료를 실시간 구독하는 기능은 추가하지 않았다.
 
@@ -41,3 +41,12 @@
 참고한 규범: 로컬 clean-architecture/FSD, vercel-react-best-practices, frontend-test-principles. FS workflow 전용 MCP가 이 세션에 없어 별도 check ID/승인 해시를 주장하지 않고 GitHub 이슈·커밋과 로컬 검증으로 기록했다.
 
 Next.js 공식 참고: [Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components), [revalidatePath](https://nextjs.org/docs/app/api-reference/functions/revalidatePath).
+
+## Tailwind 통일 (사용자 후속 요청)
+
+- 프로젝트의 CSS Modules 5개를 제거했다. 셸, 홈 캐러셀, 자료 목록 헤더, 마이페이지는 컴포넌트의 Tailwind utilities로 표현한다.
+- 두 편집기의 반복 스타일은 `shared/components/editor/styles.ts`의 정적 Tailwind 클래스 묶음을 공유한다. Input/Textarea에는 `className`으로 전달하며 기존 `cn` 병합을 이용한다. TagInputField에도 `className` 전달을 지원한다.
+- 색상·얕은 그림자·진입 모션과 compact/editor 반응형 기준은 `global.css`의 Tailwind `@theme`에 등록했다. 기존 공용 토큰은 유지하고, 붉은 brand 값은 practice 셸 안에서만 지정한다. 페이지별 CSS 선택자나 `@apply`로 Modules를 재생성하지 않았다.
+- 편집기의 `!important` 스타일 덮어쓰기를 제거했다. 기존 전역 reduced-motion 접근성 규칙은 유지한다.
+- 데스크톱 홈·롤플레잉 편집기 전후 캡처의 크기 및 입력 글자 크기/높이/패딩이 동일했다. 모바일(390px)·태블릿(834px) 배치, 두 편집기, 마이페이지, 메뉴 활성 표시와 모바일 메뉴를 확인했다.
+- TypeScript, ESLint, Next production build, Jest 112 suites / 376 tests, 관련 Storybook 4 files / 23 tests 통과. 기능·서버/클라이언트 경계 변경 없음.

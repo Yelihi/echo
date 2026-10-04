@@ -5,6 +5,7 @@ import { TagInput, type TagInputProps } from "@/shared/components/ui/TagInput";
 import { useTagInputController } from "@/shared/hooks/useTagInputController";
 
 type TagInputFieldProps = Omit<TagInputProps, "onRemoveTag" | "inputProps"> & {
+  className?: string;
   onChange: (tags: string[]) => void;
   onInputDirty?: () => void;
   getDuplicateKey?: (tag: string) => string;

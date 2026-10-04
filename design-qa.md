@@ -53,3 +53,11 @@ Storybook은 실제 HomeView/EditorialShell/에디터/MyPageContent를 사용하
 - 제품 import에서 Storybook fixture/mock으로 이어지는 경로가 없음을 검토했다. 인증은 server layout, 영속화는 기존 repository 및 Server Action이 담당한다. 상태 관리 라이브러리/DB/도메인 계약은 변경하지 않았다.
 - 구조 정리 후 `integrated-home.png` (1440px)와 `integrated-mobile-editor.png` (390px)를 재확인했다. 모바일 문서 폭 390px로 가로 넘침 없음.
 - 상세 이슈/커밋/제한: `docs/design/echo/practice-hub-20261004/implementation.md`.
+
+## Tailwind 통일 후 재검증
+
+- CSS Modules 5개 및 해당 import를 모두 제거. 공통 편집기 스타일도 Tailwind 정적 클래스이며 CSS 우선순위를 위한 `!important`가 없다.
+- 전환 전/후 데스크톱 홈(1440×1000)과 롤플레잉 작성 화면(1440×1149)을 비교했다. RGB 채널 차이 8을 초과하는 픽셀은 각각 약 0.03%로, 차이는 유사한 중성색의 공통 토큰 정리와 포커스 색에 한정된다. 입력 필드는 15px/48px/11px 14px, 대사 입력은 16px/83.59px/12px 16px로 유지됐다.
+- 모바일 여백과 반응형 우선순위는 rem 단위의 compact/editor Tailwind breakpoint로 통일했다. 데스크톱·모바일·태블릿에서 가로 넘침과 패널 배치를 확인했다.
+- `integrated-home.png`, `integrated-mobile-editor.png`를 Tailwind 적용 화면으로 갱신했다.
+- 타입 검사·린트·production build·Jest 376개·관련 Storybook 23개 통과. 원격 서비스 E2E 범위는 위 한계와 동일하다.

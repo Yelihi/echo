@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/shared/components/editor/Editor.module.css";
+import { editorStyles as styles } from "@/shared/components/editor/styles";
 
 import type {
   ParagraphActionButtonProps,
@@ -63,6 +63,7 @@ function MemorizationParagraphItem({ index }: MemorizationParagraphItemProps) {
 
   return (
     <ParagraphRow
+      className={styles.paragraphRow}
       index={index + 1}
       mode={confirmed ? "confirmed" : "edit"}
       actions={
@@ -88,7 +89,7 @@ function MemorizationParagraphItem({ index }: MemorizationParagraphItemProps) {
       ) : (
         <Textarea
           rows={3}
-          className="field-sizing-content resize-none overflow-hidden"
+          className={styles.paragraphInput}
           value={paragraph}
           aria-label={`문단 ${index + 1}`}
           onChange={(event) =>

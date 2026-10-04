@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/shared/components/editor/Editor.module.css";
+import { editorStyles as styles } from "@/shared/components/editor/styles";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
