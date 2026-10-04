@@ -18,6 +18,7 @@ export async function deleteMemorizationMaterial(id: string): Promise<boolean> {
       user.id as UserId,
     );
     revalidatePath("/sentence-memorization");
+    revalidatePath("/my-page");
     return true;
   } catch {
     return false;

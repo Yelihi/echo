@@ -1,5 +1,6 @@
+import type { MaterialKind } from "../models/interface";
 import { Suspense } from "react";
-import { getMyPageMaterials } from "@/views/my-page/services/getMyPageMaterials";
+import { getMyPageMaterials } from "@/views/my-page/services/server/getMyPageMaterials";
 import { getLatestStudySessions } from "@/widgets/latest-sessions/services/server/getLatestStudySessions";
 import {
   MyPageContent,
@@ -29,7 +30,7 @@ export function MyPageView() {
     />
   );
 }
-async function RecentMaterials({ type }: { type: "roleplay" | "memorization" }) {
+async function RecentMaterials({ type }: { type: MaterialKind }) {
   return <MyPageMaterialRows items={await getMyPageMaterials(type)} />;
 }
 async function RecentHistory() {

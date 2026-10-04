@@ -54,6 +54,7 @@ export const saveRolePlayMaterial = async (
     }
 
     revalidatePath("/role-playing");
+    revalidatePath("/my-page");
     return { code: "SUCCESS", materialId: savedId };
   } catch {
     return { code: RolePlayMaterialSaveFailedError.CODE };

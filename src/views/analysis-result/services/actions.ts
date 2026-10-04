@@ -29,6 +29,8 @@ async function retryAnalysis(
         : { memorizationSessionId: sessionId }),
     });
     revalidatePath(`/${kind}-sessions/${sessionId}/result`);
+    revalidatePath("/my-page");
+    revalidatePath("/sessions");
   } catch (error) {
     const cause = error instanceof Error ? error.cause : null;
     const message = cause && typeof cause === "object" && "message" in cause ? cause.message : null;

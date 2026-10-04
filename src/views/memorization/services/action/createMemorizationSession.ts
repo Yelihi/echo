@@ -65,7 +65,8 @@ export const createMemorizationSession = async (
     const created = await createMemorizationSessionRepository(supabase).createSession(snapshot);
 
     revalidatePath("/sentence-memorization");
-    revalidatePath("/home");
+    revalidatePath("/my-page");
+    revalidatePath("/sessions");
     return { code: "SUCCESS", sessionId: created.id };
   } catch {
     return { code: MemorizationSessionCreateFailedError.CODE };

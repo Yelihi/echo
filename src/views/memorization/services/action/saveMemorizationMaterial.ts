@@ -54,6 +54,7 @@ export const saveMemorizationMaterial = async (
     }
 
     revalidatePath("/sentence-memorization");
+    revalidatePath("/my-page");
     return { code: "SUCCESS", materialId: savedId };
   } catch {
     return { code: MemorizationMaterialSaveFailedError.CODE };

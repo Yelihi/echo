@@ -1,20 +1,15 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
-import type { GetLatestStudySession } from "@/widgets/latest-sessions/models/studySession";
 import styles from "./MyPageContent.module.css";
 
-import type { MyPageMaterialItem } from "@/views/my-page/models/interface";
+import type {
+  MyPageContentProps,
+  MyPageSectionHeadingProps,
+  MyPageMaterialRowsProps,
+  MyPageHistoryRowsProps,
+} from "@/views/my-page/models/interface";
 
-export function MyPageContent({
-  roleplay,
-  memorization,
-  history,
-}: {
-  roleplay: ReactNode;
-  memorization: ReactNode;
-  history: ReactNode;
-}) {
+export function MyPageContent({ roleplay, memorization, history }: MyPageContentProps) {
   return (
     <div className={styles.home}>
       <header className={styles.greeting}>
@@ -26,28 +21,28 @@ export function MyPageContent({
         </Link>
       </header>
       <div className={styles.materials}>
-        <section aria-labelledby="home-roleplay">
-          <SectionHeading id="home-roleplay" title="최근 롤플레잉 자료" href="/role-playing" />
+        <section aria-labelledby="my-page-roleplay">
+          <SectionHeading id="my-page-roleplay" title="최근 롤플레잉 자료" href="/role-playing" />
           {roleplay}
         </section>
-        <section aria-labelledby="home-memorization">
+        <section aria-labelledby="my-page-memorization">
           <SectionHeading
-            id="home-memorization"
+            id="my-page-memorization"
             title="최근 암기 자료"
             href="/sentence-memorization"
           />
           {memorization}
         </section>
       </div>
-      <section className={styles.history} aria-labelledby="home-history">
-        <SectionHeading id="home-history" title="최근 학습 기록" href="/sessions" />
+      <section className={styles.history} aria-labelledby="my-page-history">
+        <SectionHeading id="my-page-history" title="최근 학습 기록" href="/sessions" />
         {history}
       </section>
     </div>
   );
 }
 
-function SectionHeading({ id, title, href }: { id: string; title: string; href: string }) {
+function SectionHeading({ id, title, href }: MyPageSectionHeadingProps) {
   return (
     <div className={styles.sectionHeading}>
       <h2 id={id}>{title}</h2>
@@ -58,7 +53,7 @@ function SectionHeading({ id, title, href }: { id: string; title: string; href: 
   );
 }
 
-export function MyPageMaterialRows({ items }: { items: readonly MyPageMaterialItem[] }) {
+export function MyPageMaterialRows({ items }: MyPageMaterialRowsProps) {
   if (!items.length)
     return (
       <p className={styles.empty}>아직 자료가 없어요. 새 자료를 만들어 연습을 시작해보세요.</p>
@@ -89,7 +84,7 @@ const states = {
   inProgress: "분석 중",
   pending: "분석 전",
 };
-export function MyPageHistoryRows({ sessions }: { sessions: readonly GetLatestStudySession[] }) {
+export function MyPageHistoryRows({ sessions }: MyPageHistoryRowsProps) {
   if (!sessions.length)
     return <p className={styles.empty}>아직 학습 기록이 없어요. 첫 연습을 시작해보세요.</p>;
   return (

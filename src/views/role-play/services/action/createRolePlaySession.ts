@@ -84,7 +84,8 @@ export const createRolePlaySession = async (
     const created = await createRoleplaySessionRepository(supabase).createSession(snapshot);
 
     revalidatePath("/role-playing");
-    revalidatePath("/home");
+    revalidatePath("/my-page");
+    revalidatePath("/sessions");
     return { code: "SUCCESS", sessionId: created.id };
   } catch {
     return { code: RolePlaySessionCreateFailedError.CODE };
