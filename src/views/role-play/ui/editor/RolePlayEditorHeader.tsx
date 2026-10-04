@@ -18,11 +18,10 @@ export function RolePlayEditorHeader({
   onSave,
 }: RolePlayEditorHeaderProps) {
   const router = useRouter();
-  const edited = useRolePlayEditorStore((state) => state.edited);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   const cancel = () => {
-    if (edited) {
+    if (useRolePlayEditorStore.getState().edited) {
       setConfirmCancelOpen(true);
       return;
     }

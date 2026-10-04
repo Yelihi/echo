@@ -12,7 +12,7 @@ import { useSuggestMemorizationParagraphs } from "@/features/memorization-paragr
 
 // views
 import { convertMemorizationParagraphSuggestionToEditorParagraphs } from "@/views/memorization/models/converter/convertMemorizationParagraphSuggestionToEditorParagraphs";
-import type { MemorizationEditorClientProps } from "@/views/memorization/models/editor";
+import type { MemorizationEditorClientProps } from "@/views/memorization/models/interface";
 import {
   createMemorizationMaterialErrorFromCode,
   MemorizationMaterialSaveFailedError,

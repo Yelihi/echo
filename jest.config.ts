@@ -10,7 +10,10 @@ const config: Config = {
   passWithNoTests: true,
   testEnvironment: "jsdom",
   moduleNameMapper: { "^@/(.*)$": "<rootDir>/src/$1" },
-  testMatch: ["<rootDir>/src/**/__tests__/**/*.{test,spec}.{ts,tsx}"],
+  testMatch: [
+    "<rootDir>/src/**/__tests__/**/*.{test,spec}.{ts,tsx}",
+    "<rootDir>/src/_tests/**/*.{test,spec}.{ts,tsx}",
+  ],
   setupFilesAfterEnv: ["<rootDir>/src/setup.test.ts"],
 };
 

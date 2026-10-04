@@ -1,4 +1,4 @@
-import { memorizationLibraryHeader } from "@/views/memorization/config/libraryHeader";
+import { memorizationLibraryHeader } from "@/views/memorization/config/const";
 import { MaterialLibraryHeader } from "@/widgets/material-library/ui/MaterialLibraryHeader";
 import { Suspense } from "react";
 

@@ -11,7 +11,7 @@ import { errorPopupManager } from "@/shared/lib/error-popup";
 import { createTagValue } from "@/entities/value-object";
 
 // features
-import type { MemorizationEditorSourcePanelProps } from "@/views/memorization/models/editor";
+import type { MemorizationEditorSourcePanelProps } from "@/views/memorization/models/interface";
 
 // views
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
@@ -24,7 +24,6 @@ function MemorizationTitleField() {
     <label className="flex min-w-0 flex-col gap-2.5">
       <span className="text-[13px] font-normal text-practice-muted">제목</span>
       <Input
-        className="rounded-[7px] border border-practice-input-line bg-white px-3.5 py-2.75 text-[15px] leading-[1.7] font-normal text-practice-body shadow-practice-input placeholder:text-practice-muted focus:border-practice-focus focus:ring-2 focus:ring-practice-accent/6 focus:outline-none focus-visible:border-practice-focus focus-visible:inset-ring-0"
         value={title}
         placeholder="예: Business Email Openings"
         onChange={(event) => setTitle(event.target.value)}
@@ -42,7 +41,6 @@ function MemorizationTagsField() {
     <div className="flex min-w-0 flex-col gap-2.5">
       <span className="text-[13px] font-normal text-practice-muted">태그</span>
       <TagInputField
-        className="min-h-12 rounded-[7px] border-practice-input-line bg-white px-2.5 py-1.25 [&_input]:h-8 [&_input]:border-0 [&_input]:bg-white [&_input]:p-0 [&_input]:text-[15px] [&_input]:leading-[1.7] [&_input]:font-normal [&_input]:text-practice-body [&_input]:shadow-none [&_input::placeholder]:text-practice-muted [&_[data-slot=tag-input-chip]]:rounded [&_[data-slot=tag-input-chip]]:border-0 [&_[data-slot=tag-input-chip]]:bg-practice-chip [&_[data-slot=tag-input-chip]]:text-[12px] [&_[data-slot=tag-input-chip]]:text-practice-secondary [&_[data-slot=tag-input-chip]_button]:h-8 [&_[data-slot=tag-input-chip]_button]:w-6.5"
         theme="memo"
         tags={tags}
         placeholder="태그 입력 후 Enter"
@@ -68,7 +66,7 @@ function MemorizationRawTextField() {
       <Textarea
         aria-label="암기할 영어 본문"
         rows={10}
-        className="rounded-[7px] border border-practice-input-line bg-white px-3.5 py-2.75 text-[15px] leading-[1.7] font-normal text-practice-body shadow-practice-input placeholder:text-practice-muted focus:border-practice-focus focus:ring-2 focus:ring-practice-accent/6 focus:outline-none focus-visible:border-practice-focus focus-visible:inset-ring-0 min-h-65 w-full resize-y"
+        className="min-h-65 w-full resize-y"
         value={rawText}
         placeholder="암기할 영어 본문을 입력하세요."
         onChange={(event) => setRawText(event.target.value)}

@@ -1,6 +1,6 @@
 import { ErrorPopupProvider, errorPopupManager } from "@/shared/lib/error-popup";
-import { rolePlayLibraryHeader } from "@/views/role-play/config/libraryHeader";
-import { memorizationLibraryHeader } from "@/views/memorization/config/libraryHeader";
+import { rolePlayLibraryHeader } from "@/views/role-play/config/const";
+import { memorizationLibraryHeader } from "@/views/memorization/config/const";
 import { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within, waitFor, mocked } from "storybook/test";

@@ -1,3 +1,4 @@
+import { expect, userEvent, within } from "storybook/test";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import { Textarea } from "@/shared/components/atomics/textarea/Textarea";
@@ -10,6 +11,7 @@ const meta = {
     disabled: { control: "boolean" },
   },
   args: {
+    "aria-label": "입력",
     state: "default",
     placeholder: "외우고 싶은 영어 본문을 붙여넣거나 입력하세요.",
     rows: 6,
@@ -52,4 +54,14 @@ export const AllStates: Story = {
       <Textarea {...args} rows={3} disabled defaultValue="disabled" />
     </div>
   ),
+};
+
+export const KeyboardEditing: Story = {
+  play: async ({ canvasElement }) => {
+    const input = within(canvasElement).getByRole("textbox");
+    await userEvent.type(input, "Hello");
+    await expect(input).toHaveValue("Hello");
+    await userEvent.clear(input);
+    await expect(input).toHaveValue("");
+  },
 };

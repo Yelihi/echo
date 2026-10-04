@@ -1,3 +1,4 @@
+import { expect, userEvent, within } from "storybook/test";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import { Input } from "@/shared/components/atomics/input/Input";
@@ -15,6 +16,7 @@ const meta = {
     },
   },
   args: {
+    "aria-label": "입력",
     state: "default",
     placeholder: "내용을 입력하세요",
     disabled: false,
@@ -55,4 +57,14 @@ export const AllStates: Story = {
       <Input {...args} disabled defaultValue="disabled" />
     </div>
   ),
+};
+
+export const KeyboardEditing: Story = {
+  play: async ({ canvasElement }) => {
+    const input = within(canvasElement).getByRole("textbox");
+    await userEvent.type(input, "Hello");
+    await expect(input).toHaveValue("Hello");
+    await userEvent.clear(input);
+    await expect(input).toHaveValue("");
+  },
 };

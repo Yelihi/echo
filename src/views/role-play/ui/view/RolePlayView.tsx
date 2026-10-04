@@ -1,4 +1,4 @@
-import { rolePlayLibraryHeader } from "@/views/role-play/config/libraryHeader";
+import { rolePlayLibraryHeader } from "@/views/role-play/config/const";
 import { MaterialLibraryHeader } from "@/widgets/material-library/ui/MaterialLibraryHeader";
 import { Suspense } from "react";
 

@@ -8,7 +8,7 @@ import { Button, Spinner } from "@/shared/components";
 import { ConfirmDialog } from "@/shared/components/ui";
 
 // views
-import type { MemorizationEditorHeaderProps } from "@/views/memorization/models/editor";
+import type { MemorizationEditorHeaderProps } from "@/views/memorization/models/interface";
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
 
 export function MemorizationEditorHeader({
@@ -18,11 +18,10 @@ export function MemorizationEditorHeader({
   onSave,
 }: MemorizationEditorHeaderProps) {
   const router = useRouter();
-  const edited = useMemorizationEditorStore((state) => state.edited);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   const cancel = () => {
-    if (edited) {
+    if (useMemorizationEditorStore.getState().edited) {
       setConfirmCancelOpen(true);
       return;
     }

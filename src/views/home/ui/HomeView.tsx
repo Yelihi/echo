@@ -1,4 +1,4 @@
-import { PracticeModeCarousel } from "./PracticeModeCarousel";
+import { PracticeModeSelector } from "./PracticeModeSelector";
 
 export function HomeView() {
   return (
@@ -9,7 +9,7 @@ export function HomeView() {
           오늘은 어떻게 연습할까요?
         </h1>
       </div>
-      <PracticeModeCarousel />
+      <PracticeModeSelector />
     </div>
   );
 }

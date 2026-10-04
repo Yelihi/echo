@@ -16,7 +16,7 @@ import { convertMemorizationEditorDraftToCreateInput } from "@/views/memorizatio
 import type {
   CreateMemorizationMaterialResult,
   MemorizationEditorDraft,
-} from "@/views/memorization/models/editor";
+} from "@/views/memorization/models/interface";
 import {
   MemorizationMaterialInvalidError,
   MemorizationMaterialSaveFailedError,

@@ -1,3 +1,5 @@
+import type { PracticeMode } from "../models/interface";
+
 export const practiceModes = [
   {
     id: "roleplay",
@@ -25,4 +27,6 @@ export const practiceModes = [
     href: "/sentence-memorization",
     note: "읽고 기억하며 익히는 문단 연습",
   },
-] as const;
+] as const satisfies readonly PracticeMode[];
+
+export const PRACTICE_SWIPE_THRESHOLD = 50;
