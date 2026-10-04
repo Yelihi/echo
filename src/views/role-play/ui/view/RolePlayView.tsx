@@ -1,3 +1,4 @@
+import { rolePlayLibraryHeader } from "@/views/role-play/config/libraryHeader";
 import { MaterialLibraryHeader } from "@/widgets/material-library/ui/MaterialLibraryHeader";
 import { Suspense } from "react";
 
@@ -14,7 +15,7 @@ import {
 import { SourceCardsWrapperSkeleton } from "@/views/role-play/ui/view/SourceCardsWrapper";
 
 function RolePlayViewHeader() {
-  return <MaterialLibraryHeader type="roleplay" />;
+  return <MaterialLibraryHeader {...rolePlayLibraryHeader} />;
 }
 
 export function RolePlayViewFallback() {

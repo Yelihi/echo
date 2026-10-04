@@ -1,3 +1,4 @@
+import { memorizationLibraryHeader } from "@/views/memorization/config/libraryHeader";
 import { MaterialLibraryHeader } from "@/widgets/material-library/ui/MaterialLibraryHeader";
 import { Suspense } from "react";
 
@@ -14,7 +15,7 @@ import {
 import { SourceCardsWrapperSkeleton } from "@/views/memorization/ui/view/SourceCardsWrapper";
 
 function MemorizationViewHeader() {
-  return <MaterialLibraryHeader type="memorization" />;
+  return <MaterialLibraryHeader {...memorizationLibraryHeader} />;
 }
 
 export function MemorizationViewFallback() {

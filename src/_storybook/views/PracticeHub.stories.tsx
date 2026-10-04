@@ -1,3 +1,5 @@
+import { rolePlayLibraryHeader } from "@/views/role-play/config/libraryHeader";
+import { memorizationLibraryHeader } from "@/views/memorization/config/libraryHeader";
 import { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within, waitFor, mocked } from "storybook/test";
@@ -84,7 +86,9 @@ function Library({
   return (
     <PageContainer>
       <section className="flex flex-col gap-8">
-        <MaterialLibraryHeader type={type} />
+        <MaterialLibraryHeader
+          {...(type === "roleplay" ? rolePlayLibraryHeader : memorizationLibraryHeader)}
+        />
         <nav className="flex gap-2" aria-label="자료 태그 필터">
           {["전체", "일상", "여행"].map((value) => (
             <TagChip key={value} selected={tag === value} onClick={() => setTag(value)}>
