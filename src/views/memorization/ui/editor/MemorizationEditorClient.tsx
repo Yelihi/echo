@@ -12,10 +12,7 @@ import { useSuggestMemorizationParagraphs } from "@/features/memorization-paragr
 
 // views
 import { convertMemorizationParagraphSuggestionToEditorParagraphs } from "@/views/memorization/models/converter/convertMemorizationParagraphSuggestionToEditorParagraphs";
-import type {
-  MemorizationEditorDraft,
-  MemorizationEditorMode,
-} from "@/views/memorization/models/editor";
+import type { MemorizationEditorClientProps } from "@/views/memorization/models/interface";
 import {
   createMemorizationMaterialErrorFromCode,
   MemorizationMaterialSaveFailedError,
@@ -25,12 +22,6 @@ import { saveMemorizationMaterial } from "@/views/memorization/services/action/s
 import { MemorizationEditorHeader } from "@/views/memorization/ui/editor/MemorizationEditorHeader";
 import { MemorizationEditorSourcePanel } from "@/views/memorization/ui/editor/MemorizationEditorSourcePanel";
 import { MemorizationParagraphReviewPanel } from "@/views/memorization/ui/editor/MemorizationParagraphReviewPanel";
-
-interface MemorizationEditorClientProps {
-  mode: MemorizationEditorMode;
-  materialId?: string;
-  initialDraft?: MemorizationEditorDraft;
-}
 
 export function MemorizationEditorClient({
   mode,
@@ -125,23 +116,13 @@ export function MemorizationEditorClient({
   };
 
   return (
-    <section
-      className="flex min-h-0 w-full flex-1 flex-col gap-7 lg:h-full lg:overflow-hidden"
-      data-pillar="memo"
-      aria-busy={isBusy}
-    >
+    <section className="flex w-full min-w-0 flex-col gap-7.5" data-pillar="memo" aria-busy={isBusy}>
       <MemorizationEditorHeader mode={mode} isSaving={isSaving} isBusy={isBusy} onSave={save} />
-      <div className="grid min-h-0 w-full flex-1 gap-5 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
-        <div
-          className={cn("min-h-0 lg:h-full lg:overflow-y-auto", isBusy && "opacity-60")}
-          inert={isBusy}
-        >
+      <div className="grid grid-cols-2 items-start gap-6 max-editor:grid-cols-1">
+        <div className={cn("min-w-0", isBusy && "opacity-60")} inert={isBusy}>
           <MemorizationEditorSourcePanel paragraphSuggestion={paragraphSuggestion} />
         </div>
-        <div
-          className={cn("flex min-h-0 flex-1 flex-col lg:h-full", isBusy && "opacity-60")}
-          inert={isBusy}
-        >
+        <div className={cn("min-w-0", isBusy && "opacity-60")} inert={isBusy}>
           <MemorizationParagraphReviewPanel />
         </div>
       </div>

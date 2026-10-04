@@ -5,18 +5,12 @@ import { useRouter } from "next/navigation";
 
 // shared
 import { Button, Spinner } from "@/shared/components";
+import { BackNavigation } from "@/shared/components/ui/back-navigation/BackNavigation";
 import { ConfirmDialog } from "@/shared/components/ui";
 
 // views
-import type { MemorizationEditorMode } from "@/views/memorization/models/editor";
+import type { MemorizationEditorHeaderProps } from "@/views/memorization/models/interface";
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
-
-interface MemorizationEditorHeaderProps {
-  mode: MemorizationEditorMode;
-  isSaving: boolean;
-  isBusy: boolean;
-  onSave: () => void;
-}
 
 export function MemorizationEditorHeader({
   mode,
@@ -25,11 +19,10 @@ export function MemorizationEditorHeader({
   onSave,
 }: MemorizationEditorHeaderProps) {
   const router = useRouter();
-  const edited = useMemorizationEditorStore((state) => state.edited);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   const cancel = () => {
-    if (edited) {
+    if (useMemorizationEditorStore.getState().edited) {
       setConfirmCancelOpen(true);
       return;
     }
@@ -39,20 +32,25 @@ export function MemorizationEditorHeader({
 
   return (
     <>
-      <header className="flex shrink-0 flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <header className="mb-1 flex items-start justify-between gap-6 max-compact:flex-col max-compact:gap-5">
         <div className="flex min-w-0 flex-col gap-3">
-          <h1 className="text-heading-lg font-bold tracking-tight break-keep text-black-primary">
-            {mode === "create" ? "문장 암기 자료 만들기" : "문장 암기 자료 수정"}
+          <h1 className="text-[32px] leading-[1.4] font-medium tracking-[-1px] max-compact:text-[26px]">
+            {mode === "create" ? "문단 암기 자료 만들기" : "문단 암기 자료 수정"}
           </h1>
-          <p className="text-body-4 text-gray-text">
+          <p className="mt-2.5 text-[14px] leading-[1.8] text-practice-muted max-compact:text-[13px]">
             긴 영어 본문을 입력하고 암기 기준 문단을 확정하세요.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" size="lg" onClick={cancel} disabled={isBusy}>
-            취소
-          </Button>
-          <Button type="button" size="lg" onClick={onSave} disabled={isBusy} aria-busy={isSaving}>
+        <div className="flex shrink-0 gap-2.5 max-compact:self-end">
+          <BackNavigation href="/sentence-memorization" onBack={cancel} disabled={isBusy} />
+          <Button
+            className="min-h-11 rounded-[7px] text-[13px] font-medium"
+            type="button"
+            size="lg"
+            onClick={onSave}
+            disabled={isBusy}
+            aria-busy={isSaving}
+          >
             {isSaving ? (
               <>
                 <Spinner size="sm" className="text-current" label="저장 중" />

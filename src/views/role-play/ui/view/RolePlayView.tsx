@@ -1,9 +1,8 @@
+import { rolePlayLibraryHeader } from "@/views/role-play/config/const";
+import { MaterialLibraryHeader } from "@/widgets/material-library/ui/MaterialLibraryHeader";
 import { Suspense } from "react";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 
 // shared
-import { Button } from "@/shared/components";
 import { PaginationSkeleton } from "@/shared/components/ui";
 
 // views
@@ -16,19 +15,7 @@ import {
 import { SourceCardsWrapperSkeleton } from "@/views/role-play/ui/view/SourceCardsWrapper";
 
 function RolePlayViewHeader() {
-  return (
-    <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-col gap-4">
-        <h1 className="text-display break-keep text-black-primary">롤플레잉</h1>
-        <p className="text-body-4 text-gray-text">연습할 2인 대화 자료를 선택하세요.</p>
-      </div>
-      <Button size="lg" asChild>
-        <Link href="/role-playing/new">
-          <Plus className="size-4" />새 자료
-        </Link>
-      </Button>
-    </header>
-  );
+  return <MaterialLibraryHeader {...rolePlayLibraryHeader} />;
 }
 
 export function RolePlayViewFallback() {

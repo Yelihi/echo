@@ -1,3 +1,4 @@
+import type { RoleplayTxtImportProps } from "@/features/roleplay-txt-import/models/interface";
 import type {
   RoleplayReadyEvaluationMode,
   RoleplayReadyRole,
@@ -120,4 +121,23 @@ export interface RolePlayReadyStore {
   setVoice: (voice: RoleplayReadyVoice) => void;
   setSpeed: (speed: number) => void;
   reset: () => void;
+}
+
+export interface RolePlayEditorClientProps {
+  mode: RoleplayEditorMode;
+  materialId?: string;
+  initialDraft?: RoleplayEditorDraft;
+}
+export interface RolePlayEditorHeaderProps {
+  mode: RoleplayEditorMode;
+  isSaving: boolean;
+  isBusy: boolean;
+  onSave: () => void;
+}
+export interface RolePlayEditorMetaPanelProps {
+  txtImport: RoleplayTxtImportProps;
+}
+export interface RolePlayScriptLineProps {
+  id: string;
+  index: number;
 }

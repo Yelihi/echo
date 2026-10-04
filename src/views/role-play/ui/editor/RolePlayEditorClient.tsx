@@ -13,18 +13,12 @@ import { useTransferTextFile } from "@/features/roleplay-txt-import/services/hoo
 // views
 import { convertRoleplayTxtImportToEditorLines } from "@/views/role-play/models/converter/convertRoleplayTxtImportToEditorLines";
 import { createRolePlayMaterialErrorFromCode } from "@/views/role-play/models/errors";
-import type { RoleplayEditorDraft, RoleplayEditorMode } from "@/views/role-play/models/interface";
+import type { RolePlayEditorClientProps } from "@/views/role-play/models/interface";
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
 import { saveRolePlayMaterial } from "@/views/role-play/services/action/saveRolePlayMaterial";
 import { RolePlayEditorHeader } from "@/views/role-play/ui/editor/RolePlayEditorHeader";
 import { RolePlayEditorMetaPanel } from "@/views/role-play/ui/editor/RolePlayEditorMetaPanel";
 import { RolePlayScriptEditor } from "@/views/role-play/ui/editor/RolePlayScriptEditor";
-
-interface RolePlayEditorClientProps {
-  mode: RoleplayEditorMode;
-  materialId?: string;
-  initialDraft?: RoleplayEditorDraft;
-}
 
 export function RolePlayEditorClient({
   mode,
@@ -112,9 +106,13 @@ export function RolePlayEditorClient({
   };
 
   return (
-    <section className="flex w-full flex-col gap-7" data-pillar="roleplay" aria-busy={isBusy}>
+    <section
+      className="flex w-full min-w-0 flex-col gap-7.5"
+      data-pillar="roleplay"
+      aria-busy={isBusy}
+    >
       <RolePlayEditorHeader mode={mode} isSaving={isSaving} isBusy={isBusy} onSave={save} />
-      <div className="grid w-full gap-5 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+      <div className="flex flex-col gap-6.5">
         <div className={cn(isBusy && "opacity-60")} inert={isBusy}>
           <RolePlayEditorMetaPanel txtImport={txtImport} />
         </div>

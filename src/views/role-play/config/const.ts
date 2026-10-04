@@ -1,7 +1,9 @@
+import type { RoleplayEditorDraft } from "../models/interface";
 import { Pencil, Trash2 } from "lucide-react";
 
 // widgets
 import type { InnerMenuItemProps } from "@/widgets/source-card/models/interface";
+import type { MaterialLibraryHeaderProps } from "@/widgets/material-library/models/interface";
 
 // views
 
@@ -35,3 +37,17 @@ export const ROLE_PLAY_INNER_MENU_ITEMS: Array<Omit<InnerMenuItemProps, "onClick
     theme: "destructive",
   },
 ];
+
+export const rolePlayLibraryHeader = {
+  eyebrow: "ROLEPLAY",
+  title: "롤플레잉",
+  description: "연습하고 싶은 대화를 고르고, 나의 말로 시작해보세요.",
+  createHref: "/role-playing/new",
+} satisfies MaterialLibraryHeaderProps;
+
+export const ROLE_PLAY_EDITOR_EMPTY_DRAFT: RoleplayEditorDraft = {
+  title: "",
+  situation: "",
+  tags: [],
+  lines: [],
+};

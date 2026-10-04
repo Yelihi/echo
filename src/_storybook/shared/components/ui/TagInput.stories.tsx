@@ -1,3 +1,5 @@
+import { expect, userEvent, within } from "storybook/test";
+import { TagInputField } from "@/shared/components/ui/TagInputField";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import * as React from "react";
 
@@ -90,4 +92,21 @@ export const AllVariants: Story = {
       <TagInputDemo {...args} theme="memo" initialTags={["연설", "고급"]} />
     </div>
   ),
+};
+
+function ControlledTags() {
+  const [tags, setTags] = React.useState<string[]>([]);
+  return <TagInputField tags={tags} onChange={setTags} placeholder="태그 입력 후 Enter" />;
+}
+export const FieldKeyboard: Story = {
+  render: () => <ControlledTags />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByRole("textbox", { name: "태그 입력" }), "travel{Enter}");
+    await expect(canvas.getByRole("button", { name: "travel 태그 삭제" })).toBeVisible();
+    await userEvent.click(canvas.getByRole("button", { name: "travel 태그 삭제" }));
+    await expect(
+      canvas.queryByRole("button", { name: "travel 태그 삭제" }),
+    ).not.toBeInTheDocument();
+  },
 };

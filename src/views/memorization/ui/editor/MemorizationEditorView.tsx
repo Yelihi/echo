@@ -7,7 +7,7 @@ import { isUuidString } from "@/shared/utils/uuid";
 import type { MaterialId } from "@/entities/value-object";
 
 // views
-import type { MemorizationEditorViewProps } from "@/views/memorization/models/editor";
+import type { MemorizationEditorViewProps } from "@/views/memorization/models/interface";
 import { getMemorizationEditorDraft } from "@/views/memorization/services/server/getMemorizationEditorDraft";
 import { MemorizationEditorClient } from "@/views/memorization/ui/editor/MemorizationEditorClient";
 

@@ -1,51 +1,15 @@
-import { Suspense } from "react";
+import { PracticeModeSelector } from "./PracticeModeSelector";
 
-import {
-  HomeMemorizationSessionLatestList,
-  HomeMemorizationSessionLatestListFallback,
-} from "@/views/home/ui/HomeMemorizationSessionLatestList";
-import { HomeLatestStudyRecords } from "@/views/home/ui/HomeLatestStudyRecords";
-import {
-  HomeRoleplaySessionLatestList,
-  HomeRoleplaySessionLatestListFallback,
-} from "@/views/home/ui/HomeRoleplaySessionLatestList";
-import {
-  HomeSessionIntroCard,
-  HomeSessionIntroCardFallback,
-} from "@/views/home/ui/HomeSessionIntroCard";
-
-/**
- * 홈 화면.
- */
 export function HomeView() {
   return (
-    <section className="flex w-full flex-col items-start gap-10 sm:gap-12">
-      <header className="flex flex-col items-start gap-4">
-        <h1 className="text-display break-keep text-black-primary">오늘도 한 문장씩 말해볼까요?</h1>
-        <p className="text-body-4 text-gray-text">
-          롤플레잉으로 대화하고, 긴 문장은 암기로 다져요.
-        </p>
-      </header>
-
-      <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2">
-        <Suspense fallback={<HomeSessionIntroCardFallback type="role-play" />}>
-          <HomeSessionIntroCard type="role-play" />
-        </Suspense>
-        <Suspense fallback={<HomeSessionIntroCardFallback type="memorization" />}>
-          <HomeSessionIntroCard type="memorization" />
-        </Suspense>
+    <div className="mx-auto max-w-[1480px] px-17 pt-8.5 pb-7 max-editor:px-10 max-editor:pt-7 max-md:px-6 max-md:pt-5 max-md:pb-7.5">
+      <div className="flex items-center justify-between gap-5 px-1 max-md:block">
+        <p className="text-[10px] tracking-[0.18em] text-practice-muted">YOUR ENGLISH, YOUR WAY</p>
+        <h1 className="text-[14px] font-normal text-practice-muted max-md:mt-2.5 max-md:text-[13px]">
+          오늘은 어떻게 연습할까요?
+        </h1>
       </div>
-
-      <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2">
-        <Suspense fallback={<HomeRoleplaySessionLatestListFallback />}>
-          <HomeRoleplaySessionLatestList />
-        </Suspense>
-        <Suspense fallback={<HomeMemorizationSessionLatestListFallback />}>
-          <HomeMemorizationSessionLatestList />
-        </Suspense>
-      </div>
-
-      <HomeLatestStudyRecords />
-    </section>
+      <PracticeModeSelector />
+    </div>
   );
 }

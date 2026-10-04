@@ -2,11 +2,11 @@
 import { createStore } from "@/shared/lib/store/create-store";
 
 // views
-import { MEMORIZATION_EDITOR_EMPTY_DRAFT } from "@/views/memorization/models/converter/convertMemorizationEditorDraft";
+import { MEMORIZATION_EDITOR_EMPTY_DRAFT } from "@/views/memorization/config/const";
 import type {
   MemorizationEditorDraft,
   MemorizationEditorStore,
-} from "@/views/memorization/models/editor";
+} from "@/views/memorization/models/interface";
 
 const withUnconfirmedParagraphs = (
   draft: MemorizationEditorDraft,

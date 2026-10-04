@@ -1,6 +1,8 @@
+import type { MemorizationEditorDraft } from "../models/interface";
 import { Pencil, Trash2 } from "lucide-react";
 
 import type { InnerMenuItemProps } from "@/widgets/source-card/models/interface";
+import type { MaterialLibraryHeaderProps } from "@/widgets/material-library/models/interface";
 
 export const MEMORIZATION_ALL_TAG = "전체";
 
@@ -25,3 +27,18 @@ export const MEMORIZATION_INNER_MENU_ITEMS: Array<Omit<InnerMenuItemProps, "onCl
     theme: "destructive",
   },
 ];
+
+export const memorizationLibraryHeader = {
+  eyebrow: "MEMORIZATION",
+  title: "문단 암기",
+  description: "기억하고 싶은 글을 고르고, 한 문단씩 내 것으로 만드세요.",
+  createHref: "/sentence-memorization/new",
+} satisfies MaterialLibraryHeaderProps;
+
+export const MEMORIZATION_EDITOR_EMPTY_DRAFT: MemorizationEditorDraft = {
+  title: "",
+  tags: [],
+  rawText: "",
+  paragraphs: [],
+  confirmed: false,
+};

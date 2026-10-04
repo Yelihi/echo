@@ -8,15 +8,7 @@ import { createTagValue, type UserId } from "@/entities/value-object";
 // views
 import type { MemorizationEditorDraftInput } from "@/views/memorization/config/schema";
 import { getMemorizationParagraphText } from "@/views/memorization/models/converter/convertMemorizationReadyMaterial";
-import type { MemorizationEditorDraft } from "@/views/memorization/models/editor";
-
-export const MEMORIZATION_EDITOR_EMPTY_DRAFT: MemorizationEditorDraft = {
-  title: "",
-  tags: [],
-  rawText: "",
-  paragraphs: [],
-  confirmed: false,
-};
+import type { MemorizationEditorDraft } from "@/views/memorization/models/interface";
 
 const splitMemorizationParagraphIntoSentences = (paragraph: string): string[] => {
   const sentences = Array.from(

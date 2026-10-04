@@ -21,6 +21,7 @@ export async function proxy(request: NextRequest) {
   // NAVIGATION_MENU(widgets/navigation/config/const.ts)의 경로와 일치해야 합니다.
   const protectedRoutes = [
     "/home",
+    "/my-page",
     "/sessions",
     "/role-playing",
     "/sentence-memorization",

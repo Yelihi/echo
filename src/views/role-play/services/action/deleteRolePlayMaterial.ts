@@ -18,6 +18,7 @@ export async function deleteRolePlayMaterial(id: string): Promise<boolean> {
       user.id as UserId,
     );
     revalidatePath("/role-playing");
+    revalidatePath("/my-page");
     return true;
   } catch {
     return false;

@@ -4,18 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/tailwind/utils";
 
 export const textareaVariants = cva(
-  "group/textarea flex w-full min-w-0 rounded-control border bg-card-surface px-4 py-3.25 text-body-5 leading-relaxed text-black-primary transition-colors outline-none placeholder:text-gray-text-secondary disabled:cursor-not-allowed disabled:border-card-line disabled:bg-gray-background disabled:opacity-60",
+  "group/textarea flex w-full min-w-0 rounded-[7px] border bg-white px-3.5 py-2.75 text-[15px] leading-[1.7] font-normal text-practice-body shadow-practice-input transition-colors outline-none placeholder:text-practice-muted disabled:cursor-not-allowed disabled:border-card-line disabled:bg-gray-background disabled:opacity-60",
   {
     variants: {
       state: {
         default:
-          "border-control-line hover:border-brand focus-visible:border-brand focus-visible:inset-ring-1 focus-visible:inset-ring-brand",
+          "border-practice-input-line hover:border-brand focus:border-practice-focus focus:ring-2 focus:ring-practice-accent/6",
         error: "border-danger-ink inset-ring-1 inset-ring-danger-ink",
       },
     },
-    defaultVariants: {
-      state: "default",
-    },
+    defaultVariants: { state: "default" },
   },
 );
 
@@ -38,7 +36,7 @@ export const Textarea = ({
       data-slot="textarea"
       data-state={state ?? "default"}
       aria-invalid={state === "error" || undefined}
-      className={cn(textareaVariants({ state }), className)}
+      className={cn(textareaVariants({ state: state ?? "default" }), className)}
       {...props}
     />
   );

@@ -5,18 +5,12 @@ import { useRouter } from "next/navigation";
 
 // shared
 import { Button, Spinner } from "@/shared/components";
+import { BackNavigation } from "@/shared/components/ui/back-navigation/BackNavigation";
 import { ConfirmDialog } from "@/shared/components/ui";
 
 // views
-import type { RoleplayEditorMode } from "@/views/role-play/models/interface";
+import type { RolePlayEditorHeaderProps } from "@/views/role-play/models/interface";
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
-
-interface RolePlayEditorHeaderProps {
-  mode: RoleplayEditorMode;
-  isSaving: boolean;
-  isBusy: boolean;
-  onSave: () => void;
-}
 
 export function RolePlayEditorHeader({
   mode,
@@ -25,11 +19,10 @@ export function RolePlayEditorHeader({
   onSave,
 }: RolePlayEditorHeaderProps) {
   const router = useRouter();
-  const edited = useRolePlayEditorStore((state) => state.edited);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   const cancel = () => {
-    if (edited) {
+    if (useRolePlayEditorStore.getState().edited) {
       setConfirmCancelOpen(true);
       return;
     }
@@ -39,18 +32,25 @@ export function RolePlayEditorHeader({
 
   return (
     <>
-      <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <header className="mb-1 flex items-start justify-between gap-6 max-compact:flex-col max-compact:gap-5">
         <div className="flex min-w-0 flex-col gap-3">
-          <h1 className="text-heading-lg font-bold tracking-tight break-keep text-black-primary">
+          <h1 className="text-[32px] leading-[1.4] font-medium tracking-[-1px] max-compact:text-[26px]">
             {mode === "create" ? "롤플레잉 자료 만들기" : "롤플레잉 자료 수정"}
           </h1>
-          <p className="text-body-4 text-gray-text">상대방과 내 대사를 채팅 흐름으로 정리하세요.</p>
+          <p className="mt-2.5 text-[14px] leading-[1.8] text-practice-muted max-compact:text-[13px]">
+            연습할 상황과 주고받을 대사를 차례로 입력하세요.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" size="lg" onClick={cancel} disabled={isBusy}>
-            취소
-          </Button>
-          <Button type="button" size="lg" onClick={onSave} disabled={isBusy} aria-busy={isSaving}>
+        <div className="flex shrink-0 gap-2.5 max-compact:self-end">
+          <BackNavigation href="/role-playing" onBack={cancel} disabled={isBusy} />
+          <Button
+            className="min-h-11 rounded-[7px] text-[13px] font-medium"
+            type="button"
+            size="lg"
+            onClick={onSave}
+            disabled={isBusy}
+            aria-busy={isSaving}
+          >
             {isSaving ? (
               <>
                 <Spinner size="sm" className="text-current" label="저장 중" />

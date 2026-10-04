@@ -38,7 +38,7 @@ export const Default: Story = {
     await userEvent.keyboard("{Enter}");
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
     await userEvent.tab();
-    await expect(canvas.getByRole("button", { name: "개인 설정" })).toHaveFocus();
+    await expect(canvas.getByRole("button", { name: "계정 전환" })).toHaveFocus();
     await userEvent.keyboard("{Escape}");
     await expect(trigger).toHaveFocus();
     await expect(trigger).toHaveAttribute("aria-expanded", "false");

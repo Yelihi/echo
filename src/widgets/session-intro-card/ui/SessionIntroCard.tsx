@@ -14,7 +14,7 @@ const sessionIntroCardVariants = cva(
   {
     variants: {
       type: {
-        "role-play": "bg-silver text-brand",
+        "role-play": "bg-silver text-black-primary",
         memorization: "bg-brand text-on-brand",
       },
     },

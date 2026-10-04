@@ -16,7 +16,7 @@ import { convertMemorizationEditorDraftToCreateInput } from "@/views/memorizatio
 import type {
   CreateMemorizationMaterialResult,
   MemorizationEditorDraft,
-} from "@/views/memorization/models/editor";
+} from "@/views/memorization/models/interface";
 import {
   MemorizationMaterialInvalidError,
   MemorizationMaterialSaveFailedError,
@@ -54,6 +54,7 @@ export const saveMemorizationMaterial = async (
     }
 
     revalidatePath("/sentence-memorization");
+    revalidatePath("/my-page");
     return { code: "SUCCESS", materialId: savedId };
   } catch {
     return { code: MemorizationMaterialSaveFailedError.CODE };

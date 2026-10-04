@@ -34,6 +34,7 @@ export function RolePlayImportTxtButton({
         hidden
       />
       <DashedActionButton
+        className="min-h-10 w-auto border-0 bg-transparent p-0 text-[12px] text-practice-secondary"
         icon={<FileUp className="size-4" />}
         pending={isPending}
         disabled={isPending}

@@ -3,7 +3,7 @@
 import { Sparkles } from "lucide-react";
 
 // shared
-import { Textarea, TitleField } from "@/shared/components";
+import { Textarea, Input } from "@/shared/components";
 import { DashedActionButton, TagInputField } from "@/shared/components/ui";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 
@@ -11,7 +11,7 @@ import { errorPopupManager } from "@/shared/lib/error-popup";
 import { createTagValue } from "@/entities/value-object";
 
 // features
-import type { MemorizationParagraphSuggestionProps } from "@/features/memorization-paragraph-suggestion/models/interface";
+import type { MemorizationEditorSourcePanelProps } from "@/views/memorization/models/interface";
 
 // views
 import { useMemorizationEditorStore } from "@/views/memorization/models/stores/memorizationEditorStore";
@@ -21,9 +21,9 @@ function MemorizationTitleField() {
   const setTitle = useMemorizationEditorStore((state) => state.setTitle);
 
   return (
-    <label className="flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">제목</span>
-      <TitleField
+    <label className="flex min-w-0 flex-col gap-2.5">
+      <span className="text-[13px] font-normal text-practice-muted">제목</span>
+      <Input
         value={title}
         placeholder="예: Business Email Openings"
         onChange={(event) => setTitle(event.target.value)}
@@ -38,8 +38,8 @@ function MemorizationTagsField() {
   const markDirty = useMemorizationEditorStore((state) => state.markDirty);
 
   return (
-    <div className="mt-4 flex flex-col gap-2">
-      <span className="text-body-2 font-bold text-gray-text">태그</span>
+    <div className="flex min-w-0 flex-col gap-2.5">
+      <span className="text-[13px] font-normal text-practice-muted">태그</span>
       <TagInputField
         theme="memo"
         tags={tags}
@@ -58,14 +58,15 @@ function MemorizationRawTextField() {
   const wordCount = rawText.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div className="rounded-card border border-card-line bg-white p-5">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-body-2 font-bold text-gray-text">본문</span>
+    <div className="flex min-w-0 flex-col gap-2.5">
+      <div className="mb-2.5 flex justify-between text-[12px] text-practice-muted">
+        <span className="text-[13px] font-normal text-practice-muted">본문</span>
         <span className="text-body-1 font-bold text-gray-text-secondary">{wordCount} words</span>
       </div>
       <Textarea
         aria-label="암기할 영어 본문"
-        rows={14}
+        rows={10}
+        className="min-h-65 w-full resize-y"
         value={rawText}
         placeholder="암기할 영어 본문을 입력하세요."
         onChange={(event) => setRawText(event.target.value)}
@@ -76,9 +77,7 @@ function MemorizationRawTextField() {
 
 function MemorizationParagraphSuggestButton({
   paragraphSuggestion,
-}: {
-  paragraphSuggestion: MemorizationParagraphSuggestionProps;
-}) {
+}: MemorizationEditorSourcePanelProps) {
   const requestSuggestion = () => {
     const rawText = useMemorizationEditorStore.getState().draft.rawText;
 
@@ -95,6 +94,7 @@ function MemorizationParagraphSuggestButton({
 
   return (
     <DashedActionButton
+      className="min-h-11.5 rounded-[7px] border border-solid border-practice-input-line bg-white text-[13px] text-black-secondary"
       icon={<Sparkles className="size-4" />}
       pending={paragraphSuggestion.isPending}
       disabled={paragraphSuggestion.isPending}
@@ -107,18 +107,28 @@ function MemorizationParagraphSuggestButton({
 
 export function MemorizationEditorSourcePanel({
   paragraphSuggestion,
-}: {
-  paragraphSuggestion: MemorizationParagraphSuggestionProps;
-}) {
+}: MemorizationEditorSourcePanelProps) {
   return (
-    <aside className="flex min-w-0 flex-col gap-4">
-      <div className="rounded-card border border-card-line bg-white p-5">
+    <section
+      className="min-w-0 rounded-[14px] border border-practice-panel-line bg-white p-8 shadow-practice-panel max-editor:p-6.5 max-compact:px-4.5 max-compact:py-5.5"
+      aria-labelledby="memo-source-title"
+    >
+      <div className="mb-7 flex items-center justify-between gap-5 max-compact:items-start max-compact:gap-3">
+        <h2
+          className="text-[19px] font-medium text-practice-body max-compact:text-[17px]"
+          id="memo-source-title"
+        >
+          원문 입력
+        </h2>
+      </div>
+      <div className="flex flex-col gap-6">
         <MemorizationTitleField />
         <MemorizationTagsField />
+        <MemorizationRawTextField />
       </div>
-
-      <MemorizationRawTextField />
-      <MemorizationParagraphSuggestButton paragraphSuggestion={paragraphSuggestion} />
-    </aside>
+      <div className="mt-6">
+        <MemorizationParagraphSuggestButton paragraphSuggestion={paragraphSuggestion} />
+      </div>
+    </section>
   );
 }

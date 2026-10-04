@@ -165,6 +165,46 @@
 }
 
 @theme {
+  --breakpoint-compact: 37.5rem;
+  --breakpoint-editor: 68.8125rem;
+
+  /* Practice hub: shared visual tokens; the brand override stays inside its shell. */
+  --color-practice-ink: #242424;
+  --color-practice-body: #333333;
+  --color-practice-secondary: #555555;
+  --color-practice-muted: #6e6e6a;
+  --color-practice-subtle: #717171;
+  --color-practice-canvas: #f8f8f7;
+  --color-practice-line: #e8e7e5;
+  --color-practice-panel-line: #eeedeb;
+  --color-practice-input-line: #dededb;
+  --color-practice-chip: #f3f3f1;
+  --color-practice-avatar: #f1f0ee;
+  --color-practice-accent: #d91c23;
+  --color-practice-accent-hover: #b81720;
+  --color-practice-focus: #b61e26;
+  --color-practice-accent-subtle: #fcf4f3;
+  --color-practice-success: #256640;
+  --color-practice-success-surface: #ddefe1;
+  --color-practice-pending: #805d0b;
+  --color-practice-pending-surface: #fbf3d6;
+  --color-practice-error: #ac2028;
+  --color-practice-error-surface: #fae7e8;
+  --color-practice-neutral-surface: #eeefee;
+  --shadow-practice-panel: 0 1px 2px #00000003;
+  --shadow-practice-input: 0 1px 3px #00000003;
+  --animate-practice-arrive: practice-arrive 450ms ease both;
+  @keyframes practice-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   /** ── color · semantic ─────────────────────────────────────
       Legacy color names remain aliases during the component migration. */
   --color-brand: var(--ink-900);

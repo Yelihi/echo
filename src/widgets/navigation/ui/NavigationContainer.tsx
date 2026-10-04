@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Pluse } from "@/shared/components";
 
 import { NavigationMenuItem } from "@/widgets/navigation/ui/NavigationMenuItem";
-import { Profile } from "@/widgets/navigation/ui/Profile";
+import { Profile } from "@/features/logout/ui/Profile";
 import { NAVIGATION_MENU } from "@/widgets/navigation/config/const";
 
 export const NavigationContainer = () => {

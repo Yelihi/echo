@@ -1,19 +1,12 @@
+import { ROLE_PLAY_EDITOR_EMPTY_DRAFT } from "@/views/role-play/config/const";
 // shared
 import { createStore } from "@/shared/lib/store/create-store";
 
 // views
 import type {
-  RoleplayEditorDraft,
   RoleplayEditorSpeaker,
   RolePlayEditorStore,
 } from "@/views/role-play/models/interface";
-
-const rolePlayEditorEmptyDraft: RoleplayEditorDraft = {
-  title: "",
-  situation: "",
-  tags: [],
-  lines: [],
-};
 
 const createLine = (speaker: RoleplayEditorSpeaker) => ({
   id: `line-${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -22,7 +15,7 @@ const createLine = (speaker: RoleplayEditorSpeaker) => ({
 });
 
 export const useRolePlayEditorStore = createStore<RolePlayEditorStore>("rolePlayEditor", (set) => ({
-  draft: rolePlayEditorEmptyDraft,
+  draft: ROLE_PLAY_EDITOR_EMPTY_DRAFT,
   edited: false,
   hydrate: (draft) => set({ draft, edited: false }),
   setTitle: (title) => set((state) => ({ draft: { ...state.draft, title }, edited: true })),
@@ -68,5 +61,5 @@ export const useRolePlayEditorStore = createStore<RolePlayEditorStore>("rolePlay
       edited: true,
     })),
   markDirty: () => set({ edited: true }),
-  reset: () => set({ draft: rolePlayEditorEmptyDraft, edited: false }),
+  reset: () => set({ draft: ROLE_PLAY_EDITOR_EMPTY_DRAFT, edited: false }),
 }));
