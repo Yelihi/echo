@@ -1,41 +1,17 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Dialog } from "radix-ui";
 import { ArrowLeft, BookOpen, Files, Plus, Menu, X, History, Mic, UserRound } from "lucide-react";
 import { Profile } from "@/widgets/navigation/ui/Profile";
+import type { EditorialShellProps } from "../models/interface";
+import { getShellRoute } from "../models/getShellRoute";
 import styles from "./EditorialShell.module.css";
 
-export function EditorialShell({
-  children,
-  initials,
-  pathname,
-}: {
-  children: ReactNode;
-  initials?: string;
-  pathname: string;
-}) {
+export function EditorialShell({ children, initials, pathname }: EditorialShellProps) {
   const [open, setOpen] = useState(false);
-  const isRoleplay =
-    pathname.startsWith("/role-playing") || pathname.startsWith("/roleplay-sessions");
-  const isMemorization =
-    pathname.startsWith("/sentence-memorization") || pathname.startsWith("/memorization-sessions");
-  const inPractice = isRoleplay || isMemorization;
-  const base = isRoleplay ? "/role-playing" : "/sentence-memorization";
-  const mode = isRoleplay ? "롤플레잉" : "문단 암기";
-  const page = pathname.endsWith("/new")
-    ? "새 자료"
-    : pathname.endsWith("/edit")
-      ? "자료 수정"
-      : pathname.endsWith("/result")
-        ? "학습 결과"
-        : pathname.endsWith("/ready")
-          ? "연습 준비"
-          : pathname.startsWith("/roleplay-sessions/") ||
-              pathname.startsWith("/memorization-sessions/")
-            ? "연습 중"
-            : "자료 목록";
+  const { inPractice, base, mode, page } = getShellRoute(pathname);
   const brand = (
     <Link
       href="/home"

@@ -8,7 +8,8 @@ import { getRouter } from "@storybook/nextjs-vite/navigation.mock";
 import { useSuggestMemorizationParagraphs } from "@/features/memorization-paragraph-suggestion/services/hooks/useSuggestMemorizationParagraphs";
 import { saveRolePlayMaterial } from "@/views/role-play/services/action/saveRolePlayMaterial";
 import { saveMemorizationMaterial } from "@/views/memorization/services/action/saveMemorizationMaterial";
-import { AppShell, PageContainer } from "@/widgets/app-shell";
+import { EditorialShell } from "@/widgets/editorial-shell/ui/EditorialShell";
+import { PageContainer } from "@/widgets/app-shell";
 import { HomeView } from "@/views/home/ui/HomeView";
 import {
   MyPageContent,
@@ -276,9 +277,9 @@ function Walkthrough({
         }
       }}
     >
-      <AppShell initials="SJ" pathname={path}>
+      <EditorialShell initials="SJ" pathname={path}>
         {content}
-      </AppShell>
+      </EditorialShell>
     </div>
   );
 }
