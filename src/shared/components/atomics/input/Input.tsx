@@ -1,13 +1,28 @@
 import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/shared/lib/tailwind/utils";
+
+export const inputVariants = cva(
+  "group/input flex h-12 w-full min-w-0 rounded-[7px] border bg-white px-3.5 py-2.75 text-[15px] leading-[1.7] font-normal text-practice-body shadow-practice-input transition-colors outline-none placeholder:text-practice-muted disabled:cursor-not-allowed disabled:border-card-line disabled:bg-gray-background disabled:opacity-60",
+  {
+    variants: {
+      state: {
+        default:
+          "border-practice-input-line hover:border-brand focus:border-practice-focus focus:ring-2 focus:ring-practice-accent/6",
+        error: "border-danger-ink inset-ring-1 inset-ring-danger-ink",
+      },
+    },
+    defaultVariants: { state: "default" },
+  },
+);
 
 export interface InputProps {
   /**
    * 시각적 상태. Figma 의 focus / disabled 는 CSS 상태라 여기 포함하지 않고
    * 네이티브 속성(`disabled`, `:focus-visible`)으로 처리합니다.
    */
-  state?: "default" | "error" | null;
+  state?: VariantProps<typeof inputVariants>["state"];
 }
 
 /**
@@ -28,13 +43,7 @@ export const Input = ({
       data-slot="input"
       data-state={state ?? "default"}
       aria-invalid={state === "error" || undefined}
-      className={cn(
-        "group/input flex h-12 w-full min-w-0 rounded-[7px] border bg-white px-3.5 py-2.75 text-[15px] leading-[1.7] font-normal text-practice-body shadow-practice-input transition-colors outline-none placeholder:text-practice-muted disabled:cursor-not-allowed disabled:border-card-line disabled:bg-gray-background disabled:opacity-60",
-        state === "error"
-          ? "border-danger-ink inset-ring-1 inset-ring-danger-ink"
-          : "border-practice-input-line hover:border-brand focus:border-practice-focus focus:ring-2 focus:ring-practice-accent/6",
-        className,
-      )}
+      className={cn(inputVariants({ state: state ?? "default" }), className)}
       {...props}
     />
   );
