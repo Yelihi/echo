@@ -1,5 +1,4 @@
 "use client";
-import { editorStyles as styles } from "@/shared/components/editor/styles";
 
 import type {
   ParagraphActionButtonProps,
@@ -46,7 +45,9 @@ function MemorizationParagraphList() {
 
   if (paragraphIndexes.length === 0) {
     return (
-      <div className={styles.empty}>본문을 입력한 뒤 AI 문단 제안 요청을 눌러 초안을 만드세요.</div>
+      <div className="flex min-h-67.5 flex-col items-center justify-center gap-3 p-6 text-center text-[13px] leading-[1.8] text-practice-muted">
+        본문을 입력한 뒤 AI 문단 제안 요청을 눌러 초안을 만드세요.
+      </div>
     );
   }
 
@@ -63,7 +64,7 @@ function MemorizationParagraphItem({ index }: MemorizationParagraphItemProps) {
 
   return (
     <ParagraphRow
-      className={styles.paragraphRow}
+      className="gap-3 [&>span]:mt-2.5 [&>span]:bg-transparent [&>span]:text-[12px] [&>span]:font-normal [&>span]:text-practice-muted"
       index={index + 1}
       mode={confirmed ? "confirmed" : "edit"}
       actions={
@@ -89,7 +90,7 @@ function MemorizationParagraphItem({ index }: MemorizationParagraphItemProps) {
       ) : (
         <Textarea
           rows={3}
-          className={styles.paragraphInput}
+          className="field-sizing-content resize-none overflow-hidden rounded-[7px] border border-practice-input-line bg-white p-3.25 text-[15px] leading-[1.8]"
           value={paragraph}
           aria-label={`문단 ${index + 1}`}
           onChange={(event) =>
@@ -119,8 +120,14 @@ function MemorizationParagraphConfirmBar() {
   };
 
   return (
-    <div className={styles.confirmBar}>
-      <Button type="button" variant="secondary" size="lg" onClick={confirm}>
+    <div className="mt-7 flex justify-end border-t border-practice-panel-line pt-5.5">
+      <Button
+        className="rounded-[7px] text-[13px]"
+        type="button"
+        variant="secondary"
+        size="lg"
+        onClick={confirm}
+      >
         <Check className="size-4" />
         문단 확정
       </Button>
@@ -130,14 +137,22 @@ function MemorizationParagraphConfirmBar() {
 
 export function MemorizationParagraphReviewPanel() {
   return (
-    <section className={styles.panel} aria-labelledby="memo-review-title">
-      <div className={styles.panelHeading}>
-        <h2 id="memo-review-title">문단 검수</h2>
-        <span>
+    <section
+      className="min-w-0 rounded-[14px] border border-practice-panel-line bg-white p-8 shadow-practice-panel max-editor:p-6.5 max-compact:px-4.5 max-compact:py-5.5"
+      aria-labelledby="memo-review-title"
+    >
+      <div className="mb-7 flex items-center justify-between gap-5 max-compact:items-start max-compact:gap-3">
+        <h2
+          className="text-[19px] font-medium text-practice-body max-compact:text-[17px]"
+          id="memo-review-title"
+        >
+          문단 검수
+        </h2>
+        <span className="text-[12px] text-practice-muted">
           <MemorizationParagraphMeta />
         </span>
       </div>
-      <div className={styles.reviewList}>
+      <div className="flex min-h-67.5 flex-col gap-6">
         <MemorizationParagraphList />
       </div>
       <MemorizationParagraphConfirmBar />

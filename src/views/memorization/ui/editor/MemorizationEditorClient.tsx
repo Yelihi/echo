@@ -1,5 +1,4 @@
 "use client";
-import { editorStyles as styles } from "@/shared/components/editor/styles";
 
 import { useLayoutEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -117,9 +116,9 @@ export function MemorizationEditorClient({
   };
 
   return (
-    <section className={styles.editor} data-pillar="memo" aria-busy={isBusy}>
+    <section className="flex w-full min-w-0 flex-col gap-7.5" data-pillar="memo" aria-busy={isBusy}>
       <MemorizationEditorHeader mode={mode} isSaving={isSaving} isBusy={isBusy} onSave={save} />
-      <div className={styles.columns}>
+      <div className="grid grid-cols-2 items-start gap-6 max-editor:grid-cols-1">
         <div className={cn("min-w-0", isBusy && "opacity-60")} inert={isBusy}>
           <MemorizationEditorSourcePanel paragraphSuggestion={paragraphSuggestion} />
         </div>

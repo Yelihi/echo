@@ -45,8 +45,14 @@ Next.js 공식 참고: [Server and Client Components](https://nextjs.org/docs/ap
 ## Tailwind 통일 (사용자 후속 요청)
 
 - 프로젝트의 CSS Modules 5개를 제거했다. 셸, 홈 캐러셀, 자료 목록 헤더, 마이페이지는 컴포넌트의 Tailwind utilities로 표현한다.
-- 두 편집기의 반복 스타일은 `shared/components/editor/styles.ts`의 정적 Tailwind 클래스 묶음을 공유한다. Input/Textarea에는 `className`으로 전달하며 기존 `cn` 병합을 이용한다. TagInputField에도 `className` 전달을 지원한다.
+- 두 편집기의 Tailwind 클래스는 각 JSX 요소의 `className`에 직접 작성한다. 별도 스타일 객체 파일은 제거했다. Input/Textarea/TagInputField에도 `className`으로 전달하며 `cn` 병합을 이용한다. 제목·라벨·버튼의 스타일도 해당 요소에 둔다.
 - 색상·얕은 그림자·진입 모션과 compact/editor 반응형 기준은 `global.css`의 Tailwind `@theme`에 등록했다. 기존 공용 토큰은 유지하고, 붉은 brand 값은 practice 셸 안에서만 지정한다. 페이지별 CSS 선택자나 `@apply`로 Modules를 재생성하지 않았다.
 - 편집기의 `!important` 스타일 덮어쓰기를 제거했다. 기존 전역 reduced-motion 접근성 규칙은 유지한다.
 - 데스크톱 홈·롤플레잉 편집기 전후 캡처의 크기 및 입력 글자 크기/높이/패딩이 동일했다. 모바일(390px)·태블릿(834px) 배치, 두 편집기, 마이페이지, 메뉴 활성 표시와 모바일 메뉴를 확인했다.
 - TypeScript, ESLint, Next production build, Jest 112 suites / 376 tests, 관련 Storybook 4 files / 23 tests 통과. 기능·서버/클라이언트 경계 변경 없음.
+
+## 에디터 className 직접 작성
+
+사용자 후속 요청에 따라 에디터의 스타일 객체와 import를 제거했다. JSX에서 요소와 스타일을 함께 읽을 수 있도록 직접 작성하며, 반복되는 클래스 문자열을 위한 별도 객체/함수는 만들지 않는다. 기존 디자인 토큰은 유지한다.
+
+직접 지정한 버튼 모서리 값과 `rounded-pill`이 동시에 남던 문제는 `cn`에 프로젝트 radius 토큰을 등록해 해결했다. 기본값 덮어쓰기와 상태/반응형 클래스 보존을 검증하는 8개 회귀 테스트를 추가했다. 서버/클라이언트 경계와 저장·제안·검수 로직은 변경하지 않았다.

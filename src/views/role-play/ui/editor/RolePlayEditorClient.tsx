@@ -1,5 +1,4 @@
 "use client";
-import { editorStyles as styles } from "@/shared/components/editor/styles";
 
 import { useLayoutEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -107,9 +106,13 @@ export function RolePlayEditorClient({
   };
 
   return (
-    <section className={styles.editor} data-pillar="roleplay" aria-busy={isBusy}>
+    <section
+      className="flex w-full min-w-0 flex-col gap-7.5"
+      data-pillar="roleplay"
+      aria-busy={isBusy}
+    >
       <RolePlayEditorHeader mode={mode} isSaving={isSaving} isBusy={isBusy} onSave={save} />
-      <div className={styles.panels}>
+      <div className="flex flex-col gap-6.5">
         <div className={cn(isBusy && "opacity-60")} inert={isBusy}>
           <RolePlayEditorMetaPanel txtImport={txtImport} />
         </div>

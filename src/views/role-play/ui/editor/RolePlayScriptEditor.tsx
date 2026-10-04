@@ -4,7 +4,6 @@ import { useShallow } from "zustand/react/shallow";
 import { ArrowLeftRight, Trash2, Plus } from "lucide-react";
 import { Textarea } from "@/shared/components";
 import { LoadingState } from "@/shared/components/ui";
-import { editorStyles as styles } from "@/shared/components/editor/styles";
 import type {
   RolePlayScriptEditorProps,
   RolePlayScriptLineProps,
@@ -19,10 +18,18 @@ export function RolePlayScriptEditor({ isPending }: RolePlayScriptEditorProps) {
     (state) => state.draft.lines.filter((line) => line.text.trim()).length,
   );
   return (
-    <section className={styles.panel} aria-labelledby="script-title">
-      <div className={styles.panelHeading}>
-        <h2 id="script-title">대화 스크립트</h2>
-        <span>{count}개 대사</span>
+    <section
+      className="min-w-0 rounded-[14px] border border-practice-panel-line bg-white p-8 shadow-practice-panel max-editor:p-6.5 max-compact:px-4.5 max-compact:py-5.5"
+      aria-labelledby="script-title"
+    >
+      <div className="mb-7 flex items-center justify-between gap-5 max-compact:items-start max-compact:gap-3">
+        <h2
+          className="text-[19px] font-medium text-practice-body max-compact:text-[17px]"
+          id="script-title"
+        >
+          대화 스크립트
+        </h2>
+        <span className="text-[12px] text-practice-muted">{count}개 대사</span>
       </div>
       {isPending ? (
         <LoadingState
@@ -33,33 +40,41 @@ export function RolePlayScriptEditor({ isPending }: RolePlayScriptEditorProps) {
         <>
           {lineIds.length > 0 ? (
             <>
-              <div className={styles.scriptHeading} aria-hidden>
+              <div
+                className="grid grid-cols-[32px_105px_minmax(0,1fr)_44px] gap-3.5 border-b border-practice-panel-line pb-3 text-[11px] text-practice-muted max-compact:hidden"
+                aria-hidden
+              >
                 <span>순서</span>
                 <span>화자</span>
                 <span>대사</span>
                 <span>관리</span>
               </div>
-              <div className={styles.scriptList}>
+              <div className="flex min-h-52.5 flex-col">
                 {lineIds.map((id, index) => (
                   <ScriptLine key={id} id={id} index={index} />
                 ))}
               </div>
             </>
           ) : (
-            <div className={styles.empty}>
+            <div className="flex min-h-67.5 flex-col items-center justify-center gap-3 p-6 text-center text-[13px] leading-[1.8] text-practice-muted">
               <p>아직 대사가 없어요</p>
               <p>TXT를 불러오거나, 아래 버튼으로 대사를 추가하세요.</p>
             </div>
           )}
-          <div className={styles.addBar}>
+          <div className="flex justify-start gap-3 pt-6 max-compact:flex-wrap">
             <button
+              className="flex min-h-11 items-center gap-2 rounded-md border border-practice-input-line bg-white px-4 py-0 text-[12px] text-practice-secondary"
               type="button"
               onClick={() => useRolePlayEditorStore.getState().addLine("partner")}
             >
               <Plus size={15} aria-hidden />
               상대방 대사
             </button>
-            <button type="button" onClick={() => useRolePlayEditorStore.getState().addLine("me")}>
+            <button
+              className="flex min-h-11 items-center gap-2 rounded-md border border-practice-input-line bg-white px-4 py-0 text-[12px] text-practice-secondary"
+              type="button"
+              onClick={() => useRolePlayEditorStore.getState().addLine("me")}
+            >
               <Plus size={15} aria-hidden />내 대사
             </button>
           </div>
@@ -72,11 +87,13 @@ function ScriptLine({ id, index }: RolePlayScriptLineProps) {
   const line = useRolePlayEditorStore((state) => state.draft.lines.find((item) => item.id === id));
   if (!line) return null;
   return (
-    <div className={styles.scriptRow}>
-      <span className={styles.lineNumber}>{String(index + 1).padStart(2, "0")}</span>
+    <div className="grid grid-cols-[32px_105px_minmax(0,1fr)_44px] items-start gap-3.5 border-b border-practice-panel-line py-5 max-compact:grid-cols-[22px_1fr_44px] max-compact:gap-2">
+      <span className="pt-3.75 text-[12px] text-practice-muted max-compact:pt-3.25">
+        {String(index + 1).padStart(2, "0")}
+      </span>
       <button
         type="button"
-        className={styles.speaker}
+        className="flex min-h-12 items-center gap-2.5 text-[12px] text-practice-secondary data-[speaker=me]:text-practice-focus max-compact:min-h-11"
         data-speaker={line.speaker}
         aria-label={`${index + 1}번째 화자 바꾸기`}
         onClick={() => useRolePlayEditorStore.getState().flipLineSpeaker(id)}
@@ -86,7 +103,7 @@ function ScriptLine({ id, index }: RolePlayScriptLineProps) {
       </button>
       <Textarea
         rows={2}
-        className={styles.scriptInput}
+        className="min-h-19.5 resize-y rounded-[7px] border border-practice-input-line bg-white px-4 py-3 text-[16px] leading-[1.8] text-practice-body focus:border-practice-focus focus:outline-none focus-visible:border-practice-focus max-compact:col-span-full max-compact:row-start-2"
         aria-label={`${index + 1}번째 ${line.speaker === "me" ? "내" : "상대방"} 대사`}
         value={line.text}
         placeholder={
@@ -98,7 +115,7 @@ function ScriptLine({ id, index }: RolePlayScriptLineProps) {
       />
       <button
         type="button"
-        className={styles.iconButton}
+        className="grid min-h-11 min-w-11 place-items-center rounded-md text-practice-subtle hover:bg-practice-accent-subtle hover:text-practice-focus max-compact:col-start-3 max-compact:row-start-1"
         aria-label={`${index + 1}번째 대사 삭제`}
         onClick={() => useRolePlayEditorStore.getState().deleteLine(id)}
       >

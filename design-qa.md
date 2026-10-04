@@ -61,3 +61,10 @@ Storybook은 실제 HomeView/EditorialShell/에디터/MyPageContent를 사용하
 - 모바일 여백과 반응형 우선순위는 rem 단위의 compact/editor Tailwind breakpoint로 통일했다. 데스크톱·모바일·태블릿에서 가로 넘침과 패널 배치를 확인했다.
 - `integrated-home.png`, `integrated-mobile-editor.png`를 Tailwind 적용 화면으로 갱신했다.
 - 타입 검사·린트·production build·Jest 376개·관련 Storybook 23개 통과. 원격 서비스 E2E 범위는 위 한계와 동일하다.
+
+## 에디터 스타일 직접 작성 후 확인
+
+- `shared/components/editor/styles.ts`를 제거하고 모든 에디터 스타일을 JSX의 `className`으로 이동했다. 제목·라벨·동작 버튼은 각 요소에 직접 지정한다.
+- 공용 버튼의 커스텀 radius 토큰 병합을 수정하고 8개 회귀 테스트를 추가했다.
+- 두 편집기의 데스크톱 화면 및 모바일 롤플레잉 작성 화면에서 배치·입력 크기·버튼 모서리를 확인했다.
+- 검증: TypeScript/ESLint/Next build, Jest 113 suites / 384 tests, 관련 Storybook 4 files / 23 tests 통과.
