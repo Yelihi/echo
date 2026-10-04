@@ -11,7 +11,7 @@ import { getRouter } from "@storybook/nextjs-vite/navigation.mock";
 import { useSuggestMemorizationParagraphs } from "@/features/memorization-paragraph-suggestion/services/hooks/useSuggestMemorizationParagraphs";
 import { saveRolePlayMaterial } from "@/views/role-play/services/action/saveRolePlayMaterial";
 import { saveMemorizationMaterial } from "@/views/memorization/services/action/saveMemorizationMaterial";
-import { EditorialShell } from "@/widgets/editorial-shell/ui/EditorialShell";
+import { EditorialShell } from "@/widgets/app-shell/ui/EditorialShell";
 import { PageContainer } from "@/widgets/app-shell";
 import { HomeView } from "@/views/home/ui/HomeView";
 import {

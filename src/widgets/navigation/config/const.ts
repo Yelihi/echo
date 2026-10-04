@@ -1,10 +1,6 @@
-import { FolderOpenDot, Home, Layers, ListChecks, LogOut, MessageSquare } from "lucide-react";
+import { FolderOpenDot, Home, Layers, ListChecks, MessageSquare } from "lucide-react";
 
-import type {
-  NavigationMenuItemProps,
-  ProfileMenuItem,
-  ProfileMenuKey,
-} from "@/widgets/navigation/models/interface";
+import type { NavigationMenuItemProps } from "@/widgets/navigation/models/interface";
 
 export const NAVIGATION_MENU: NavigationMenuItemProps[] = [
   {
@@ -33,13 +29,3 @@ export const NAVIGATION_MENU: NavigationMenuItemProps[] = [
     label: "녹음 관리",
   },
 ];
-
-export const PROFILE_MENU: ProfileMenuItem[] = [
-  {
-    key: "logout",
-    icon: LogOut,
-    label: "계정 전환",
-  },
-];
-
-export type { ProfileMenuKey };

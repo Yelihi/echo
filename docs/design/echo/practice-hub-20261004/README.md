@@ -1,6 +1,6 @@
 # Echo 연습 선택 홈 · 2026-10-04
 
-사용자 피드백에 따른 로컬 디자인 구현. `feature/practice-hub-20261004` 브랜치이며 main 병합·배포하지 않았다.
+사용자 피드백에 따라 승인된 디자인을 실제 앱에 반영한 구현. `feature/practice-hub-20261004` 브랜치이며 main 병합·배포하지 않았다.
 
 ## 변경
 
@@ -40,3 +40,5 @@ https://www.awwwards.com/sites/sequence-website
   - Generated original: `/Users/yelihi/.codex/generated_images/01a0ffbc-e548-7151-9744-ff31522beec4/exec-ed8fc547-cb86-4c60-87de-621bea6a6abf.png`
 
 검증 상세: 프로젝트 루트 `design-qa.md`.
+
+승인 이후 이슈별 구현 및 검증: [implementation.md](./implementation.md).

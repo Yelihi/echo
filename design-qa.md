@@ -36,8 +36,20 @@ Storybook은 실제 HomeView/EditorialShell/에디터/MyPageContent를 사용하
 ## 코드 검증 및 한계
 
 - TypeScript, ESLint, Next production build 통과.
-- Jest 111 suites / 357 tests 통과.
-- 관련 Storybook 4 files / 20 tests 통과. 화면 접근성 검사 포함.
+- Jest 112 suites / 376 tests 통과.
+- 관련 Storybook 4 files / 23 tests 통과. 화면 접근성 검사 포함.
 - 브라우저 미리보기는 샘플 데이터이며 저장/AI/세션 시작은 mock. 녹음/분석으로 이어지는 링크는 미리보기 범위 안내를 표시한다.
 - 실제 OAuth/원격 저장/AI 응답/녹음·분석 E2E는 실행하지 않았다.
-- 변경은 로컬 브랜치에만 존재하며 main 병합 및 배포하지 않았다.
+- 변경은 feature 브랜치에서 검증했으며 main 병합 및 배포하지 않았다.
+
+## 승인 후 실제 앱 통합 (#137–#143)
+
+- 승인된 사진/색상/배치 변경 없이 HomeView의 정적 부분과 PracticeModeCarousel의 client 경계를 분리했다.
+- 셸의 라우트 분류/타입은 기존 app-shell/models, 렌더링은 app-shell/ui로 모았다. 계정 메뉴는 features/logout으로 옮겨 widget 간 의존을 제거했다. 라우트 분류 11개 케이스 검증.
+- 공통 자료 헤더는 widget props 계약만 가지며 모드별 문구/경로는 각 view/config에 둔다.
+- 마이페이지 조회는 services/server와 server-only를 유지한다. 자료 저장·삭제와 세션 생성/분석 재시도 성공 후 마이페이지 갱신을 연결했다. 새 라우트에 기존 proxy 보호 목록도 적용했다.
+- 저장/삭제 Server Action의 성공·실패·비인증 및 수정 ID 보존 테스트 16개 통과.
+- 편집기 props는 기존 각 view/models로 이동했다. 롤플레잉 저장 실패 → 입력 보존 → 재시도, 문단 확정 전 저장 차단 → 제안/편집/확정 → 실패/재시도를 실제 UI로 검증했다. 외부 저장/AI 경계만 mock이다.
+- 제품 import에서 Storybook fixture/mock으로 이어지는 경로가 없음을 검토했다. 인증은 server layout, 영속화는 기존 repository 및 Server Action이 담당한다. 상태 관리 라이브러리/DB/도메인 계약은 변경하지 않았다.
+- 구조 정리 후 `integrated-home.png` (1440px)와 `integrated-mobile-editor.png` (390px)를 재확인했다. 모바일 문서 폭 390px로 가로 넘침 없음.
+- 상세 이슈/커밋/제한: `docs/design/echo/practice-hub-20261004/implementation.md`.

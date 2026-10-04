@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Dialog } from "radix-ui";
 import { ArrowLeft, BookOpen, Files, Plus, Menu, X, History, Mic, UserRound } from "lucide-react";
-import { Profile } from "@/widgets/navigation/ui/Profile";
-import type { EditorialShellProps } from "../models/interface";
+import { Profile } from "@/features/logout/ui/Profile";
+import type { EditorialShellProps } from "../models/editorialShell";
 import { getShellRoute } from "../models/getShellRoute";
 import styles from "./EditorialShell.module.css";
 

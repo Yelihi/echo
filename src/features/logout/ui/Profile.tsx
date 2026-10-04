@@ -6,8 +6,8 @@ import { User } from "lucide-react";
 
 import { useClickOutside } from "@/shared/hooks/useClickOutside";
 import { useLogout } from "@/features/logout/services/service/useLogout";
-import type { ProfileMenuItemProps } from "@/widgets/navigation/models/interface";
-import { PROFILE_MENU, ProfileMenuKey } from "@/widgets/navigation/config/const";
+import type { ProfileMenuItemProps } from "@/features/logout/models/profile";
+import { PROFILE_MENU, ProfileMenuKey } from "@/features/logout/config/profile";
 
 export const ProfileMenuItem = ({ icon: Icon, label, onClick }: ProfileMenuItemProps) => {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
