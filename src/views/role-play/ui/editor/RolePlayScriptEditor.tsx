@@ -5,7 +5,10 @@ import { ArrowLeftRight, Trash2, Plus } from "lucide-react";
 import { Textarea } from "@/shared/components";
 import { LoadingState } from "@/shared/components/ui";
 import styles from "@/shared/components/editor/Editor.module.css";
-import type { RolePlayScriptEditorProps } from "@/views/role-play/models/interface";
+import type {
+  RolePlayScriptEditorProps,
+  RolePlayScriptLineProps,
+} from "@/views/role-play/models/interface";
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
 
 export function RolePlayScriptEditor({ isPending }: RolePlayScriptEditorProps) {
@@ -65,7 +68,7 @@ export function RolePlayScriptEditor({ isPending }: RolePlayScriptEditorProps) {
     </section>
   );
 }
-function ScriptLine({ id, index }: { id: string; index: number }) {
+function ScriptLine({ id, index }: RolePlayScriptLineProps) {
   const line = useRolePlayEditorStore((state) => state.draft.lines.find((item) => item.id === id));
   if (!line) return null;
   return (

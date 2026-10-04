@@ -1,3 +1,4 @@
+import { ErrorPopupProvider, errorPopupManager } from "@/shared/lib/error-popup";
 import { rolePlayLibraryHeader } from "@/views/role-play/config/libraryHeader";
 import { memorizationLibraryHeader } from "@/views/memorization/config/libraryHeader";
 import { useEffect, useState } from "react";
@@ -33,6 +34,7 @@ import { roleplay, memorization, sessions } from "./practiceHubFixtures";
 const meta = {
   title: "views/Practice Hub",
   beforeEach: () => {
+    errorPopupManager.close();
     mocked(createRolePlaySession).mockResolvedValue({ code: "SUCCESS", sessionId: "preview" });
     mocked(createMemorizationSession).mockResolvedValue({ code: "SUCCESS", sessionId: "preview" });
     mocked(useSuggestMemorizationParagraphs).mockImplementation((onSuggested) => ({
@@ -57,6 +59,14 @@ const meta = {
       materialId: "preview-material",
     });
   },
+  decorators: [
+    (Story) => (
+      <>
+        <Story />
+        <ErrorPopupProvider />
+      </>
+    ),
+  ],
   parameters: {
     layout: "fullscreen",
     nextjs: { appDirectory: true, navigation: { pathname: "/home" } },
@@ -370,5 +380,50 @@ export const Flow: Story = {
     await expect(c.queryByRole("complementary")).not.toBeInTheDocument();
     await userEvent.click(c.getByRole("link", { name: "Echo 홈" }));
     await expect(c.getByRole("heading", { name: "오늘은 어떻게 연습할까요?" })).toBeVisible();
+  },
+};
+
+export const RoleplaySaveFailure: Story = {
+  name: "09 롤플레잉 · 저장 실패 시 입력 보존",
+  globals: { viewport: { value: "desktop" } },
+  render: () => <Walkthrough initialPath="/role-playing/cafe/edit" populated />,
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    mocked(saveRolePlayMaterial).mockRejectedValueOnce(new Error("Network unavailable"));
+    await userEvent.click(c.getByRole("button", { name: "저장" }));
+    const popup = await within(document.body).findByRole("alertdialog");
+    await waitFor(() => expect(within(popup).getByText("저장에 실패했습니다")).toBeVisible());
+    await userEvent.click(within(popup).getByRole("button", { name: "확인" }));
+    await waitFor(() =>
+      expect(within(document.body).queryByRole("alertdialog")).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(c.getByRole("textbox", { name: "제목" })).toHaveValue("Ordering at a Cafe"),
+    );
+    await expect(c.getByRole("textbox", { name: "2번째 내 대사" })).toHaveValue(
+      "Could I have a latte, please?",
+    );
+    await userEvent.click(c.getByRole("button", { name: "저장" }));
+    await waitFor(() => expect(c.getByRole("heading", { name: "롤플레잉" })).toBeVisible());
+    await expect(saveRolePlayMaterial).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: "Ordering at a Cafe" }),
+      "cafe",
+    );
+  },
+};
+export const RoleplayInvalidSave: Story = {
+  name: "10 롤플레잉 · 빈 자료 저장 차단",
+  render: () => <Walkthrough initialPath="/role-playing/new" />,
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    mocked(saveRolePlayMaterial).mockClear();
+    await userEvent.click(c.getByRole("button", { name: "저장" }));
+    const popup = await within(document.body).findByRole("alertdialog");
+    await waitFor(() => expect(within(popup).getByText("제목을 입력해주세요")).toBeVisible());
+    await expect(saveRolePlayMaterial).not.toHaveBeenCalled();
+    await userEvent.click(within(popup).getByRole("button", { name: "확인" }));
+    await waitFor(() =>
+      expect(within(document.body).queryByRole("alertdialog")).not.toBeInTheDocument(),
+    );
   },
 };

@@ -6,7 +6,7 @@ import { Input } from "@/shared/components";
 import { TagInputField } from "@/shared/components/ui";
 
 // features
-import type { RoleplayTxtImportProps } from "@/features/roleplay-txt-import/models/interface";
+import type { RolePlayEditorMetaPanelProps } from "@/views/role-play/models/interface";
 
 // views
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
@@ -63,7 +63,7 @@ function RolePlayTagsField() {
   );
 }
 
-export function RolePlayEditorMetaPanel({ txtImport }: { txtImport: RoleplayTxtImportProps }) {
+export function RolePlayEditorMetaPanel({ txtImport }: RolePlayEditorMetaPanelProps) {
   return (
     <section className={styles.panel} aria-labelledby="roleplay-meta-title">
       <div className={styles.panelHeading}>

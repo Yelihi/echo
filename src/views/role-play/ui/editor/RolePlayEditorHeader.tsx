@@ -9,15 +9,8 @@ import { Button, Spinner } from "@/shared/components";
 import { ConfirmDialog } from "@/shared/components/ui";
 
 // views
-import type { RoleplayEditorMode } from "@/views/role-play/models/interface";
+import type { RolePlayEditorHeaderProps } from "@/views/role-play/models/interface";
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
-
-interface RolePlayEditorHeaderProps {
-  mode: RoleplayEditorMode;
-  isSaving: boolean;
-  isBusy: boolean;
-  onSave: () => void;
-}
 
 export function RolePlayEditorHeader({
   mode,

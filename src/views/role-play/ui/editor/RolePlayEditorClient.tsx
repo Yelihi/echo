@@ -14,18 +14,12 @@ import { useTransferTextFile } from "@/features/roleplay-txt-import/services/hoo
 // views
 import { convertRoleplayTxtImportToEditorLines } from "@/views/role-play/models/converter/convertRoleplayTxtImportToEditorLines";
 import { createRolePlayMaterialErrorFromCode } from "@/views/role-play/models/errors";
-import type { RoleplayEditorDraft, RoleplayEditorMode } from "@/views/role-play/models/interface";
+import type { RolePlayEditorClientProps } from "@/views/role-play/models/interface";
 import { useRolePlayEditorStore } from "@/views/role-play/models/stores/rolePlayEditorStore";
 import { saveRolePlayMaterial } from "@/views/role-play/services/action/saveRolePlayMaterial";
 import { RolePlayEditorHeader } from "@/views/role-play/ui/editor/RolePlayEditorHeader";
 import { RolePlayEditorMetaPanel } from "@/views/role-play/ui/editor/RolePlayEditorMetaPanel";
 import { RolePlayScriptEditor } from "@/views/role-play/ui/editor/RolePlayScriptEditor";
-
-interface RolePlayEditorClientProps {
-  mode: RoleplayEditorMode;
-  materialId?: string;
-  initialDraft?: RoleplayEditorDraft;
-}
 
 export function RolePlayEditorClient({
   mode,
