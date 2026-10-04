@@ -367,7 +367,7 @@ export const Flow: Story = {
     await userEvent.type(c.getByRole("textbox", { name: "1번째 내 대사" }), "Hello there.");
     await userEvent.click(c.getByRole("button", { name: "1번째 화자 바꾸기" }));
     await expect(c.getByRole("textbox", { name: "1번째 상대방 대사" })).toHaveValue("Hello there.");
-    await userEvent.click(c.getByRole("button", { name: "취소" }));
+    await userEvent.click(c.getByRole("button", { name: "뒤로가기" }));
     const dialog = await within(document.body).findByRole("alertdialog");
     await userEvent.click(within(dialog).getByRole("button", { name: "나가기" }));
     await waitFor(() => expect(c.getByRole("heading", { name: "롤플레잉" })).toBeVisible());
@@ -468,5 +468,35 @@ export const MemorizationSaveFlow: Story = {
       }),
       "habit",
     );
+  },
+};
+
+export const HistoryReturn: Story = {
+  name: "12 마이페이지 → 기록 · 녹음 관리 → 뒤로가기",
+  render: () => <Walkthrough initialPath="/my-page" />,
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    await userEvent.click(c.getByRole("link", { name: "최근 학습 기록 전체 보기" }));
+    await expect(c.getByRole("link", { name: "뒤로가기" })).toHaveAttribute("href", "/my-page");
+    await userEvent.click(c.getByRole("link", { name: "뒤로가기" }));
+    await expect(c.getByRole("heading", { name: "마이페이지" })).toBeVisible();
+    await userEvent.click(within(c.getByRole("main")).getByRole("link", { name: "녹음 관리" }));
+    await expect(c.getByRole("link", { name: "뒤로가기" })).toHaveAttribute("href", "/my-page");
+    await userEvent.click(c.getByRole("link", { name: "뒤로가기" }));
+    await userEvent.click(c.getByRole("link", { name: "최근 롤플레잉 자료 전체 보기" }));
+    await expect(c.getByRole("link", { name: "뒤로가기" })).toHaveAttribute("href", "/my-page");
+    await userEvent.click(c.getByRole("link", { name: "뒤로가기" }));
+    await userEvent.click(c.getByRole("link", { name: "뒤로가기" }));
+    await expect(c.getByRole("heading", { name: "오늘은 어떻게 연습할까요?" })).toBeVisible();
+    await expect(c.queryByRole("link", { name: "뒤로가기" })).not.toBeInTheDocument();
+  },
+};
+export const HistoryDirectEntry: Story = {
+  name: "13 학습 기록 직접 진입",
+  render: () => <Walkthrough initialPath="/sessions" />,
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    await userEvent.click(c.getByRole("link", { name: "뒤로가기" }));
+    await expect(c.getByRole("heading", { name: "마이페이지" })).toBeVisible();
   },
 };

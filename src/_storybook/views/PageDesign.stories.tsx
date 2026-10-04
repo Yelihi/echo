@@ -70,7 +70,7 @@ export const RoleplayEditor: Story = {
     const line = canvas.getByRole("textbox", { name: "3번째 내 대사" });
     await userEvent.type(line, "Thank you.");
     await expect(line).toHaveValue("Thank you.");
-    await userEvent.click(canvas.getByRole("button", { name: "취소" }));
+    await userEvent.click(canvas.getByRole("button", { name: "뒤로가기" }));
     const dialogElement = await within(document.body).findByRole("alertdialog");
     await waitFor(() => expect(dialogElement).toBeVisible());
     const dialog = within(dialogElement);

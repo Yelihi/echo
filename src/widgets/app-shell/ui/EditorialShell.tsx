@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Profile } from "@/features/logout/ui/Profile";
 import type { EditorialShellProps } from "../models/editorialShell";
 import { getShellRoute } from "../models/getShellRoute";
+import { ScreenBackNavigation } from "./ScreenBackNavigation";
 import { EchoWordmark } from "./EchoWordmark";
 import { PracticeNavigation } from "./PracticeNavigation";
 import { PracticeMobileMenu } from "./PracticeMobileMenu";
@@ -72,6 +73,7 @@ export function EditorialShell({ children, initials, pathname }: EditorialShellP
           </div>
         </header>
         <main id="main-content" tabIndex={-1}>
+          <ScreenBackNavigation pathname={pathname} />
           {children}
         </main>
       </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 // shared
 import { Button, Spinner } from "@/shared/components";
+import { BackNavigation } from "@/shared/components/ui/back-navigation/BackNavigation";
 import { ConfirmDialog } from "@/shared/components/ui";
 
 // views
@@ -41,16 +42,7 @@ export function MemorizationEditorHeader({
           </p>
         </div>
         <div className="flex shrink-0 gap-2.5 max-compact:self-end">
-          <Button
-            className="min-h-11 rounded-[7px] text-[13px] font-medium"
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={cancel}
-            disabled={isBusy}
-          >
-            취소
-          </Button>
+          <BackNavigation href="/sentence-memorization" onBack={cancel} disabled={isBusy} />
           <Button
             className="min-h-11 rounded-[7px] text-[13px] font-medium"
             type="button"
