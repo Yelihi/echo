@@ -5,6 +5,9 @@ import { useScreenTrail } from "../services/useScreenTrail";
 
 export function ScreenBackNavigation({ pathname }: { pathname: string }) {
   const href = useScreenTrail(pathname);
+  const root = pathname.split("/").filter(Boolean)[0];
+  // Grammar views own explicit list context and guarded session/editor exits.
+  if (root === "grammar" || root === "grammar-sessions") return null;
   // Editors and recording screens own their guarded exit controls.
   if (pathname === "/home" || isTransientScreen(pathname)) return null;
   return (

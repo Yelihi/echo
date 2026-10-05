@@ -16,22 +16,22 @@ export function GrammarExamPlayer(props: GrammarExamPlayerProps) {
   return (
     <section
       aria-label="어법 시험"
-      className="mx-auto max-w-3xl space-y-8 rounded-2xl border bg-background p-6 md:p-10"
+      className="mx-auto max-w-3xl space-y-8 rounded-2xl border border-practice-line bg-white shadow-practice-panel p-6 md:p-10"
     >
       <button
         type="button"
         disabled={busy}
         onClick={() => setExitOpen(true)}
-        className="text-sm text-muted-foreground disabled:opacity-50"
+        className="text-sm text-practice-muted disabled:opacity-50"
       >
         ← 노트로 돌아가기
       </button>
       <header className="space-y-3">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-practice-muted">
           {session.questionIndex + 1} / {session.questions.length}
         </p>
         <h1 className="text-3xl font-medium">{session.title}</h1>
-        <p className="text-sm text-muted-foreground">적용할 어법: {session.learningNote}</p>
+        <p className="text-sm text-practice-muted">적용할 어법: {session.learningNote}</p>
       </header>
       <GrammarExamQuestion
         key={question.id}

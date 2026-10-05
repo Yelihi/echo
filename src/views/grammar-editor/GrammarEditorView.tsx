@@ -18,7 +18,7 @@ export function GrammarEditorView({
   const returnTo =
     backHref === "/grammar" || backHref.startsWith("/grammar?") ? backHref : "/grammar";
   return (
-    <main className="mx-auto w-full max-w-4xl space-y-8 py-8">
+    <div className="mx-auto w-full max-w-4xl space-y-8 py-8">
       <header className="space-y-3">
         <p className="text-xs tracking-widest text-gray-text">GRAMMAR NOTE</p>
         <h1 className="text-3xl font-medium tracking-tight text-black-primary">
@@ -39,9 +39,15 @@ export function GrammarEditorView({
             router.push(`/grammar/${note.id}?returnTo=${encodeURIComponent(returnTo)}`);
             router.refresh();
           }}
-          onExit={() => router.push(returnTo)}
+          onExit={() =>
+            router.push(
+              initialNote
+                ? `/grammar/${initialNote.id}?returnTo=${encodeURIComponent(returnTo)}`
+                : returnTo,
+            )
+          }
         />
       </div>
-    </main>
+    </div>
   );
 }

@@ -48,25 +48,25 @@ export function GrammarExamFeedbackItem({
     }
   }
   return (
-    <article className="space-y-4 rounded-xl border bg-background p-5">
+    <article className="space-y-4 rounded-xl border border-practice-line bg-white shadow-practice-panel p-5">
       <h2 className="text-lg font-medium">{question.context || question.translation}</h2>
       <div>
-        <p className="text-xs text-muted-foreground">내 답안</p>
+        <p className="text-xs text-practice-muted">내 답안</p>
         <p className="mt-1 whitespace-pre-wrap text-lg">{answer}</p>
       </div>
       {feedback ? (
-        <div className="space-y-3 border-t pt-4">
+        <div className="space-y-3 border-t border-practice-line pt-4">
           <p className="font-medium">{labels[feedback.verdict]}</p>
           <dl className="space-y-3">
             <div>
               <dt className="text-sm font-medium">어법</dt>
-              <dd className="text-sm leading-relaxed text-muted-foreground">
+              <dd className="text-sm leading-relaxed text-practice-muted">
                 {feedback.grammarFeedback}
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium">의미와 문맥</dt>
-              <dd className="text-sm leading-relaxed text-muted-foreground">
+              <dd className="text-sm leading-relaxed text-practice-muted">
                 {feedback.meaningFeedback}
               </dd>
             </div>
@@ -81,13 +81,13 @@ export function GrammarExamFeedbackItem({
           type="button"
           disabled={busy || autoPending}
           onClick={() => void request()}
-          className="rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
+          className="rounded-lg border border-practice-input-line px-4 py-2 text-sm disabled:opacity-50"
         >
           {busy || autoPending ? "피드백 작성 중…" : error ? "피드백 다시 받기" : "피드백 받기"}
         </button>
       )}
       {error && !feedback && !busy && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-practice-accent">
           {error}
         </p>
       )}

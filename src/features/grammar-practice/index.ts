@@ -5,3 +5,6 @@ export {
   saveGrammarSessionAnswers,
   completeGrammarSession,
 } from "./services/actions/grammarSessionActions";
+
+export { GrammarPracticeLauncher } from "./ui/GrammarPracticeLauncher";
+export type { GrammarPracticeLauncherProps } from "./models/launcher";

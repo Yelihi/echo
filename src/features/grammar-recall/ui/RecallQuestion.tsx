@@ -106,6 +106,11 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
           {error}
         </p>
       )}
+      {(!revealed || !draft.assessment) && (
+        <p className="text-xs leading-6 text-practice-muted">
+          문장을 작성한 뒤 정답을 확인하고, 기억한 정도를 선택하면 다음으로 진행할 수 있어요.
+        </p>
+      )}
       <div className="flex flex-wrap justify-between gap-3 border-t border-practice-line pt-5">
         <button
           type="button"
