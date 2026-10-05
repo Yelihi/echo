@@ -6,7 +6,7 @@ import { useId, useState } from "react";
 import { Input } from "@/shared/components/atomics/input/Input";
 import { Textarea } from "@/shared/components/atomics/textarea/Textarea";
 import { Button } from "@/shared/components/atomics/button/Button";
-import type { AnalysisEdit } from "../models/interface";
+import type { AnalysisEdit } from "../models/editAnalysis";
 import { getTextBoundaries } from "../services/textBoundaries";
 import { BoundarySelect } from "./BoundarySelect";
 import { useAnalysisEditor } from "./AnalysisEditorProvider";
@@ -30,10 +30,10 @@ export function ChunkEditor({ chunk }: ChunkEditorProps) {
         (item) => item.position > chunk.range.start && item.position < chunk.range.end,
       )?.position ?? chunk.range.start,
   );
-  const run = (command: AnalysisEdit) => {
+  const run = (command?: AnalysisEdit) => {
     const result = edit([
-      { type: "edit-chunk", chunkId: chunk.id, literalMeaning: meaning, explanation },
-      command,
+      (service) => service.editChunk(chunk.id, { literalMeaning: meaning, explanation }),
+      ...(command ? [command] : []),
     ]);
     setError(result.ok ? "" : result.message);
   };
@@ -54,12 +54,7 @@ export function ChunkEditor({ chunk }: ChunkEditorProps) {
           onChange={(e) => setExplanation(e.target.value)}
         />
       </label>
-      <Button
-        type="button"
-        onClick={() =>
-          run({ type: "edit-chunk", chunkId: chunk.id, literalMeaning: meaning, explanation })
-        }
-      >
+      <Button type="button" onClick={() => run()}>
         풀이 적용
       </Button>
       <div className="grid gap-6 border-t border-practice-input-line pt-5 sm:grid-cols-2">
@@ -80,7 +75,7 @@ export function ChunkEditor({ chunk }: ChunkEditorProps) {
             type="button"
             variant="outline"
             disabled={!next}
-            onClick={() => run({ type: "move-boundary", chunkId: chunk.id, end: boundary })}
+            onClick={() => run((service) => service.moveBoundary(chunk.id, boundary))}
           >
             경계 적용
           </Button>
@@ -102,12 +97,7 @@ export function ChunkEditor({ chunk }: ChunkEditorProps) {
             variant="outline"
             disabled={split <= chunk.range.start || split >= chunk.range.end}
             onClick={() =>
-              run({
-                type: "split-chunk",
-                chunkId: chunk.id,
-                offset: split,
-                newId: crypto.randomUUID(),
-              })
+              run((service) => service.splitChunk(chunk.id, split, crypto.randomUUID()))
             }
           >
             나누기
@@ -118,7 +108,7 @@ export function ChunkEditor({ chunk }: ChunkEditorProps) {
         type="button"
         variant="ghost"
         disabled={!next}
-        onClick={() => run({ type: "merge-next", chunkId: chunk.id })}
+        onClick={() => run((service) => service.mergeNext(chunk.id))}
       >
         다음 구간과 합치기
       </Button>

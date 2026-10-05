@@ -21,7 +21,7 @@ export function ConstructionEditor({ annotation }: ConstructionEditorProps) {
       className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
-        const result = edit({ type: "save-construction", annotation: draft });
+        const result = edit((service) => service.saveConstruction(draft));
         setError(result.ok ? "" : result.message);
       }}
     >

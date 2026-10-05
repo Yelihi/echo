@@ -1,7 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { sentenceAnalysisSchema } from "@/entities/grammar-note";
 import type { AnalysisEditorProps, AnalysisEditorState } from "./interface";
-import { editAnalysis } from "../services/editAnalysis";
+import { applyAnalysisEdits } from "../services/applyAnalysisEdits";
 
 export function createAnalysisEditorStore({ initialAnalysis, onChange }: AnalysisEditorProps) {
   return createStore<AnalysisEditorState>((set, get) => ({
@@ -24,17 +24,16 @@ export function createAnalysisEditorStore({ initialAnalysis, onChange }: Analysi
     addSyntax: () => {
       if (get().dirty) return { ok: false, message: "현재 수정을 먼저 적용해 주세요." };
       const id = crypto.randomUUID();
-      const result = get().edit({
-        type: "save-syntax",
-        annotation: {
+      const result = get().edit((service) =>
+        service.saveSyntax({
           id,
           ranges: [{ start: 0, end: get().analysis.sourceText.length }],
           parentId: null,
           role: "other",
           label: "새 문법 항목",
           explanation: "",
-        },
-      });
+        }),
+      );
       if (result.ok) set({ selectedId: id, editing: true });
       return result;
     },
@@ -65,14 +64,7 @@ export function createAnalysisEditorStore({ initialAnalysis, onChange }: Analysi
         });
     },
     edit: (command) => {
-      const commands = "type" in command ? [command] : command;
-      let analysis = get().analysis;
-      for (const item of commands) {
-        const result = editAnalysis(analysis, item);
-        if (!result.ok) return result;
-        analysis = result.analysis;
-      }
-      const result = { ok: true as const, analysis };
+      const result = applyAnalysisEdits(get().analysis, command);
       if (result.ok) {
         const ids = [
           ...result.analysis.chunks,

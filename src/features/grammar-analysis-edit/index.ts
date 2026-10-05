@@ -1,3 +1,4 @@
 export { GrammarAnalysisEditor } from "./ui/GrammarAnalysisEditor";
-export { editAnalysis } from "./services/editAnalysis";
-export type { AnalysisEdit, AnalysisEditResult, AnalysisEditorProps } from "./models/interface";
+export { EditAnalysisService } from "./services/EditAnalysisService";
+export type { AnalysisEdit, AnalysisEditResult } from "./models/editAnalysis";
+export type { AnalysisEditorProps } from "./models/interface";

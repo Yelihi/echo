@@ -21,3 +21,17 @@ AI 분석 결과의 의미 덩어리를 그대로 표시한다. 사용자가 구
 - 읽기/수정 전환, Escape 포커스, 미적용 입력 이탈 확인은 자동 테스트로 검증.
 
 현재 범위는 독립 컴포넌트/Storybook이다. AI 서비스와 저장 및 실제 등록 페이지 연결은 별도 이슈이며 이 PR에서 연결했다고 간주하지 않는다. 미리보기 데이터는 fixture다.
+
+
+## 편집 책임 분리 — 2026-10-06
+
+문자열 action type을 해석하던 `editAnalysis` 분기를 제거하고 `EditAnalysisService`의 동작별 메서드로 분리했다. 이벤트는 `edit(service => service.moveBoundary(chunkId, end))`처럼 필요한 동작을 직접 지정한다.
+
+- `EditAnalysisService`: 변경하지 않는 입력 스냅샷을 바탕으로 경계 이동·나누기·합치기·풀이 수정·문법/구문 저장 및 삭제를 각각 처리한다.
+- `validateAnalysisCandidate`: 도메인 검증과 재검토 상태 전환을 공통 적용한다.
+- `applyAnalysisEdits`: 이전 편집 결과를 다음 동작에 전달하고 첫 실패에서 중단한다. 중간 결과를 store에 쓰지 않는다.
+- store: 전체 성공 시에만 분석·선택·dirty 상태를 반영하고 소비자에게 한 번 알린다.
+
+새 편집을 추가해도 기존 메서드, 배치 적용 루프, store의 성공 반영 경로에 편집 종류 분기를 추가하지 않는다. 편집 계약과 UI props 계약은 별도 모델 파일로 분리했다. 인라인 타입 import도 상단 `import type`으로 정리했다.
+
+회귀 검증: 전체 Jest 124 suites / 456 tests, Chromium Storybook 6개, TypeScript와 변경 범위 ESLint 통과. 배치 실패 시 입력·선택 보존 및 후속 동작 중단, 성공 시 앞선 편집 보존과 단일 반영, 각 편집의 검증·원문 보존을 확인했다. 이번 변경에는 화면 배치나 스타일 변경이 없어 이전 시각 검토를 유지하고 Storybook 상호작용을 다시 검증했다.

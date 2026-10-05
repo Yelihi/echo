@@ -32,7 +32,7 @@ export function SyntaxEditor({ annotation }: SyntaxEditorProps) {
       className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
-        const result = edit({ type: "save-syntax", annotation: draft });
+        const result = edit((service) => service.saveSyntax(draft));
         setError(result.ok ? "" : result.message);
       }}
     >
@@ -99,7 +99,7 @@ export function SyntaxEditor({ annotation }: SyntaxEditorProps) {
           type="button"
           variant="ghost"
           onClick={() => {
-            const result = edit({ type: "delete-syntax", id: annotation.id });
+            const result = edit((service) => service.deleteSyntax(annotation.id));
             setError(result.ok ? "" : result.message);
           }}
         >
