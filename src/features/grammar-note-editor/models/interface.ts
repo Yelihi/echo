@@ -25,6 +25,7 @@ export interface GrammarNoteEditorProps {
   AnalysisEditor: ComponentType<{
     initialAnalysis: SentenceAnalysis;
     onChange: (analysis: SentenceAnalysis) => void;
+    onDirtyChange?: (dirty: boolean) => void;
   }>;
   onSaved: (note: GrammarNote) => void;
   onExit: () => void;
@@ -37,10 +38,11 @@ export interface EditorState {
   error: string;
   fieldErrors: Partial<Record<"sentence" | "learningNote", string>>;
   reviewed: boolean;
+  analysisDirty: boolean;
+  setAnalysisDirty: (dirty: boolean) => void;
   dirty: boolean;
   changeSource: (field: "sentence" | "learningNote", value: string) => void;
   changeAnalysis: (analysis: SentenceAnalysis) => void;
-  markDirty: () => void;
   setReviewed: (reviewed: boolean) => void;
   back: () => void;
   analyze: () => Promise<void>;

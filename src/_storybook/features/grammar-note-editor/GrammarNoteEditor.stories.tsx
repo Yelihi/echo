@@ -78,3 +78,16 @@ export const AnalyzeThenReview: Story = {
     await expect(canvas.getByLabelText(/영어 문장/)).toHaveValue(note.source.sentence);
   },
 };
+export const UnappliedAnalysisBlocksSave: Story = {
+  args: { initialNote: note },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "She" }));
+    await userEvent.click(canvas.getByRole("button", { name: "분석 수정" }));
+    await userEvent.type(canvas.getByLabelText("직독직해"), " 수정");
+    await expect(canvas.getByRole("checkbox")).toBeDisabled();
+    await expect(canvas.getByRole("button", { name: "검토 완료 · 노트 저장" })).toBeDisabled();
+    await userEvent.click(canvas.getByRole("button", { name: "풀이 적용" }));
+    await expect(canvas.getByRole("checkbox")).toBeEnabled();
+  },
+};

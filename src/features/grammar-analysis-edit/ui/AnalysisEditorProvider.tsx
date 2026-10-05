@@ -16,6 +16,7 @@ const Context = createContext<StoreApi<AnalysisEditorState> | null>(null);
 export function AnalysisEditorProvider({
   initialAnalysis,
   onChange,
+  onDirtyChange,
   children,
 }: AnalysisEditorProviderProps) {
   // 부모가 콜백을 변경해도 편집 상태를 초기화하지 않고 최신 수신자에게 알린다.
@@ -29,6 +30,12 @@ export function AnalysisEditorProvider({
       onChange: (analysis) => onChangeRef.current(analysis),
     }),
   );
+  useEffect(() => {
+    onDirtyChange?.(store.getState().dirty);
+    return store.subscribe((state, previous) => {
+      if (state.dirty !== previous.dirty) onDirtyChange?.(state.dirty);
+    });
+  }, [store, onDirtyChange]);
   return <Context.Provider value={store}>{children}</Context.Provider>;
 }
 

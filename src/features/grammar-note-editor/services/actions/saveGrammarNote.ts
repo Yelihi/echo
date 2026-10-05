@@ -3,6 +3,7 @@ import { GrammarNotePersistenceError, GrammarNoteRepository } from "@/entities/g
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
+import { persistReviewedNote } from "../persistReviewedNote";
 import type { SaveNoteCommand, SaveNoteResult } from "../../models/interface";
 export async function saveGrammarNote(command: SaveNoteCommand): Promise<SaveNoteResult> {
   try {
@@ -15,13 +16,7 @@ export async function saveGrammarNote(command: SaveNoteCommand): Promise<SaveNot
         const { data, error } = await client.auth.getUser();
         if (error || !data.user) throw new GrammarNotePersistenceError("UNAUTHORIZED");
         const repository = new GrammarNoteRepository(client);
-        return command.existing
-          ? repository.update({
-              id: command.existing.id,
-              expectedVersion: command.existing.expectedVersion,
-              content: command.content,
-            })
-          : repository.create({ requestId: command.requestId, content: command.content });
+        return persistReviewedNote(command, repository);
       },
     });
     return { ok: true, note };

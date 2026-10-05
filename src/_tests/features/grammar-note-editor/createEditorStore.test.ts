@@ -11,12 +11,10 @@ function dependencies() {
   const note = createEditorNote();
   return {
     initialNote: note,
-    analyze: jest
-      .fn<GrammarNoteEditorProps["analyze"]>()
-      .mockResolvedValue({
-        status: "analyzed",
-        data: { metadata: note.metadata, analysis: note.analysis },
-      }),
+    analyze: jest.fn<GrammarNoteEditorProps["analyze"]>().mockResolvedValue({
+      status: "analyzed",
+      data: { metadata: note.metadata, analysis: note.analysis },
+    }),
     save: jest.fn<GrammarNoteEditorProps["save"]>().mockResolvedValue({ ok: true, note }),
     onSaved: jest.fn<GrammarNoteEditorProps["onSaved"]>(),
   };

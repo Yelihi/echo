@@ -18,6 +18,9 @@ export function createEditorStore(
     error: "",
     fieldErrors: {},
     reviewed: false,
+    analysisDirty: false,
+    setAnalysisDirty: (analysisDirty) =>
+      set({ analysisDirty, ...(analysisDirty ? { dirty: true, reviewed: false } : {}) }),
     dirty: false,
     changeSource: (field, value) => {
       if (get().pending === "save") return;
@@ -43,12 +46,11 @@ export function createEditorStore(
             }
           : {},
       ),
-    markDirty: () => set({ dirty: true, reviewed: false }),
     setReviewed: (reviewed) => set({ reviewed }),
     back: () => {
       if (get().pending === "save") return;
       request++;
-      set({ stage: "input", pending: null, error: "" });
+      set({ stage: "input", pending: null, error: "", analysisDirty: false });
     },
     cancel: () => {
       request++;
@@ -99,7 +101,13 @@ export function createEditorStore(
     },
     save: async () => {
       const state = get();
-      if (state.pending || !state.reviewed || state.result?.status !== "analyzed") return;
+      if (
+        state.pending ||
+        state.analysisDirty ||
+        !state.reviewed ||
+        state.result?.status !== "analyzed"
+      )
+        return;
       const content = grammarNoteContentSchema.safeParse({
         source: state.source,
         ...state.result.data,
