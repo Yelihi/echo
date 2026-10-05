@@ -4,19 +4,19 @@
 
 각 PR의 base는 바로 앞 단계 브랜치이다. 앞 PR을 main에 병합한 후 다음 PR의 base를 main으로 변경한다. squash merge로 선행 커밋이 중복 표시된다면 다음 브랜치를 갱신한 뒤 diff를 확인한다. 자동 병합은 설정하지 않았다.
 
-| 순서 | 이슈 / 내용 | PR |
-| --- | --- | --- |
-| 1 | #152 노트 저장·조회 | [#166](https://github.com/Yelihi/echo/pull/166) |
-| 2 | #150·#151 기존 분석 UI·서비스 연결 | [#167](https://github.com/Yelihi/echo/pull/167) |
-| 3 | #153 필수 입력·사전 검사·분석 검토·저장 | [#168](https://github.com/Yelihi/echo/pull/168) |
-| 4 | #154 예문 생성·재시도·검토·선택 저장 | [#169](https://github.com/Yelihi/echo/pull/169) |
-| 5 | #155 검색·페이지네이션·스켈레톤 목록 | [#170](https://github.com/Yelihi/echo/pull/170) |
-| 6 | #156 저장 문장 음성 생성·재생 | [#171](https://github.com/Yelihi/echo/pull/171) |
-| 7 | #157 세션 스냅샷·진행·멱등 완료 | [#172](https://github.com/Yelihi/echo/pull/172) |
-| 8 | #158 부분 완성·전체 회상 암기 | [#173](https://github.com/Yelihi/echo/pull/173) |
-| 9 | #159 기존·새 문맥 시험과 문장별 피드백 | [#174](https://github.com/Yelihi/echo/pull/174) |
-| 10 | #160 누적 횟수·최근 날짜·기록 모달 | [#175](https://github.com/Yelihi/echo/pull/175) |
-| 11 | #161 전체 라우트 연결과 회귀 보완 | `feature/161-grammar-routes` |
+| 순서 | 이슈 / 내용                             | PR                                              |
+| ---- | --------------------------------------- | ----------------------------------------------- |
+| 1    | #152 노트 저장·조회                     | [#166](https://github.com/Yelihi/echo/pull/166) |
+| 2    | #150·#151 기존 분석 UI·서비스 연결      | [#167](https://github.com/Yelihi/echo/pull/167) |
+| 3    | #153 필수 입력·사전 검사·분석 검토·저장 | [#168](https://github.com/Yelihi/echo/pull/168) |
+| 4    | #154 예문 생성·재시도·검토·선택 저장    | [#169](https://github.com/Yelihi/echo/pull/169) |
+| 5    | #155 검색·페이지네이션·스켈레톤 목록    | [#170](https://github.com/Yelihi/echo/pull/170) |
+| 6    | #156 저장 문장 음성 생성·재생           | [#171](https://github.com/Yelihi/echo/pull/171) |
+| 7    | #157 세션 스냅샷·진행·멱등 완료         | [#172](https://github.com/Yelihi/echo/pull/172) |
+| 8    | #158 부분 완성·전체 회상 암기           | [#173](https://github.com/Yelihi/echo/pull/173) |
+| 9    | #159 기존·새 문맥 시험과 문장별 피드백  | [#174](https://github.com/Yelihi/echo/pull/174) |
+| 10   | #160 누적 횟수·최근 날짜·기록 모달      | [#175](https://github.com/Yelihi/echo/pull/175) |
+| 11   | #161 전체 라우트 연결과 회귀 보완       | [#176](https://github.com/Yelihi/echo/pull/176) |
 
 #163·#164의 분석 변경은 당시 main이 아닌 별도 브랜치에 병합됐고, #165가 닫혀 main에 도달하지 않았다. #167은 이미 검토된 변경을 후속 작업의 기반으로 연결한다.
 
