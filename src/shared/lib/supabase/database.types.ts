@@ -28,6 +28,39 @@ export type Database = {
   };
   public: {
     Tables: {
+      grammar_notes: {
+        Row: {
+          id: string;
+          owner_id: string;
+          content: Json;
+          creation_request_id: string;
+          creation_content: Json;
+          version: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          content: Json;
+          creation_request_id: string;
+          creation_content: Json;
+          version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          owner_id?: string;
+          content?: Json;
+          creation_request_id?: string;
+          creation_content?: Json;
+          version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       accepted_recordings: {
         Row: {
           accepted_at: string;
@@ -1022,6 +1055,22 @@ export type Database = {
       };
     };
     Functions: {
+      is_valid_grammar_note_content: {
+        Args: { p_content: Json };
+        Returns: boolean;
+      };
+      create_grammar_note: {
+        Args: { p_request_id: string; p_content: Json };
+        Returns: Json;
+      };
+      update_grammar_note: {
+        Args: { p_note_id: string; p_expected_version: number; p_content: Json };
+        Returns: Json;
+      };
+      list_grammar_notes: {
+        Args: { p_page?: number; p_page_size?: number; p_query?: string };
+        Returns: Json;
+      };
       update_roleplay_material: {
         Args: { p_material_id: string; p_content: Json };
         Returns: undefined;
