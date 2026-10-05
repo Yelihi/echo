@@ -9,9 +9,12 @@ const meta = {
   title: "features/grammar-note-editor/GrammarNoteEditor",
   component: GrammarNoteEditor,
   args: {
-    analyze: fn<GrammarNoteEditorProps["analyze"]>(async () => ({
+    analyze: fn<GrammarNoteEditorProps["analyze"]>(async (source) => ({
       status: "analyzed",
-      data: { metadata: note.metadata, analysis: note.analysis },
+      data: {
+        metadata: { ...note.metadata, sourceRevision: source.revision },
+        analysis: { ...note.analysis, sourceRevision: source.revision },
+      },
     })),
     save: fn<GrammarNoteEditorProps["save"]>(async () => ({ ok: true, note })),
     AnalysisEditor: GrammarAnalysisEditor,
@@ -59,6 +62,18 @@ export const SaveFailure: Story = {
     await userEvent.click(canvas.getByRole("checkbox"));
     await userEvent.click(canvas.getByRole("button", { name: "검토 완료 · 노트 저장" }));
     await expect(await canvas.findByRole("alert")).toBeVisible();
+    await userEvent.click(canvas.getByRole("button", { name: "이전 · 입력 수정" }));
+    await expect(canvas.getByLabelText(/영어 문장/)).toHaveValue(note.source.sentence);
+  },
+};
+
+export const AnalyzeThenReview: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByLabelText(/영어 문장/), note.source.sentence);
+    await userEvent.type(canvas.getByLabelText(/핵심 어법 설명/), note.source.learningNote);
+    await userEvent.click(canvas.getByRole("button", { name: "문장 분석하기" }));
+    await expect(await canvas.findByRole("heading", { name: note.metadata.title })).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: "이전 · 입력 수정" }));
     await expect(canvas.getByLabelText(/영어 문장/)).toHaveValue(note.source.sentence);
   },
