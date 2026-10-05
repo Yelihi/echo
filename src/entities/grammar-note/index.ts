@@ -1,9 +1,6 @@
+export type { GrammarSource, GrammarMetadata, TextRange, SyntaxRole } from "./models/value-objects";
 export type {
-  GrammarSource,
-  GrammarMetadata,
-  TextRange,
   SentenceChunk,
-  SyntaxRole,
   SyntaxAnnotation,
   ConstructionAnnotation,
   SentenceAnalysis,

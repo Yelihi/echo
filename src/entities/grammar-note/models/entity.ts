@@ -1,23 +1,4 @@
-/** User-authored fields only. Titles and tags belong to AI metadata. */
-export interface GrammarSource {
-  readonly sentence: string;
-  readonly learningNote: string;
-  readonly revision: number;
-}
-
-export interface GrammarMetadata {
-  readonly source: "ai";
-  readonly sourceRevision: number;
-  readonly title: string;
-  readonly tags: readonly string[];
-  readonly grammarKey: string | null;
-}
-
-/** UTF-16 offsets into the unchanged source; end is exclusive. */
-export interface TextRange {
-  readonly start: number;
-  readonly end: number;
-}
+import type { GrammarSource, GrammarMetadata, TextRange, SyntaxRole } from "./value-objects";
 
 export interface SentenceChunk {
   readonly id: string;
@@ -25,8 +6,6 @@ export interface SentenceChunk {
   readonly literalMeaning: string;
   readonly explanation: string;
 }
-
-export type SyntaxRole = "subject" | "verb" | "object" | "complement" | "modifier" | "other";
 
 export interface SyntaxAnnotation {
   readonly id: string;
