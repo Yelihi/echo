@@ -42,7 +42,7 @@ begin
   union all
   select jsonb_build_object('id','example:'||(e->>'id'),'kind','existing','sentence',e->>'sentence',
    'translation',e->>'translation','context','','requiredWords','[]'::jsonb,'chunks','[]'::jsonb)
-  from jsonb_array_elements(v_note.content->'examples') e
+  from jsonb_array_elements(v_note.content->'examples') e where e->>'reviewStatus'='reviewed'
  ) select jsonb_agg(q order by random()) into v_questions from questions;
  select jsonb_agg(q->>'id' order by ord) into v_order from jsonb_array_elements(v_questions) with ordinality as a(q,ord);
  -- 두 문항 이상일 때 우연히 이전 순서와 같으면 회전하여 반복 순서를 피합니다.

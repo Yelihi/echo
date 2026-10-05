@@ -33,10 +33,11 @@ select is(public.complete_grammar_session((select (value->>'id')::uuid from sess
 select is((public.list_grammar_session_history()->>'total')::integer,1,'completion is counted once');
 select is((select value->'questions' from session_test where label='completed'),(select value->'questions' from session_test where label='single'),'completion retains order and source');
 select throws_ok($q$update public.grammar_sessions set answers='{}'$q$,'42501',null,'direct writes cannot bypass validation');
-insert into session_test select 'changed-note',public.update_grammar_note((value->>'id')::uuid,1,jsonb_set(pg_temp.grammar_content('Changed'),'{examples}','[{"id":"e1","sentence":"He is not lazy but tired.","translation":"그는 게으른 게 아니라 피곤합니다.","targetExplanation":"not A but B","reviewStatus":"reviewed"}]')) from session_test where label='note';
+insert into session_test select 'changed-note',public.update_grammar_note((value->>'id')::uuid,1,jsonb_set(pg_temp.grammar_content('Changed'),'{examples}','[{"id":"e1","sentence":"He is not lazy but tired.","translation":"그는 게으른 게 아니라 피곤합니다.","targetExplanation":"not A but B","reviewStatus":"reviewed"},{"id":"draft","sentence":"Unreviewed sentence.","translation":"미확인 예문","targetExplanation":"검토 전","reviewStatus":"needs-review"}]')) from session_test where label='note';
 select is((select snapshot#>>'{metadata,title}' from public.grammar_sessions limit 1),'Not A but B','editing the note never changes frozen metadata');
 insert into session_test select 'multi1',public.start_grammar_session((value->>'id')::uuid,'25252525-3333-4333-8333-333333333333','recall') from session_test where label='note';
 insert into session_test select 'multi2',public.start_grammar_session((value->>'id')::uuid,'25252525-4444-4444-8444-444444444444','recall') from session_test where label='note';
+select is((select jsonb_array_length(value->'questions') from session_test where label='multi1'),2,'only adopted reviewed examples become practice questions');
 select isnt((select value->'questions' from session_test where label='multi1'),(select value->'questions' from session_test where label='multi2'),'new multi-question session avoids previous order');
 select is((public.list_grammar_session_history()->>'total')::integer,1,'active and abandoned sessions do not count');
 select is((public.list_grammar_session_history(null,99,20)->>'total')::integer,1,'empty history page retains total');
