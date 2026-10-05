@@ -4,6 +4,25 @@ import { grammarAnalysisFailure } from "../../models/errors";
 import type { GrammarAnalysisDependencies } from "../../models/interface";
 
 const source = { sentence: "She is a doctor.", learningNote: "주격 보어", revision: 3 };
+function createAnalysisOutput() {
+  return {
+    title: "주격 보어",
+    tags: ["보어"],
+    grammarKey: null,
+    chunks: [
+      {
+        id: "c",
+        range: { start: 0, end: 16 },
+        literalMeaning: "그녀는 의사이다",
+        explanation: "",
+      },
+    ],
+    syntax: [],
+    constructions: [],
+    naturalTranslation: "그녀는 의사입니다.",
+  };
+}
+
 function dependencies(): GrammarAnalysisDependencies {
   return {
     consumeRequest: jest
@@ -13,22 +32,9 @@ function dependencies(): GrammarAnalysisDependencies {
       precheck: jest
         .fn<GrammarAnalysisDependencies["provider"]["precheck"]>()
         .mockResolvedValue({ status: "passed", issues: [] }),
-      analyze: jest.fn<GrammarAnalysisDependencies["provider"]["analyze"]>().mockResolvedValue({
-        title: "주격 보어",
-        tags: ["보어"],
-        grammarKey: null,
-        chunks: [
-          {
-            id: "c",
-            range: { start: 0, end: 16 },
-            literalMeaning: "그녀는 의사이다",
-            explanation: "",
-          },
-        ],
-        syntax: [],
-        constructions: [],
-        naturalTranslation: "그녀는 의사입니다.",
-      }),
+      analyze: jest
+        .fn<GrammarAnalysisDependencies["provider"]["analyze"]>()
+        .mockResolvedValue(createAnalysisOutput()),
     },
   };
 }
@@ -107,12 +113,110 @@ describe("grammar precheck followed by analysis", () => {
   });
   it("rejects invalid source ranges from AI", async () => {
     const deps = dependencies();
-    const valid = await deps.provider.analyze(source);
+    const valid = createAnalysisOutput();
     deps.provider.analyze = async () => ({
-      ...(valid as object),
+      ...valid,
       chunks: [{ id: "c", range: { start: 0, end: 999 }, literalMeaning: "뜻", explanation: "" }],
     });
     await expect(analyzeGrammar(source, deps)).rejects.toMatchObject({ code: "INVALID_OUTPUT" });
+  });
+  it("does not start analysis while the precheck response is pending", async () => {
+    // Given: 사전 체크가 끝나기 전에는 두 번째 요청 비용이 발생해서는 안 된다.
+    const deps = dependencies();
+    let resolvePrecheck!: (output: unknown) => void;
+    const pendingPrecheck = new Promise<unknown>((resolve) => {
+      resolvePrecheck = resolve;
+    });
+    let notifyStarted!: () => void;
+    const started = new Promise<void>((resolve) => {
+      notifyStarted = resolve;
+    });
+    deps.provider.precheck = async () => {
+      notifyStarted();
+      return pendingPrecheck;
+    };
+
+    // When
+    const result = analyzeGrammar(source, deps);
+    await started;
+
+    // Then
+    expect(deps.consumeRequest).toHaveBeenCalledTimes(1);
+    expect(deps.provider.analyze).not.toHaveBeenCalled();
+    resolvePrecheck({ status: "passed", issues: [] });
+    await expect(result).resolves.toMatchObject({ status: "analyzed" });
+    expect(deps.consumeRequest).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    { status: "needs-revision", issues: [{ field: "sentence", message: " ", suggestion: null }] },
+    { status: "uncertain", issues: [{ field: "sentence", message: "보완 필요", suggestion: " " }] },
+    { status: "passed", issues: [], sourceRevision: 999 },
+  ])("rejects invalid precheck content before charging for analysis: %j", async (output) => {
+    // Given
+    const deps = dependencies();
+    deps.provider.precheck = async () => output;
+    // When / Then
+    await expect(analyzeGrammar(source, deps)).rejects.toMatchObject({ code: "INVALID_OUTPUT" });
+    expect(deps.consumeRequest).toHaveBeenCalledTimes(1);
+    expect(deps.provider.analyze).not.toHaveBeenCalled();
+  });
+
+  it.each([null, { title: "incomplete" }])("rejects malformed analysis DTO: %j", async (output) => {
+    // Given
+    const deps = dependencies();
+    deps.provider.analyze = async () => output;
+    // When / Then
+    await expect(analyzeGrammar(source, deps)).rejects.toMatchObject({ code: "INVALID_OUTPUT" });
+  });
+
+  it.each([
+    { title: " " },
+    { tags: [" "] },
+    { sourceText: "A different sentence." },
+    { sourceRevision: 999 },
+    { reviewStatus: "reviewed" },
+  ])("rejects invalid metadata or AI attempts to set server-owned fields: %j", async (override) => {
+    // Given: 유효한 기본 응답에서 검증 대상 필드만 교체한다.
+    const deps = dependencies();
+    const valid = createAnalysisOutput();
+    deps.provider.analyze = async () => ({ ...valid, ...override });
+    // When / Then
+    await expect(analyzeGrammar(source, deps)).rejects.toMatchObject({ code: "INVALID_OUTPUT" });
+  });
+
+  it.each(["precheck", "analyze"] as const)(
+    "propagates %s rejection to the safe error boundary",
+    async (stage) => {
+      // Given
+      const deps = dependencies();
+      const failure = new Error("sensitive provider contents");
+      deps.provider[stage] = jest
+        .fn<GrammarAnalysisDependencies["provider"][typeof stage]>()
+        .mockRejectedValue(failure);
+      // When / Then: 중간 단계에서 삼키거나 원문을 UI 메시지에 포함하지 않는다.
+      await expect(analyzeGrammar(source, deps)).rejects.toBe(failure);
+      expect(grammarAnalysisFailure(failure)).toMatchObject({
+        status: "error",
+        code: "PROVIDER_FAILED",
+      });
+      expect(grammarAnalysisFailure(failure).message).not.toContain(failure.message);
+      expect(deps.consumeRequest).toHaveBeenCalledTimes(stage === "precheck" ? 1 : 2);
+      if (stage === "precheck") expect(deps.provider.analyze).not.toHaveBeenCalled();
+    },
+  );
+
+  it("stops before any provider call when the quota service rejects", async () => {
+    // Given
+    const deps = dependencies();
+    const failure = new Error("quota unavailable");
+    deps.consumeRequest = jest
+      .fn<GrammarAnalysisDependencies["consumeRequest"]>()
+      .mockRejectedValue(failure);
+    // When / Then
+    await expect(analyzeGrammar(source, deps)).rejects.toBe(failure);
+    expect(deps.provider.precheck).not.toHaveBeenCalled();
+    expect(deps.provider.analyze).not.toHaveBeenCalled();
   });
   it("maps provider exceptions to safe display messages without raw text", () => {
     const result = grammarAnalysisFailure(new Error("sensitive request contents"));
