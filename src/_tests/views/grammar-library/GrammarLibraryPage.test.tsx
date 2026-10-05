@@ -22,10 +22,11 @@ describe("grammar list route", () => {
     findMany.mockResolvedValue({ items: [], total: 41, page: 999, pageSize: 20 });
   });
   it("redirects an out-of-range page to last valid page with search preserved", async () => {
-    const { default: GrammarLibraryPage } = await import("@/app/(protected)/grammar/(list)/page");
-    await expect(
-      GrammarLibraryPage({ searchParams: Promise.resolve({ page: "999", q: "verb" }) }),
-    ).rejects.toThrow("redirect:/grammar?q=verb&page=3");
+    const { GrammarLibraryContent } =
+      await import("@/views/grammar-library/ui/GrammarLibraryContent");
+    await expect(GrammarLibraryContent({ query: { page: 999, query: "verb" } })).rejects.toThrow(
+      "redirect:/grammar?q=verb&page=3",
+    );
     expect(findMany).toHaveBeenCalledWith({ page: 999, pageSize: 20, query: "verb" });
   });
   it("normalizes an invalid URL before rendering valid links", async () => {
