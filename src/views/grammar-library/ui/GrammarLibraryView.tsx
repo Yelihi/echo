@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Form from "next/form";
 import type { GrammarNoteListProps } from "../models/interface";
+import { grammarLibraryHref } from "../services/libraryQuery";
 import { GrammarNoteList } from "./GrammarNoteList";
 import { BackNavigation } from "@/shared/components/ui/back-navigation/BackNavigation";
 export function GrammarLibraryView(props: GrammarNoteListProps) {
@@ -14,7 +15,7 @@ export function GrammarLibraryView(props: GrammarNoteListProps) {
           <p className="mt-3 text-practice-secondary">배운 어법을 문장으로 기억하세요.</p>
         </div>
         <Link
-          href="/grammar/new"
+          href={`/grammar/new?returnTo=${encodeURIComponent(grammarLibraryHref({ page: props.data.page, query: props.query }))}`}
           className="rounded-md bg-practice-accent px-5 py-3 text-sm text-white"
         >
           새 노트 작성 →

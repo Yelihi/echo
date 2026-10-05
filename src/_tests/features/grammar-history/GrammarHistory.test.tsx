@@ -37,4 +37,49 @@ describe("grammar history", () => {
     expect(await screen.findByText("아직 완료한 연습이 없습니다.")).toBeVisible();
     expect(load).toHaveBeenCalledTimes(2);
   });
+  it("refreshes the latest date and keeps it while paging older records", async () => {
+    const user = userEvent.setup();
+    const oldDate = "2026-10-01T00:00:00Z";
+    const latestDate = "2026-10-03T00:00:00Z";
+    const item = {
+      id: "session",
+      noteId: "note",
+      title: "Grammar",
+      mode: "recall" as const,
+      startedAt: oldDate,
+      completedAt: oldDate,
+      questionCount: 1,
+    };
+    const initialData = { items: [item], total: 1, page: 1, pageSize: 10 };
+    const load = jest
+      .fn<() => Promise<GrammarHistoryResult>>()
+      .mockResolvedValueOnce({
+        ok: true,
+        data: { ...initialData, total: 21, items: [{ ...item, completedAt: latestDate }] },
+      })
+      .mockResolvedValueOnce({ ok: true, data: { ...initialData, total: 21, page: 2 } });
+    render(
+      <GrammarHistory
+        noteId="note"
+        initialData={initialData}
+        load={load}
+        resultHref={(id) => `/grammar-sessions/${id}/result?returnTo=%2Fgrammar%3Fpage%3D3`}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "연습 기록 전체보기" }));
+    await waitFor(() =>
+      expect(screen.getByText(/^완료한 연습 \d/)).toHaveTextContent(
+        formatGrammarPracticeDate(latestDate),
+      ),
+    );
+    expect(screen.getByRole("link", { name: /결과 보기/ })).toHaveAttribute(
+      "href",
+      "/grammar-sessions/session/result?returnTo=%2Fgrammar%3Fpage%3D3",
+    );
+    await user.click(screen.getByRole("button", { name: "다음 기록" }));
+    await waitFor(() => expect(screen.getByText("2 / 3")).toBeVisible());
+    expect(screen.getByText(/^완료한 연습 \d/)).toHaveTextContent(
+      formatGrammarPracticeDate(latestDate),
+    );
+  });
 });

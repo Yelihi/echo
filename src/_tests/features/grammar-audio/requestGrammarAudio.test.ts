@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import type { OpenAITTSProvider } from "@/shared/lib/tts/server";
 import type { GrammarNote } from "@/entities/grammar-note";
+import { recallSession } from "@/_tests/features/grammar-recall/fixture";
 import { createGrammarAnalysis } from "@/_tests/fixtures/grammarAnalysis";
 jest.mock("server-only", () => ({}));
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
@@ -40,6 +41,7 @@ const note: GrammarNote = {
 async function dependencies() {
   const { createSupabaseServerClient } = await import("@/shared/lib/supabase/server");
   const { GrammarNoteRepository } = await import("@/entities/grammar-note");
+  const { GrammarSessionRepository } = await import("@/entities/grammar-session");
   const { OpenAITTSProvider } = await import("@/shared/lib/tts/server");
   const { requestGrammarAudio } =
     await import("@/features/grammar-audio/services/actions/requestGrammarAudio");
@@ -51,7 +53,10 @@ async function dependencies() {
       ReturnType<typeof createSupabaseServerClient>
     >);
   const findById = jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
-  return { requestGrammarAudio, getUser, rpc, findById, OpenAITTSProvider };
+  const findSession = jest
+    .spyOn(GrammarSessionRepository.prototype, "findById")
+    .mockResolvedValue(recallSession());
+  return { requestGrammarAudio, getUser, rpc, findById, findSession, OpenAITTSProvider };
 }
 describe("authenticated saved sentence audio action", () => {
   beforeEach(() => {
@@ -100,5 +105,48 @@ describe("authenticated saved sentence audio action", () => {
       voice: "alloy",
       speed: 1,
     });
+  });
+  it("plays the frozen recall example without consulting an edited note", async () => {
+    const deps = await dependencies();
+    const session = recallSession();
+    deps.findSession.mockResolvedValue({
+      ...session,
+      questions: [
+        {
+          ...session.questions[0],
+          id: "example:stored-id",
+          sentence: "The frozen sentence remains unchanged.",
+        },
+      ],
+    });
+    const result = await deps.requestGrammarAudio({
+      sessionId: session.id,
+      questionId: "example:stored-id",
+    });
+    expect(result.ok).toBe(true);
+    expect(deps.findById).not.toHaveBeenCalled();
+    const instance = jest.mocked(deps.OpenAITTSProvider).mock.results[0].value as Pick<
+      OpenAITTSProvider,
+      "speak"
+    >;
+    expect(instance.speak).toHaveBeenCalledWith({
+      text: "The frozen sentence remains unchanged.",
+      voice: "alloy",
+      speed: 1,
+    });
+  });
+  it("rejects exam, unowned sessions and unknown questions before spending quota", async () => {
+    const deps = await dependencies();
+    const session = recallSession();
+    const request = { sessionId: session.id, questionId: "source" };
+    deps.findSession.mockResolvedValueOnce({ ...session, mode: "exam" });
+    expect((await deps.requestGrammarAudio(request)).ok).toBe(false);
+    deps.findSession.mockResolvedValueOnce(null);
+    expect((await deps.requestGrammarAudio(request)).ok).toBe(false);
+    expect((await deps.requestGrammarAudio({ ...request, questionId: "not-in-session" })).ok).toBe(
+      false,
+    );
+    expect(deps.rpc).not.toHaveBeenCalled();
+    expect(deps.OpenAITTSProvider).not.toHaveBeenCalled();
   });
 });

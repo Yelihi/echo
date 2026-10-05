@@ -13,6 +13,10 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
   const audio = useRef<HTMLAudioElement | null>(null);
   const speech = useRef<Extract<GrammarAudioResult, { ok: true }> | null>(null);
   const release = useRef<(() => void) | null>(null);
+  const sourceKey =
+    "sessionId" in input
+      ? JSON.stringify(["session", input.sessionId, input.questionId])
+      : JSON.stringify(["note", input.noteId, input.sentenceId, input.noteVersion]);
   function stop() {
     request.current++;
     audio.current?.pause();
@@ -31,7 +35,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
       audio.current = null;
       release.current?.();
     };
-  }, [input.noteId, input.sentenceId, input.noteVersion]);
+  }, [sourceKey]);
   async function play() {
     if (status === "playing") {
       stop();
