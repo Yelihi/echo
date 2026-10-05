@@ -69,3 +69,18 @@ export interface ChunkReading {
   readonly roles: readonly string[];
   readonly constructions: readonly ConstructionAnnotation[];
 }
+
+export interface AnalysisKeyboardBoundaryProps {
+  children: ReactNode;
+}
+
+export interface ChunkBoundaryEditorProps extends ChunkEditorProps {
+  source: string;
+  nextEnd?: number;
+  onApply: (edit: AnalysisEdit) => void;
+}
+
+export interface ChunkSplitEditorProps extends ChunkEditorProps {
+  source: string;
+  onApply: (edit: AnalysisEdit) => void;
+}

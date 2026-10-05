@@ -3,6 +3,7 @@ import { sentenceAnalysisSchema } from "@/entities/grammar-note";
 import type { AnalysisEditorProps, AnalysisEditorState } from "./interface";
 import { applyAnalysisEdits } from "../services/applyAnalysisEdits";
 
+/** 에디터 수명에 맞춰 상태를 생성한다. onChange는 성공한 편집을 상위 문서에 전달한다. */
 export function createAnalysisEditorStore({ initialAnalysis, onChange }: AnalysisEditorProps) {
   return createStore<AnalysisEditorState>((set, get) => ({
     analysis: sentenceAnalysisSchema.parse(initialAnalysis),

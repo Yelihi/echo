@@ -1,12 +1,12 @@
 "use client";
 
-import { getChunkReading } from "../models/chunkReading";
+import { convertAnalysisToChunkReading } from "../models/converters/convertAnalysisToChunkReading";
 import { useAnalysisEditor } from "./AnalysisEditorProvider";
 
 export function AnalysisReading() {
   const id = useAnalysisEditor((state) => state.selectedId);
   const analysis = useAnalysisEditor((state) => state.analysis);
-  const reading = id ? getChunkReading(analysis, id) : null;
+  const reading = id ? convertAnalysisToChunkReading(analysis, id) : null;
   return (
     <section
       aria-label="선택 구간 풀이"

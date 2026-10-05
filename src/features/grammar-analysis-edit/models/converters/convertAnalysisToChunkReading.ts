@@ -1,8 +1,11 @@
 import type { SentenceAnalysis } from "@/entities/grammar-note";
-import type { ChunkReading } from "./interface";
+import type { ChunkReading } from "../interface";
 
-/** Read AI/user annotations; do not infer grammar in presentation components. */
-export function getChunkReading(analysis: SentenceAnalysis, id: string): ChunkReading | null {
+/** 저장된 분석을 선택 구간의 읽기 UI 모델로 변환한다. 문법을 새로 추론하지 않는다. */
+export function convertAnalysisToChunkReading(
+  analysis: SentenceAnalysis,
+  id: string,
+): ChunkReading | null {
   const chunk = analysis.chunks.find((item) => item.id === id);
   if (!chunk) return null;
   const overlaps = (range: { start: number; end: number }) =>

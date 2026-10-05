@@ -35,3 +35,17 @@ AI 분석 결과의 의미 덩어리를 그대로 표시한다. 사용자가 구
 새 편집을 추가해도 기존 메서드, 배치 적용 루프, store의 성공 반영 경로에 편집 종류 분기를 추가하지 않는다. 편집 계약과 UI props 계약은 별도 모델 파일로 분리했다. 인라인 타입 import도 상단 `import type`으로 정리했다.
 
 회귀 검증: 전체 Jest 124 suites / 456 tests, Chromium Storybook 6개, TypeScript와 변경 범위 ESLint 통과. 배치 실패 시 입력·선택 보존 및 후속 동작 중단, 성공 시 앞선 편집 보존과 단일 반영, 각 편집의 검증·원문 보존을 확인했다. 이번 변경에는 화면 배치나 스타일 변경이 없어 이전 시각 검토를 유지하고 Storybook 상호작용을 다시 검증했다.
+
+## PR 댓글 반영과 유지 근거 — 2026-10-06
+
+- **변환 함수**: `models/converters/convertAnalysisToChunkReading.ts`로 옮겼다. 저장된 분석을 읽기용 모델로 변환하므로 범용 utils가 아닌 converter로 명명한다. 문법 추론을 추가하지 않는다.
+- **store 생성과 Provider**: 테스트 전용 주입이 아니다. 각 에디터가 받은 초기 분석과 선택·수정 모드·미적용 입력을 해당 인스턴스 수명에 묶는다. 전역 singleton의 초기화/정리 순서에 의존하지 않는다. Context에는 고정된 vanilla store 참조를 전달하고, 상태 변화는 Zustand selector로 구독한다. 이는 [Zustand의 props 초기화 지침](https://zustand.docs.pmnd.rs/learn/guides/initialize-state-with-props)과 같은 패턴이다. 현재 실제 페이지에 여러 에디터가 배치되어 있다는 의미는 아니다.
+- **초기값과 콜백**: `initialAnalysis`는 마운트 시 초기값이다. 다른 문서/분석으로 교체하려면 소비자가 key를 바꾼다. 부모의 재렌더링은 편집 상태를 초기화하지 않으며, `onChange`가 바뀌면 최신 콜백으로 알리도록 수정했다. 초기 콜백을 store가 계속 보관하던 문제를 해결한다.
+- **입력 책임**: 풀이 필드, 경계 미리보기, 나누기 미리보기를 분리했다. 경계와 나누기는 각각의 컴포넌트에서 필요한 state만 관리한다. 풀이 텍스트는 적용 전까지 DOM 입력값으로 보존하고 적용할 때 FormData로 읽는다. 타이핑마다 텍스트를 React state에도 복제하거나 상위 입력 묶음을 다시 렌더링할 이유가 없기 때문이다. 공통 적용 hook은 현재 풀이와 구조 변경을 기존 원자적 편집 흐름에 전달하고 UI용 오류를 관리한다.
+- **클라이언트 경계**: 조합 컴포넌트에서 hooks와 이벤트를 제거하고 읽기/수정 분기 및 키보드 처리를 작은 client component로 옮겼다. 파일을 나눴다고 client parent에서 가져온 하위 컴포넌트가 Server Component가 되는 것은 아니다. 이번 변경의 검증 대상은 상태 구독과 렌더링 책임이며, 번들 크기나 SSR 개선을 주장하지 않는다.
+- **키보드 핸들러**: JSX 밖 이름 있는 함수로 분리했다. 이벤트가 발생할 때 `store.getState()`로 읽으므로 키보드 처리만을 위한 상태 구독이 없다. 직접 DOM에 전달하고 memo 자식이나 effect 의존성으로 사용하지 않으므로 `useCallback`을 추가하지 않았다. 함수 생성 자체가 렌더링을 발생시키는 것은 아니다. [React useCallback 문서](https://react.dev/reference/react/useCallback)의 참조 안정성이 필요한 경우와 구분한다.
+- **포커스 탐색과 확인창 예외**: 현재 에디터의 DOM 안에서 선택 버튼 또는 읽기 복귀 버튼을 찾아 포커스를 복원한다. 별도 DOM ref 대신 이벤트의 `currentTarget`을 사용한다. 포털 이벤트도 React 트리로 전파되므로 alertdialog 내부 Escape는 Radix에 맡겨 편집기와 확인창이 동시에 닫히지 않도록 한다.
+
+회귀 검증: 전체 Jest 125 suites / 462 tests 통과. 두 에디터의 선택·수정 격리, 부모 재렌더링 시 입력 보존 및 최신 콜백, 문서 key 변경, 확인창 Escape, 유효성 실패 후 입력 보존, 풀이와 경계의 단일 반영을 확인했다. Profiler로 풀이 입력 시 컨트롤들이 다시 commit되지 않으며 경계 미리보기 변경은 해당 컨트롤에서만 commit됨을 검증했다. 테스트 관찰 래퍼는 실제 컴포넌트를 실행한다.
+
+Chromium Storybook 10개 통과: 기존 6개와 풀이 입력·경계 미리보기/적용·마지막 구간 비활성·나누기 미리보기/적용 4개. TypeScript, 변경 범위 ESLint, Next.js production build 통과. 화면 배치·테마 변경은 없으며 실제 페이지 연결 범위도 동일하다.

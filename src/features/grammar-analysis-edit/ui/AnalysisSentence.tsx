@@ -3,7 +3,7 @@
 import { cva } from "class-variance-authority";
 import { useShallow } from "zustand/react/shallow";
 import type { AnalysisItemProps } from "../models/interface";
-import { getChunkReading } from "../models/chunkReading";
+import { convertAnalysisToChunkReading } from "../models/converters/convertAnalysisToChunkReading";
 import { useAnalysisEditor } from "./AnalysisEditorProvider";
 
 const chunkVariants = cva(
@@ -23,7 +23,7 @@ function ChunkButton({ id }: AnalysisItemProps) {
   const chunk = useAnalysisEditor((state) => state.analysis.chunks.find((item) => item.id === id));
   const source = useAnalysisEditor((state) => state.analysis.sourceText);
   const hint = useAnalysisEditor((state) => {
-    const reading = getChunkReading(state.analysis, id);
+    const reading = convertAnalysisToChunkReading(state.analysis, id);
     return reading ? [reading.meaning, ...reading.roles].filter(Boolean).join(" · ") : "";
   });
   const selected = useAnalysisEditor((state) => state.selectedId === id);
