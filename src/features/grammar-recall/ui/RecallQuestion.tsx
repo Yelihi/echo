@@ -1,4 +1,5 @@
 "use client";
+import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import { useState } from "react";
 import type { RecallDraft, RecallQuestionProps } from "../models/interface";
 import { persistRecallDraft, readRecallDraft, recallSegments } from "../services/recallDraft";
@@ -45,7 +46,7 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
           <textarea
             autoComplete="off"
             spellCheck={false}
-            maxLength={3000}
+            maxLength={GRAMMAR_ANSWER_MAX_LENGTH}
             disabled={busy}
             value={draft.whole}
             onChange={(e) => update({ ...draft, whole: e.target.value })}

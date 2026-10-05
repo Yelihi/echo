@@ -1,3 +1,4 @@
+import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import type { GrammarSession, GrammarSessionQuestion } from "@/entities/grammar-session";
 import type { RecallDraft, RecallSegment } from "../models/interface";
 export function recallSegments(question: GrammarSessionQuestion): RecallSegment[] {
@@ -40,10 +41,10 @@ function validDraft(value: unknown): value is RecallDraft {
   const draft = value as Partial<RecallDraft>;
   return (
     typeof draft.whole === "string" &&
-    draft.whole.length <= 3000 &&
+    draft.whole.length <= GRAMMAR_ANSWER_MAX_LENGTH &&
     !!draft.values &&
     Object.values(draft.values).every(
-      (value) => typeof value === "string" && value.length <= 1000,
+      (value) => typeof value === "string" && value.length <= GRAMMAR_ANSWER_MAX_LENGTH,
     ) &&
     (draft.assessment === null || draft.assessment === "remembered" || draft.assessment === "again")
   );

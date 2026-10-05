@@ -1,6 +1,8 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
+select ok(not has_function_privilege('anon','public.save_grammar_session_answers(uuid,integer,jsonb,text,integer)','EXECUTE'),'replacement preserves anonymous execute denial');
+select ok(has_function_privilege('authenticated','public.save_grammar_session_answers(uuid,integer,jsonb,text,integer)','EXECUTE'),'replacement preserves authenticated execute grant');
 insert into auth.users(id) values ('15151515-1111-4111-8111-111111111111'),('15151515-2222-4222-8222-222222222222');
 create function pg_temp.grammar_content(p_title text default 'Not A but B') returns jsonb
 language sql immutable as $$
@@ -45,6 +47,13 @@ insert into session_test select 'exam',public.start_grammar_session((value->>'id
 insert into session_test select 'exam-ready',public.set_grammar_exam_prompts((value->>'id')::uuid,'[{"id":"novel:1","kind":"novel","sentence":null,"translation":"새로운 상황","context":"친구의 직업을 정정하세요.","chunks":[],"requiredWords":[{"word":"engineer","meaning":"기술자"}]}]') from session_test where label='exam';
 select is((select jsonb_array_length(value->'questions') from session_test where label='exam-ready'),3,'exam freezes existing and novel questions');
 select is(public.set_grammar_exam_prompts((select (value->>'id')::uuid from session_test where label='exam'), '[]'),(select value from session_test where label='exam-ready'),'retry never replaces already frozen novel question');
+insert into session_test select 'limits',public.start_grammar_session((value->>'id')::uuid,'25252525-7777-4777-8777-777777777777','recall') from session_test where label='note';
+select lives_ok($q$select public.save_grammar_session_answers((select (value->>'id')::uuid from session_test where label='limits'),1,
+ jsonb_build_object('partial:source',jsonb_build_object('values',jsonb_build_object('c1',repeat('a',4000)),'assessment',null)::text),'partial',0)$q$,'partial JSON overhead is accepted for 4000 character sentence');
+select throws_ok($q$select public.save_grammar_session_answers((select (value->>'id')::uuid from session_test where label='limits'),2,
+ jsonb_build_object('whole:source',repeat('a',4001)),'whole',0)$q$,'P0001','GRAMMAR_SESSION_INVALID_INPUT','whole answer still rejects length over 4000');
+select throws_ok($q$select public.save_grammar_session_answers((select (value->>'id')::uuid from session_test where label='limits'),2,
+ jsonb_build_object('partial:source',repeat('a',262145)),'partial',0)$q$,'P0001','GRAMMAR_SESSION_INVALID_INPUT','partial payload is still bounded');
 select set_config('request.jwt.claim.sub','15151515-2222-4222-8222-222222222222',true);
 select is((select count(*) from public.grammar_sessions),0::bigint,'RLS hides other owner sessions');
 select throws_ok($q$select public.complete_grammar_session((select (value->>'id')::uuid from session_test where label='single'),1)$q$,'P0001','GRAMMAR_SESSION_NOT_FOUND','other owner cannot complete');
