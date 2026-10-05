@@ -9,6 +9,6 @@ export function getTextBoundaries(text: string) {
     .sort((a, b) => a - b)
     .map((position) => ({
       position,
-      label: `${text.slice(Math.max(0, position - 24), position)} │ ${text.slice(position, position + 24)}`,
+      label: `${text.slice(Math.max(0, position - 24), position)}│${text.slice(position, position + 24)}`,
     }));
 }

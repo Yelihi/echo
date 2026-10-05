@@ -24,8 +24,11 @@ export interface AnalysisEditorState {
   readonly selectedId: string | null;
   readonly editing: boolean;
   readonly dirty: boolean;
-  readonly pendingSelection: { id: string | null } | null;
+  readonly pendingSelection: { id: string | null; editing: boolean } | null;
+  readonly readingId: string | null;
   startEditing: () => void;
+  finishEditing: () => void;
+  addSyntax: () => AnalysisEditResult;
   markDirty: () => void;
   resolveSelection: (discard: boolean) => void;
   select: (id: string | null) => void;
@@ -67,4 +70,12 @@ export interface BoundarySelectProps {
   max?: number;
   disabled?: boolean;
   onChange: (position: number) => void;
+}
+
+export interface ChunkReading {
+  readonly text: string;
+  readonly meaning: string;
+  readonly explanation: string;
+  readonly roles: readonly string[];
+  readonly constructions: readonly ConstructionAnnotation[];
 }

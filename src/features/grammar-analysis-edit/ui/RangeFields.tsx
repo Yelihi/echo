@@ -42,6 +42,7 @@ export function RangeFields({ ranges, source, onChange }: RangeFieldsProps) {
       <Button
         type="button"
         size="sm"
+        disabled={ranges[ranges.length - 1].end >= source.length}
         variant="outline"
         onClick={() =>
           onChange([...ranges, { start: ranges[ranges.length - 1].end, end: source.length }])

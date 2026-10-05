@@ -18,7 +18,7 @@ export function BoundarySelect({
     (item) => item.position >= min && item.position <= max,
   );
   if (!options.some((item) => item.position === value))
-    options.push({ position: value, label: `${source.slice(0, value)} │ ${source.slice(value)}` });
+    options.push({ position: value, label: `${source.slice(0, value)}│${source.slice(value)}` });
   return (
     <label htmlFor={id} className="block space-y-2 text-sm">
       {label}
