@@ -4,7 +4,6 @@ import {
   type GrammarNoteRepositoryPort,
 } from "@/entities/grammar-note";
 import type { SaveNoteCommand } from "../models/interface";
-/** 생성의 중복 방지는 저장소의 요청 UUID, 수정의 재시도는 확정된 버전과 동일 내용으로 판정한다. */
 export async function persistReviewedNote(
   command: SaveNoteCommand,
   repository: GrammarNoteRepositoryPort,
@@ -21,6 +20,8 @@ export async function persistReviewedNote(
     if (!(error instanceof GrammarNotePersistenceError) || error.code !== "VERSION_CONFLICT")
       throw error;
     const current = await repository.findById(id);
+    // 저장은 성공했지만 응답만 유실된 경우를 복구한다. 다른 수정까지 성공으로 오인하지 않도록
+    // 바로 다음 버전이며 내용도 같은 경우에만 재시도를 성공으로 처리한다.
     if (current?.version === expectedVersion + 1) {
       const currentContent = grammarNoteContentSchema.parse({
         source: current.source,

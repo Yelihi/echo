@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-// Provider DTOs intentionally exclude source text/revision and reviewed flags.
-// Those values are stamped from the authenticated request, never authored by AI.
+// AI가 분석 기준 문장이나 검토 상태를 바꾸지 못하도록 공급자 응답에서는 제외한다.
+// 원문·revision은 요청 값에서, 검토 상태는 서버의 초기값에서 부여한다.
 const range = z.object({ start: z.number().int(), end: z.number().int() }).strict();
 export const precheckOutputSchema = z
   .object({

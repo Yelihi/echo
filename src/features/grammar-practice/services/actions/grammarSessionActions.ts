@@ -24,10 +24,10 @@ async function executeSessionAction(
       resourceId: "grammar-session",
       recordEvent: recordOperationEvent,
       execute: async () => {
-        const db = await createSupabaseServerClient();
-        const { data, error } = await db.auth.getUser();
+        const supabase = await createSupabaseServerClient();
+        const { data, error } = await supabase.auth.getUser();
         if (error || !data.user) throw new GrammarSessionError("UNAUTHORIZED");
-        return { ok: true as const, data: await execute(new GrammarSessionRepository(db)) };
+        return { ok: true as const, data: await execute(new GrammarSessionRepository(supabase)) };
       },
     });
   } catch (error) {
@@ -43,13 +43,6 @@ export async function startGrammarSession(input: unknown): Promise<GrammarSessio
   return executeSessionAction("grammar.session.start", (repository) =>
     repository.start(startGrammarSessionSchema.parse(input)),
   );
-}
-export async function resumeGrammarSession(id: string): Promise<GrammarSessionResult> {
-  return executeSessionAction("grammar.session.resume", async (repository) => {
-    const session = await repository.findById(z.string().uuid().parse(id));
-    if (!session) throw new GrammarSessionError("NOT_FOUND");
-    return session;
-  });
 }
 export async function saveGrammarSessionAnswers(input: unknown): Promise<GrammarSessionResult> {
   return executeSessionAction("grammar.session.save", (repository) =>

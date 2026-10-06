@@ -3,7 +3,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { getOpenAIEvaluationModel, getOpenAIServerClient } from "@/shared/lib/openai/server";
 import type { GrammarSource } from "@/entities/grammar-note";
 import type { GrammarAnalysisProvider } from "../../models/interface";
-import { analysisOutputSchema, precheckOutputSchema } from "../../models/providerSchema";
+import { analysisOutputSchema, precheckOutputSchema } from "../../models/schema";
 import { GRAMMAR_ANALYSIS_PROMPT, GRAMMAR_PRECHECK_PROMPT } from "../../config/prompts";
 
 export function createOpenAIGrammarProvider(): GrammarAnalysisProvider {
