@@ -6,18 +6,18 @@ import type {
   UpdateGrammarNoteInput,
   FindGrammarNotesParams,
 } from "../models/repository";
-import { GrammarNotePersistenceError } from "../models/persistenceError";
+import { GrammarNotePersistenceError } from "../models/errors";
 import {
   createGrammarNoteSchema,
   updateGrammarNoteSchema,
   findGrammarNotesSchema,
   grammarNoteIdSchema,
-} from "../models/persistenceSchema";
-import { convertGrammarNoteContentToJson } from "../models/converters/convertGrammarNoteContentToJson";
+} from "../models/schema";
 import {
-  convertGrammarNoteRowToEntity,
-  convertGrammarNotePageToEntity,
-} from "../models/converters/convertGrammarNoteResponse";
+  mapGrammarNoteContentToJson,
+  mapGrammarNoteRowToEntity,
+  mapGrammarNotePageToEntity,
+} from "../models/mapper";
 import { executeGrammarNoteRequest } from "./executeGrammarNoteRequest";
 
 /** 로그인 사용자의 Supabase client를 받는다. 소유권은 DB의 auth.uid()/RLS가 결정한다. */
@@ -31,9 +31,9 @@ export class GrammarNoteRepository implements GrammarNoteRepositoryPort {
       () =>
         this.supabase.rpc("create_grammar_note", {
           p_request_id: parsed.data.requestId,
-          p_content: convertGrammarNoteContentToJson(parsed.data.content),
+          p_content: mapGrammarNoteContentToJson(parsed.data.content),
         }),
-      convertGrammarNoteRowToEntity,
+      mapGrammarNoteRowToEntity,
     );
   }
 
@@ -45,9 +45,9 @@ export class GrammarNoteRepository implements GrammarNoteRepositoryPort {
         this.supabase.rpc("update_grammar_note", {
           p_note_id: parsed.data.id,
           p_expected_version: parsed.data.expectedVersion,
-          p_content: convertGrammarNoteContentToJson(parsed.data.content),
+          p_content: mapGrammarNoteContentToJson(parsed.data.content),
         }),
-      convertGrammarNoteRowToEntity,
+      mapGrammarNoteRowToEntity,
     );
   }
 
@@ -62,7 +62,7 @@ export class GrammarNoteRepository implements GrammarNoteRepositoryPort {
           .eq("id", parsed.data)
           .maybeSingle(),
       // RLS로 숨겨진 타 사용자 노트도 존재하지 않는 노트와 동일하게 처리한다.
-      (data) => (data === null ? null : convertGrammarNoteRowToEntity(data)),
+      (data) => (data === null ? null : mapGrammarNoteRowToEntity(data)),
     );
   }
 
@@ -77,7 +77,7 @@ export class GrammarNoteRepository implements GrammarNoteRepositoryPort {
           p_page_size: pageSize,
           p_query: query,
         }),
-      (data) => convertGrammarNotePageToEntity(data, { page, pageSize }),
+      (data) => mapGrammarNotePageToEntity(data, { page, pageSize }),
     );
   }
 }

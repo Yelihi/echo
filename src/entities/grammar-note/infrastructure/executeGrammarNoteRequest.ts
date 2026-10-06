@@ -1,6 +1,6 @@
 import type { PostgrestError } from "@supabase/supabase-js";
-import { GrammarNotePersistenceError } from "../models/persistenceError";
-import type { GrammarNotePersistenceErrorCode } from "../models/persistenceError";
+import { GrammarNotePersistenceError } from "../models/errors";
+import type { GrammarNotePersistenceErrorCode } from "../models/errors";
 
 const rpcErrors = new Map<string, GrammarNotePersistenceErrorCode>([
   ["GRAMMAR_NOTE_INVALID_INPUT", "INVALID_INPUT"],
