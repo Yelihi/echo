@@ -11,7 +11,6 @@ export interface ExamFeedbackDependencies {
   consumeRequest: () => Promise<void>;
   provider: GrammarExamProvider;
 }
-/** 완료 확인 → 저장된 결과 재사용 → 새 답안 평가 → 저장 순서를 조율합니다. */
 export async function requestExamFeedback(
   sessionId: string,
   questionId: string,
@@ -23,6 +22,7 @@ export async function requestExamFeedback(
     throw new GrammarExamError("NOT_READY");
   if (!session.questions.some((question) => question.id === questionId))
     throw new GrammarExamError("INVALID_INPUT");
+  // 결과 재방문과 응답 유실 후 재시도에서는 이미 저장한 평가를 읽어 AI 비용을 다시 소비하지 않는다.
   const existing = await dependencies.readFeedback(sessionId, questionId);
   if (existing) return existing;
   await dependencies.consumeRequest();

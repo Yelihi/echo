@@ -15,7 +15,7 @@ async function prepareSession(id: string, access: Awaited<ReturnType<typeof crea
   if (!session) throw new GrammarSessionError("NOT_FOUND");
   if (session.mode !== "exam") throw new GrammarExamError("INVALID_INPUT");
   if (session.questions.some((q) => q.kind === "novel")) return session;
-  await consumeExamRequest(access.db);
+  await consumeExamRequest(access.supabase);
   const questions = await createExamPrompts(session, createOpenAIExamProvider());
   return access.repository.setExamPrompts(session.id, questions);
 }
@@ -35,12 +35,12 @@ export async function prepareGrammarExam(id: string) {
 export async function readGrammarExamFeedback(id: string) {
   return observeExamAction("grammar.exam.feedback.read", async () => {
     z.string().uuid().parse(id);
-    const { repository, db } = await createExamAccess();
+    const { repository, supabase } = await createExamAccess();
     const session = await repository.findById(id);
     if (!session) throw new GrammarSessionError("NOT_FOUND");
     if (session.mode !== "exam" || session.status !== "completed")
       throw new GrammarExamError("NOT_READY");
-    const { data, error } = await db
+    const { data, error } = await supabase
       .from("grammar_exam_feedback")
       .select("feedback")
       .eq("session_id", id);
@@ -53,11 +53,11 @@ export async function requestGrammarExamFeedback(input: unknown) {
     const args = z
       .object({ sessionId: z.string().uuid(), questionId: z.string().min(1).max(120) })
       .parse(input);
-    const { repository, db } = await createExamAccess();
+    const { repository, supabase } = await createExamAccess();
     return requestExamFeedback(args.sessionId, args.questionId, {
       loadSession: (id) => repository.findById(id),
-      ...createFeedbackPersistence(db),
-      consumeRequest: () => consumeExamRequest(db),
+      ...createFeedbackPersistence(supabase),
+      consumeRequest: () => consumeExamRequest(supabase),
       provider: createOpenAIExamProvider(),
     });
   });
