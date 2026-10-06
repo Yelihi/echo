@@ -6,7 +6,7 @@ import type {
 } from "../models/interface";
 import { grammarAnalysisFailure } from "../models/errors";
 
-/** Transport may keep running; cancellation always prevents stale result application. */
+// 전송 중인 서버 작업은 취소되지 않을 수 있으므로, 요청 세대로 늦은 응답의 상태 반영을 차단한다.
 export function createAnalysisController(
   request: (source: GrammarSource) => Promise<GrammarAnalysisResult>,
 ): GrammarAnalysisController {
