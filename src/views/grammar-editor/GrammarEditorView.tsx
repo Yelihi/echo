@@ -6,7 +6,7 @@ import { requestGrammarAnalysis } from "@/features/grammar-analysis/services/act
 import { GrammarNoteEditor } from "@/features/grammar-note-editor";
 import { saveGrammarNote } from "@/features/grammar-note-editor/services/actions/saveGrammarNote";
 
-/** initialNote가 바뀌면 key로 편집 생명주기를 새로 시작한다. 목록 검색 복귀 경로는 내부 경로만 허용한다. */
+// 다른 노트나 최신 저장 버전을 열 때 이전 초안이 섞이지 않도록 에디터 key에 ID와 버전을 함께 쓴다.
 export function GrammarEditorView({
   initialNote,
   backHref = "/grammar",

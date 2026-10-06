@@ -2,7 +2,7 @@ import { grammarNoteContentSchema } from "@/entities/grammar-note";
 import type { GrammarSource } from "@/entities/grammar-note";
 import { GrammarAnalysisError } from "../models/errors";
 import type { GrammarAnalysisDependencies, GrammarAnalysisOutput } from "../models/interface";
-import { analysisOutputSchema } from "../models/providerSchema";
+import { analysisOutputSchema } from "../models/schema";
 import { consumeGrammarAnalysisRequest } from "./consumeGrammarAnalysisRequest";
 
 export async function generateGrammarAnalysis(
