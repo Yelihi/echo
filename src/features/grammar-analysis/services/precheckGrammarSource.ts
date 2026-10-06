@@ -2,7 +2,7 @@ import { precheckResultSchema } from "@/entities/grammar-note";
 import type { GrammarSource, PrecheckResult } from "@/entities/grammar-note";
 import { GrammarAnalysisError } from "../models/errors";
 import type { GrammarAnalysisDependencies } from "../models/interface";
-import { precheckOutputSchema } from "../models/providerSchema";
+import { precheckOutputSchema } from "../models/schema";
 import { consumeGrammarAnalysisRequest } from "./consumeGrammarAnalysisRequest";
 
 export async function precheckGrammarSource(

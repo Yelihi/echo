@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/shared/lib/supabase/database.types";
 import type { GrammarNoteContent } from "../../models/entity";
 import { GrammarNoteRepository } from "../GrammarNoteRepository";
-import { convertGrammarNoteContentToJson } from "../../models/converters/convertGrammarNoteContentToJson";
+import { mapGrammarNoteContentToJson } from "../../models/mapper";
 
 const id = "11111111-1111-4111-8111-111111111111";
 const ownerId = "22222222-2222-4222-8222-222222222222";
@@ -294,7 +294,7 @@ describe("GrammarNoteRepository", () => {
         },
       ],
     };
-    const serialized = convertGrammarNoteContentToJson(note);
+    const serialized = mapGrammarNoteContentToJson(note);
     expect(serialized).toEqual(note);
     expect(serialized).not.toBe(note);
     expect(note.source.sentence).toBe("She is a doctor.");

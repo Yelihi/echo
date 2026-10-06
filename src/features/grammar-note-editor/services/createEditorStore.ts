@@ -5,15 +5,19 @@ import type { EditorState, GrammarNoteEditorProps } from "../models/interface";
 export function createEditorStore(
   dependencies: Omit<GrammarNoteEditorProps, "AnalysisEditor" | "onExit">,
 ) {
-  const initial = dependencies.initialNote;
-  let request = 0;
+  const initialNote = dependencies.initialNote;
+  // 입력 변경·화면 이탈 후에도 서버 분석은 끝날 수 있어, 현재 세대의 응답만 적용한다.
+  let generation = 0;
   let saveIdentity: { content: string; id: string } | null = null;
   return createStore<EditorState>((set, get) => ({
-    source: initial?.source ?? { sentence: "", learningNote: "", revision: 0 },
-    result: initial
-      ? { status: "analyzed", data: { metadata: initial.metadata, analysis: initial.analysis } }
+    source: initialNote?.source ?? { sentence: "", learningNote: "", revision: 0 },
+    result: initialNote
+      ? {
+          status: "analyzed",
+          data: { metadata: initialNote.metadata, analysis: initialNote.analysis },
+        }
       : null,
-    stage: initial ? "review" : "input",
+    stage: initialNote ? "review" : "input",
     pending: null,
     error: "",
     fieldErrors: {},
@@ -24,7 +28,7 @@ export function createEditorStore(
     dirty: false,
     changeSource: (field, value) => {
       if (get().pending === "save") return;
-      request++;
+      generation++;
       set((state) => ({
         source: { ...state.source, [field]: value, revision: state.source.revision + 1 },
         result: null,
@@ -49,11 +53,11 @@ export function createEditorStore(
     setReviewed: (reviewed) => set({ reviewed }),
     back: () => {
       if (get().pending === "save") return;
-      request++;
+      generation++;
       set({ stage: "input", pending: null, error: "", analysisDirty: false });
     },
     cancel: () => {
-      request++;
+      generation++;
     },
     analyze: async () => {
       if (get().pending) return;
@@ -65,12 +69,12 @@ export function createEditorStore(
         });
         return;
       }
-      const token = ++request;
+      const currentGeneration = ++generation;
       set({ pending: "analysis", error: "", fieldErrors: {} });
       try {
         const result = await dependencies.analyze(parsed.data);
-        if (token !== request) return;
-        // 클라이언트 주입 경계에서도 다른 원문/리비전 결과를 적용하지 않는다.
+        if (currentGeneration !== generation) return;
+        // 분석 함수는 주입받으므로 서버 구현의 검증을 가정하지 않고 원문·리비전 일치를 다시 확인한다.
         if (
           result.status === "needs-input" &&
           result.precheck.sourceRevision !== parsed.data.revision
@@ -92,7 +96,7 @@ export function createEditorStore(
           error: result.status === "error" ? result.message : "",
         });
       } catch {
-        if (token === request)
+        if (currentGeneration === generation)
           set({
             pending: null,
             error: "분석을 완료하지 못했습니다. 입력을 유지했으니 다시 시도해 주세요.",
@@ -112,7 +116,7 @@ export function createEditorStore(
         source: state.source,
         ...state.result.data,
         analysis: { ...state.result.data.analysis, reviewStatus: "reviewed" },
-        examples: initial?.examples ?? [],
+        examples: initialNote?.examples ?? [],
       });
       if (!content.success) {
         set({ error: "분석과 입력을 다시 확인해 주세요." });
@@ -127,7 +131,9 @@ export function createEditorStore(
         const result = await dependencies.save({
           requestId: saveIdentity.id,
           content: content.data,
-          ...(initial ? { existing: { id: initial.id, expectedVersion: initial.version } } : {}),
+          ...(initialNote
+            ? { existing: { id: initialNote.id, expectedVersion: initialNote.version } }
+            : {}),
         });
         if (!result.ok) {
           set({ pending: null, error: result.message });
