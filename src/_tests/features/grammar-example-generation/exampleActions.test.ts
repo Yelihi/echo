@@ -63,20 +63,21 @@ describe("예문 서버 액션 권한", () => {
     expect(find).not.toHaveBeenCalled();
     expect(requestExampleOutput).not.toHaveBeenCalled();
   });
-  it.each(["not_invited", "rate_limited", "unexpected"])(
-    "권한 %s이면 AI를 실행하지 않는다",
-    async (permission) => {
-      jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(createEditorNote());
-      rpc.mockResolvedValue({ data: permission, error: null });
-      const result = await requestGrammarExamples({
-        noteId: createEditorNote().id,
-        expectedVersion: 1,
-        count: 3,
-      });
-      expect(result.ok).toBe(false);
-      expect(requestExampleOutput).not.toHaveBeenCalled();
-    },
-  );
+  it.each([
+    ["not_invited", "AI 기능을 사용할 권한이 없습니다."],
+    ["rate_limited", "AI 요청 한도에 도달했습니다. 잠시 후 다시 시도해 주세요."],
+    ["unexpected", "예문 작업을 완료하지 못했습니다. 기존 내용은 유지됩니다. 다시 시도해 주세요."],
+  ])("권한 %s이면 AI를 실행하지 않는다", async (permission, message) => {
+    jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(createEditorNote());
+    rpc.mockResolvedValue({ data: permission, error: null });
+    const result = await requestGrammarExamples({
+      noteId: createEditorNote().id,
+      expectedVersion: 1,
+      count: 3,
+    });
+    expect(result).toEqual({ ok: false, message });
+    expect(requestExampleOutput).not.toHaveBeenCalled();
+  });
   it("한도 조회 실패를 허용으로 처리하지 않는다", async () => {
     jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(createEditorNote());
     rpc.mockResolvedValue({ data: null, error: new Error("network") });

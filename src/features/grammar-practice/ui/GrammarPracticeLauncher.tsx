@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { GrammarSessionMode } from "@/entities/grammar-session";
-import type { GrammarPracticeLauncherProps } from "../models/launcher";
+import type { GrammarPracticeLauncherProps } from "../models/interface";
 
 const modes = [
   {

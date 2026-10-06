@@ -22,6 +22,7 @@ const answersSchema = z
     }
   });
 export const grammarSessionModeSchema = z.enum(["recall", "exam"]);
+export const grammarSessionIdSchema = z.string().uuid();
 export const grammarSessionPhaseSchema = z.enum(["partial", "whole", "existing", "novel"]);
 export const grammarQuestionSchema = z.object({
   id: z.string().min(1).max(120),
@@ -73,6 +74,25 @@ export const completeGrammarSessionSchema = z.object({
   id: z.string().uuid(),
   expectedVersion: z.number().int().positive(),
 });
+
+export const findGrammarSessionHistorySchema = z.object({
+  noteId: grammarSessionIdSchema.optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+});
+const grammarSessionSummarySchema = z.object({
+  id: grammarSessionIdSchema,
+  noteId: grammarSessionIdSchema,
+  title: z.string(),
+  mode: grammarSessionModeSchema,
+  startedAt: z.string(),
+  completedAt: z.string(),
+  questionCount: z.number().int().positive(),
+});
+export const grammarSessionHistoryPageSchema = z.object({
+  items: z.array(grammarSessionSummarySchema),
+  total: z.number().int().nonnegative(),
+});
 export type GrammarSession = z.infer<typeof grammarSessionSchema>;
 export type GrammarSessionQuestion = z.infer<typeof grammarQuestionSchema>;
 export type GrammarSessionMode = z.infer<typeof grammarSessionModeSchema>;
@@ -80,3 +100,22 @@ export type GrammarSessionPhase = z.infer<typeof grammarSessionPhaseSchema>;
 export type StartGrammarSessionInput = z.infer<typeof startGrammarSessionSchema>;
 export type SaveGrammarAnswersInput = z.infer<typeof saveGrammarAnswersSchema>;
 export type CompleteGrammarSessionInput = z.infer<typeof completeGrammarSessionSchema>;
+
+export const grammarSessionRowSchema = z.object({
+  id: z.string(),
+  note_id: z.string(),
+  note_version: z.number(),
+  mode: z.string(),
+  status: z.string(),
+  snapshot: z.object({
+    metadata: z.object({ title: z.string() }),
+    source: z.object({ learningNote: z.string() }),
+  }),
+  questions: z.unknown(),
+  answers: z.unknown(),
+  phase: z.string(),
+  question_index: z.number(),
+  version: z.number(),
+  started_at: z.string(),
+  completed_at: z.string().nullable(),
+});

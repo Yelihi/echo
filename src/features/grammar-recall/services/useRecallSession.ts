@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import type { GrammarRecallProps, RecallDraft } from "../models/interface";
-import { answersWithRecallDraft } from "./recallDraft";
+import { mergeRecallDraftIntoAnswers } from "./recallDraft";
 export function useRecallSession(props: GrammarRecallProps) {
   const [session, setSession] = useState(props.initialSession);
   const [busy, setBusy] = useState(false);
@@ -34,7 +34,7 @@ export function useRecallSession(props: GrammarRecallProps) {
       const saved = await props.save({
         id: session.id,
         expectedVersion: session.version,
-        answers: answersWithRecallDraft(session, draft),
+        answers: mergeRecallDraftIntoAnswers(session, draft),
         phase,
         questionIndex: index,
       });

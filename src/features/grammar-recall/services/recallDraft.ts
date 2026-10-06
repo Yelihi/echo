@@ -1,7 +1,7 @@
 import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import type { GrammarSession, GrammarSessionQuestion } from "@/entities/grammar-session";
 import type { RecallDraft, RecallSegment } from "../models/interface";
-export function recallSegments(question: GrammarSessionQuestion): RecallSegment[] {
+export function createRecallSegments(question: GrammarSessionQuestion): RecallSegment[] {
   const sentence = question.sentence ?? "";
   const chunks = question.chunks;
   if (chunks.length < 2)
@@ -36,7 +36,7 @@ export function recallSegments(question: GrammarSessionQuestion): RecallSegment[
     });
   return segments;
 }
-function validDraft(value: unknown): value is RecallDraft {
+function isRecallDraft(value: unknown): value is RecallDraft {
   if (!value || typeof value !== "object") return false;
   const draft = value as Partial<RecallDraft>;
   return (
@@ -49,7 +49,7 @@ function validDraft(value: unknown): value is RecallDraft {
     (draft.assessment === null || draft.assessment === "remembered" || draft.assessment === "again")
   );
 }
-export function recallDraftKey(session: GrammarSession) {
+export function getRecallDraftKey(session: GrammarSession) {
   return `echo:grammar-recall:${session.id}:${session.phase}:${session.questionIndex}`;
 }
 export function readRecallDraft(session: GrammarSession): RecallDraft {
@@ -67,24 +67,24 @@ export function readRecallDraft(session: GrammarSession): RecallDraft {
     /* 이전 버전의 단순 문자열 답안은 빈칸 초안으로 해석하지 않는다. */
   }
   try {
-    const local = JSON.parse(sessionStorage.getItem(recallDraftKey(session)) ?? "null");
-    if (local?.version === session.version && validDraft(local.draft)) return local.draft;
+    const local = JSON.parse(sessionStorage.getItem(getRecallDraftKey(session)) ?? "null");
+    if (local?.version === session.version && isRecallDraft(local.draft)) return local.draft;
   } catch {
     /* 저장소를 사용할 수 없으면 서버에 저장된 답안으로 계속한다. */
   }
-  return validDraft(draft) ? draft : { values: {}, whole: "", assessment: null };
+  return isRecallDraft(draft) ? draft : { values: {}, whole: "", assessment: null };
 }
 export function persistRecallDraft(session: GrammarSession, draft: RecallDraft) {
   try {
     sessionStorage.setItem(
-      recallDraftKey(session),
+      getRecallDraftKey(session),
       JSON.stringify({ version: session.version, draft }),
     );
   } catch {
     /* 브라우저 저장 공간이 없더라도 서버 저장과 입력을 막지 않는다. */
   }
 }
-export function answersWithRecallDraft(session: GrammarSession, draft: RecallDraft) {
+export function mergeRecallDraftIntoAnswers(session: GrammarSession, draft: RecallDraft) {
   const id = session.questions[session.questionIndex].id;
   return {
     ...session.answers,

@@ -13,8 +13,8 @@ export async function loadGrammarNote(id: string) {
     resourceId: id,
     recordEvent: recordOperationEvent,
     execute: async () => {
-      const db = await createSupabaseServerClient();
-      return new GrammarNoteRepository(db).findById(id);
+      const supabase = await createSupabaseServerClient();
+      return new GrammarNoteRepository(supabase).findById(id);
     },
   });
   if (!note) notFound();

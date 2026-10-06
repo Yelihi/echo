@@ -1,22 +1,22 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { recallSession } from "./fixture";
 import {
-  recallSegments,
+  createRecallSegments,
   readRecallDraft,
   persistRecallDraft,
-  answersWithRecallDraft,
+  mergeRecallDraftIntoAnswers,
 } from "@/features/grammar-recall/services/recallDraft";
 describe("recall drafts and semantic blanks", () => {
   beforeEach(() => sessionStorage.clear());
   it("uses stable semantic chunks without losing whitespace or punctuation", () => {
     const question = recallSession().questions[0];
-    const segments = recallSegments(question);
+    const segments = createRecallSegments(question);
     expect(segments.map((s) => s.text).join("")).toBe(question.sentence);
     expect(segments.filter((s) => s.hidden).map((s) => s.id)).toEqual(["verb", "contrast"]);
   });
   it("uses whole sentence recall when an example has no verified chunks", () => {
     const question = { ...recallSession().questions[0], chunks: [] };
-    expect(recallSegments(question)).toEqual([
+    expect(createRecallSegments(question)).toEqual([
       { id: "source-whole", text: question.sentence, meaning: question.translation, hidden: true },
     ]);
   });
@@ -33,7 +33,7 @@ describe("recall drafts and semantic blanks", () => {
       phase: "whole" as const,
       answers: { "partial:other": "old" },
     };
-    const answers = answersWithRecallDraft(session, {
+    const answers = mergeRecallDraftIntoAnswers(session, {
       values: { verb: "is" },
       whole: "She is a doctor.",
       assessment: "again",
@@ -50,7 +50,9 @@ describe("recall drafts and semantic blanks", () => {
     persistRecallDraft(session, draft);
     expect(readRecallDraft(session)).toEqual(draft);
     expect(
-      JSON.parse(answersWithRecallDraft(session, draft)["partial:source"]).values["source-whole"],
+      JSON.parse(mergeRecallDraftIntoAnswers(session, draft)["partial:source"]).values[
+        "source-whole"
+      ],
     ).toBe(sentence);
   });
 });

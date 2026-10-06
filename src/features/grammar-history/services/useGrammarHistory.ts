@@ -8,28 +8,28 @@ export function useGrammarHistory({ noteId, initialData, load }: GrammarHistoryP
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const request = useRef(0);
+  const generation = useRef(0);
   useEffect(() => {
-    const lifecycle = request;
+    const lifecycle = generation;
     return () => {
       lifecycle.current++;
     };
   }, []);
   async function refresh(page = 1) {
-    const token = ++request.current;
+    const currentGeneration = ++generation.current;
     setBusy(true);
     setError("");
     try {
       const result = await load(noteId, page);
-      if (token !== request.current) return;
+      if (currentGeneration !== generation.current) return;
       if (result.ok) {
         setData(result.data);
         if (result.data.page === 1) setLatestCompletedAt(result.data.items[0]?.completedAt);
       } else setError(result.message);
     } catch {
-      if (token === request.current) setError("연습 기록을 불러오지 못했습니다.");
+      if (currentGeneration === generation.current) setError("연습 기록을 불러오지 못했습니다.");
     } finally {
-      if (token === request.current) setBusy(false);
+      if (currentGeneration === generation.current) setBusy(false);
     }
   }
   return { data, latestCompletedAt, busy, error, refresh };

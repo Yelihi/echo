@@ -9,7 +9,7 @@ import { claimGrammarPlayback } from "./playbackCoordinator";
 export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
   const [status, setStatus] = useState<GrammarAudioStatus>("idle");
   const [message, setMessage] = useState("");
-  const request = useRef(0);
+  const generation = useRef(0);
   const audio = useRef<HTMLAudioElement | null>(null);
   const speech = useRef<Extract<GrammarAudioResult, { ok: true }> | null>(null);
   const release = useRef<(() => void) | null>(null);
@@ -18,7 +18,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
       ? JSON.stringify(["session", input.sessionId, input.questionId])
       : JSON.stringify(["note", input.noteId, input.sentenceId, input.noteVersion]);
   function stop() {
-    request.current++;
+    generation.current++;
     audio.current?.pause();
     audio.current = null;
     release.current?.();
@@ -28,9 +28,9 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
   useEffect(() => {
     speech.current = null;
     setStatus("idle");
-    const lifecycleRequest = request;
+    const lifecycleGeneration = generation;
     return () => {
-      lifecycleRequest.current++;
+      lifecycleGeneration.current++;
       audio.current?.pause();
       audio.current = null;
       release.current?.();
@@ -41,10 +41,10 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
       stop();
       return;
     }
-    // 같은 버튼의 재시도는 이전 소유권만 반납한 뒤 새 요청을 시작한다.
+    // 이전 소유권을 남겨 두면 재획득 시 stop이 호출되어 새 요청의 세대까지 무효화되므로 먼저 반납한다.
     release.current?.();
     release.current = null;
-    const token = ++request.current;
+    const currentGeneration = ++generation.current;
     setMessage("");
     release.current = claimGrammarPlayback(stop);
     let data = speech.current;
@@ -52,7 +52,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
       setStatus("generating");
       try {
         const result = await generate(input);
-        if (token !== request.current) return;
+        if (currentGeneration !== generation.current) return;
         if (!result.ok) {
           setMessage(result.message);
           setStatus("generation-error");
@@ -61,7 +61,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
         data = result;
         speech.current = result;
       } catch {
-        if (token !== request.current) return;
+        if (currentGeneration !== generation.current) return;
         setMessage("음성 생성 요청에 실패했습니다.");
         setStatus("generation-error");
         return;
@@ -71,22 +71,22 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
       const player = new Audio(`data:${data.mimeType};base64,${data.audioBase64}`);
       audio.current = player;
       player.onended = () => {
-        if (token === request.current) stop();
+        if (currentGeneration === generation.current) stop();
       };
       player.onerror = () => {
-        if (token === request.current) {
+        if (currentGeneration === generation.current) {
           setMessage("음성을 재생하지 못했습니다.");
           setStatus("playback-error");
         }
       };
       await player.play();
-      if (token !== request.current) {
+      if (currentGeneration !== generation.current) {
         player.pause();
         return;
       }
       setStatus("playing");
     } catch {
-      if (token !== request.current) return;
+      if (currentGeneration !== generation.current) return;
       setMessage("음성을 재생하지 못했습니다. 재생 버튼을 다시 눌러주세요.");
       setStatus("playback-error");
     }

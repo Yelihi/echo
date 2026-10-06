@@ -2,14 +2,14 @@
 import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import { useState } from "react";
 import type { RecallDraft, RecallQuestionProps } from "../models/interface";
-import { persistRecallDraft, readRecallDraft, recallSegments } from "../services/recallDraft";
+import { persistRecallDraft, readRecallDraft, createRecallSegments } from "../services/recallDraft";
 import { RecallBlankFields } from "./RecallBlankFields";
 export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQuestionProps) {
   const question = session.questions[session.questionIndex];
   const [draft, setDraft] = useState(() => readRecallDraft(session));
   const [revealed, setRevealed] = useState(false);
   const [hint, setHint] = useState(false);
-  const segments = recallSegments(question);
+  const segments = createRecallSegments(question);
   const partial = session.phase === "partial";
   function update(next: RecallDraft) {
     setDraft(next);

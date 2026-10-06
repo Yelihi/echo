@@ -3,7 +3,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/shared/lib/supabase/database.types";
 import { GrammarSessionRepository } from "../GrammarSessionRepository";
-import { convertGrammarSessionRow } from "../../models/converters/convertGrammarSessionRow";
+import { mapGrammarSessionRowToEntity } from "../../models/mapper";
 const id = "11111111-1111-4111-8111-111111111111";
 function row(mode = "recall", status = "active") {
   return {
@@ -47,14 +47,14 @@ function setup(data: unknown, status = 200) {
 }
 describe("Grammar session persisted contract", () => {
   it("active_exam_hides_reference_sentence_and_chunks", () => {
-    const session = convertGrammarSessionRow(row("exam"));
+    const session = mapGrammarSessionRowToEntity(row("exam"));
     expect(session.questions[0].sentence).toBeNull();
     expect(session.questions[0].chunks).toEqual([]);
     expect(session.learningNote).toBe("not A but B");
   });
   it("recall_and_completed_exam_keep_frozen_reference", () => {
-    expect(convertGrammarSessionRow(row()).questions[0].sentence).toContain("teacher");
-    expect(convertGrammarSessionRow(row("exam", "completed")).questions[0].sentence).toContain(
+    expect(mapGrammarSessionRowToEntity(row()).questions[0].sentence).toContain("teacher");
+    expect(mapGrammarSessionRowToEntity(row("exam", "completed")).questions[0].sentence).toContain(
       "teacher",
     );
   });
@@ -123,7 +123,7 @@ describe("Grammar session persisted contract", () => {
     const stored = row();
     stored.questions[0].sentence = "  She is a doctor.  ";
     stored.questions[0].chunks = [{ id: "subject", start: 2, end: 5, meaning: "그녀는" }];
-    const question = convertGrammarSessionRow(stored).questions[0];
+    const question = mapGrammarSessionRowToEntity(stored).questions[0];
     expect(question.sentence).toBe(stored.questions[0].sentence);
     expect(question.sentence?.slice(question.chunks[0].start, question.chunks[0].end)).toBe("She");
   });
