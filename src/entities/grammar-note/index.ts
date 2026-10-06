@@ -27,6 +27,6 @@ export type {
   GrammarNotePage,
   GrammarNoteRepositoryPort,
 } from "./models/repository";
-export { GrammarNotePersistenceError } from "./models/persistenceError";
-export type { GrammarNotePersistenceErrorCode } from "./models/persistenceError";
+export { GrammarNotePersistenceError } from "./models/errors";
+export type { GrammarNotePersistenceErrorCode } from "./models/errors";
 export { GrammarNoteRepository } from "./infrastructure/GrammarNoteRepository";
