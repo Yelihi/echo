@@ -6,7 +6,6 @@ import { ChunkEditor } from "./ChunkEditor";
 import { SyntaxEditor } from "./SyntaxEditor";
 import { ConstructionEditor } from "./ConstructionEditor";
 
-/** The correction workspace is mounted only when explicitly requested. */
 export function AnalysisInspector() {
   const id = useAnalysisEditor((state) => state.selectedId);
   const analysis = useAnalysisEditor((state) => state.analysis);
