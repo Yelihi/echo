@@ -2,7 +2,8 @@ import { createStore } from "zustand/vanilla";
 import { grammarExampleSchema } from "@/entities/grammar-note";
 import type { ExampleState, GrammarExampleManagerProps } from "../models/interface";
 export function createExampleStore(dependencies: GrammarExampleManagerProps) {
-  let request = 0;
+  // 재생성 중 사용자가 후보를 수정할 수 있으므로, 수정 이전에 시작한 응답은 적용하지 않는다.
+  let generation = 0;
   return createStore<ExampleState>((set, get) => ({
     note: dependencies.note,
     candidates: [],
@@ -11,15 +12,15 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
     error: "",
     dirty: false,
     cancel: () => {
-      request++;
+      generation++;
     },
     discard: () => {
-      request++;
+      generation++;
       set({ candidates: [], selected: [], pending: null, error: "", dirty: false });
     },
     change: (id, field, value) => {
       if (get().pending === "save") return;
-      request++;
+      generation++;
       set((state) => ({
         candidates: state.candidates.map((candidate) =>
           candidate.id === id
@@ -42,7 +43,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       const state = get();
       if (state.pending) return;
       if (id && !state.candidates.some((candidate) => candidate.id === id)) return;
-      const token = ++request;
+      const currentGeneration = ++generation;
       set({ pending: id ?? "all", error: "" });
       try {
         const result = await dependencies.generate({
@@ -50,7 +51,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           expectedVersion: state.note.version,
           count: id ? 1 : 3,
         });
-        if (token !== request) return;
+        if (currentGeneration !== generation) return;
         if (!result.ok) {
           set({ pending: null, error: result.message });
           return;
@@ -68,7 +69,6 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           )
         )
           throw new Error("DUPLICATE_CANDIDATE");
-        // 부분 재생성은 해당 후보만 교체하며 다른 수정본과 선택 상태를 유지한다.
         set((current) => ({
           candidates: id
             ? current.candidates.map((candidate) =>
@@ -80,7 +80,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           dirty: true,
         }));
       } catch {
-        if (token === request)
+        if (currentGeneration === generation)
           set({
             pending: null,
             error: "예문 생성에 실패했습니다. 기존 후보를 유지했으니 다시 생성해 주세요.",
