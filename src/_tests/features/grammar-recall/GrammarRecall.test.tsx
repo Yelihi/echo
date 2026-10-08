@@ -113,3 +113,19 @@ describe("recall workflow", () => {
     );
   });
 });
+
+it("preserves a same-session draft and resets when opening a different session", () => {
+  const session = { ...recallSession(), phase: "whole" as const };
+  const props = {
+    save: jest.fn<() => Promise<RecallActionResult>>(),
+    complete: jest.fn<() => Promise<RecallActionResult>>(),
+    onComplete: jest.fn(),
+    onExit: jest.fn(),
+  };
+  const { rerender } = render(<GrammarRecall {...props} initialSession={session} />);
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "My draft" } });
+  rerender(<GrammarRecall {...props} initialSession={{ ...session, version: 2 }} />);
+  expect(screen.getByRole("textbox")).toHaveValue("My draft");
+  rerender(<GrammarRecall {...props} initialSession={{ ...session, id: "another-session" }} />);
+  expect(screen.getByRole("textbox")).toHaveValue("");
+});
