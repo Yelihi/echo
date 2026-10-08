@@ -18,6 +18,7 @@ export function mapGrammarSessionRowToEntity(input: unknown) {
     startedAt: row.started_at,
     completedAt: row.completed_at,
   });
+
   // UI에서 숨겨도 서버 응답에는 정답이 남으므로, 진행 중인 시험은 직렬화 전에 정답과 구간을 제거한다.
   if (session.mode === "exam" && session.status === "active")
     session.questions = session.questions.map((question) => ({
@@ -25,5 +26,6 @@ export function mapGrammarSessionRowToEntity(input: unknown) {
       sentence: null,
       chunks: [],
     }));
+
   return session;
 }

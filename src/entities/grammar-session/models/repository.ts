@@ -15,17 +15,20 @@ export interface GrammarSessionSummary {
   completedAt: string;
   questionCount: number;
 }
+
 export interface GrammarSessionHistoryInput {
   noteId?: string;
   page?: number;
   pageSize?: number;
 }
+
 export interface GrammarSessionHistory {
   items: GrammarSessionSummary[];
   total: number;
   page: number;
   pageSize: number;
 }
+
 export interface GrammarSessionRepositoryPort {
   start(input: StartGrammarSessionInput): Promise<GrammarSession>;
   findById(id: string): Promise<GrammarSession | null>;

@@ -1,4 +1,5 @@
 import type { GrammarSessionError } from "../models/errors";
+
 export function grammarSessionErrorMessage(code: GrammarSessionError["code"]): string {
   const messages = {
     INVALID_INPUT: "연습 입력을 확인해 주세요.",
@@ -8,5 +9,6 @@ export function grammarSessionErrorMessage(code: GrammarSessionError["code"]): s
     UNAUTHORIZED: "로그인 후 다시 시도해 주세요.",
     FAILED: "연습을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
   };
+
   return messages[code];
 }
