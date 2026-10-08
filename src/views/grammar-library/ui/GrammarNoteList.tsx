@@ -2,9 +2,11 @@ import Link from "next/link";
 import type { GrammarNoteListProps } from "../models/interface";
 import { grammarLibraryHref } from "../services/libraryQuery";
 import { getPaginationItems } from "@/shared/utils/pagination";
+
 export function GrammarNoteList({ data, query }: GrammarNoteListProps) {
   const returnTo = grammarLibraryHref({ page: data.page, query });
   const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
+
   return (
     <section aria-label="어법 노트 목록" className="space-y-8">
       <p className="text-sm text-practice-secondary">{data.total}개의 어법 노트</p>

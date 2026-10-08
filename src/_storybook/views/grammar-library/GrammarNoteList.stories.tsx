@@ -1,19 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, within } from "storybook/test";
 import { GrammarNoteList } from "@/views/grammar-library";
+
 const meta = {
   title: "Views/Grammar/Note list",
   component: GrammarNoteList,
   args: { query: "", data: { items: [], total: 0, page: 1, pageSize: 20 } },
 } satisfies Meta<typeof GrammarNoteList>;
+
 export default meta;
+
 type Story = StoryObj<typeof meta>;
+
 export const Empty: Story = {
   play: async ({ canvasElement }) => {
     await expect(within(canvasElement).getByText("첫 어법 노트를 만들어보세요")).toBeVisible();
   },
 };
+
 export const SearchEmpty: Story = { args: { query: "unknown" } };
+
 export const Notes: Story = {
   args: {
     query: "not",
@@ -35,8 +41,10 @@ export const Notes: Story = {
       ],
     },
   },
+
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await expect(canvas.getByRole("link", { name: /not A but B/ })).toHaveAttribute(
       "href",
       expect.stringContaining("returnTo=%2Fgrammar%3Fq%3Dnot%26page%3D2"),

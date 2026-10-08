@@ -8,6 +8,7 @@ describe("grammar analysis review below the sentence", () => {
   it("selects a chunk and edits its explanation without losing the source", async () => {
     const user = userEvent.setup();
     const onChange = jest.fn();
+
     render(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={onChange} />);
     await user.click(screen.getByRole("button", { name: "She" }));
     await user.click(screen.getByRole("button", { name: "분석 수정" }));
@@ -22,9 +23,11 @@ describe("grammar analysis review below the sentence", () => {
       }),
     );
   });
+
   it("keeps an invalid hierarchy draft visible with a recoverable error", async () => {
     const user = userEvent.setup();
     const onChange = jest.fn();
+
     render(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={onChange} />);
     await user.click(screen.getByRole("button", { name: "분석 수정" }));
     await user.click(screen.getByRole("button", { name: "절" }));
@@ -41,6 +44,7 @@ describe("grammar analysis review below the sentence", () => {
 
 it("asks before leaving an unapplied edit and preserves input when continuing", async () => {
   const user = userEvent.setup();
+
   render(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={jest.fn()} />);
   await user.click(screen.getByRole("button", { name: "She" }));
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
@@ -57,6 +61,7 @@ it("asks before leaving an unapplied edit and preserves input when continuing", 
 it("shows AI chunks for reading and keeps correction controls behind edit mode", async () => {
   const user = userEvent.setup();
   const onChange = jest.fn();
+
   render(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={onChange} />);
   expect(screen.queryByRole("button", { name: "절" })).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "She" }));
@@ -72,6 +77,7 @@ it("shows AI chunks for reading and keeps correction controls behind edit mode",
 it("guards returning to reading and restores the selected chunk after discarding edits", async () => {
   const user = userEvent.setup();
   const onChange = jest.fn();
+
   render(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={onChange} />);
   await user.click(screen.getByRole("button", { name: "She" }));
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
@@ -92,6 +98,7 @@ it("isolates selection and edits between mounted editors", async () => {
   const user = userEvent.setup();
   const firstChange = jest.fn();
   const secondChange = jest.fn();
+
   render(
     <>
       <section aria-label="첫 번째 노트">
@@ -104,6 +111,7 @@ it("isolates selection and edits between mounted editors", async () => {
   );
   const first = within(screen.getByRole("region", { name: "첫 번째 노트" }));
   const second = within(screen.getByRole("region", { name: "두 번째 노트" }));
+
   await user.click(first.getByRole("button", { name: "She" }));
   expect(second.getByRole("button", { name: "She" })).toHaveAttribute("aria-pressed", "false");
   await user.click(first.getByRole("button", { name: "분석 수정" }));
@@ -127,6 +135,7 @@ it("preserves drafts on parent rerender and notifies the current callback", asyn
       onDirtyChange={originalDirty}
     />,
   );
+
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
   await user.type(screen.getByLabelText("직독직해"), " 수정");
   expect(originalDirty.mock.calls).toEqual([[true]]);
@@ -155,9 +164,11 @@ it("starts a fresh editor when the document key changes", async () => {
       onChange={onChange}
     />,
   );
+
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
   await user.type(screen.getByLabelText("직독직해"), " 수정");
   const next = createGrammarAnalysis();
+
   rerender(
     <GrammarAnalysisEditor
       key="note-2"
@@ -176,6 +187,7 @@ it("starts a fresh editor when the document key changes", async () => {
 
 it("keeps the editor draft when Escape dismisses the confirmation dialog", async () => {
   const user = userEvent.setup();
+
   render(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={jest.fn()} />);
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
   await user.type(screen.getByLabelText("직독직해"), " 수정");
@@ -189,9 +201,11 @@ it("keeps the editor draft when Escape dismisses the confirmation dialog", async
 it("applies current text with a boundary edit and keeps input after validation failure", async () => {
   const user = userEvent.setup();
   const onChange = jest.fn();
+
   render(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={onChange} />);
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
   const input = screen.getByLabelText("직독직해");
+
   // 도메인 길이 제한을 넘는 입력에도 다른 편집 후보를 반영하지 않는다.
   fireEvent.change(input, { target: { value: "x".repeat(4001) } });
   await user.selectOptions(screen.getByLabelText("다음 구간과의 경계"), "3");

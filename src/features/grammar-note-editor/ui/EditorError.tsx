@@ -1,9 +1,14 @@
 "use client";
+
 import { useEditor } from "./EditorProvider";
+
 export function EditorError() {
   const error = useEditor((s) => s.error);
+
   if (!error) return null;
+
   let message: string;
+
   if ("message" in error) message = error.message;
   else {
     switch (error.code) {
@@ -23,6 +28,7 @@ export function EditorError() {
         message = "저장하지 못했습니다. 입력을 유지했으니 다시 저장해 주세요.";
     }
   }
+
   return (
     <p role="alert" className="text-sm text-destructive">
       {message}

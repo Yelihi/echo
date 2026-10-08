@@ -3,6 +3,7 @@ import Form from "next/form";
 import type { GrammarNoteListProps } from "../models/interface";
 import { GrammarNoteList } from "./GrammarNoteList";
 import { BackNavigation } from "@/shared/components/ui/back-navigation/BackNavigation";
+
 export function GrammarLibraryView(props: GrammarNoteListProps) {
   return (
     <div className="mx-auto max-w-5xl space-y-9 px-6 py-8">
