@@ -155,3 +155,89 @@ describe("저장 노트 기반 예문 생성 및 채택", () => {
     expect(deps.repository.update).not.toHaveBeenCalled();
   });
 });
+
+describe("생성·채택 정책 회귀", () => {
+  it("요청 개수와 다른 생성 응답을 후보로 전달하지 않는다", async () => {
+    const deps = setup();
+    deps.generate.mockResolvedValue({
+      examples: createExampleCandidates()
+        .slice(0, 2)
+        .map(({ sentence, translation, targetExplanation }) => ({
+          sentence,
+          translation,
+          targetExplanation,
+        })),
+    });
+    await expect(generateExamples(deps.command, deps)).rejects.toThrow("INVALID_EXAMPLE_COUNT");
+  });
+
+  it("공백·대소문자만 다른 생성 문장을 중복으로 검사한다", async () => {
+    const deps = setup();
+    const examples = createExampleCandidates().map(
+      ({ sentence, translation, targetExplanation }) => ({
+        sentence,
+        translation,
+        targetExplanation,
+      }),
+    );
+    examples[1].sentence = ` ${examples[0].sentence.toUpperCase()} `;
+    deps.generate.mockResolvedValue({ examples });
+    await expect(generateExamples(deps.command, deps)).rejects.toThrow("DUPLICATE_EXAMPLES");
+  });
+
+  it.each(["source", "saved"])("%s 문장을 재사용한 생성 결과는 반환하지 않는다", async (kind) => {
+    const deps = setup();
+    const examples = createExampleCandidates().map(
+      ({ sentence, translation, targetExplanation }) => ({
+        sentence,
+        translation,
+        targetExplanation,
+      }),
+    );
+    if (kind === "source") examples[0].sentence = ` ${deps.note.source.sentence.toUpperCase()} `;
+    else
+      deps.repository.findById.mockResolvedValue({
+        ...deps.note,
+        examples: [createExampleCandidates()[0]],
+      });
+    deps.generate.mockResolvedValue({ examples });
+    await expect(generateExamples(deps.command, deps)).rejects.toThrow("REPEATED_EXAMPLES");
+  });
+
+  it.each(["sentence", "translation", "targetExplanation"] as const)(
+    "저장된 후보의 %s가 달라지면 동일 재시도로 인정하지 않는다",
+    async (field) => {
+      const deps = setup();
+      const candidate = createExampleCandidates()[0];
+      deps.repository.findById.mockResolvedValue({
+        ...deps.note,
+        version: 2,
+        examples: [{ ...candidate, reviewStatus: "reviewed" }],
+      });
+      await expect(
+        saveExamples(
+          {
+            noteId: deps.note.id,
+            expectedVersion: 1,
+            candidates: [{ ...candidate, [field]: "Changed content" }],
+          },
+          deps.repository,
+        ),
+      ).rejects.toMatchObject({ code: "VERSION_CONFLICT" });
+      expect(deps.repository.update).not.toHaveBeenCalled();
+    },
+  );
+
+  it("일부 ID만 이미 저장되었다면 새 후보를 중복 채택하지 않는다", async () => {
+    const deps = setup();
+    const candidates = createExampleCandidates();
+    deps.repository.findById.mockResolvedValue({
+      ...deps.note,
+      examples: [{ ...candidates[0], reviewStatus: "reviewed" }],
+    });
+    await expect(
+      saveExamples({ noteId: deps.note.id, expectedVersion: 1, candidates }, deps.repository),
+    ).rejects.toThrow("DUPLICATE_CANDIDATE");
+    expect(deps.repository.update).not.toHaveBeenCalled();
+  });
+});

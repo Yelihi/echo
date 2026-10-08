@@ -1,3 +1,4 @@
+import { getAuthenticatedUser } from "@/shared/lib/supabase/getAuthenticatedUser";
 import { notFound } from "next/navigation";
 
 // shared
@@ -9,9 +10,7 @@ import type { UserId } from "@/entities/value-object";
 export const requireUser = async (
   supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
 ) => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthenticatedUser(supabase);
 
   if (!user) {
     notFound();

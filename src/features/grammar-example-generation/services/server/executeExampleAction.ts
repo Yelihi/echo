@@ -1,5 +1,6 @@
 import "server-only";
 import { GrammarNotePersistenceError, GrammarNoteRepository } from "@/entities/grammar-note";
+import { getAuthenticatedUser } from "@/shared/lib/supabase/getAuthenticatedUser";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
@@ -19,9 +20,9 @@ export async function executeExampleAction<T>(
 
       execute: async () => {
         const supabase = await createSupabaseServerClient();
-        const { data: auth, error } = await supabase.auth.getUser();
+        const user = await getAuthenticatedUser(supabase);
 
-        if (error || !auth.user) throw new GrammarNotePersistenceError("UNAUTHORIZED");
+        if (!user) throw new GrammarNotePersistenceError("UNAUTHORIZED");
 
         return execute({
           repository: new GrammarNoteRepository(supabase),
