@@ -4,6 +4,7 @@ import { getOpenAIServerClient, getOpenAIEvaluationModel } from "@/shared/lib/op
 import { grammarExamPromptOutputSchema, grammarExamGradeOutputSchema } from "../../models/schema";
 import type { GrammarExamProvider } from "../../models/interface";
 import { EXAM_CONTEXT_PROMPT, EXAM_FEEDBACK_PROMPT } from "../../config/prompts";
+
 export function createOpenAIExamProvider(): GrammarExamProvider {
   return {
     createPrompts: async (input) => {
@@ -19,8 +20,10 @@ export function createOpenAIExamProvider(): GrammarExamProvider {
         },
         { timeout: 60000, maxRetries: 0 },
       );
+
       return response.output_parsed;
     },
+
     grade: async (input) => {
       const response = await getOpenAIServerClient().responses.parse(
         {
@@ -34,6 +37,7 @@ export function createOpenAIExamProvider(): GrammarExamProvider {
         },
         { timeout: 60000, maxRetries: 0 },
       );
+
       return response.output_parsed;
     },
   };

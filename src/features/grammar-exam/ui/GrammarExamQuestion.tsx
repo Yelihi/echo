@@ -1,6 +1,8 @@
 "use client";
+
 import { useState, useId, useEffect } from "react";
 import type { GrammarSessionQuestion } from "@/entities/grammar-session";
+
 interface Props {
   question: GrammarSessionQuestion;
   initialAnswer: string;
@@ -8,19 +10,25 @@ interface Props {
   last: boolean;
   onSave: (answer: string, advance: boolean) => Promise<void>;
 }
+
 export function GrammarExamQuestion({ question, initialAnswer, busy, last, onSave }: Props) {
   const [answer, setAnswer] = useState(initialAnswer);
   const inputId = useId();
   const dirty = answer !== initialAnswer;
+
   useEffect(() => {
     if (!dirty) return;
+
     const protectDraft = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
+
     window.addEventListener("beforeunload", protectDraft);
+
     return () => window.removeEventListener("beforeunload", protectDraft);
   }, [dirty]);
+
   return (
     <form
       className="space-y-7"

@@ -1,7 +1,9 @@
 "use client";
+
 import type { GrammarExamResultProps } from "../models/interface";
 import { useInitialExamFeedback } from "../services/hooks/useInitialExamFeedback";
 import { GrammarExamFeedbackItem } from "./GrammarExamFeedbackItem";
+
 export function GrammarExamResult({
   session,
   initialFeedback = [],
@@ -14,8 +16,10 @@ export function GrammarExamResult({
     onRequestFeedback,
     autoRequest,
   });
+
   if (session.mode !== "exam" || session.status !== "completed")
     return <p role="status">시험을 완료한 뒤 피드백을 확인할 수 있습니다.</p>;
+
   return (
     <section aria-label="어법 시험 결과" className="mx-auto max-w-3xl space-y-6">
       <header className="space-y-2">

@@ -1,9 +1,11 @@
 "use client";
+
 import { grammarExamErrorMessage } from "./errorMessage";
 import { useRef, useState } from "react";
 import type { GrammarSessionQuestion } from "@/entities/grammar-session";
 import type { GrammarExamFeedback } from "../models/schema";
 import type { GrammarExamFeedbackResult } from "../models/interface";
+
 interface Props {
   question: GrammarSessionQuestion;
   answer: string;
@@ -12,11 +14,13 @@ interface Props {
   autoPending?: boolean;
   onRequest: () => Promise<GrammarExamFeedbackResult>;
 }
+
 const labels = {
   correct: "잘 작성했어요",
   "partially-correct": "일부 보완이 필요해요",
   "needs-work": "다시 살펴보세요",
 };
+
 export function GrammarExamFeedbackItem({
   question,
   answer,
@@ -33,13 +37,17 @@ export function GrammarExamFeedbackItem({
   const error =
     localError || (autoResult && !autoResult.ok ? grammarExamErrorMessage(autoResult.code) : "");
   const pending = useRef(false);
+
   async function request() {
     if (pending.current) return;
+
     pending.current = true;
     setBusy(true);
     setError("");
+
     try {
       const result = await onRequest();
+
       if (result.ok) setFeedback(result.data);
       else setError(grammarExamErrorMessage(result.code));
     } catch {
@@ -49,6 +57,7 @@ export function GrammarExamFeedbackItem({
       setBusy(false);
     }
   }
+
   return (
     <article className="space-y-4 rounded-xl border bg-background p-5">
       <h2 className="text-lg font-medium">{question.context || question.translation}</h2>

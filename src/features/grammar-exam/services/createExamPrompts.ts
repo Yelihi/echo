@@ -2,6 +2,7 @@ import type { GrammarSession, GrammarSessionQuestion } from "@/entities/grammar-
 import type { GrammarExamProvider } from "../models/interface";
 import { grammarExamPromptOutputSchema } from "../models/schema";
 import { GrammarExamError } from "../models/errors";
+
 export async function createExamPrompts(
   session: GrammarSession,
   provider: GrammarExamProvider,
@@ -11,7 +12,9 @@ export async function createExamPrompts(
     existingTranslations: session.questions.map((question) => question.translation),
   });
   const parsed = grammarExamPromptOutputSchema.safeParse(response);
+
   if (!parsed.success) throw new GrammarExamError("FAILED");
+
   return parsed.data.questions.map((question, index) => ({
     id: `novel:${index + 1}`,
     kind: "novel",

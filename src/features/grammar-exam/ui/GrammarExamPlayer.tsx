@@ -1,10 +1,12 @@
 "use client";
+
 import { grammarExamErrorMessage } from "./errorMessage";
 import { useState } from "react";
 import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
 import type { GrammarExamPlayerProps } from "../models/interface";
 import { useGrammarExam } from "../services/hooks/useGrammarExam";
 import { GrammarExamQuestion } from "./GrammarExamQuestion";
+
 export function GrammarExamPlayer(props: GrammarExamPlayerProps) {
   return <ExamSession key={props.initialSession.id} {...props} />;
 }
@@ -12,12 +14,14 @@ export function GrammarExamPlayer(props: GrammarExamPlayerProps) {
 function ExamSession(props: GrammarExamPlayerProps) {
   const [exitOpen, setExitOpen] = useState(false);
   const { session, question, busy, message, save } = useGrammarExam(props);
+
   if (
     session.mode !== "exam" ||
     session.status !== "active" ||
     !session.questions.some((q) => q.kind === "novel")
   )
     return <p role="status">시험 문제를 준비하거나 완료 결과를 확인해 주세요.</p>;
+
   return (
     <section
       aria-label="어법 시험"

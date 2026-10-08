@@ -7,13 +7,17 @@ import type {
   CompleteGrammarSessionInput,
 } from "@/entities/grammar-session";
 import type { GrammarExamFeedback } from "./schema";
+
 export type GrammarExamErrorCode = GrammarExamError["code"] | GrammarSessionError["code"];
+
 export type GrammarExamSessionResult =
   | { ok: true; data: GrammarSession }
   | { ok: false; code: GrammarExamErrorCode };
+
 export type GrammarExamFeedbackResult =
   | { ok: true; data: GrammarExamFeedback }
   | { ok: false; code: GrammarExamErrorCode };
+
 export interface GrammarExamProvider {
   createPrompts(input: {
     targetGrammar: string;
@@ -25,6 +29,7 @@ export interface GrammarExamProvider {
     answer: string;
   }): Promise<unknown>;
 }
+
 export interface GrammarExamPlayerProps {
   initialSession: GrammarSession;
   onExit: () => void;
@@ -32,6 +37,7 @@ export interface GrammarExamPlayerProps {
   onComplete: (input: CompleteGrammarSessionInput) => Promise<GrammarExamSessionResult>;
   onCompleted: (session: GrammarSession) => void;
 }
+
 export interface GrammarExamResultProps {
   session: GrammarSession;
   initialFeedback?: GrammarExamFeedback[];

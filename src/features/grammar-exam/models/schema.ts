@@ -1,5 +1,7 @@
 import { z } from "zod";
+
 const text = z.string().trim().min(1).max(4000);
+
 export const grammarExamPromptOutputSchema = z.object({
   questions: z
     .array(
@@ -15,12 +17,14 @@ export const grammarExamPromptOutputSchema = z.object({
     .min(1)
     .max(3),
 });
+
 export const grammarExamGradeOutputSchema = z.object({
   verdict: z.enum(["correct", "partially-correct", "needs-work"]),
   grammarFeedback: text,
   meaningFeedback: text,
   suggestedSentence: text,
 });
+
 export const grammarExamFeedbackSchema = grammarExamGradeOutputSchema.extend({
   questionId: z.string(),
   answer: z
@@ -29,4 +33,5 @@ export const grammarExamFeedbackSchema = grammarExamGradeOutputSchema.extend({
     .max(4000)
     .refine((value) => value.trim().length > 0),
 });
+
 export type GrammarExamFeedback = z.infer<typeof grammarExamFeedbackSchema>;

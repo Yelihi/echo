@@ -1,5 +1,6 @@
 import { grammarSessionErrorMessage } from "@/entities/grammar-session";
 import type { GrammarExamErrorCode } from "../models/interface";
+
 export function grammarExamErrorMessage(code: GrammarExamErrorCode): string {
   switch (code) {
     case "INVALID_INPUT":

@@ -1,5 +1,6 @@
 import type { GrammarSession } from "@/entities/grammar-session";
 import type { GrammarExamFeedback } from "@/features/grammar-exam/models/schema";
+
 export function createGrammarExam(overrides: Partial<GrammarSession> = {}): GrammarSession {
   return {
     id: "11111111-1111-4111-8111-111111111111",
@@ -38,6 +39,7 @@ export function createGrammarExam(overrides: Partial<GrammarSession> = {}): Gram
     ...overrides,
   };
 }
+
 export function createGrammarExamFeedback(
   overrides: Partial<GrammarExamFeedback> = {},
 ): GrammarExamFeedback {

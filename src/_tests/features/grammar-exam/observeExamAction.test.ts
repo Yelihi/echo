@@ -2,8 +2,11 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { GrammarSessionError } from "@/entities/grammar-session";
 import { GrammarExamError } from "@/features/grammar-exam/models/errors";
+
 jest.mock("server-only", () => ({}));
+
 jest.mock("@/shared/lib/logging/pino", () => ({ recordOperationEvent: jest.fn() }));
+
 describe("시험 액션 오류 계약", () => {
   it.each([
     [new GrammarSessionError("CONFLICT"), "CONFLICT"],
@@ -15,6 +18,7 @@ describe("시험 액션 오류 계약", () => {
     const result = await observeExamAction("test.exam", async () => {
       throw error;
     });
+
     expect(result).toEqual({ ok: false, code });
   });
 });

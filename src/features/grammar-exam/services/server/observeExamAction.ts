@@ -5,6 +5,7 @@ import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import { GrammarSessionError } from "@/entities/grammar-session";
 import { GrammarExamError } from "../../models/errors";
 import type { GrammarExamErrorCode } from "../../models/interface";
+
 export async function observeExamAction<T>(
   operation: string,
   execute: () => Promise<T>,
@@ -26,6 +27,7 @@ export async function observeExamAction<T>(
         : error instanceof GrammarSessionError || error instanceof GrammarExamError
           ? error.code
           : "FAILED";
+
     return { ok: false, code };
   }
 }
