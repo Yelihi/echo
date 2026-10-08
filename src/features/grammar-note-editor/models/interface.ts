@@ -13,14 +13,17 @@ export type EditorAnalysisResult =
   | { status: "analyzed"; data: { metadata: GrammarMetadata; analysis: SentenceAnalysis } }
   | { status: "needs-input"; precheck: Exclude<PrecheckResult, { status: "passed" }> }
   | { status: "error"; message: string };
+
 export type SaveNoteCommand = {
   requestId: string;
   content: GrammarNoteContent;
   existing?: { id: string; expectedVersion: number };
 };
+
 export type SaveNoteResult =
   | { ok: true; note: GrammarNote }
   | { ok: false; code: GrammarNotePersistenceErrorCode };
+
 export interface GrammarNoteEditorProps {
   initialNote?: GrammarNote;
   analyze: (source: GrammarSource) => Promise<EditorAnalysisResult>;
@@ -33,6 +36,7 @@ export interface GrammarNoteEditorProps {
   onSaved: (note: GrammarNote) => void;
   onExit: () => void;
 }
+
 export type EditorError =
   | { code: GrammarNotePersistenceErrorCode | "ANALYSIS_FAILED" | "INVALID_ANALYSIS" }
   | { message: string };

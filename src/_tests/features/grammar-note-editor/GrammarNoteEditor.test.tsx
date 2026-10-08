@@ -6,10 +6,13 @@ import { GrammarNoteEditor, type GrammarNoteEditorProps } from "@/features/gramm
 import type { GrammarNotePersistenceErrorCode } from "@/entities/grammar-note";
 import { GrammarAnalysisEditor } from "@/features/grammar-analysis-edit";
 import { createEditorNote } from "./fixtures";
+
 Object.defineProperty(globalThis.crypto, "randomUUID", { value: randomUUID, configurable: true });
+
 function setup() {
   const note = createEditorNote();
   const save = jest.fn<GrammarNoteEditorProps["save"]>().mockResolvedValue({ ok: true, note });
+
   render(
     <GrammarNoteEditor
       initialNote={note}
@@ -23,11 +26,14 @@ function setup() {
       onExit={() => {}}
     />,
   );
+
   return { user: userEvent.setup(), save, note };
 }
+
 describe("분석 초안과 노트 저장 연결", () => {
   it("미적용 풀이가 있으면 저장을 막고 적용 이후 검토를 다시 받는다", async () => {
     const { user, save } = setup();
+
     await user.click(screen.getByRole("button", { name: "She" }));
     await user.click(screen.getByRole("button", { name: "분석 수정" }));
     await user.clear(screen.getByLabelText("직독직해"));
@@ -51,8 +57,10 @@ describe("분석 초안과 노트 저장 연결", () => {
       }),
     );
   });
+
   it("미적용 풀이에서 입력으로 돌아가기 전 확인하고 원문은 보존한다", async () => {
     const { user, note } = setup();
+
     await user.click(screen.getByRole("button", { name: "She" }));
     await user.click(screen.getByRole("button", { name: "분석 수정" }));
     await user.type(screen.getByLabelText("직독직해"), " 수정");
@@ -72,6 +80,7 @@ it.each<[GrammarNotePersistenceErrorCode, string]>([
   ["PERSISTENCE_FAILED", "저장하지 못했습니다. 입력을 유지했으니 다시 저장해 주세요."],
 ])("%s 저장 오류의 안내는 UI에서 선택하고 재시도할 내용을 유지한다", async (code, message) => {
   const { user, save } = setup();
+
   save.mockResolvedValue({ ok: false, code });
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
   await user.type(screen.getByLabelText("직독직해"), " 수정");
@@ -97,6 +106,7 @@ it("부모가 다시 렌더링되어도 입력을 유지하고 새 분석 콜백
   };
   const { rerender } = render(<GrammarNoteEditor {...props} analyze={original} />);
   const user = userEvent.setup();
+
   await user.type(screen.getByLabelText(/영어 문장/), note.source.sentence);
   await user.type(screen.getByLabelText(/핵심 어법 설명/), note.source.learningNote);
   rerender(<GrammarNoteEditor {...props} analyze={current} />);

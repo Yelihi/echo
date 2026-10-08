@@ -1,4 +1,5 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import type { GrammarNote } from "@/entities/grammar-note";
 import { GrammarAnalysisEditor } from "@/features/grammar-analysis-edit";
@@ -16,6 +17,7 @@ export function GrammarEditorClient({
   const router = useRouter();
   const returnTo =
     backHref === "/grammar" || backHref.startsWith("/grammar?") ? backHref : "/grammar";
+
   return (
     <GrammarNoteEditor
       key={initialNote ? `${initialNote.id}:${initialNote.version}` : "new"}
