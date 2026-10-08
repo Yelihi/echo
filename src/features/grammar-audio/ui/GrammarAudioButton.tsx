@@ -1,8 +1,9 @@
 "use client";
 import type { GrammarAudioButtonProps } from "../models/interface";
+import { grammarAudioErrorMessages } from "./errorMessage";
 import { useGrammarAudio } from "../services/useGrammarAudio";
 export function GrammarAudioButton(props: GrammarAudioButtonProps) {
-  const { status, message, play } = useGrammarAudio(props);
+  const { status, error, play } = useGrammarAudio(props);
   return (
     <div className="space-y-2">
       <button
@@ -22,9 +23,9 @@ export function GrammarAudioButton(props: GrammarAudioButtonProps) {
                 : "문장 듣기"}
       </button>
       <span className="ml-3 text-xs text-practice-secondary">AI 생성 음성</span>
-      {message && (
+      {error && (
         <p role="alert" className="text-sm text-practice-accent">
-          {message}
+          {grammarAudioErrorMessages[error]}
         </p>
       )}
     </div>

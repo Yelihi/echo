@@ -4,11 +4,12 @@ import type {
   GrammarAudioButtonProps,
   GrammarAudioResult,
   GrammarAudioStatus,
+  GrammarAudioErrorCode,
 } from "../models/interface";
 import { claimGrammarPlayback } from "./playbackCoordinator";
 export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
   const [status, setStatus] = useState<GrammarAudioStatus>("idle");
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState<GrammarAudioErrorCode | null>(null);
   const generation = useRef(0);
   const audio = useRef<HTMLAudioElement | null>(null);
   const speech = useRef<Extract<GrammarAudioResult, { ok: true }> | null>(null);
@@ -23,6 +24,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
   }
   useEffect(() => {
     speech.current = null;
+    setError(null);
     setStatus("idle");
     const lifecycleGeneration = generation;
     return () => {
@@ -41,7 +43,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
     release.current?.();
     release.current = null;
     const currentGeneration = ++generation.current;
-    setMessage("");
+    setError(null);
     release.current = claimGrammarPlayback(stop);
     let data = speech.current;
     if (!data) {
@@ -50,7 +52,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
         const result = await generate(input);
         if (currentGeneration !== generation.current) return;
         if (!result.ok) {
-          setMessage(result.message);
+          setError(result.code);
           setStatus("generation-error");
           return;
         }
@@ -58,7 +60,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
         speech.current = result;
       } catch {
         if (currentGeneration !== generation.current) return;
-        setMessage("음성 생성 요청에 실패했습니다.");
+        setError("GENERATION_FAILED");
         setStatus("generation-error");
         return;
       }
@@ -71,7 +73,7 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
       };
       player.onerror = () => {
         if (currentGeneration === generation.current) {
-          setMessage("음성을 재생하지 못했습니다.");
+          setError("PLAYBACK_FAILED");
           setStatus("playback-error");
         }
       };
@@ -83,9 +85,9 @@ export function useGrammarAudio({ input, generate }: GrammarAudioButtonProps) {
       setStatus("playing");
     } catch {
       if (currentGeneration !== generation.current) return;
-      setMessage("음성을 재생하지 못했습니다. 재생 버튼을 다시 눌러주세요.");
+      setError("PLAYBACK_FAILED");
       setStatus("playback-error");
     }
   }
-  return { status, message, play };
+  return { status, error, play };
 }

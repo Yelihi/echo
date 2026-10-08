@@ -12,7 +12,10 @@ describe("grammar audio content cache", () => {
   });
   it("deduplicates concurrent generation and does not cache failure", async () => {
     const { cachedGrammarAudio } = await import("@/features/grammar-audio/services/audioCache");
-    const generate = jest.fn(async () => ({ ok: false as const, message: "failed" }));
+    const generate = jest.fn(async () => ({
+      ok: false as const,
+      code: "GENERATION_FAILED" as const,
+    }));
     await Promise.all([
       cachedGrammarAudio("unique", generate),
       cachedGrammarAudio("unique", generate),

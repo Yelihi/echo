@@ -6,7 +6,7 @@ const meta = {
   component: GrammarAudioButton,
   args: {
     input: { noteId: "note", sentenceId: "source", noteVersion: 1 },
-    generate: fn(async () => ({ ok: false as const, message: "음성 생성에 실패했습니다." })),
+    generate: fn(async () => ({ ok: false as const, code: "GENERATION_FAILED" as const })),
   },
 } satisfies Meta<typeof GrammarAudioButton>;
 export default meta;

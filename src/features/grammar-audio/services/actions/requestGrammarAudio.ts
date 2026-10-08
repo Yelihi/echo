@@ -24,11 +24,10 @@ export async function requestGrammarAudio(input: unknown): Promise<GrammarAudioR
       recordEvent: recordOperationEvent,
       execute: async () => {
         const parsed = schema.safeParse(input);
-        if (!parsed.success) return { ok: false as const, message: "음성 요청을 확인해주세요." };
+        if (!parsed.success) return { ok: false as const, code: "INVALID_INPUT" as const };
         const supabase = await createSupabaseServerClient();
         const { data, error } = await supabase.auth.getUser();
-        if (error || !data.user)
-          return { ok: false as const, message: "로그인 후 다시 시도해주세요." };
+        if (error || !data.user) return { ok: false as const, code: "UNAUTHORIZED" as const };
         const note = await new GrammarNoteRepository(supabase).findById(parsed.data.noteId);
         const text = resolveGrammarAudioText(note, parsed.data);
         const model = getOpenAITTSModel();
@@ -40,10 +39,13 @@ export async function requestGrammarAudio(input: unknown): Promise<GrammarAudioR
           if (quotaError || permission !== "allowed")
             return {
               ok: false,
-              message:
-                permission === "not_invited"
-                  ? "AI 음성 이용 권한이 필요합니다."
-                  : "음성 요청 한도에 도달했습니다. 잠시 후 다시 시도해주세요.",
+              code: quotaError
+                ? "GENERATION_FAILED"
+                : permission === "not_invited"
+                  ? "NOT_INVITED"
+                  : permission === "rate_limited"
+                    ? "RATE_LIMITED"
+                    : "GENERATION_FAILED",
             };
           const speech = await new OpenAITTSProvider({ model }).speak({
             text,
@@ -62,7 +64,7 @@ export async function requestGrammarAudio(input: unknown): Promise<GrammarAudioR
   } catch {
     return {
       ok: false,
-      message: "음성을 생성하지 못했습니다. 노트가 변경되었다면 새로고침 후 다시 생성해주세요.",
+      code: "GENERATION_FAILED",
     };
   }
 }

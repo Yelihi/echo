@@ -69,11 +69,12 @@ describe("grammar audio lifecycle", () => {
   it("retries generation failure rather than treating it as playback failure", async () => {
     const generate = jest
       .fn<() => Promise<GrammarAudioResult>>()
-      .mockResolvedValueOnce({ ok: false, message: "failed" })
+      .mockResolvedValueOnce({ ok: false, code: "GENERATION_FAILED" })
       .mockResolvedValueOnce(speech);
     const { result } = renderHook(() => useGrammarAudio({ input, generate }));
     await act(() => result.current.play());
     expect(result.current.status).toBe("generation-error");
+    expect(result.current.error).toBe("GENERATION_FAILED");
     await act(() => result.current.play());
     expect(result.current.status).toBe("playing");
     expect(generate).toHaveBeenCalledTimes(2);

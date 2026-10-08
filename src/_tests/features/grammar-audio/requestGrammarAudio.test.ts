@@ -62,7 +62,7 @@ describe("authenticated saved sentence audio action", () => {
     deps.getUser.mockResolvedValueOnce({ data: { user: null }, error: null } as unknown as Awaited<
       ReturnType<typeof deps.getUser>
     >);
-    expect((await deps.requestGrammarAudio(input)).ok).toBe(false);
+    expect(await deps.requestGrammarAudio(input)).toEqual({ ok: false, code: "UNAUTHORIZED" });
     expect(deps.findById).not.toHaveBeenCalled();
     expect(deps.rpc).not.toHaveBeenCalled();
     expect(deps.OpenAITTSProvider).not.toHaveBeenCalled();
@@ -80,6 +80,16 @@ describe("authenticated saved sentence audio action", () => {
     expect((await deps.requestGrammarAudio({ ...input, text: "untrusted" })).ok).toBe(false);
     deps.rpc.mockResolvedValueOnce({ data: "rate_limited", error: null });
     expect((await deps.requestGrammarAudio(input)).ok).toBe(false);
+    expect(deps.OpenAITTSProvider).not.toHaveBeenCalled();
+  });
+  it.each([
+    ["not_invited", "NOT_INVITED"],
+    ["rate_limited", "RATE_LIMITED"],
+    ["unexpected", "GENERATION_FAILED"],
+  ])("returns %s as a code without spending provider cost", async (permission, code) => {
+    const deps = await dependencies();
+    deps.rpc.mockResolvedValueOnce({ data: permission, error: null });
+    expect(await deps.requestGrammarAudio(input)).toEqual({ ok: false, code });
     expect(deps.OpenAITTSProvider).not.toHaveBeenCalled();
   });
   it("reuses authenticated content cache and sends only stored text to TTS", async () => {
