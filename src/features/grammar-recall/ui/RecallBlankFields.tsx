@@ -1,3 +1,4 @@
+import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import type { RecallSegment } from "../models/interface";
 
 export function RecallBlankFields({
@@ -20,7 +21,7 @@ export function RecallBlankFields({
             <input
               autoComplete="off"
               spellCheck={false}
-              maxLength={1000}
+              maxLength={GRAMMAR_ANSWER_MAX_LENGTH}
               disabled={disabled}
               value={values[segment.id] ?? ""}
               onChange={(event) => onChange(segment.id, event.target.value)}

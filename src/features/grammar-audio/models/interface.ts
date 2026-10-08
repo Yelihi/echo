@@ -1,4 +1,4 @@
-export interface GrammarAudioInput {
+export interface GrammarNoteAudioInput {
   readonly noteId: string;
   readonly sentenceId: string;
   readonly noteVersion: number;
@@ -11,6 +11,13 @@ export type GrammarAudioErrorCode =
   | "RATE_LIMITED"
   | "GENERATION_FAILED"
   | "PLAYBACK_FAILED";
+
+export interface GrammarSessionAudioInput {
+  readonly sessionId: string;
+  readonly questionId: string;
+}
+
+export type GrammarAudioInput = GrammarNoteAudioInput | GrammarSessionAudioInput;
 
 export type GrammarAudioResult =
   | { ok: true; audioBase64: string; mimeType: "audio/mpeg"; cacheKey: string }

@@ -1,5 +1,6 @@
 "use client";
 
+import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import { useState } from "react";
 import type { RecallDraft, RecallQuestionProps } from "../models/interface";
 import { persistRecallDraft, readRecallDraft, createRecallSegments } from "../services/recallDraft";
@@ -51,7 +52,7 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
           <textarea
             autoComplete="off"
             spellCheck={false}
-            maxLength={3000}
+            maxLength={GRAMMAR_ANSWER_MAX_LENGTH}
             disabled={busy}
             value={draft.whole}
             onChange={(e) => update({ ...draft, whole: e.target.value })}
@@ -109,6 +110,11 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
       {error && (
         <p role="alert" className="text-sm text-practice-accent">
           {error}
+        </p>
+      )}
+      {(!revealed || !draft.assessment) && (
+        <p className="text-xs leading-6 text-practice-muted">
+          문장을 작성한 뒤 정답을 확인하고, 기억한 정도를 선택하면 다음으로 진행할 수 있어요.
         </p>
       )}
       <div className="flex flex-wrap justify-between gap-3 border-t border-practice-line pt-5">

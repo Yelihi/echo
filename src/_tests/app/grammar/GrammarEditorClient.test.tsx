@@ -58,6 +58,22 @@ describe("editor route navigation", () => {
     expect(refresh).not.toHaveBeenCalled();
   });
 
+  it("returns from editing to the note while preserving the list context", async () => {
+    const { GrammarEditorClient } =
+      await import("@/app/(protected)/grammar/_components/GrammarEditorClient");
+    render(
+      <GrammarEditorClient
+        initialNote={createEditorNote()}
+        backHref="/grammar?q=contrast&page=2"
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "나가기" }));
+    expect(push).toHaveBeenCalledWith(
+      `/grammar/${createEditorNote().id}?returnTo=%2Fgrammar%3Fq%3Dcontrast%26page%3D2`,
+    );
+    expect(refresh).not.toHaveBeenCalled();
+  });
+
   it.each([undefined, "https://example.com", "/grammar/other"])(
     "falls back to the list for an absent or invalid return path: %s",
     async (backHref) => {
