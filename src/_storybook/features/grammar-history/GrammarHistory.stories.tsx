@@ -48,5 +48,5 @@ export const Empty: Story = {
   },
 };
 export const Failure: Story = {
-  args: { load: fn(async () => ({ ok: false as const, message: "연습 기록 조회 실패" })) },
+  args: { load: fn(async () => ({ ok: false as const, code: "LOAD_FAILED" as const })) },
 };

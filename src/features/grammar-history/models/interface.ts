@@ -1,7 +1,7 @@
 import type { GrammarSessionHistory } from "@/entities/grammar-session";
 export type GrammarHistoryResult =
   | { ok: true; data: GrammarSessionHistory }
-  | { ok: false; message: string };
+  | { ok: false; code: "LOAD_FAILED" };
 export interface GrammarHistoryProps {
   readonly noteId: string;
   readonly initialData?: GrammarSessionHistory;

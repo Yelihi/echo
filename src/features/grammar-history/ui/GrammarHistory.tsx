@@ -15,6 +15,10 @@ import { useGrammarHistory } from "../services/useGrammarHistory";
 import { formatGrammarPracticeDate } from "../services/formatPracticeDate";
 import { GrammarHistoryRows } from "./GrammarHistoryRows";
 export function GrammarHistory(props: GrammarHistoryProps) {
+  return <HistoryForNote key={props.noteId} {...props} />;
+}
+
+function HistoryForNote(props: GrammarHistoryProps) {
   const [open, setOpen] = useState(false);
   const { data, busy, error, refresh } = useGrammarHistory(props);
   const total = data?.total ?? 0;
@@ -61,7 +65,7 @@ export function GrammarHistory(props: GrammarHistoryProps) {
             ) : error ? (
               <div className="space-y-4 py-6">
                 <p role="alert" className="text-sm text-practice-accent">
-                  {error}
+                  연습 기록을 불러오지 못했습니다. 다시 시도해주세요.
                 </p>
                 <button
                   type="button"

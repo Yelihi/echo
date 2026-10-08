@@ -26,6 +26,6 @@ export async function getGrammarHistory(noteId: string, page = 1): Promise<Gramm
       },
     });
   } catch {
-    return { ok: false, message: "연습 기록을 불러오지 못했습니다. 다시 시도해주세요." };
+    return { ok: false, code: "LOAD_FAILED" };
   }
 }
