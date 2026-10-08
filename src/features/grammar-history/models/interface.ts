@@ -4,6 +4,7 @@ export type GrammarHistoryResult =
   | { ok: false; code: "LOAD_FAILED" };
 export interface GrammarHistoryProps {
   readonly noteId: string;
+  readonly resultHref?: (sessionId: string) => string;
   readonly initialData?: GrammarSessionHistory;
   readonly load: (noteId: string, page: number) => Promise<GrammarHistoryResult>;
 }

@@ -31,7 +31,7 @@ function EditorExit({ onExit }: { onExit: () => void }) {
         disabled={saving}
         onClick={() => (dirty ? setConfirm(true) : onExit())}
       >
-        ← 목록으로
+        ← 뒤로가기
       </Button>
       <ConfirmDialog
         open={confirm}

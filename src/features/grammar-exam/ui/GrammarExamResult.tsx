@@ -20,7 +20,7 @@ export function GrammarExamResult({
     <section aria-label="어법 시험 결과" className="mx-auto max-w-3xl space-y-6">
       <header className="space-y-2">
         <h1 className="text-3xl font-medium">시험을 마쳤어요</h1>
-        <p className="text-muted-foreground">{session.title} · 답안별 피드백을 확인해 보세요.</p>
+        <p className="text-practice-muted">{session.title} · 답안별 피드백을 확인해 보세요.</p>
       </header>
       {session.questions.map((question) => (
         <GrammarExamFeedbackItem

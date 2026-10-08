@@ -23,3 +23,5 @@ export type {
 export { GrammarSessionRepository } from "./infrastructure/GrammarSessionRepository";
 export { GrammarSessionError } from "./models/errors";
 export { grammarSessionErrorMessage } from "./ui/errorMessage";
+
+export { GRAMMAR_ANSWER_MAX_LENGTH, GRAMMAR_PARTIAL_DRAFT_MAX_LENGTH } from "./models/limits";
