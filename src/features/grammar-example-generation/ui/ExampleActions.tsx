@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/shared/components/atomics/button/Button";
+import { exampleErrorMessage } from "./errorMessage";
 import { useExamples } from "./ExampleProvider";
 export function ExampleActions() {
   const pending = useExamples((s) => s.pending);
@@ -26,7 +27,7 @@ export function ExampleActions() {
       </div>
       {error && (
         <p role="alert" className="text-sm text-destructive">
-          {error}
+          {exampleErrorMessage(error)}
         </p>
       )}
       {pending && (

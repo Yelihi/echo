@@ -9,14 +9,14 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
     candidates: [],
     selected: [],
     pending: null,
-    error: "",
+    error: null,
     dirty: false,
     cancel: () => {
       generation++;
     },
     discard: () => {
       generation++;
-      set({ candidates: [], selected: [], pending: null, error: "", dirty: false });
+      set({ candidates: [], selected: [], pending: null, error: null, dirty: false });
     },
     change: (id, field, value) => {
       if (get().pending === "save") return;
@@ -44,7 +44,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       if (state.pending) return;
       if (id && !state.candidates.some((candidate) => candidate.id === id)) return;
       const currentGeneration = ++generation;
-      set({ pending: id ?? "all", error: "" });
+      set({ pending: id ?? "all", error: null });
       try {
         const result = await dependencies.generate({
           noteId: state.note.id,
@@ -53,7 +53,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         });
         if (currentGeneration !== generation) return;
         if (!result.ok) {
-          set({ pending: null, error: result.message });
+          set({ pending: null, error: result.code });
           return;
         }
         const candidates = result.data.map((candidate) => grammarExampleSchema.parse(candidate));
@@ -83,7 +83,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         if (currentGeneration === generation)
           set({
             pending: null,
-            error: "예문 생성에 실패했습니다. 기존 후보를 유지했으니 다시 생성해 주세요.",
+            error: "GENERATION_FAILED",
           });
       }
     },
@@ -97,10 +97,10 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         !candidates.length ||
         candidates.some((candidate) => !grammarExampleSchema.safeParse(candidate).success)
       ) {
-        set({ error: "저장할 예문을 선택하고 문장·뜻·어법 설명을 모두 입력해 주세요." });
+        set({ error: "INVALID_SELECTION" });
         return;
       }
-      set({ pending: "save", error: "" });
+      set({ pending: "save", error: null });
       try {
         const result = await dependencies.save({
           noteId: state.note.id,
@@ -108,7 +108,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           candidates,
         });
         if (!result.ok) {
-          set({ pending: null, error: result.message });
+          set({ pending: null, error: result.code });
           return;
         }
         set((current) => ({
@@ -124,7 +124,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       } catch {
         set({
           pending: null,
-          error: "예문을 저장하지 못했습니다. 선택과 수정 내용을 유지했습니다. 다시 저장해 주세요.",
+          error: "SAVE_FAILED",
         });
       }
     },

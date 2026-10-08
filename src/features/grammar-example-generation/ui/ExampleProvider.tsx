@@ -1,20 +1,33 @@
 "use client";
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useStore, type StoreApi } from "zustand";
 import type { ExampleState, GrammarExampleManagerProps } from "../models/interface";
 import { createExampleStore } from "../services/createExampleStore";
 const Context = createContext<StoreApi<ExampleState> | null>(null);
 export function ExampleProvider({
   children,
-  ...props
+  note,
+  generate,
+  save,
+  onUpdated,
+  onBack,
 }: GrammarExampleManagerProps & { children: ReactNode }) {
-  const latest = useRef(props);
-  useEffect(() => {
-    latest.current = props;
-  }, [props]);
+  const latest = useRef({ generate, save, onUpdated });
+  useLayoutEffect(() => {
+    latest.current = { generate, save, onUpdated };
+  }, [generate, save, onUpdated]);
   const [store] = useState(() =>
     createExampleStore({
-      ...props,
+      note,
+      onBack,
       generate: (command) => latest.current.generate(command),
       save: (command) => latest.current.save(command),
       onUpdated: (note) => latest.current.onUpdated(note),

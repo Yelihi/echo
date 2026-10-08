@@ -55,7 +55,7 @@ export const Retry: Story = {
   play: async ({ canvasElement, args }) => {
     args.generate.mockResolvedValueOnce({
       ok: false,
-      message: "생성에 실패했습니다. 다시 생성해 주세요.",
+      code: "FAILED",
     });
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));

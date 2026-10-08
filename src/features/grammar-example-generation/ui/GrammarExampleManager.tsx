@@ -39,7 +39,7 @@ function ExampleBack({ onBack }: { onBack?: () => void }) {
 /** 노트 ID로 생명주기를 구분한다. 선택 저장 후 남은 후보 보존을 위해 버전 변경으로 재마운트하지 않는다. */
 export function GrammarExampleManager({ onBack, ...props }: GrammarExampleManagerProps) {
   return (
-    <ExampleProvider {...props}>
+    <ExampleProvider key={props.note.id} {...props}>
       <section className="space-y-6">
         <ExampleBack onBack={onBack} />
         <header className="space-y-2">

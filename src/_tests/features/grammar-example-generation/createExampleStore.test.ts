@@ -24,11 +24,11 @@ describe("예문 초안 이벤트", () => {
     await store.getState().generate();
     store.getState().change("candidate-0", "sentence", "Edited sentence");
     store.getState().select("candidate-0", true);
-    generate.mockResolvedValue({ ok: false, message: "실패" });
+    generate.mockResolvedValue({ ok: false, code: "FAILED" });
     await store.getState().generate("candidate-1");
     expect(store.getState().candidates[0].sentence).toBe("Edited sentence");
     expect(store.getState().selected).toEqual(["candidate-0"]);
-    expect(store.getState().error).toBe("실패");
+    expect(store.getState().error).toBe("FAILED");
   });
   it("부분 재생성은 다른 수정본을 건드리지 않는다", async () => {
     const { store, generate } = setup();

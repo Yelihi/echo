@@ -64,10 +64,10 @@ describe("예문 서버 액션 권한", () => {
     expect(requestExampleOutput).not.toHaveBeenCalled();
   });
   it.each([
-    ["not_invited", "AI 기능을 사용할 권한이 없습니다."],
-    ["rate_limited", "AI 요청 한도에 도달했습니다. 잠시 후 다시 시도해 주세요."],
-    ["unexpected", "예문 작업을 완료하지 못했습니다. 기존 내용은 유지됩니다. 다시 시도해 주세요."],
-  ])("권한 %s이면 AI를 실행하지 않는다", async (permission, message) => {
+    ["not_invited", "NOT_INVITED"],
+    ["rate_limited", "RATE_LIMITED"],
+    ["unexpected", "FAILED"],
+  ])("권한 %s이면 AI를 실행하지 않는다", async (permission, code) => {
     jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(createEditorNote());
     rpc.mockResolvedValue({ data: permission, error: null });
     const result = await requestGrammarExamples({
@@ -75,7 +75,7 @@ describe("예문 서버 액션 권한", () => {
       expectedVersion: 1,
       count: 3,
     });
-    expect(result).toEqual({ ok: false, message });
+    expect(result).toEqual({ ok: false, code });
     expect(requestExampleOutput).not.toHaveBeenCalled();
   });
   it("한도 조회 실패를 허용으로 처리하지 않는다", async () => {

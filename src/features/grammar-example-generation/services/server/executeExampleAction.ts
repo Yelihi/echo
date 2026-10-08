@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import type { ExampleDependencies, ExampleResult } from "../../models/interface";
-import { grammarExampleErrorMessage } from "../../models/errors";
+import { grammarExampleErrorCode } from "../../models/errors";
 import { requestExampleOutput } from "./requestExampleOutput";
 export async function executeExampleAction<T>(
   operation: string,
@@ -38,6 +38,6 @@ export async function executeExampleAction<T>(
     });
     return { ok: true, data };
   } catch (error) {
-    return { ok: false, message: grammarExampleErrorMessage(error) };
+    return { ok: false, code: grammarExampleErrorCode(error) };
   }
 }

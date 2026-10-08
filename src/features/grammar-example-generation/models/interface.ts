@@ -1,3 +1,4 @@
+import type { ExampleErrorCode } from "./errors";
 import type {
   GrammarExample,
   GrammarNote,
@@ -13,7 +14,7 @@ export interface SaveExamplesCommand {
   expectedVersion: number;
   candidates: readonly GrammarExample[];
 }
-export type ExampleResult<T> = { ok: true; data: T } | { ok: false; message: string };
+export type ExampleResult<T> = { ok: true; data: T } | { ok: false; code: ExampleErrorCode };
 export interface ExampleDependencies {
   repository: GrammarNoteRepositoryPort;
   generate: (note: GrammarNote, count: 1 | 3) => Promise<unknown>;
@@ -31,7 +32,7 @@ export interface ExampleState {
   candidates: readonly GrammarExample[];
   selected: readonly string[];
   pending: string | null;
-  error: string;
+  error: ExampleErrorCode | null;
   dirty: boolean;
   change: (
     id: string,
