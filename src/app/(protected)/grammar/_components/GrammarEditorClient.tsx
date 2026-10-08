@@ -9,10 +9,10 @@ import { saveGrammarNote } from "@/features/grammar-note-editor/services/actions
 
 export function GrammarEditorClient({
   initialNote,
-  backHref,
+  backHref = "/grammar",
 }: {
   initialNote?: GrammarNote;
-  backHref: string;
+  backHref?: string;
 }) {
   const router = useRouter();
   const returnTo =

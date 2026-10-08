@@ -11,7 +11,7 @@ export type RecallActionResult =
   | { ok: true; data: GrammarSession }
   | { ok: false; code: GrammarSessionError["code"] };
 
-export interface GrammarRecallProps {
+export interface RecallSessionProps {
   readonly initialSession: GrammarSession;
   readonly save: (input: SaveGrammarAnswersInput) => Promise<RecallActionResult>;
   readonly complete: (input: CompleteGrammarSessionInput) => Promise<RecallActionResult>;

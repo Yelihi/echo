@@ -1,32 +1,13 @@
-"use client";
+import type { ReactNode } from "react";
 
-import { grammarSessionErrorMessage } from "@/entities/grammar-session";
-import type { GrammarRecallProps } from "../models/interface";
-import { useRecallSession } from "../services/useRecallSession";
-import { RecallQuestion } from "./RecallQuestion";
-
-export function GrammarRecall(props: GrammarRecallProps) {
-  return <RecallSession key={props.initialSession.id} {...props} />;
-}
-
-function RecallSession(props: GrammarRecallProps) {
-  const { session, busy, error, move } = useRecallSession(props);
-  const question = session.questions[session.questionIndex];
-
+export function GrammarRecall({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="mx-auto max-w-3xl space-y-7 px-5 py-8">
       <header>
         <p className="mb-3 text-xs tracking-widest text-practice-secondary">RECALL PRACTICE</p>
-        <h1 className="text-2xl font-medium text-practice-ink">{session.title}</h1>
+        <h1 className="text-2xl font-medium text-practice-ink">{title}</h1>
       </header>
-      <RecallQuestion
-        key={`${session.phase}:${question.id}`}
-        session={session}
-        busy={busy}
-        error={error ? grammarSessionErrorMessage(error) : ""}
-        onMove={move}
-        audio={props.renderAudio?.(question)}
-      />
+      {children}
     </div>
   );
 }
