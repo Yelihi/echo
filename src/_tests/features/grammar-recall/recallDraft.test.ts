@@ -51,4 +51,20 @@ describe("recall drafts and semantic blanks", () => {
     expect(answers["partial:other"]).toBe("old");
     expect(JSON.parse(answers["partial:source"]).assessment).toBe("again");
   });
+
+  it("maximum_length_source_and_blank_draft_survive_refresh_and_checkpoint", () => {
+    const session = recallSession();
+    const sentence = "x".repeat(4000);
+
+    session.questions[0] = { ...session.questions[0], sentence, chunks: [] };
+    const draft = { values: { "source-whole": sentence }, whole: sentence, assessment: null };
+
+    persistRecallDraft(session, draft);
+    expect(readRecallDraft(session)).toEqual(draft);
+    expect(
+      JSON.parse(mergeRecallDraftIntoAnswers(session, draft)["partial:source"]).values[
+        "source-whole"
+      ],
+    ).toBe(sentence);
+  });
 });
