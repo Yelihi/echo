@@ -2,10 +2,10 @@
 
 import type { GrammarSessionError } from "@/entities/grammar-session";
 import { useState } from "react";
-import type { GrammarRecallProps, RecallDraft } from "../models/interface";
+import type { RecallSessionProps, RecallDraft } from "../models/interface";
 import { mergeRecallDraftIntoAnswers } from "./recallDraft";
 
-export function useRecallSession(props: GrammarRecallProps) {
+export function useRecallSession(props: RecallSessionProps) {
   const [session, setSession] = useState(props.initialSession);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<GrammarSessionError["code"] | null>(null);

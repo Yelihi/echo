@@ -1,11 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
-import { GrammarRecall } from "@/features/grammar-recall";
+import { GrammarRecall, RecallSession } from "@/features/grammar-recall";
 import { recallSession } from "@/_tests/features/grammar-recall/fixture";
 
 const meta = {
   title: "Features/Grammar/Recall",
-  component: GrammarRecall,
+  component: RecallSession,
+  render: (args) => (
+    <GrammarRecall title={args.initialSession.title}>
+      <RecallSession {...args} />
+    </GrammarRecall>
+  ),
   args: {
     initialSession: recallSession(),
     save: fn(async () => ({
@@ -20,7 +25,7 @@ const meta = {
   beforeEach: () => {
     sessionStorage.clear();
   },
-} satisfies Meta<typeof GrammarRecall>;
+} satisfies Meta<typeof RecallSession>;
 
 export default meta;
 

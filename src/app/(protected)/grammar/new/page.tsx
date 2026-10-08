@@ -1,5 +1,7 @@
 import { PageContainer } from "@/widgets/app-shell";
 import { GrammarEditorView } from "@/views/grammar-editor";
+import { GrammarEditorClient } from "../_components/GrammarEditorClient";
+
 export default async function NewGrammarNotePage({
   searchParams,
 }: {
@@ -8,7 +10,9 @@ export default async function NewGrammarNotePage({
   const { returnTo } = await searchParams;
   return (
     <PageContainer>
-      <GrammarEditorView backHref={returnTo} />
+      <GrammarEditorView>
+        <GrammarEditorClient backHref={returnTo} />
+      </GrammarEditorView>
     </PageContainer>
   );
 }

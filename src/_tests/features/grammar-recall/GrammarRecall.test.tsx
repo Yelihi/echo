@@ -1,6 +1,6 @@
 import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { GrammarRecall } from "@/features/grammar-recall";
+import { RecallSession } from "@/features/grammar-recall";
 import type { SaveGrammarAnswersInput } from "@/entities/grammar-session";
 import type { RecallActionResult } from "@/features/grammar-recall";
 import { recallSession } from "./fixture";
@@ -15,7 +15,7 @@ describe("recall workflow", () => {
       .mockResolvedValue({ ok: false, code: "FAILED" as const });
 
     render(
-      <GrammarRecall
+      <RecallSession
         initialSession={session}
         save={save}
         complete={jest.fn<() => Promise<RecallActionResult>>()}
@@ -46,7 +46,7 @@ describe("recall workflow", () => {
       .mockResolvedValue({ ok: false, code: "FAILED" as const });
 
     render(
-      <GrammarRecall
+      <RecallSession
         initialSession={recallSession()}
         save={save}
         complete={jest.fn<() => Promise<RecallActionResult>>()}
@@ -86,7 +86,7 @@ describe("recall workflow", () => {
     const onComplete = jest.fn();
 
     render(
-      <GrammarRecall
+      <RecallSession
         initialSession={session}
         save={save}
         complete={complete}
@@ -130,11 +130,11 @@ it("preserves a same-session draft and resets when opening a different session",
     onComplete: jest.fn(),
     onExit: jest.fn(),
   };
-  const { rerender } = render(<GrammarRecall {...props} initialSession={session} />);
+  const { rerender } = render(<RecallSession {...props} initialSession={session} />);
 
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "My draft" } });
-  rerender(<GrammarRecall {...props} initialSession={{ ...session, version: 2 }} />);
+  rerender(<RecallSession {...props} initialSession={{ ...session, version: 2 }} />);
   expect(screen.getByRole("textbox")).toHaveValue("My draft");
-  rerender(<GrammarRecall {...props} initialSession={{ ...session, id: "another-session" }} />);
+  rerender(<RecallSession {...props} initialSession={{ ...session, id: "another-session" }} />);
   expect(screen.getByRole("textbox")).toHaveValue("");
 });

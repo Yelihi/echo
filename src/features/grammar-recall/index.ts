@@ -1,3 +1,4 @@
 export { GrammarRecall } from "./ui/GrammarRecall";
+export { RecallSession } from "./ui/RecallSession";
 
-export type { GrammarRecallProps, RecallActionResult } from "./models/interface";
+export type { RecallSessionProps, RecallActionResult } from "./models/interface";
