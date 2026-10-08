@@ -1,4 +1,5 @@
 import type { RecallSegment } from "../models/interface";
+
 export function RecallBlankFields({
   segments,
   values,

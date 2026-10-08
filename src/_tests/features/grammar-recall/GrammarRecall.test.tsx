@@ -4,13 +4,16 @@ import { GrammarRecall } from "@/features/grammar-recall";
 import type { SaveGrammarAnswersInput } from "@/entities/grammar-session";
 import type { RecallActionResult } from "@/features/grammar-recall";
 import { recallSession } from "./fixture";
+
 describe("recall workflow", () => {
   beforeEach(() => sessionStorage.clear());
+
   it("does not expose the whole answer before reveal and keeps typed input after save failure", async () => {
     const session = { ...recallSession(), phase: "whole" as const };
     const save = jest
       .fn<() => Promise<RecallActionResult>>()
       .mockResolvedValue({ ok: false, code: "FAILED" as const });
+
     render(
       <GrammarRecall
         initialSession={session}
@@ -35,11 +38,13 @@ describe("recall workflow", () => {
       }),
     );
   });
+
   it("saves before exiting and remains on page when saving fails", async () => {
     const exit = jest.fn();
     const save = jest
       .fn<() => Promise<RecallActionResult>>()
       .mockResolvedValue({ ok: false, code: "FAILED" as const });
+
     render(
       <GrammarRecall
         initialSession={recallSession()}
@@ -55,6 +60,7 @@ describe("recall workflow", () => {
     expect(exit).not.toHaveBeenCalled();
     expect(screen.getByLabelText("이다")).toHaveValue("is");
   });
+
   it("preserves both phase answers when returning and completes only after saving", async () => {
     const session = recallSession();
     const save = jest
@@ -78,6 +84,7 @@ describe("recall workflow", () => {
       .fn<() => Promise<RecallActionResult>>()
       .mockResolvedValue({ ok: true, data: completed });
     const onComplete = jest.fn();
+
     render(
       <GrammarRecall
         initialSession={session}
@@ -95,6 +102,7 @@ describe("recall workflow", () => {
     fireEvent.click(screen.getByRole("radio", { name: "기억했어요" }));
     fireEvent.click(screen.getByRole("button", { name: "다음" }));
     const whole = await screen.findByRole("textbox", { name: "영어 문장을 작성해주세요" });
+
     fireEvent.change(whole, { target: { value: "She is not a teacher but a doctor." } });
     fireEvent.click(screen.getByRole("button", { name: "이전" }));
     await waitFor(() => expect(screen.getByLabelText("이다")).toHaveValue("is"));
@@ -123,6 +131,7 @@ it("preserves a same-session draft and resets when opening a different session",
     onExit: jest.fn(),
   };
   const { rerender } = render(<GrammarRecall {...props} initialSession={session} />);
+
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "My draft" } });
   rerender(<GrammarRecall {...props} initialSession={{ ...session, version: 2 }} />);
   expect(screen.getByRole("textbox")).toHaveValue("My draft");

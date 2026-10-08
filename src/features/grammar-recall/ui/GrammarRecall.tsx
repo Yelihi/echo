@@ -1,8 +1,10 @@
 "use client";
+
 import { grammarSessionErrorMessage } from "@/entities/grammar-session";
 import type { GrammarRecallProps } from "../models/interface";
 import { useRecallSession } from "../services/useRecallSession";
 import { RecallQuestion } from "./RecallQuestion";
+
 export function GrammarRecall(props: GrammarRecallProps) {
   return <RecallSession key={props.initialSession.id} {...props} />;
 }
@@ -10,6 +12,7 @@ export function GrammarRecall(props: GrammarRecallProps) {
 function RecallSession(props: GrammarRecallProps) {
   const { session, busy, error, move } = useRecallSession(props);
   const question = session.questions[session.questionIndex];
+
   return (
     <div className="mx-auto max-w-3xl space-y-7 px-5 py-8">
       <header>

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { GrammarRecall } from "@/features/grammar-recall";
 import { recallSession } from "@/_tests/features/grammar-recall/fixture";
+
 const meta = {
   title: "Features/Grammar/Recall",
   component: GrammarRecall,
@@ -15,15 +16,20 @@ const meta = {
     onComplete: fn(),
     onExit: fn(),
   },
+
   beforeEach: () => {
     sessionStorage.clear();
   },
 } satisfies Meta<typeof GrammarRecall>;
+
 export default meta;
+
 type Story = StoryObj<typeof meta>;
+
 export const Partial: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await userEvent.type(canvas.getByLabelText("이다"), "is");
     await userEvent.tab();
     await expect(canvas.getByLabelText("교사가 아니라 의사")).toHaveFocus();
@@ -38,4 +44,5 @@ export const Partial: Story = {
     );
   },
 };
+
 export const Whole: Story = { args: { initialSession: { ...recallSession(), phase: "whole" } } };
