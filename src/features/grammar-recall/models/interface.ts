@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
 import type {
   GrammarSession,
+  GrammarSessionError,
   GrammarSessionQuestion,
   SaveGrammarAnswersInput,
   CompleteGrammarSessionInput,
 } from "@/entities/grammar-session";
 export type RecallActionResult =
   | { ok: true; data: GrammarSession }
-  | { ok: false; message: string };
+  | { ok: false; code: GrammarSessionError["code"] };
 export interface GrammarRecallProps {
   readonly initialSession: GrammarSession;
   readonly save: (input: SaveGrammarAnswersInput) => Promise<RecallActionResult>;

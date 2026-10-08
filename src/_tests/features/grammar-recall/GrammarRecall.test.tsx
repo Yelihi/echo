@@ -10,7 +10,7 @@ describe("recall workflow", () => {
     const session = { ...recallSession(), phase: "whole" as const };
     const save = jest
       .fn<() => Promise<RecallActionResult>>()
-      .mockResolvedValue({ ok: false, message: "저장 실패" });
+      .mockResolvedValue({ ok: false, code: "FAILED" as const });
     render(
       <GrammarRecall
         initialSession={session}
@@ -25,7 +25,9 @@ describe("recall workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "정답 보기" }));
     fireEvent.click(screen.getByRole("radio", { name: "다시 볼게요" }));
     fireEvent.click(screen.getByRole("button", { name: "연습 완료" }));
-    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("저장 실패"));
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent("연습을 저장하지 못했습니다"),
+    );
     expect(screen.getByRole("textbox")).toHaveValue("My own answer.");
     expect(save).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -37,7 +39,7 @@ describe("recall workflow", () => {
     const exit = jest.fn();
     const save = jest
       .fn<() => Promise<RecallActionResult>>()
-      .mockResolvedValue({ ok: false, message: "다시 시도" });
+      .mockResolvedValue({ ok: false, code: "FAILED" as const });
     render(
       <GrammarRecall
         initialSession={recallSession()}

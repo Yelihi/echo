@@ -9,9 +9,9 @@ const meta = {
     initialSession: recallSession(),
     save: fn(async () => ({
       ok: false as const,
-      message: "저장하지 못했습니다. 다시 시도해주세요.",
+      code: "FAILED" as const,
     })),
-    complete: fn(async () => ({ ok: false as const, message: "완료 저장 실패" })),
+    complete: fn(async () => ({ ok: false as const, code: "FAILED" as const })),
     onComplete: fn(),
     onExit: fn(),
   },

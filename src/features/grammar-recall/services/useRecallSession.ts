@@ -1,15 +1,16 @@
 "use client";
+import type { GrammarSessionError } from "@/entities/grammar-session";
 import { useState } from "react";
 import type { GrammarRecallProps, RecallDraft } from "../models/interface";
 import { mergeRecallDraftIntoAnswers } from "./recallDraft";
 export function useRecallSession(props: GrammarRecallProps) {
   const [session, setSession] = useState(props.initialSession);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<GrammarSessionError["code"] | null>(null);
   async function move(draft: RecallDraft, direction: "next" | "back" | "exit") {
     if (busy) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const last = session.questionIndex === session.questions.length - 1;
       const finishing = direction === "next" && last && session.phase === "whole";
@@ -39,7 +40,7 @@ export function useRecallSession(props: GrammarRecallProps) {
         questionIndex: index,
       });
       if (!saved.ok) {
-        setError(saved.message);
+        setError(saved.code);
         return;
       }
       setSession(saved.data);
@@ -53,13 +54,13 @@ export function useRecallSession(props: GrammarRecallProps) {
           expectedVersion: saved.data.version,
         });
         if (!completed.ok) {
-          setError(completed.message);
+          setError(completed.code);
           return;
         }
         props.onComplete(completed.data);
       }
     } catch {
-      setError("진행 상태를 저장하지 못했습니다. 입력은 유지됩니다. 다시 시도해주세요.");
+      setError("FAILED");
     } finally {
       setBusy(false);
     }
