@@ -1,10 +1,9 @@
 "use client";
-
+import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import { useState } from "react";
 import type { RecallDraft, RecallQuestionProps } from "../models/interface";
 import { persistRecallDraft, readRecallDraft, createRecallSegments } from "../services/recallDraft";
 import { RecallBlankFields } from "./RecallBlankFields";
-
 export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQuestionProps) {
   const question = session.questions[session.questionIndex];
   const [draft, setDraft] = useState(() => readRecallDraft(session));
@@ -12,20 +11,16 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
   const [hint, setHint] = useState(false);
   const segments = createRecallSegments(question);
   const partial = session.phase === "partial";
-
   function update(next: RecallDraft) {
     setDraft(next);
     persistRecallDraft(session, next);
   }
-
   function changeBlank(id: string, value: string) {
     update({ ...draft, values: { ...draft.values, [id]: value } });
   }
-
   const filled = partial
     ? segments.filter((s) => s.hidden).every((s) => draft.values[s.id]?.trim())
     : !!draft.whole.trim();
-
   return (
     <section className="space-y-7 rounded-2xl border border-practice-line bg-white p-6 sm:p-9">
       <div className="flex items-center justify-between">
@@ -51,7 +46,7 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
           <textarea
             autoComplete="off"
             spellCheck={false}
-            maxLength={3000}
+            maxLength={GRAMMAR_ANSWER_MAX_LENGTH}
             disabled={busy}
             value={draft.whole}
             onChange={(e) => update({ ...draft, whole: e.target.value })}
@@ -109,6 +104,11 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
       {error && (
         <p role="alert" className="text-sm text-practice-accent">
           {error}
+        </p>
+      )}
+      {(!revealed || !draft.assessment) && (
+        <p className="text-xs leading-6 text-practice-muted">
+          문장을 작성한 뒤 정답을 확인하고, 기억한 정도를 선택하면 다음으로 진행할 수 있어요.
         </p>
       )}
       <div className="flex flex-wrap justify-between gap-3 border-t border-practice-line pt-5">

@@ -142,4 +142,12 @@ describe("Grammar session persisted contract", () => {
       pageSize: 10,
     });
   });
+  it("session_conversion_preserves_source_whitespace_and_chunk_offsets", () => {
+    const stored = row();
+    stored.questions[0].sentence = "  She is a doctor.  ";
+    stored.questions[0].chunks = [{ id: "subject", start: 2, end: 5, meaning: "그녀는" }];
+    const question = mapGrammarSessionRowToEntity(stored).questions[0];
+    expect(question.sentence).toBe(stored.questions[0].sentence);
+    expect(question.sentence?.slice(question.chunks[0].start, question.chunks[0].end)).toBe("She");
+  });
 });

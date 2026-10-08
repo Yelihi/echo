@@ -27,6 +27,18 @@ export const practiceModes = [
     href: "/sentence-memorization",
     note: "읽고 기억하며 익히는 문단 연습",
   },
+  {
+    id: "grammar",
+    name: "어법 연습",
+    label: "GRAMMAR",
+    title: "배운 어법을,\n직접 쓰는 나의 문장으로.",
+    description: "공부한 문장과 어법을 기록하세요.\n문장을 나누어 읽고, 떠올리고, 새롭게 써보세요.",
+    image: "/images/practice/reading.webp",
+    imageAlt: "펼쳐진 책과 조용한 학습 공간",
+    imageTitle: "Make it\nyour sentence.",
+    href: "/grammar",
+    note: "이해한 어법을 기억하고 적용하는 연습",
+  },
 ] as const satisfies readonly PracticeMode[];
 
 export const PRACTICE_SWIPE_THRESHOLD = 50;

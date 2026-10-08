@@ -1,7 +1,13 @@
 /** Screens that should never be reopened as a back destination after leaving them. */
 export function isTransientScreen(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
-  return segments.at(-1) === "new" || segments.at(-1) === "edit" || segments.includes("session");
+  return (
+    segments[0] === "grammar-sessions" ||
+    (segments[0] === "grammar" && segments.at(-1) === "practice") ||
+    segments.at(-1) === "new" ||
+    segments.at(-1) === "edit" ||
+    segments.includes("session")
+  );
 }
 
 export function advanceScreenTrail(trail: readonly string[], pathname: string): string[] {
@@ -13,6 +19,7 @@ export function advanceScreenTrail(trail: readonly string[], pathname: string): 
 
 export function getScreenFallback(pathname: string): string {
   const [root, ...segments] = pathname.split("/").filter(Boolean);
+  if (root === "grammar-sessions" || (root === "grammar" && segments.length)) return "/grammar";
   if (root === "sessions" || root === "recording-management") return "/my-page";
   if (root === "roleplay-sessions" || root === "memorization-sessions") return "/sessions";
   if (root === "role-playing" && segments.length) return "/role-playing";

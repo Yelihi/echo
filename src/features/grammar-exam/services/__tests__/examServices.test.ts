@@ -4,6 +4,7 @@ import type { GrammarExamProvider } from "../../models/interface";
 import { createExamPrompts } from "../createExamPrompts";
 import { gradeExamAnswer } from "../gradeExamAnswer";
 import { requestExamFeedback } from "../requestExamFeedback";
+import { grammarExamFeedbackSchema } from "../../models/schema";
 import { EXAM_FEEDBACK_PROMPT } from "../../config/prompts";
 
 function provider(): GrammarExamProvider {
@@ -182,5 +183,11 @@ describe("grammar exam operations", () => {
 
     expect(result.answer).toBe(session.answers["existing:source"]);
     expect(session.questions[1].context).toBe("친구는 가수가 아니라 기술자입니다.");
+  });
+  it("feedback_schema_preserves_original_answer_whitespace", () => {
+    const answer = "  She is a doctor.\n";
+    expect(grammarExamFeedbackSchema.parse(createGrammarExamFeedback({ answer })).answer).toBe(
+      answer,
+    );
   });
 });

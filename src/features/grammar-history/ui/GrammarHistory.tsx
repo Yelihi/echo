@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   Dialog,
@@ -15,25 +14,19 @@ import type { GrammarHistoryProps } from "../models/interface";
 import { useGrammarHistory } from "../services/useGrammarHistory";
 import { formatGrammarPracticeDate } from "../services/formatPracticeDate";
 import { GrammarHistoryRows } from "./GrammarHistoryRows";
-
 export function GrammarHistory(props: GrammarHistoryProps) {
   return <HistoryForNote key={props.noteId} {...props} />;
 }
 
 function HistoryForNote(props: GrammarHistoryProps) {
   const [open, setOpen] = useState(false);
-  const { data, busy, error, refresh } = useGrammarHistory(props);
+  const { data, latestCompletedAt, busy, error, refresh } = useGrammarHistory(props);
   const total = data?.total ?? 0;
-  const last =
-    props.initialData?.items[0]?.completedAt ??
-    (data?.page === 1 ? data.items[0]?.completedAt : undefined);
-
+  const last = latestCompletedAt;
   function changeOpen(next: boolean) {
     setOpen(next);
-
     if (next) void refresh(1);
   }
-
   return (
     <section aria-label="연습 기록" className="space-y-4 border-t border-practice-line pt-7">
       <h2 className="text-lg font-medium text-practice-ink">나의 연습</h2>
@@ -81,7 +74,7 @@ function HistoryForNote(props: GrammarHistoryProps) {
                 </button>
               </div>
             ) : (
-              <GrammarHistoryRows items={data?.items ?? []} />
+              <GrammarHistoryRows items={data?.items ?? []} resultHref={props.resultHref} />
             )}
           </div>
           <DialogFooter>
