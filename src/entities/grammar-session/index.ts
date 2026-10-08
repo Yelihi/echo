@@ -21,4 +21,5 @@ export type {
   GrammarSessionSummary,
 } from "./models/repository";
 export { GrammarSessionRepository } from "./infrastructure/GrammarSessionRepository";
-export { GrammarSessionError, grammarSessionErrorMessage } from "./models/errors";
+export { GrammarSessionError } from "./models/errors";
+export { grammarSessionErrorMessage } from "./ui/errorMessage";

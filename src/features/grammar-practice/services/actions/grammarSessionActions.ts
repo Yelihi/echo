@@ -6,7 +6,6 @@ import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import {
   GrammarSessionRepository,
   GrammarSessionError,
-  grammarSessionErrorMessage,
   startGrammarSessionSchema,
   saveGrammarAnswersSchema,
   completeGrammarSessionSchema,
@@ -33,9 +32,12 @@ async function executeSessionAction(
   } catch (error) {
     return {
       ok: false,
-      message: grammarSessionErrorMessage(
-        error instanceof z.ZodError ? new GrammarSessionError("INVALID_INPUT") : error,
-      ),
+      code:
+        error instanceof z.ZodError
+          ? "INVALID_INPUT"
+          : error instanceof GrammarSessionError
+            ? error.code
+            : "FAILED",
     };
   }
 }
