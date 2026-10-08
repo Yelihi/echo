@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "녹음 시작부터 문장 저장까지",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      574
+    ]
+  },
+  "participants": [
+    {
+      "id": "recorder",
+      "type": "frontend",
+      "label": "브라우저 녹음",
+      "sublabel": "AudioCapture · MediaRecorder"
+    },
+    {
+      "id": "screen",
+      "type": "frontend",
+      "label": "연습 화면",
+      "sublabel": "녹음 상태 · 오디오 보존"
+    },
+    {
+      "id": "server",
+      "type": "backend",
+      "label": "Next.js API",
+      "sublabel": "/api/roleplay-recordings"
+    },
+    {
+      "id": "objects",
+      "type": "cloud",
+      "label": "Storage",
+      "sublabel": "녹음 오브젝트"
+    },
+    {
+      "id": "database",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "accepted_recordings"
+    }
+  ],
+  "messages": [
+    {
+      "id": "recording-1",
+      "from": "screen",
+      "to": "recorder",
+      "y": 160,
+      "label": "시작 · 마이크 권한 요청",
+      "variant": "default"
+    },
+    {
+      "id": "recording-2",
+      "from": "recorder",
+      "to": "screen",
+      "y": 196,
+      "label": "권한 확인 후 녹음 시작",
+      "variant": "return"
+    },
+    {
+      "id": "recording-3",
+      "from": "screen",
+      "to": "recorder",
+      "y": 232,
+      "label": "중지 · 최종 데이터 대기",
+      "variant": "default"
+    },
+    {
+      "id": "recording-4",
+      "from": "recorder",
+      "to": "screen",
+      "y": 268,
+      "label": "Blob 반환 · 마이크 해제",
+      "variant": "return"
+    },
+    {
+      "id": "recording-5",
+      "from": "screen",
+      "to": "server",
+      "y": 304,
+      "label": "POST save · Blob + recordingId",
+      "variant": "emphasis"
+    },
+    {
+      "id": "recording-6",
+      "from": "server",
+      "to": "objects",
+      "y": 340,
+      "label": "인증·소유권·크기 확인 후 업로드",
+      "variant": "default"
+    },
+    {
+      "id": "recording-7",
+      "from": "objects",
+      "to": "server",
+      "y": 376,
+      "label": "오브젝트 준비",
+      "variant": "return"
+    },
+    {
+      "id": "recording-8",
+      "from": "server",
+      "to": "database",
+      "y": 412,
+      "label": "commit_roleplay_recording · 순서 확인",
+      "variant": "emphasis"
+    },
+    {
+      "id": "recording-9",
+      "from": "database",
+      "to": "server",
+      "y": 448,
+      "label": "녹음 확정 · 진행 위치 갱신",
+      "variant": "return"
+    },
+    {
+      "id": "recording-10",
+      "from": "server",
+      "to": "screen",
+      "y": 484,
+      "label": "성공 후 Blob 해제 · 다음 문장",
+      "variant": "return"
+    }
+  ]
+}

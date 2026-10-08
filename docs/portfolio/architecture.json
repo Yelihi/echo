@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Echo · 녹음과 학습 결과의 흐름",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1160,
+      740
+    ],
+    "repository": {
+      "url": "https://github.com/Yelihi/echo",
+      "revision": "f5bef1242dec003d2ed66357a9e5ba5568dfb59a"
+    }
+  },
+  "components": [
+    {
+      "id": "practice-browser",
+      "type": "frontend",
+      "label": "학습 화면",
+      "sublabel": "React · Zustand · MediaRecorder",
+      "pos": [
+        30,
+        210
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "src/views/recording/services/hooks/useRecordingTurn.ts"
+        }
+      ]
+    },
+    {
+      "id": "next-application",
+      "type": "backend",
+      "label": "Next.js · Vercel",
+      "sublabel": "Server Component · Action · API",
+      "pos": [
+        450,
+        210
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "src/app/api/roleplay-recordings/route.ts"
+        }
+      ]
+    },
+    {
+      "id": "session-database",
+      "type": "database",
+      "label": "Supabase Postgres",
+      "sublabel": "세션 · 녹음 메타데이터 · 작업 큐",
+      "pos": [
+        870,
+        210
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "supabase/migrations/20260910120000_roleplay_recording_completion.sql"
+        }
+      ]
+    },
+    {
+      "id": "user-identity",
+      "type": "security",
+      "label": "Supabase Auth",
+      "sublabel": "Google 로그인 · 사용자 확인",
+      "pos": [
+        450,
+        20
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "src/shared/lib/supabase/server.ts"
+        }
+      ]
+    },
+    {
+      "id": "audio-objects",
+      "type": "cloud",
+      "label": "Supabase Storage",
+      "sublabel": "녹음 파일 · 서명된 재생 URL",
+      "pos": [
+        450,
+        435
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "src/features/recording-storage/services/server/saveLearnerRecording.ts"
+        }
+      ]
+    },
+    {
+      "id": "analysis-executor",
+      "type": "backend",
+      "label": "분석 Edge Function",
+      "sublabel": "작업 선점 · 최대 3문장씩 처리",
+      "pos": [
+        870,
+        435
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "supabase/functions/process-analysis-job/processor.ts"
+        }
+      ]
+    },
+    {
+      "id": "cron-dispatcher",
+      "type": "messagebus",
+      "label": "pg_cron",
+      "sublabel": "분석 함수 예약 호출",
+      "pos": [
+        450,
+        635
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "supabase/migrations/20260706090000_analysis_processor_cron.sql"
+        }
+      ]
+    },
+    {
+      "id": "speech-evaluation",
+      "type": "external",
+      "label": "OpenAI",
+      "sublabel": "음성 전사 · 문맥별 피드백",
+      "pos": [
+        870,
+        635
+      ],
+      "size": [
+        240,
+        82
+      ],
+      "sources": [
+        {
+          "path": "supabase/functions/process-analysis-job/openai.ts"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "save-call",
+      "from": "practice-browser",
+      "to": "next-application",
+      "label": "HTTPS · 저장 / 완료"
+    },
+    {
+      "id": "auth-check",
+      "from": "next-application",
+      "to": "user-identity",
+      "label": "사용자 인증"
+    },
+    {
+      "id": "session-rpc",
+      "from": "next-application",
+      "to": "session-database",
+      "label": "조회 · 확정 RPC"
+    },
+    {
+      "id": "upload-object",
+      "from": "next-application",
+      "to": "audio-objects",
+      "label": "오디오 업로드",
+      "labelDy": 70
+    },
+    {
+      "id": "worker-claim",
+      "from": "analysis-executor",
+      "to": "session-database",
+      "label": "작업 선점 · 결과 저장"
+    },
+    {
+      "id": "worker-audio",
+      "from": "analysis-executor",
+      "to": "audio-objects",
+      "label": "오디오 다운로드"
+    },
+    {
+      "id": "cron-invoke",
+      "from": "cron-dispatcher",
+      "to": "analysis-executor",
+      "label": "예약 POST 호출",
+      "variant": "dashed"
+    },
+    {
+      "id": "evaluate-recording",
+      "from": "analysis-executor",
+      "to": "speech-evaluation",
+      "label": "전사 → 평가",
+      "labelDy": 60
+    }
+  ]
+}

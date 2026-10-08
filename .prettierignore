@@ -11,3 +11,8 @@ supabase/.temp
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+
+# Archify specifications and exports: preserve validated artifact bytes
+docs/portfolio/*.json
+docs/portfolio/*.html
+docs/portfolio/*.svg

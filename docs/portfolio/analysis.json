@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "세션 완료와 비동기 분석",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      610
+    ]
+  },
+  "participants": [
+    {
+      "id": "completion",
+      "type": "backend",
+      "label": "Next.js",
+      "sublabel": "완료 요청 · 결과 조회"
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "세션 · analysis_jobs"
+    },
+    {
+      "id": "cron",
+      "type": "messagebus",
+      "label": "pg_cron",
+      "sublabel": "예약 실행"
+    },
+    {
+      "id": "worker",
+      "type": "backend",
+      "label": "Edge Function",
+      "sublabel": "process-analysis-job"
+    },
+    {
+      "id": "storage",
+      "type": "cloud",
+      "label": "Storage",
+      "sublabel": "저장된 녹음"
+    },
+    {
+      "id": "provider",
+      "type": "external",
+      "label": "OpenAI",
+      "sublabel": "음성 전사 · 평가"
+    }
+  ],
+  "messages": [
+    {
+      "id": "analysis-1",
+      "from": "completion",
+      "to": "db",
+      "y": 160,
+      "label": "finish_roleplay_recording",
+      "variant": "emphasis"
+    },
+    {
+      "id": "analysis-2",
+      "from": "db",
+      "to": "completion",
+      "y": 190,
+      "label": "필수 녹음 확인 · 완료 + 작업 생성",
+      "variant": "return"
+    },
+    {
+      "id": "analysis-3",
+      "from": "cron",
+      "to": "worker",
+      "y": 220,
+      "label": "예약 POST 호출",
+      "variant": "dashed"
+    },
+    {
+      "id": "analysis-4",
+      "from": "worker",
+      "to": "db",
+      "y": 250,
+      "label": "claim_next_analysis_job",
+      "variant": "default"
+    },
+    {
+      "id": "analysis-5",
+      "from": "db",
+      "to": "worker",
+      "y": 280,
+      "label": "작업 + claim_token",
+      "variant": "return"
+    },
+    {
+      "id": "analysis-6",
+      "from": "worker",
+      "to": "storage",
+      "y": 310,
+      "label": "미처리 대상 오디오 다운로드",
+      "variant": "default"
+    },
+    {
+      "id": "analysis-7",
+      "from": "storage",
+      "to": "worker",
+      "y": 340,
+      "label": "오디오 Blob",
+      "variant": "return"
+    },
+    {
+      "id": "analysis-8",
+      "from": "worker",
+      "to": "provider",
+      "y": 370,
+      "label": "전사 요청 → 전사문으로 평가 요청",
+      "variant": "default"
+    },
+    {
+      "id": "analysis-9",
+      "from": "provider",
+      "to": "worker",
+      "y": 400,
+      "label": "전사문 · 피드백 · 점수",
+      "variant": "return"
+    },
+    {
+      "id": "analysis-10",
+      "from": "worker",
+      "to": "db",
+      "y": 430,
+      "label": "현재 claim_token으로 문장 결과 저장",
+      "variant": "emphasis"
+    },
+    {
+      "id": "analysis-11",
+      "from": "worker",
+      "to": "db",
+      "y": 460,
+      "label": "잔여 대상: 재대기 / 전체 처리: 완료",
+      "variant": "default"
+    },
+    {
+      "id": "analysis-12",
+      "from": "completion",
+      "to": "db",
+      "y": 490,
+      "label": "결과 조회 · 새 작업 생성 없음",
+      "variant": "default"
+    },
+    {
+      "id": "analysis-13",
+      "from": "db",
+      "to": "completion",
+      "y": 520,
+      "label": "작업 상태 · 저장된 문장별 결과",
+      "variant": "return"
+    }
+  ]
+}
