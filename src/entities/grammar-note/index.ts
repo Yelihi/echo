@@ -18,3 +18,15 @@ export {
   precheckResultSchema,
 } from "./models/schema";
 export { isValidTextRange, getAnalysisIssues } from "./models/validation";
+
+export type {
+  CreateGrammarNoteInput,
+  UpdateGrammarNoteInput,
+  FindGrammarNotesParams,
+  GrammarNoteSummary,
+  GrammarNotePage,
+  GrammarNoteRepositoryPort,
+} from "./models/repository";
+export { GrammarNotePersistenceError } from "./models/errors";
+export type { GrammarNotePersistenceErrorCode } from "./models/errors";
+export { GrammarNoteRepository } from "./infrastructure/GrammarNoteRepository";
