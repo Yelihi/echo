@@ -6,7 +6,13 @@ describe("practice workspace routing", () => {
     "%s does not show a practice sidebar",
     (path) => expect(getShellRoute(path).inPractice).toBe(false),
   );
+
   it.each([
+    ["/grammar", "어법 연습", "자료 목록"],
+    ["/grammar/note-id", "어법 연습", "어법 노트"],
+    ["/grammar/note-id/practice", "어법 연습", "연습 준비"],
+    ["/grammar-sessions/id", "어법 연습", "연습 중"],
+    ["/grammar-sessions/id/result", "어법 연습", "학습 결과"],
     ["/role-playing", "롤플레잉", "자료 목록"],
     ["/role-playing/new", "롤플레잉", "새 자료"],
     ["/role-playing/id/edit", "롤플레잉", "자료 수정"],

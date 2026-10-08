@@ -28,6 +28,7 @@ export interface AnalysisEditorState {
 export interface AnalysisEditorProps {
   initialAnalysis: SentenceAnalysis;
   onChange: (analysis: SentenceAnalysis) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 export interface AnalysisEditorProviderProps extends AnalysisEditorProps {

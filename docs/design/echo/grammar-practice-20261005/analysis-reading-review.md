@@ -22,7 +22,6 @@ AI 분석 결과의 의미 덩어리를 그대로 표시한다. 사용자가 구
 
 현재 범위는 독립 컴포넌트/Storybook이다. AI 서비스와 저장 및 실제 등록 페이지 연결은 별도 이슈이며 이 PR에서 연결했다고 간주하지 않는다. 미리보기 데이터는 fixture다.
 
-
 ## 편집 책임 분리 — 2026-10-06
 
 문자열 action type을 해석하던 `editAnalysis` 분기를 제거하고 `EditAnalysisService`의 동작별 메서드로 분리했다. 이벤트는 `edit(service => service.moveBoundary(chunkId, end))`처럼 필요한 동작을 직접 지정한다.
