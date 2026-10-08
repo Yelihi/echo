@@ -118,16 +118,31 @@ it("preserves drafts on parent rerender and notifies the current callback", asyn
   const user = userEvent.setup();
   const original = jest.fn();
   const current = jest.fn();
+  const originalDirty = jest.fn();
+  const currentDirty = jest.fn();
   const { rerender } = render(
-    <GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={original} />,
+    <GrammarAnalysisEditor
+      initialAnalysis={createGrammarAnalysis()}
+      onChange={original}
+      onDirtyChange={originalDirty}
+    />,
   );
   await user.click(screen.getByRole("button", { name: "분석 수정" }));
   await user.type(screen.getByLabelText("직독직해"), " 수정");
-  rerender(<GrammarAnalysisEditor initialAnalysis={createGrammarAnalysis()} onChange={current} />);
+  expect(originalDirty.mock.calls).toEqual([[true]]);
+  rerender(
+    <GrammarAnalysisEditor
+      initialAnalysis={createGrammarAnalysis()}
+      onChange={current}
+      onDirtyChange={currentDirty}
+    />,
+  );
   expect(screen.getByLabelText("직독직해")).toHaveValue("그녀는 수정");
   await user.click(screen.getByRole("button", { name: "풀이 적용" }));
   expect(original).not.toHaveBeenCalled();
   expect(current).toHaveBeenCalledTimes(1);
+  expect(originalDirty.mock.calls).toEqual([[true]]);
+  expect(currentDirty.mock.calls).toEqual([[false]]);
 });
 
 it("starts a fresh editor when the document key changes", async () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useLayoutEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
 import type { StoreApi } from "zustand";
 import type { AnalysisEditorProviderProps, AnalysisEditorState } from "../models/interface";
@@ -16,17 +16,19 @@ const Context = createContext<StoreApi<AnalysisEditorState> | null>(null);
 export function AnalysisEditorProvider({
   initialAnalysis,
   onChange,
+  onDirtyChange,
   children,
 }: AnalysisEditorProviderProps) {
   // 부모가 콜백을 변경해도 편집 상태를 초기화하지 않고 최신 수신자에게 알린다.
-  const onChangeRef = useRef(onChange);
-  useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
+  const callbacks = useRef({ onChange, onDirtyChange });
+  useLayoutEffect(() => {
+    callbacks.current = { onChange, onDirtyChange };
+  }, [onChange, onDirtyChange]);
   const [store] = useState(() =>
     createAnalysisEditorStore({
       initialAnalysis,
-      onChange: (analysis) => onChangeRef.current(analysis),
+      onChange: (analysis) => callbacks.current.onChange(analysis),
+      onDirtyChange: (dirty) => callbacks.current.onDirtyChange?.(dirty),
     }),
   );
   return <Context.Provider value={store}>{children}</Context.Provider>;
