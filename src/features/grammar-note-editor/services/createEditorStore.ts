@@ -19,12 +19,14 @@ export function createEditorStore(
       : null,
     stage: initialNote ? "review" : "input",
     pending: null,
-    error: "",
+    error: null,
     fieldErrors: {},
     reviewed: false,
     analysisDirty: false,
-    setAnalysisDirty: (analysisDirty) =>
-      set({ analysisDirty, ...(analysisDirty ? { dirty: true, reviewed: false } : {}) }),
+    setAnalysisDirty: (analysisDirty) => {
+      if (get().analysisDirty === analysisDirty) return;
+      set({ analysisDirty, ...(analysisDirty ? { dirty: true, reviewed: false } : {}) });
+    },
     dirty: false,
     changeSource: (field, value) => {
       if (get().pending === "save") return;
@@ -36,7 +38,7 @@ export function createEditorStore(
         pending: null,
         reviewed: false,
         dirty: true,
-        error: "",
+        error: null,
         fieldErrors: {},
       }));
     },
@@ -46,6 +48,7 @@ export function createEditorStore(
           ? {
               result: { status: "analyzed", data: { ...state.result.data, analysis } },
               reviewed: false,
+              analysisDirty: false,
               dirty: true,
             }
           : {},
@@ -54,7 +57,7 @@ export function createEditorStore(
     back: () => {
       if (get().pending === "save") return;
       generation++;
-      set({ stage: "input", pending: null, error: "", analysisDirty: false });
+      set({ stage: "input", pending: null, error: null, analysisDirty: false });
     },
     cancel: () => {
       generation++;
@@ -70,7 +73,7 @@ export function createEditorStore(
         return;
       }
       const currentGeneration = ++generation;
-      set({ pending: "analysis", error: "", fieldErrors: {} });
+      set({ pending: "analysis", error: null, fieldErrors: {} });
       try {
         const result = await dependencies.analyze(parsed.data);
         if (currentGeneration !== generation) return;
@@ -93,13 +96,13 @@ export function createEditorStore(
           pending: null,
           stage: result.status === "analyzed" ? "review" : "input",
           reviewed: false,
-          error: result.status === "error" ? result.message : "",
+          error: result.status === "error" ? { message: result.message } : null,
         });
       } catch {
         if (currentGeneration === generation)
           set({
             pending: null,
-            error: "분석을 완료하지 못했습니다. 입력을 유지했으니 다시 시도해 주세요.",
+            error: { code: "ANALYSIS_FAILED" },
           });
       }
     },
@@ -119,14 +122,14 @@ export function createEditorStore(
         examples: initialNote?.examples ?? [],
       });
       if (!content.success) {
-        set({ error: "분석과 입력을 다시 확인해 주세요." });
+        set({ error: { code: "INVALID_ANALYSIS" } });
         return;
       }
       const signature = JSON.stringify(content.data);
       // 동일 저장의 네트워크 재시도에는 동일 UUID를 보내 서버 중복 생성을 막는다.
       if (saveIdentity?.content !== signature)
         saveIdentity = { content: signature, id: crypto.randomUUID() };
-      set({ pending: "save", error: "" });
+      set({ pending: "save", error: null });
       try {
         const result = await dependencies.save({
           requestId: saveIdentity.id,
@@ -136,13 +139,13 @@ export function createEditorStore(
             : {}),
         });
         if (!result.ok) {
-          set({ pending: null, error: result.message });
+          set({ pending: null, error: { code: result.code } });
           return;
         }
         set({ pending: null, dirty: false });
         dependencies.onSaved(result.note);
       } catch {
-        set({ pending: null, error: "저장하지 못했습니다. 입력을 유지했으니 다시 저장해 주세요." });
+        set({ pending: null, error: { code: "PERSISTENCE_FAILED" } });
       }
     },
   }));

@@ -54,7 +54,7 @@ export const SaveFailure: Story = {
     initialNote: note,
     save: fn<GrammarNoteEditorProps["save"]>(async () => ({
       ok: false as const,
-      message: "노트를 저장하지 못했습니다. 다시 저장해 주세요.",
+      code: "PERSISTENCE_FAILED",
     })),
   },
   play: async ({ canvasElement }) => {

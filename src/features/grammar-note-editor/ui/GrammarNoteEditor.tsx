@@ -4,6 +4,7 @@ import { Button } from "@/shared/components/atomics/button/Button";
 import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
 import type { GrammarNoteEditorProps } from "../models/interface";
 import { EditorProvider, useEditor } from "./EditorProvider";
+import { EditorError } from "./EditorError";
 import { SourceStep } from "./SourceStep";
 import { ReviewStep } from "./ReviewStep";
 function EditorBody({
@@ -11,16 +12,11 @@ function EditorBody({
   onExit,
 }: Pick<GrammarNoteEditorProps, "AnalysisEditor" | "onExit">) {
   const stage = useEditor((s) => s.stage);
-  const error = useEditor((s) => s.error);
   return (
     <div className="space-y-8">
       <EditorExit onExit={onExit} />
       {stage === "input" ? <SourceStep /> : <ReviewStep AnalysisEditor={AnalysisEditor} />}
-      {error && (
-        <p role="alert" className="text-sm text-destructive">
-          {error}
-        </p>
-      )}
+      <EditorError />
     </div>
   );
 }

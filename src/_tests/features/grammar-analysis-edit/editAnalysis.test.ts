@@ -190,3 +190,38 @@ it("updates only explanation fields even when the supplied object contains chunk
   });
   expect(result.analysis.sourceText).toBe(source.sourceText);
 });
+
+it("notifies dirty changes within editing events and keeps failed/discard-cancelled drafts dirty", () => {
+  const onDirtyChange = jest.fn();
+  const store = createAnalysisEditorStore({
+    initialAnalysis: createGrammarAnalysis(),
+    onChange: jest.fn(),
+    onDirtyChange,
+  });
+  store.getState().markDirty();
+  expect(onDirtyChange).not.toHaveBeenCalled();
+  store.getState().startEditing();
+  store.getState().markDirty();
+  store.getState().markDirty();
+  expect(onDirtyChange.mock.calls).toEqual([[true]]);
+  const failed = store.getState().edit((service) =>
+    service.saveSyntax({
+      id: "s",
+      ranges: [{ start: 0, end: 1 }],
+      parentId: "s",
+      role: "other",
+      label: "invalid",
+      explanation: "",
+    }),
+  );
+  expect(failed.ok).toBe(false);
+  expect(store.getState().dirty).toBe(true);
+  store.getState().finishEditing();
+  store.getState().resolveSelection(false);
+  expect(store.getState().dirty).toBe(true);
+  expect(onDirtyChange.mock.calls).toEqual([[true]]);
+  store.getState().finishEditing();
+  store.getState().resolveSelection(true);
+  expect(store.getState().dirty).toBe(false);
+  expect(onDirtyChange.mock.calls).toEqual([[true], [false]]);
+});

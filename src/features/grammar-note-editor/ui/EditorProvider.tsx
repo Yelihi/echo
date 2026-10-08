@@ -1,5 +1,13 @@
 "use client";
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useStore } from "zustand";
 import type { StoreApi } from "zustand";
 import type { EditorState, GrammarNoteEditorProps } from "../models/interface";
@@ -7,15 +15,19 @@ import { createEditorStore } from "../services/createEditorStore";
 const Context = createContext<StoreApi<EditorState> | null>(null);
 export function EditorProvider({
   children,
-  ...dependencies
+  initialNote,
+  analyze,
+  save,
+  onSaved,
 }: Omit<GrammarNoteEditorProps, "AnalysisEditor" | "onExit"> & { children: ReactNode }) {
-  const latest = useRef(dependencies);
-  useEffect(() => {
-    latest.current = dependencies;
-  }, [dependencies]);
+  const latest = useRef({ analyze, save, onSaved });
+  useLayoutEffect(() => {
+    latest.current = { analyze, save, onSaved };
+  }, [analyze, save, onSaved]);
+  // initialNote는 초기값이다. 문서 ID·버전이 바뀌면 호출부에서 key로 새 세션을 연다.
   const [store] = useState(() =>
     createEditorStore({
-      initialNote: dependencies.initialNote,
+      initialNote,
       analyze: (source) => latest.current.analyze(source),
       save: (command) => latest.current.save(command),
       onSaved: (note) => latest.current.onSaved(note),

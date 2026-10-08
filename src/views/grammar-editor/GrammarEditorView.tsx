@@ -1,12 +1,6 @@
-"use client";
-import { useRouter } from "next/navigation";
 import type { GrammarNote } from "@/entities/grammar-note";
-import { GrammarAnalysisEditor } from "@/features/grammar-analysis-edit";
-import { requestGrammarAnalysis } from "@/features/grammar-analysis/services/actions/requestGrammarAnalysis";
-import { GrammarNoteEditor } from "@/features/grammar-note-editor";
-import { saveGrammarNote } from "@/features/grammar-note-editor/services/actions/saveGrammarNote";
+import { GrammarEditorClient } from "./GrammarEditorClient";
 
-// 다른 노트나 최신 저장 버전을 열 때 이전 초안이 섞이지 않도록 에디터 key에 ID와 버전을 함께 쓴다.
 export function GrammarEditorView({
   initialNote,
   backHref = "/grammar",
@@ -14,9 +8,6 @@ export function GrammarEditorView({
   initialNote?: GrammarNote;
   backHref?: string;
 }) {
-  const router = useRouter();
-  const returnTo =
-    backHref === "/grammar" || backHref.startsWith("/grammar?") ? backHref : "/grammar";
   return (
     <main className="mx-auto w-full max-w-4xl space-y-8 py-8">
       <header className="space-y-3">
@@ -29,18 +20,7 @@ export function GrammarEditorView({
         </p>
       </header>
       <div className="rounded-2xl border border-card-line bg-white p-5 sm:p-8">
-        <GrammarNoteEditor
-          key={initialNote ? `${initialNote.id}:${initialNote.version}` : "new"}
-          initialNote={initialNote}
-          analyze={requestGrammarAnalysis}
-          save={saveGrammarNote}
-          AnalysisEditor={GrammarAnalysisEditor}
-          onSaved={(note) => {
-            router.push(`/grammar/${note.id}?returnTo=${encodeURIComponent(returnTo)}`);
-            router.refresh();
-          }}
-          onExit={() => router.push(returnTo)}
-        />
+        <GrammarEditorClient initialNote={initialNote} backHref={backHref} />
       </div>
     </main>
   );

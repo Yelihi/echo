@@ -44,7 +44,7 @@ describe("어법 저장 서버 경계", () => {
     const create = jest.spyOn(GrammarNoteRepository.prototype, "create");
     expect(await saveGrammarNote(command())).toEqual({
       ok: false,
-      message: "로그인 후 다시 저장해 주세요.",
+      code: "UNAUTHORIZED",
     });
     expect(create).not.toHaveBeenCalled();
   });
@@ -94,7 +94,7 @@ describe("어법 저장 서버 경계", () => {
     });
     expect(result).toEqual({
       ok: false,
-      message: "다른 화면에서 노트가 변경되었습니다. 새로고침 후 다시 확인해 주세요.",
+      code: "VERSION_CONFLICT",
     });
   });
   it("실패는 내부 이벤트로 기록하고 원문과 내부 오류를 UI에 노출하지 않는다", async () => {

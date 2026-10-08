@@ -3,6 +3,7 @@ import type {
   GrammarMetadata,
   GrammarNote,
   GrammarNoteContent,
+  GrammarNotePersistenceErrorCode,
   GrammarSource,
   PrecheckResult,
   SentenceAnalysis,
@@ -17,7 +18,9 @@ export type SaveNoteCommand = {
   content: GrammarNoteContent;
   existing?: { id: string; expectedVersion: number };
 };
-export type SaveNoteResult = { ok: true; note: GrammarNote } | { ok: false; message: string };
+export type SaveNoteResult =
+  | { ok: true; note: GrammarNote }
+  | { ok: false; code: GrammarNotePersistenceErrorCode };
 export interface GrammarNoteEditorProps {
   initialNote?: GrammarNote;
   analyze: (source: GrammarSource) => Promise<EditorAnalysisResult>;
@@ -30,12 +33,16 @@ export interface GrammarNoteEditorProps {
   onSaved: (note: GrammarNote) => void;
   onExit: () => void;
 }
+export type EditorError =
+  | { code: GrammarNotePersistenceErrorCode | "ANALYSIS_FAILED" | "INVALID_ANALYSIS" }
+  | { message: string };
+
 export interface EditorState {
   source: GrammarSource;
   result: EditorAnalysisResult | null;
   stage: "input" | "review";
   pending: "analysis" | "save" | null;
-  error: string;
+  error: EditorError | null;
   fieldErrors: Partial<Record<"sentence" | "learningNote", string>>;
   reviewed: boolean;
   analysisDirty: boolean;

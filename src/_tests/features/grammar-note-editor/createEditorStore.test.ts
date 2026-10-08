@@ -80,7 +80,7 @@ describe("어법 등록 이벤트", () => {
       reviewed: true,
     });
     await store.getState().save();
-    expect(store.getState().error).toContain("다시 저장");
+    expect(store.getState().error).toEqual({ code: "PERSISTENCE_FAILED" });
     await store.getState().save();
     expect(deps.save.mock.calls[0][0].requestId).toBe(deps.save.mock.calls[1][0].requestId);
     expect(deps.onSaved).toHaveBeenCalledTimes(1);
@@ -120,11 +120,11 @@ describe("어법 등록 이벤트", () => {
     });
     const store = createEditorStore(deps);
     await store.getState().analyze();
-    expect(store.getState().error).toContain("분석");
+    expect(store.getState().error).toEqual({ code: "ANALYSIS_FAILED" });
   });
   it("편집 저장은 읽은 버전을 전달하고 충돌시 초안을 유지한다", async () => {
     const deps = dependencies();
-    deps.save.mockResolvedValue({ ok: false, message: "버전 충돌" });
+    deps.save.mockResolvedValue({ ok: false, code: "VERSION_CONFLICT" });
     const store = createEditorStore(deps);
     store.getState().setReviewed(true);
     await store.getState().save();
@@ -133,6 +133,6 @@ describe("어법 등록 이벤트", () => {
       expectedVersion: 1,
     });
     expect(store.getState().result).not.toBeNull();
-    expect(store.getState().error).toBe("버전 충돌");
+    expect(store.getState().error).toEqual({ code: "VERSION_CONFLICT" });
   });
 });

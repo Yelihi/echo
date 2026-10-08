@@ -22,14 +22,6 @@ export async function saveGrammarNote(command: SaveNoteCommand): Promise<SaveNot
     return { ok: true, note };
   } catch (error) {
     const code = error instanceof GrammarNotePersistenceError ? error.code : "PERSISTENCE_FAILED";
-    return {
-      ok: false,
-      message:
-        code === "VERSION_CONFLICT"
-          ? "다른 화면에서 노트가 변경되었습니다. 새로고침 후 다시 확인해 주세요."
-          : code === "UNAUTHORIZED"
-            ? "로그인 후 다시 저장해 주세요."
-            : "노트를 저장하지 못했습니다. 잠시 후 다시 저장해 주세요.",
-    };
+    return { ok: false, code };
   }
 }
