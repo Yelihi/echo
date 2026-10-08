@@ -4,7 +4,9 @@ import type { GrammarNoteEditorProps } from "@/features/grammar-note-editor";
 import { GrammarNoteEditor } from "@/features/grammar-note-editor";
 import { GrammarAnalysisEditor } from "@/features/grammar-analysis-edit";
 import { createEditorNote } from "@/_tests/features/grammar-note-editor/fixtures";
+
 const note = createEditorNote();
+
 const meta = {
   title: "features/grammar-note-editor/GrammarNoteEditor",
   component: GrammarNoteEditor,
@@ -29,26 +31,34 @@ const meta = {
     ),
   ],
 } satisfies Meta<typeof GrammarNoteEditor>;
+
 export default meta;
+
 type Story = StoryObj<typeof meta>;
+
 export const EmptyInput: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await userEvent.click(canvas.getByRole("button", { name: "문장 분석하기" }));
     await expect(canvas.getAllByRole("alert")).toHaveLength(2);
     await expect(canvas.queryByLabelText("제목")).not.toBeInTheDocument();
   },
 };
+
 export const ReviewAndSave: Story = {
   args: { initialNote: note },
+
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
+
     await expect(canvas.getByRole("button", { name: "검토 완료 · 노트 저장" })).toBeDisabled();
     await userEvent.click(canvas.getByRole("checkbox"));
     await userEvent.click(canvas.getByRole("button", { name: "검토 완료 · 노트 저장" }));
     await expect(args.onSaved).toHaveBeenCalled();
   },
 };
+
 export const SaveFailure: Story = {
   args: {
     initialNote: note,
@@ -57,8 +67,10 @@ export const SaveFailure: Story = {
       code: "PERSISTENCE_FAILED",
     })),
   },
+
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await userEvent.click(canvas.getByRole("checkbox"));
     await userEvent.click(canvas.getByRole("button", { name: "검토 완료 · 노트 저장" }));
     await expect(await canvas.findByRole("alert")).toBeVisible();
@@ -70,6 +82,7 @@ export const SaveFailure: Story = {
 export const AnalyzeThenReview: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await userEvent.type(canvas.getByLabelText(/영어 문장/), note.source.sentence);
     await userEvent.type(canvas.getByLabelText(/핵심 어법 설명/), note.source.learningNote);
     await userEvent.click(canvas.getByRole("button", { name: "문장 분석하기" }));
@@ -78,10 +91,13 @@ export const AnalyzeThenReview: Story = {
     await expect(canvas.getByLabelText(/영어 문장/)).toHaveValue(note.source.sentence);
   },
 };
+
 export const UnappliedAnalysisBlocksSave: Story = {
   args: { initialNote: note },
+
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await userEvent.click(canvas.getByRole("button", { name: "She" }));
     await userEvent.click(canvas.getByRole("button", { name: "분석 수정" }));
     await userEvent.type(canvas.getByLabelText("직독직해"), " 수정");
