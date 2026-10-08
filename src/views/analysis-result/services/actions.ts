@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { createAnalysisJobRepository } from "@/entities/analysis-job";
 import type { SessionId } from "@/entities/value-object";
-import { requireUser } from "@/features/login";
+import { requireUser } from "@/features/login/server";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 
 export async function retryRoleplayAnalysis(sessionId: SessionId): Promise<string | void> {

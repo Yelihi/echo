@@ -8,7 +8,7 @@ import { createAcceptedRecordingRepository } from "@/entities/accepted-recording
 import { createMemorizationSessionRepository } from "@/entities/memorization-session";
 import type { SessionId } from "@/entities/value-object";
 import { RecordingStorageService } from "@/shared/lib/recording-storage/server";
-import { requireUser } from "@/features/login";
+import { requireUser } from "@/features/login/server";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import type { MemorizationResultPageData } from "@/views/analysis-result/models";
 
