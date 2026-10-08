@@ -13,3 +13,5 @@ export type {
 } from "./models/interface";
 export { GrammarExamPlayer } from "./ui/GrammarExamPlayer";
 export { GrammarExamResult } from "./ui/GrammarExamResult";
+
+export { grammarExamErrorMessage } from "./ui/errorMessage";

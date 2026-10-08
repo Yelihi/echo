@@ -49,7 +49,7 @@ export const SaveFailure: Story = {
   args: {
     onSaveAnswers: fn<GrammarExamPlayerProps["onSaveAnswers"]>(async () => ({
       ok: false as const,
-      message: "저장하지 못했습니다. 다시 시도해 주세요.",
+      code: "FAILED" as const,
     })),
   },
   play: async ({ canvasElement }) => {
@@ -71,7 +71,7 @@ export const CompletedFeedback: Story = {
         },
       })}
       initialFeedback={[createGrammarExamFeedback({ answer: "She is a doctor, not a teacher." })]}
-      onRequestFeedback={async () => ({ ok: false, message: "잠시 후 다시 시도해 주세요." })}
+      onRequestFeedback={async () => ({ ok: false, code: "FAILED" as const })}
     />
   ),
 };

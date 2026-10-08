@@ -1,10 +1,15 @@
 "use client";
+import { grammarExamErrorMessage } from "./errorMessage";
 import { useState } from "react";
 import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
 import type { GrammarExamPlayerProps } from "../models/interface";
 import { useGrammarExam } from "../services/hooks/useGrammarExam";
 import { GrammarExamQuestion } from "./GrammarExamQuestion";
 export function GrammarExamPlayer(props: GrammarExamPlayerProps) {
+  return <ExamSession key={props.initialSession.id} {...props} />;
+}
+
+function ExamSession(props: GrammarExamPlayerProps) {
   const [exitOpen, setExitOpen] = useState(false);
   const { session, question, busy, message, save } = useGrammarExam(props);
   if (
@@ -43,7 +48,7 @@ export function GrammarExamPlayer(props: GrammarExamPlayerProps) {
       />
       {message && (
         <p role="status" aria-live="polite" className="text-sm">
-          {message}
+          {message === "SAVED" ? "답안을 임시 저장했습니다." : grammarExamErrorMessage(message)}
         </p>
       )}
       <ConfirmDialog

@@ -2,12 +2,13 @@ import "server-only";
 import { z } from "zod";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
-import { GrammarSessionError, grammarSessionErrorMessage } from "@/entities/grammar-session";
-import { GrammarExamError, grammarExamErrorMessage } from "../../models/errors";
+import { GrammarSessionError } from "@/entities/grammar-session";
+import { GrammarExamError } from "../../models/errors";
+import type { GrammarExamErrorCode } from "../../models/interface";
 export async function observeExamAction<T>(
   operation: string,
   execute: () => Promise<T>,
-): Promise<{ ok: true; data: T } | { ok: false; message: string }> {
+): Promise<{ ok: true; data: T } | { ok: false; code: GrammarExamErrorCode }> {
   try {
     return {
       ok: true,
@@ -19,12 +20,12 @@ export async function observeExamAction<T>(
       }),
     };
   } catch (error) {
-    const message =
-      error instanceof GrammarSessionError
-        ? grammarSessionErrorMessage(error)
-        : grammarExamErrorMessage(
-            error instanceof z.ZodError ? new GrammarExamError("INVALID_INPUT") : error,
-          );
-    return { ok: false, message };
+    const code =
+      error instanceof z.ZodError
+        ? "INVALID_INPUT"
+        : error instanceof GrammarSessionError || error instanceof GrammarExamError
+          ? error.code
+          : "FAILED";
+    return { ok: false, code };
   }
 }

@@ -30,12 +30,12 @@ describe("Grammar exam UI", () => {
     expect(screen.queryByRole("button", { name: /듣기|재생/ })).not.toBeInTheDocument();
   });
   it("failed_save_keeps_user_draft_and_question", async () => {
-    setup({ onSaveAnswers: async () => ({ ok: false, message: "저장 실패" }) });
+    setup({ onSaveAnswers: async () => ({ ok: false, code: "FAILED" as const }) });
     fireEvent.change(screen.getByLabelText("영어로 작성해 주세요"), {
       target: { value: "My draft" },
     });
     fireEvent.click(screen.getByRole("button", { name: "다음 문항" }));
-    await screen.findByText("저장 실패");
+    await screen.findByText("시험을 처리하지 못했습니다. 입력을 유지한 채 다시 시도해 주세요.");
     expect(screen.getByLabelText("영어로 작성해 주세요")).toHaveValue("My draft");
     expect(screen.getByText("1 / 2")).toBeInTheDocument();
   });
@@ -52,7 +52,7 @@ describe("Grammar exam UI", () => {
       onSaveAnswers: async (input) => ({ ok: true, data: { ...session, ...input, version: 2 } }),
       onComplete: async () =>
         attempt++ === 0
-          ? { ok: false, message: "완료 실패" }
+          ? { ok: false, code: "FAILED" as const }
           : { ok: true, data: { ...session, status: "completed" } },
       onCompleted,
     });
@@ -60,7 +60,7 @@ describe("Grammar exam UI", () => {
       target: { value: "He is an engineer." },
     });
     fireEvent.click(screen.getByRole("button", { name: "시험 완료" }));
-    await screen.findByText("완료 실패");
+    await screen.findByText("시험을 처리하지 못했습니다. 입력을 유지한 채 다시 시도해 주세요.");
     expect(onCompleted).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "시험 완료" }));
     await waitFor(() => expect(onCompleted).toHaveBeenCalledTimes(1));
@@ -82,7 +82,7 @@ describe("Grammar exam UI", () => {
       .fn<() => Promise<GrammarExamFeedbackResult>>()
       .mockImplementation(async () =>
         attempt++ === 0
-          ? { ok: false, message: "일시 실패" }
+          ? { ok: false, code: "FAILED" as const }
           : { ok: true, data: createGrammarExamFeedback() },
       );
     render(<GrammarExamResult session={session} onRequestFeedback={request} />);
@@ -106,7 +106,7 @@ describe("Grammar exam UI", () => {
     const request = jest
       .fn<NonNullable<Parameters<typeof GrammarExamResult>[0]["onRequestFeedback"]>>()
       .mockImplementationOnce(() => first)
-      .mockResolvedValueOnce({ ok: false, message: "두 번째 실패" });
+      .mockResolvedValueOnce({ ok: false, code: "FAILED" as const });
     render(
       <StrictMode>
         <GrammarExamResult session={session} autoRequest onRequestFeedback={request} />
@@ -114,7 +114,7 @@ describe("Grammar exam UI", () => {
     );
     await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
     resolveFirst({ ok: true, data: createGrammarExamFeedback() });
-    await screen.findByText("두 번째 실패");
+    await screen.findByText("시험을 처리하지 못했습니다. 입력을 유지한 채 다시 시도해 주세요.");
     expect(request).toHaveBeenCalledTimes(2);
     expect(screen.getByText("잘 작성했어요")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "피드백 다시 받기" })).toBeEnabled();
@@ -122,7 +122,7 @@ describe("Grammar exam UI", () => {
   it("history_mount_does_not_trigger_paid_feedback_and_cached_initial_items_are_skipped", async () => {
     const request = jest
       .fn<NonNullable<Parameters<typeof GrammarExamResult>[0]["onRequestFeedback"]>>()
-      .mockResolvedValue({ ok: false, message: "실패" });
+      .mockResolvedValue({ ok: false, code: "FAILED" as const });
     const session = createGrammarExam({ status: "completed" });
     const view = render(<GrammarExamResult session={session} onRequestFeedback={request} />);
     expect(request).not.toHaveBeenCalled();
@@ -151,4 +151,21 @@ describe("Grammar exam UI", () => {
     window.dispatchEvent(saved);
     expect(saved.defaultPrevented).toBe(false);
   });
+});
+
+it("keeps drafts on same-session rerender and isolates a different exam", () => {
+  const session = createGrammarExam();
+  const props: GrammarExamPlayerProps = {
+    initialSession: session,
+    onSaveAnswers: jest.fn<GrammarExamPlayerProps["onSaveAnswers"]>(),
+    onComplete: jest.fn<GrammarExamPlayerProps["onComplete"]>(),
+    onCompleted: jest.fn(),
+    onExit: jest.fn(),
+  };
+  const { rerender } = render(<GrammarExamPlayer {...props} />);
+  fireEvent.change(screen.getByLabelText("영어로 작성해 주세요"), { target: { value: "Draft" } });
+  rerender(<GrammarExamPlayer {...props} initialSession={{ ...session, version: 2 }} />);
+  expect(screen.getByLabelText("영어로 작성해 주세요")).toHaveValue("Draft");
+  rerender(<GrammarExamPlayer {...props} initialSession={{ ...session, id: "another-exam" }} />);
+  expect(screen.getByLabelText("영어로 작성해 주세요")).toHaveValue("");
 });

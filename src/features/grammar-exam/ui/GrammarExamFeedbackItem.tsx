@@ -1,4 +1,5 @@
 "use client";
+import { grammarExamErrorMessage } from "./errorMessage";
 import { useRef, useState } from "react";
 import type { GrammarSessionQuestion } from "@/entities/grammar-session";
 import type { GrammarExamFeedback } from "../models/schema";
@@ -29,7 +30,8 @@ export function GrammarExamFeedbackItem({
     localFeedback ?? initialFeedback ?? (autoResult?.ok ? autoResult.data : undefined);
   const [busy, setBusy] = useState(false);
   const [localError, setError] = useState("");
-  const error = localError || (autoResult && !autoResult.ok ? autoResult.message : "");
+  const error =
+    localError || (autoResult && !autoResult.ok ? grammarExamErrorMessage(autoResult.code) : "");
   const pending = useRef(false);
   async function request() {
     if (pending.current) return;
@@ -39,7 +41,7 @@ export function GrammarExamFeedbackItem({
     try {
       const result = await onRequest();
       if (result.ok) setFeedback(result.data);
-      else setError(result.message);
+      else setError(grammarExamErrorMessage(result.code));
     } catch {
       setError("피드백을 불러오지 못했습니다. 다시 시도해 주세요.");
     } finally {

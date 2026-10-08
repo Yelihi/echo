@@ -1,16 +1,19 @@
+import type { GrammarExamError } from "./errors";
 import type {
   GrammarSession,
+  GrammarSessionError,
   GrammarSessionQuestion,
   SaveGrammarAnswersInput,
   CompleteGrammarSessionInput,
 } from "@/entities/grammar-session";
 import type { GrammarExamFeedback } from "./schema";
+export type GrammarExamErrorCode = GrammarExamError["code"] | GrammarSessionError["code"];
 export type GrammarExamSessionResult =
   | { ok: true; data: GrammarSession }
-  | { ok: false; message: string };
+  | { ok: false; code: GrammarExamErrorCode };
 export type GrammarExamFeedbackResult =
   | { ok: true; data: GrammarExamFeedback }
-  | { ok: false; message: string };
+  | { ok: false; code: GrammarExamErrorCode };
 export interface GrammarExamProvider {
   createPrompts(input: {
     targetGrammar: string;

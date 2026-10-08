@@ -34,7 +34,7 @@ export function useInitialExamFeedback({
         try {
           result = await onRequestFeedback({ sessionId: session.id, questionId: question.id });
         } catch {
-          result = { ok: false, message: "피드백을 불러오지 못했습니다. 다시 시도해 주세요." };
+          result = { ok: false, code: "FAILED" };
         }
         if (!isCurrent()) return;
         setResults((previous) => ({ ...previous, [`${session.id}:${question.id}`]: result }));
