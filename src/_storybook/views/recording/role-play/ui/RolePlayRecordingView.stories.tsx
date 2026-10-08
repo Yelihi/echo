@@ -47,13 +47,16 @@ const meta = {
 } satisfies Meta<typeof RolePlayRecordingView>;
 
 export default meta;
+
 type Story = StoryObj<typeof meta>;
 
 export const Ready: Story = {};
+
 export const Preview: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole("button", { name: "문장 미리 보기" }));
     const dialog = await within(canvasElement.ownerDocument.body).findByRole("dialog");
+
     await waitFor(() =>
       expect(within(dialog).getByText("I'd like a latte, please.")).toBeVisible(),
     );
@@ -79,10 +82,13 @@ export const Recorded: Story = {
 export const Failed: Story = {
   args: { initialPhase: "failed" },
 };
+
 export const Completed: Story = { args: { initialPhase: "completed" } };
+
 export const LearnerEndsConversation: Story = {
   args: { resume: { phase: "user-ready", step: 2, closingPartner: false } },
 };
+
 export const PartnerEndsConversation: Story = {
   args: {
     autoAdvancePartner: true,
@@ -101,8 +107,10 @@ export const PartnerEndsConversation: Story = {
 
 export const ResumeSavedPractice: Story = {
   args: { resume: { phase: "ready", step: 2, closingPartner: false, savedCount: 1 } },
+
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await waitFor(() => {
       expect(canvas.getByRole("button", { name: "이어서 연습" })).toBeVisible();
       expect(canvas.getByText(/2번째 문장부터 이어서/)).toBeVisible();
@@ -112,9 +120,11 @@ export const ResumeSavedPractice: Story = {
 
 export const ConfirmExit: Story = {
   args: { initialPhase: "user-ready" },
+
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole("button", { name: "연습 나가기" }));
     const dialog = await within(canvasElement.ownerDocument.body).findByRole("alertdialog");
+
     await waitFor(() =>
       expect(within(dialog).getByRole("button", { name: "계속 연습" })).toBeVisible(),
     );
