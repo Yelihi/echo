@@ -28,6 +28,51 @@ export type Database = {
   };
   public: {
     Tables: {
+      grammar_sessions: {
+        Row: {
+          id: string;
+          owner_id: string;
+          note_id: string;
+          note_version: number;
+          snapshot: Json;
+          mode: string;
+          status: string;
+          questions: Json;
+          answers: Json;
+          phase: string;
+          question_index: number;
+          version: number;
+          creation_request_id: string;
+          started_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          note_id: string;
+          note_version: number;
+          snapshot: Json;
+          mode: string;
+          questions: Json;
+          phase: string;
+          creation_request_id: string;
+          status?: string;
+          answers?: Json;
+          question_index?: number;
+          version?: number;
+          started_at?: string;
+          completed_at?: string | null;
+        };
+        Update: {
+          answers?: Json;
+          phase?: string;
+          question_index?: number;
+          version?: number;
+          status?: string;
+          completed_at?: string | null;
+        };
+        Relationships: [];
+      };
       grammar_notes: {
         Row: {
           id: string;
@@ -1055,6 +1100,32 @@ export type Database = {
       };
     };
     Functions: {
+      start_grammar_session: {
+        Args: { p_note_id: string; p_request_id: string; p_mode: string };
+        Returns: Json;
+      };
+      save_grammar_session_answers: {
+        Args: {
+          p_session_id: string;
+          p_expected_version: number;
+          p_answers: Json;
+          p_phase: string;
+          p_question_index: number;
+        };
+        Returns: Json;
+      };
+      complete_grammar_session: {
+        Args: { p_session_id: string; p_expected_version: number };
+        Returns: Json;
+      };
+      list_grammar_session_history: {
+        Args: { p_note_id?: string; p_page?: number; p_page_size?: number };
+        Returns: Json;
+      };
+      set_grammar_exam_prompts: {
+        Args: { p_session_id: string; p_questions: Json };
+        Returns: Json;
+      };
       is_valid_grammar_note_content: {
         Args: { p_content: Json };
         Returns: boolean;
