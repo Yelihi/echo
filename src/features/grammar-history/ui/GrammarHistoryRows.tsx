@@ -2,7 +2,13 @@ import Link from "next/link";
 import type { GrammarSessionSummary } from "@/entities/grammar-session";
 import { formatGrammarPracticeDate } from "../services/formatPracticeDate";
 
-export function GrammarHistoryRows({ items }: { items: readonly GrammarSessionSummary[] }) {
+export function GrammarHistoryRows({
+  items,
+  resultHref,
+}: {
+  items: readonly GrammarSessionSummary[];
+  resultHref?: (sessionId: string) => string;
+}) {
   if (!items.length)
     return (
       <p className="py-8 text-center text-sm text-practice-secondary">
@@ -15,7 +21,7 @@ export function GrammarHistoryRows({ items }: { items: readonly GrammarSessionSu
       {items.map((item) => (
         <li key={item.id} className="py-5">
           <Link
-            href={`/grammar-sessions/${item.id}/result`}
+            href={resultHref?.(item.id) ?? `/grammar-sessions/${item.id}/result`}
             className="flex min-h-11 items-center justify-between gap-3 rounded-md focus-visible:outline-practice-focus"
           >
             <div>

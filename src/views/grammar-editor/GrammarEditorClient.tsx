@@ -29,7 +29,13 @@ export function GrammarEditorClient({
         router.push(`/grammar/${note.id}?returnTo=${encodeURIComponent(returnTo)}`);
         router.refresh();
       }}
-      onExit={() => router.push(returnTo)}
+      onExit={() =>
+        router.push(
+          initialNote
+            ? `/grammar/${initialNote.id}?returnTo=${encodeURIComponent(returnTo)}`
+            : returnTo,
+        )
+      }
     />
   );
 }

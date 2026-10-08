@@ -9,7 +9,7 @@ export function GrammarEditorView({
   backHref?: string;
 }) {
   return (
-    <main className="mx-auto w-full max-w-4xl space-y-8 py-8">
+    <div className="mx-auto w-full max-w-4xl space-y-8 py-8">
       <header className="space-y-3">
         <p className="text-xs tracking-widest text-gray-text">GRAMMAR NOTE</p>
         <h1 className="text-3xl font-medium tracking-tight text-black-primary">
@@ -22,6 +22,6 @@ export function GrammarEditorView({
       <div className="rounded-2xl border border-card-line bg-white p-5 sm:p-8">
         <GrammarEditorClient initialNote={initialNote} backHref={backHref} />
       </div>
-    </main>
+    </div>
   );
 }

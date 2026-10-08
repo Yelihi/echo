@@ -1,6 +1,27 @@
 import { z } from "zod";
 
-const text = z.string().trim().min(1).max(4000);
+import { GRAMMAR_ANSWER_MAX_LENGTH, GRAMMAR_PARTIAL_DRAFT_MAX_LENGTH } from "./limits";
+
+// 저장 원문의 공백과 구간 오프셋을 보존하고 공백뿐인 값만 거부합니다.
+const text = z
+  .string()
+  .max(GRAMMAR_ANSWER_MAX_LENGTH)
+  .refine((value) => value.trim().length > 0);
+
+const answersSchema = z
+  .record(z.string().max(GRAMMAR_PARTIAL_DRAFT_MAX_LENGTH))
+  .superRefine((answers, context) => {
+    // 부분 회상은 JSON 초안이며, 나머지 단계는 원문과 같은 길이의 일반 텍스트 답안입니다.
+    for (const [key, answer] of Object.entries(answers)) {
+      if (!key.startsWith("partial:") && answer.length > GRAMMAR_ANSWER_MAX_LENGTH) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [key],
+          message: "문장 답안은 4,000자 이내로 입력해 주세요.",
+        });
+      }
+    }
+  });
 
 export const grammarSessionModeSchema = z.enum(["recall", "exam"]);
 
@@ -36,7 +57,7 @@ export const grammarSessionSchema = z.object({
   mode: grammarSessionModeSchema,
   status: z.enum(["active", "completed"]),
   questions: z.array(grammarQuestionSchema).min(1).max(110),
-  answers: z.record(z.string().max(4000)),
+  answers: answersSchema,
   phase: grammarSessionPhaseSchema,
   questionIndex: z.number().int().nonnegative(),
   version: z.number().int().positive(),
@@ -53,7 +74,7 @@ export const startGrammarSessionSchema = z.object({
 export const saveGrammarAnswersSchema = z.object({
   id: z.string().uuid(),
   expectedVersion: z.number().int().positive(),
-  answers: z.record(z.string().max(4000)),
+  answers: answersSchema,
   phase: grammarSessionPhaseSchema,
   questionIndex: z.number().int().nonnegative(),
 });
