@@ -1,7 +1,9 @@
 "use client";
+
 import type { GrammarSessionHistory } from "@/entities/grammar-session";
 import { GrammarHistory } from "@/features/grammar-history";
 import { getGrammarHistory } from "@/features/grammar-history/services/actions/getGrammarHistory";
+
 export function GrammarDetailHistory({
   noteId,
   backHref,

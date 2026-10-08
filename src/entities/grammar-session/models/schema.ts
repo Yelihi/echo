@@ -7,6 +7,7 @@ const text = z
   .string()
   .max(GRAMMAR_ANSWER_MAX_LENGTH)
   .refine((value) => value.trim().length > 0);
+
 const answersSchema = z
   .record(z.string().max(GRAMMAR_PARTIAL_DRAFT_MAX_LENGTH))
   .superRefine((answers, context) => {
@@ -21,9 +22,13 @@ const answersSchema = z
       }
     }
   });
+
 export const grammarSessionModeSchema = z.enum(["recall", "exam"]);
+
 export const grammarSessionIdSchema = z.string().uuid();
+
 export const grammarSessionPhaseSchema = z.enum(["partial", "whole", "existing", "novel"]);
+
 export const grammarQuestionSchema = z.object({
   id: z.string().min(1).max(120),
   kind: z.enum(["existing", "novel"]),
@@ -42,6 +47,7 @@ export const grammarQuestionSchema = z.object({
     .max(200),
   requiredWords: z.array(z.object({ word: text, meaning: text })).max(12),
 });
+
 export const grammarSessionSchema = z.object({
   id: z.string().uuid(),
   noteId: z.string().uuid(),
@@ -58,11 +64,13 @@ export const grammarSessionSchema = z.object({
   startedAt: z.string(),
   completedAt: z.string().nullable(),
 });
+
 export const startGrammarSessionSchema = z.object({
   noteId: z.string().uuid(),
   requestId: z.string().uuid(),
   mode: grammarSessionModeSchema,
 });
+
 export const saveGrammarAnswersSchema = z.object({
   id: z.string().uuid(),
   expectedVersion: z.number().int().positive(),
@@ -70,6 +78,7 @@ export const saveGrammarAnswersSchema = z.object({
   phase: grammarSessionPhaseSchema,
   questionIndex: z.number().int().nonnegative(),
 });
+
 export const completeGrammarSessionSchema = z.object({
   id: z.string().uuid(),
   expectedVersion: z.number().int().positive(),
@@ -80,6 +89,7 @@ export const findGrammarSessionHistorySchema = z.object({
   page: z.number().int().min(1).default(1),
   pageSize: z.number().int().min(1).max(100).default(20),
 });
+
 const grammarSessionSummarySchema = z.object({
   id: grammarSessionIdSchema,
   noteId: grammarSessionIdSchema,
@@ -89,16 +99,24 @@ const grammarSessionSummarySchema = z.object({
   completedAt: z.string(),
   questionCount: z.number().int().positive(),
 });
+
 export const grammarSessionHistoryPageSchema = z.object({
   items: z.array(grammarSessionSummarySchema),
   total: z.number().int().nonnegative(),
 });
+
 export type GrammarSession = z.infer<typeof grammarSessionSchema>;
+
 export type GrammarSessionQuestion = z.infer<typeof grammarQuestionSchema>;
+
 export type GrammarSessionMode = z.infer<typeof grammarSessionModeSchema>;
+
 export type GrammarSessionPhase = z.infer<typeof grammarSessionPhaseSchema>;
+
 export type StartGrammarSessionInput = z.infer<typeof startGrammarSessionSchema>;
+
 export type SaveGrammarAnswersInput = z.infer<typeof saveGrammarAnswersSchema>;
+
 export type CompleteGrammarSessionInput = z.infer<typeof completeGrammarSessionSchema>;
 
 export const grammarSessionRowSchema = z.object({

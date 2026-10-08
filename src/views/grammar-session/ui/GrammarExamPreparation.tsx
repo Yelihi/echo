@@ -1,4 +1,5 @@
 "use client";
+
 import { grammarExamErrorMessage } from "@/features/grammar-exam";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,11 +19,14 @@ export function GrammarExamPreparation({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
   async function retryPreparation() {
     setPending(true);
     setError(null);
+
     try {
       const result = await prepareGrammarExam(session.id);
+
       if (result.ok) router.refresh();
       else setError(grammarExamErrorMessage(result.code));
     } catch {
@@ -31,6 +35,7 @@ export function GrammarExamPreparation({
       setPending(false);
     }
   }
+
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-5 py-8">
       <BackNavigation

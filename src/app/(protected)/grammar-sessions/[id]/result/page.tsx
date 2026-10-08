@@ -7,6 +7,7 @@ import { loadGrammarSession } from "@/views/grammar-session/services/loadGrammar
 import { GrammarRecallResult } from "@/views/grammar-session/ui/GrammarRecallResult";
 import { GrammarExamResultView } from "@/views/grammar-session/ui/GrammarExamResultView";
 import { readGrammarExamFeedback } from "@/features/grammar-exam/services/actions/examActions";
+
 export default async function GrammarResultPage({
   params,
   searchParams,
@@ -18,8 +19,11 @@ export default async function GrammarResultPage({
   const returnTo = grammarReturnTo(query.returnTo);
   const context = `returnTo=${encodeURIComponent(returnTo)}`;
   const session = await loadGrammarSession(id);
+
   if (session.status !== "completed") redirect(`/grammar-sessions/${id}?${context}`);
+
   const feedback = session.mode === "exam" ? await readGrammarExamFeedback(id) : null;
+
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-5 py-8 sm:px-8">
       <BackNavigation href={`/grammar/${session.noteId}?${context}`} />

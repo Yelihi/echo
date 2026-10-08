@@ -4,6 +4,7 @@ import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import { loadGrammarNote, grammarReturnTo } from "@/views/grammar-detail";
 import { GrammarPracticeView } from "@/views/grammar-practice/GrammarPracticeView";
+
 export default async function GrammarPracticePage({
   params,
   searchParams,
@@ -18,9 +19,11 @@ export default async function GrammarPracticePage({
     operation: "grammar.session.active",
     resourceId: id,
     recordEvent: recordOperationEvent,
+
     execute: () =>
       Promise.all([repository.findActive(id, "recall"), repository.findActive(id, "exam")]),
   });
+
   return (
     <GrammarPracticeView
       returnTo={grammarReturnTo(query.returnTo)}

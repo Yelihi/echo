@@ -30,6 +30,7 @@ describe("practice mode selection", () => {
   it("ignores short and cancelled touches, but advances after a deliberate swipe", () => {
     render(<PracticeModeSelector />);
     const photo = screen.getByRole("img").parentElement!;
+
     fireEvent.touchStart(photo, { touches: [{ clientX: 200 }] });
     fireEvent.touchEnd(photo, { changedTouches: [{ clientX: 170 }] });
     expect(screen.getByRole("heading", { name: "롤플레잉", level: 2 })).toBeInTheDocument();

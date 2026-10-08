@@ -1,4 +1,5 @@
 "use server";
+
 import { z } from "zod";
 import { GrammarSessionRepository } from "@/entities/grammar-session";
 import { GrammarNoteRepository } from "@/entities/grammar-note";
@@ -11,6 +12,7 @@ import type { GrammarAudioResult } from "../../models/interface";
 import { resolveGrammarSessionAudioText } from "../resolveGrammarSessionAudioText";
 import { resolveGrammarAudioText } from "../resolveGrammarAudioText";
 import { cachedGrammarAudio, grammarAudioCacheKey } from "../audioCache";
+
 const schema = z.union([
   z
     .object({
@@ -21,18 +23,24 @@ const schema = z.union([
     .strict(),
   z.object({ sessionId: z.string().uuid(), questionId: z.string().min(1).max(120) }).strict(),
 ]);
+
 export async function requestGrammarAudio(input: unknown): Promise<GrammarAudioResult> {
   try {
     return await observeOperation({
       operation: "grammar.audio",
       resourceId: "grammar-audio",
       recordEvent: recordOperationEvent,
+
       execute: async () => {
         const parsed = schema.safeParse(input);
+
         if (!parsed.success) return { ok: false as const, code: "INVALID_INPUT" as const };
+
         const supabase = await createSupabaseServerClient();
         const { data, error } = await supabase.auth.getUser();
+
         if (error || !data.user) return { ok: false as const, code: "UNAUTHORIZED" as const };
+
         const source = parsed.data;
         const text =
           "sessionId" in source
@@ -47,10 +55,12 @@ export async function requestGrammarAudio(input: unknown): Promise<GrammarAudioR
 
         const model = getOpenAITTSModel();
         const key = grammarAudioCacheKey(data.user.id, text, model);
+
         return cachedGrammarAudio(key, async () => {
           const { data: permission, error: quotaError } = await supabase.rpc("consume_ai_request", {
             p_operation: "tts",
           });
+
           if (quotaError || permission !== "allowed")
             return {
               ok: false,
@@ -62,11 +72,13 @@ export async function requestGrammarAudio(input: unknown): Promise<GrammarAudioR
                     ? "RATE_LIMITED"
                     : "GENERATION_FAILED",
             };
+
           const speech = await new OpenAITTSProvider({ model }).speak({
             text,
             voice: "alloy",
             speed: 1,
           });
+
           return {
             ok: true,
             audioBase64: Buffer.from(speech.audio).toString("base64"),

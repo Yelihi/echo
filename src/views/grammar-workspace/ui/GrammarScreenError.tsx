@@ -1,4 +1,5 @@
 "use client";
+
 import { BackNavigation } from "@/shared/components/ui/back-navigation/BackNavigation";
 import { Button } from "@/shared/components/atomics/button/Button";
 

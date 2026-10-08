@@ -1,9 +1,11 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import type { GrammarSessionMode } from "@/entities/grammar-session";
 import { GrammarPracticeLauncher } from "@/features/grammar-practice";
 import { startGrammarSession } from "@/features/grammar-practice/services/actions/grammarSessionActions";
 import { startGrammarExam } from "@/features/grammar-exam/services/actions/examActions";
+
 export function GrammarPracticeClient({
   noteId,
   returnTo,
@@ -14,6 +16,7 @@ export function GrammarPracticeClient({
   activeSessions: Partial<Record<GrammarSessionMode, string>>;
 }) {
   const router = useRouter();
+
   return (
     <GrammarPracticeLauncher
       noteId={noteId}

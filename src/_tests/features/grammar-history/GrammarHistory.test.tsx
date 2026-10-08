@@ -43,6 +43,7 @@ describe("grammar history", () => {
     expect(await screen.findByText("아직 완료한 연습이 없습니다.")).toBeVisible();
     expect(load).toHaveBeenCalledTimes(2);
   });
+
   it("refreshes the latest date and keeps it while paging older records", async () => {
     const user = userEvent.setup();
     const oldDate = "2026-10-01T00:00:00Z";
@@ -64,6 +65,7 @@ describe("grammar history", () => {
         data: { ...initialData, total: 21, items: [{ ...item, completedAt: latestDate }] },
       })
       .mockResolvedValueOnce({ ok: true, data: { ...initialData, total: 21, page: 2 } });
+
     render(
       <GrammarHistory
         noteId="note"

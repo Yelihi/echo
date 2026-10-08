@@ -19,6 +19,7 @@ export function getShellRoute(pathname: string) {
               : isGrammar && segments.length
                 ? "어법 노트"
                 : "자료 목록";
+
   return {
     inPractice: isRoleplay || isMemorization || isGrammar,
     base: isGrammar ? "/grammar" : isRoleplay ? "/role-playing" : "/sentence-memorization",

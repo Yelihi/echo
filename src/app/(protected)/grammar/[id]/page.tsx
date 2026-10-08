@@ -1,5 +1,6 @@
 import { GrammarDetailView, loadGrammarNote, grammarReturnTo } from "@/views/grammar-detail";
 import { getGrammarHistory } from "@/features/grammar-history/services/actions/getGrammarHistory";
+
 export default async function GrammarNotePage({
   params,
   searchParams,
@@ -10,6 +11,7 @@ export default async function GrammarNotePage({
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const note = await loadGrammarNote(id);
   const history = await getGrammarHistory(id, 1);
+
   return (
     <GrammarDetailView
       initialHistory={history.ok ? history.data : undefined}

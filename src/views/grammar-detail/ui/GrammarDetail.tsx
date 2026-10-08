@@ -12,6 +12,7 @@ export function GrammarDetail({
   history,
 }: GrammarDetailProps) {
   const context = `returnTo=${encodeURIComponent(backHref)}`;
+
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-5 py-8 sm:px-8">
       <BackNavigation href={backHref} />

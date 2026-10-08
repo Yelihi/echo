@@ -4,19 +4,24 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { GrammarPracticeLauncher } from "@/features/grammar-practice";
 
 import { recallSession } from "@/_tests/features/grammar-recall/fixture";
+
 describe("grammar practice launch", () => {
   let sequence = 0;
+
   beforeAll(() => {
     Object.defineProperty(crypto, "randomUUID", {
       value: () => `00000000-0000-4000-8000-${String(++sequence).padStart(12, "0")}`,
+
       configurable: true,
     });
   });
+
   it("reuses the request id on a failed start and keeps resume separate", async () => {
     const onStart = jest
       .fn<GrammarPracticeLauncherProps["onStart"]>()
       .mockResolvedValue({ ok: false, code: "FAILED" as const });
     const onOpen = jest.fn();
+
     render(
       <GrammarPracticeLauncher
         noteId="note"
@@ -34,11 +39,13 @@ describe("grammar practice launch", () => {
     await waitFor(() => expect(onStart).toHaveBeenCalledTimes(2));
     expect(onStart.mock.calls[0][0].requestId).toBe(onStart.mock.calls[1][0].requestId);
   });
+
   it("uses a new request after a successful start in a restored launcher", async () => {
     const onStart = jest
       .fn<GrammarPracticeLauncherProps["onStart"]>()
       .mockResolvedValue({ ok: true, data: recallSession() });
     const onOpen = jest.fn();
+
     render(
       <GrammarPracticeLauncher
         noteId="note"

@@ -6,6 +6,7 @@ describe("practice workspace routing", () => {
     "%s does not show a practice sidebar",
     (path) => expect(getShellRoute(path).inPractice).toBe(false),
   );
+
   it.each([
     ["/grammar", "어법 연습", "자료 목록"],
     ["/grammar/note-id", "어법 연습", "어법 노트"],

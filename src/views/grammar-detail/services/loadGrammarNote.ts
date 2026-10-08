@@ -8,15 +8,20 @@ import { recordOperationEvent } from "@/shared/lib/logging/pino";
 
 export async function loadGrammarNote(id: string) {
   if (!z.string().uuid().safeParse(id).success) notFound();
+
   const note = await observeOperation({
     operation: "grammar.note.read",
     resourceId: id,
     recordEvent: recordOperationEvent,
+
     execute: async () => {
       const supabase = await createSupabaseServerClient();
+
       return new GrammarNoteRepository(supabase).findById(id);
     },
   });
+
   if (!note) notFound();
+
   return note;
 }

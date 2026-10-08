@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { GrammarSessionSummary } from "@/entities/grammar-session";
 import { formatGrammarPracticeDate } from "../services/formatPracticeDate";
+
 export function GrammarHistoryRows({
   items,
   resultHref,
@@ -14,6 +15,7 @@ export function GrammarHistoryRows({
         아직 완료한 연습이 없습니다.
       </p>
     );
+
   return (
     <ul className="divide-y divide-practice-line">
       {items.map((item) => (

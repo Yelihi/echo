@@ -1,9 +1,11 @@
 "use client";
+
 import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import { useState } from "react";
 import type { RecallDraft, RecallQuestionProps } from "../models/interface";
 import { persistRecallDraft, readRecallDraft, createRecallSegments } from "../services/recallDraft";
 import { RecallBlankFields } from "./RecallBlankFields";
+
 export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQuestionProps) {
   const question = session.questions[session.questionIndex];
   const [draft, setDraft] = useState(() => readRecallDraft(session));
@@ -11,16 +13,20 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
   const [hint, setHint] = useState(false);
   const segments = createRecallSegments(question);
   const partial = session.phase === "partial";
+
   function update(next: RecallDraft) {
     setDraft(next);
     persistRecallDraft(session, next);
   }
+
   function changeBlank(id: string, value: string) {
     update({ ...draft, values: { ...draft.values, [id]: value } });
   }
+
   const filled = partial
     ? segments.filter((s) => s.hidden).every((s) => draft.values[s.id]?.trim())
     : !!draft.whole.trim();
+
   return (
     <section className="space-y-7 rounded-2xl border border-practice-line bg-white p-6 sm:p-9">
       <div className="flex items-center justify-between">

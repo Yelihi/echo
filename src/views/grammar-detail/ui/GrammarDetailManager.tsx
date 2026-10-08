@@ -1,4 +1,5 @@
 "use client";
+
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { GrammarNote } from "@/entities/grammar-note";
@@ -7,7 +8,9 @@ import {
   requestGrammarExamples,
   saveGrammarExamples,
 } from "@/features/grammar-example-generation/services/actions/exampleActions";
+
 const ManageContext = createContext<(() => void) | null>(null);
+
 export function GrammarDetailManager({
   note,
   children,
@@ -17,6 +20,7 @@ export function GrammarDetailManager({
 }) {
   const [managing, setManaging] = useState(false);
   const router = useRouter();
+
   return (
     <ManageContext.Provider value={() => setManaging(true)}>
       {managing ? (
@@ -37,9 +41,12 @@ export function GrammarDetailManager({
     </ManageContext.Provider>
   );
 }
+
 export function GrammarManageExamplesButton() {
   const manage = useContext(ManageContext);
+
   if (!manage) throw new Error("GrammarDetailManager가 필요합니다.");
+
   return (
     <button
       type="button"

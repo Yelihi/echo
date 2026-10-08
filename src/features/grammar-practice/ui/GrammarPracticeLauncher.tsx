@@ -35,13 +35,17 @@ export function GrammarPracticeLauncher({
 
   async function start(mode: GrammarSessionMode) {
     if (busy.current) return;
+
     busy.current = true;
     setPending(mode);
     setError(null);
+
     try {
       const requestId = requests.current[mode] ?? crypto.randomUUID();
+
       requests.current[mode] = requestId;
       const result = await onStart({ noteId, requestId, mode });
+
       if (result.ok) {
         delete requests.current[mode];
         onOpen(result.data.id);
