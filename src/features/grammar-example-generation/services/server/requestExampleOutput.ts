@@ -3,6 +3,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 import type { GrammarNote } from "@/entities/grammar-note";
 import { getOpenAIEvaluationModel, getOpenAIServerClient } from "@/shared/lib/openai/server";
 import { exampleOutputSchema } from "../../models/schema";
+
 export async function requestExampleOutput(note: GrammarNote, count: 1 | 3): Promise<unknown> {
   const response = await getOpenAIServerClient().responses.parse(
     {
@@ -29,5 +30,6 @@ export async function requestExampleOutput(note: GrammarNote, count: 1 | 3): Pro
     },
     { timeout: 60000, maxRetries: 0 },
   );
+
   return response.output_parsed;
 }

@@ -1,7 +1,9 @@
 "use client";
+
 import { Button } from "@/shared/components/atomics/button/Button";
 import { exampleErrorMessage } from "./errorMessage";
 import { useExamples } from "./ExampleProvider";
+
 export function ExampleActions() {
   const pending = useExamples((s) => s.pending);
   const error = useExamples((s) => s.error);
@@ -9,6 +11,7 @@ export function ExampleActions() {
   const count = useExamples((s) => s.candidates.length);
   const generate = useExamples((s) => s.generate);
   const save = useExamples((s) => s.save);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">

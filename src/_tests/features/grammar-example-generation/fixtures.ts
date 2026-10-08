@@ -1,4 +1,5 @@
 import type { GrammarExample } from "@/entities/grammar-note";
+
 export function createExampleCandidates(): GrammarExample[] {
   return [
     "He is not a driver but a teacher.",

@@ -6,7 +6,9 @@ import {
 } from "@/features/grammar-example-generation";
 import { createEditorNote } from "@/_tests/features/grammar-note-editor/fixtures";
 import { createExampleCandidates } from "@/_tests/features/grammar-example-generation/fixtures";
+
 const note = createEditorNote();
+
 const meta = {
   title: "features/grammar-example-generation/GrammarExampleManager",
   component: GrammarExampleManager,
@@ -31,12 +33,17 @@ const meta = {
     ),
   ],
 } satisfies Meta<typeof GrammarExampleManager>;
+
 export default meta;
+
 type Story = StoryObj<typeof meta>;
+
 export const Empty: Story = {};
+
 export const SelectAndSave: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
+
     await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
     await expect(await canvas.findAllByRole("checkbox")).toHaveLength(3);
     await userEvent.click(canvas.getAllByRole("checkbox")[0]);
@@ -45,6 +52,7 @@ export const SelectAndSave: Story = {
     await expect(canvas.getAllByRole("checkbox")).toHaveLength(2);
   },
 };
+
 export const Retry: Story = {
   args: {
     generate: fn<GrammarExampleManagerProps["generate"]>(async () => ({
@@ -52,23 +60,28 @@ export const Retry: Story = {
       data: createExampleCandidates(),
     })),
   },
+
   play: async ({ canvasElement, args }) => {
     args.generate.mockResolvedValueOnce({
       ok: false,
       code: "FAILED",
     });
     const canvas = within(canvasElement);
+
     await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
     await expect(await canvas.findByRole("alert")).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: "예문 다시 생성" }));
     await expect(await canvas.findAllByRole("checkbox")).toHaveLength(3);
   },
 };
+
 export const EditCandidate: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+
     await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
     const input = (await canvas.findAllByLabelText("한국어 뜻"))[0];
+
     await userEvent.clear(input);
     await userEvent.type(input, "그는 운전사가 아니라 교사입니다.");
     await expect(input).toHaveValue("그는 운전사가 아니라 교사입니다.");

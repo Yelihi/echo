@@ -7,6 +7,7 @@ import {
 } from "@/features/grammar-example-generation";
 import { createEditorNote } from "../grammar-note-editor/fixtures";
 import { createExampleCandidates } from "./fixtures";
+
 describe("예문 편집 세션", () => {
   it("같은 노트의 버전 갱신에는 초안을 유지하고 최신 콜백을 쓰며 다른 노트에는 초기화한다", async () => {
     const note = createEditorNote();
@@ -20,6 +21,7 @@ describe("예문 편집 세션", () => {
     const props = { note, generate, save, onUpdated: jest.fn() };
     const { rerender } = render(<GrammarExampleManager {...props} />);
     const user = userEvent.setup();
+
     await user.click(screen.getByRole("button", { name: "예문 3개 생성" }));
     fireEvent.change((await screen.findAllByLabelText("영어 예문"))[0], {
       target: { value: "Edited sentence." },

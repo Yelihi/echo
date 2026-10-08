@@ -1,4 +1,5 @@
 export { GrammarExampleManager } from "./ui/GrammarExampleManager";
+
 export type {
   GrammarExampleManagerProps,
   GenerateExamplesCommand,

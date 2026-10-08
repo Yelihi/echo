@@ -1,13 +1,16 @@
 "use client";
+
 import { useId } from "react";
 import { Textarea } from "@/shared/components/atomics/textarea/Textarea";
 import { Button } from "@/shared/components/atomics/button/Button";
 import { useExamples } from "./ExampleProvider";
+
 const fields = [
   { field: "sentence", label: "영어 예문" },
   { field: "translation", label: "한국어 뜻" },
   { field: "targetExplanation", label: "목표 어법 설명" },
 ] as const;
+
 export function ExampleCandidateCard({ id, number }: { id: string; number: number }) {
   const formId = useId();
   const candidate = useExamples((s) => s.candidates.find((candidate) => candidate.id === id));
@@ -16,7 +19,9 @@ export function ExampleCandidateCard({ id, number }: { id: string; number: numbe
   const change = useExamples((s) => s.change);
   const select = useExamples((s) => s.select);
   const generate = useExamples((s) => s.generate);
+
   if (!candidate) return null;
+
   return (
     <article className="space-y-5 rounded-2xl border border-card-line bg-white p-5 sm:p-6">
       <header className="flex items-center justify-between gap-3">

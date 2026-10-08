@@ -4,22 +4,27 @@ import type {
   GrammarNote,
   GrammarNoteRepositoryPort,
 } from "@/entities/grammar-note";
+
 export interface GenerateExamplesCommand {
   noteId: string;
   expectedVersion: number;
   count: 1 | 3;
 }
+
 export interface SaveExamplesCommand {
   noteId: string;
   expectedVersion: number;
   candidates: readonly GrammarExample[];
 }
+
 export type ExampleResult<T> = { ok: true; data: T } | { ok: false; code: ExampleErrorCode };
+
 export interface ExampleDependencies {
   repository: GrammarNoteRepositoryPort;
   generate: (note: GrammarNote, count: 1 | 3) => Promise<unknown>;
   consumeRequest: () => Promise<"allowed" | "not_invited" | "rate_limited">;
 }
+
 export interface GrammarExampleManagerProps {
   note: GrammarNote;
   generate: (command: GenerateExamplesCommand) => Promise<ExampleResult<readonly GrammarExample[]>>;
@@ -27,6 +32,7 @@ export interface GrammarExampleManagerProps {
   onUpdated: (note: GrammarNote) => void;
   onBack?: () => void;
 }
+
 export interface ExampleState {
   note: GrammarNote;
   candidates: readonly GrammarExample[];

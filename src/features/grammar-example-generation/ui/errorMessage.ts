@@ -1,4 +1,5 @@
 import type { ExampleErrorCode } from "../models/errors";
+
 export function exampleErrorMessage(code: ExampleErrorCode): string {
   switch (code) {
     case "VERSION_CONFLICT":

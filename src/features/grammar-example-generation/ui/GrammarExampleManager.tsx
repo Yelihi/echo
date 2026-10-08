@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { Button } from "@/shared/components/atomics/button/Button";
 import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
@@ -6,15 +7,18 @@ import type { GrammarExampleManagerProps } from "../models/interface";
 import { ExampleProvider, useExamples } from "./ExampleProvider";
 import { ExampleCandidates } from "./ExampleCandidates";
 import { ExampleActions } from "./ExampleActions";
+
 function ExampleBack({ onBack }: { onBack?: () => void }) {
   const [confirm, setConfirm] = useState(false);
   const dirty = useExamples((s) => s.dirty);
   const saving = useExamples((s) => s.pending === "save");
   const discard = useExamples((s) => s.discard);
+
   function leave() {
     discard();
     onBack?.();
   }
+
   return (
     <>
       <Button
@@ -36,6 +40,7 @@ function ExampleBack({ onBack }: { onBack?: () => void }) {
     </>
   );
 }
+
 /** 노트 ID로 생명주기를 구분한다. 선택 저장 후 남은 후보 보존을 위해 버전 변경으로 재마운트하지 않는다. */
 export function GrammarExampleManager({ onBack, ...props }: GrammarExampleManagerProps) {
   return (
