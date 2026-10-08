@@ -28,6 +28,24 @@ export type Database = {
   };
   public: {
     Tables: {
+      grammar_exam_feedback: {
+        Row: {
+          session_id: string;
+          question_id: string;
+          owner_id: string;
+          feedback: Json;
+          created_at: string;
+        };
+        Insert: {
+          session_id: string;
+          question_id: string;
+          owner_id: string;
+          feedback: Json;
+          created_at?: string;
+        };
+        Update: { feedback?: Json };
+        Relationships: [];
+      };
       grammar_sessions: {
         Row: {
           id: string;
@@ -1100,6 +1118,10 @@ export type Database = {
       };
     };
     Functions: {
+      save_grammar_exam_feedback: {
+        Args: { p_session_id: string; p_question_id: string; p_answer: string; p_feedback: Json };
+        Returns: Json;
+      };
       start_grammar_session: {
         Args: { p_note_id: string; p_request_id: string; p_mode: string };
         Returns: Json;
