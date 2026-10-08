@@ -1,9 +1,12 @@
 "use client";
+
 import type { GrammarAudioButtonProps } from "../models/interface";
 import { grammarAudioErrorMessages } from "./errorMessage";
 import { useGrammarAudio } from "../services/useGrammarAudio";
+
 export function GrammarAudioButton(props: GrammarAudioButtonProps) {
   const { status, error, play } = useGrammarAudio(props);
+
   return (
     <div className="space-y-2">
       <button

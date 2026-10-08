@@ -3,6 +3,7 @@ import type { GrammarNote } from "@/entities/grammar-note";
 import { createGrammarAnalysis } from "@/_tests/fixtures/grammarAnalysis";
 import { resolveGrammarAudioText } from "@/features/grammar-audio/services/resolveGrammarAudioText";
 import { claimGrammarPlayback } from "@/features/grammar-audio/services/playbackCoordinator";
+
 const note: GrammarNote = {
   id: "note",
   ownerId: "owner",
@@ -26,6 +27,7 @@ const note: GrammarNote = {
     },
   ],
 };
+
 describe("saved grammar audio", () => {
   it("resolves only source or adopted saved examples", () => {
     expect(
@@ -35,6 +37,7 @@ describe("saved grammar audio", () => {
       resolveGrammarAudioText(note, { noteId: "note", sentenceId: "example", noteVersion: 2 }),
     ).toBe(note.examples[0].sentence);
   });
+
   it("rejects stale versions, missing notes, unreviewed and arbitrary sentences", () => {
     expect(() =>
       resolveGrammarAudioText(note, { noteId: "note", sentenceId: "source", noteVersion: 1 }),
@@ -52,14 +55,17 @@ describe("saved grammar audio", () => {
       ),
     ).toThrow();
   });
+
   it("stops the current player when another sentence claims playback", () => {
     const first = jest.fn(),
       second = jest.fn();
     const releaseFirst = claimGrammarPlayback(first);
     const releaseSecond = claimGrammarPlayback(second);
+
     expect(first).toHaveBeenCalledTimes(1);
     releaseFirst();
     const releaseThird = claimGrammarPlayback(jest.fn());
+
     expect(second).toHaveBeenCalledTimes(1);
     releaseSecond();
     releaseThird();
