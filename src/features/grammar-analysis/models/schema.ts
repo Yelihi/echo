@@ -21,7 +21,7 @@ export const analysisOutputSchema = z
   .object({
     title: z.string(),
     tags: z.array(z.string()),
-    grammarKey: z.string().nullable(),
+    grammarKey: z.null(),
     chunks: z.array(
       z
         .object({ id: z.string(), range, literalMeaning: z.string(), explanation: z.string() })
@@ -32,7 +32,7 @@ export const analysisOutputSchema = z
         .object({
           id: z.string(),
           ranges: z.array(range),
-          parentId: z.string().nullable(),
+          parentId: z.string().min(1).nullable(),
           role: z.enum(["subject", "verb", "object", "complement", "modifier", "other"]),
           label: z.string(),
           explanation: z.string(),
