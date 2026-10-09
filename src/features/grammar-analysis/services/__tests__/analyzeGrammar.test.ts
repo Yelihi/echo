@@ -1,6 +1,10 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { analyzeGrammar } from "../analyzeGrammar";
-import { grammarAnalysisFailure } from "../../models/errors";
+import {
+  grammarAnalysisFailure,
+  GrammarAnalysisError,
+  invalidGrammarOutput,
+} from "../../models/errors";
 import type { GrammarAnalysisDependencies } from "../../models/interface";
 
 const source = { sentence: "She is a doctor.", learningNote: "주격 보어", revision: 3 };
@@ -222,5 +226,127 @@ describe("grammar precheck followed by analysis", () => {
     const result = grammarAnalysisFailure(new Error("sensitive request contents"));
     expect(result.code).toBe("PROVIDER_FAILED");
     expect(result.message).not.toContain("sensitive");
+  });
+});
+
+describe("invalid analysis diagnostics", () => {
+  it.each([
+    [null, "precheck.shape", []],
+    [
+      { status: "passed", issues: [{ field: "sentence", message: "detail", suggestion: null }] },
+      "precheck.consistency",
+      ["issues"],
+    ],
+    [{ status: "uncertain", issues: [] }, "precheck.content", ["issues"]],
+  ])("identifies the failed precheck without continuing: %j", async (output, stage, path) => {
+    // Given
+    const deps = dependencies();
+    deps.provider.precheck = async () => output;
+
+    // When / Then
+    await expect(analyzeGrammar(source, deps)).rejects.toMatchObject({
+      diagnostics: { stage, issues: expect.arrayContaining([expect.objectContaining({ path })]) },
+    });
+    expect(deps.provider.analyze).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [{ grammarKey: "" }, ["grammarKey"]],
+    [
+      {
+        syntax: [
+          {
+            id: "s1",
+            ranges: [{ start: 0, end: 3 }],
+            parentId: "",
+            role: "subject",
+            label: "She",
+            explanation: "",
+          },
+        ],
+      },
+      ["syntax", 0, "parentId"],
+    ],
+  ])(
+    "rejects empty identifiers from the reported response at the provider contract: %j",
+    async (override, path) => {
+      const deps = dependencies();
+      deps.provider.analyze = async () => ({ ...createAnalysisOutput(), ...override });
+
+      await expect(analyzeGrammar(source, deps)).rejects.toMatchObject({
+        diagnostics: {
+          stage: "analysis.shape",
+          issues: expect.arrayContaining([expect.objectContaining({ path })]),
+        },
+      });
+    },
+  );
+
+  it("keeps rejecting the captured final offset of 27 for the 28-character sentence", async () => {
+    const reported = {
+      sentence: "I want to join a study group",
+      learningNote: "I want to : ~하고 싶어",
+      revision: 87,
+    };
+    const output = createAnalysisOutput();
+    output.chunks[0].range.end = 27;
+    const deps = dependencies();
+    deps.provider.analyze = async () => output;
+
+    await expect(analyzeGrammar(reported, deps)).rejects.toMatchObject({
+      diagnostics: {
+        stage: "analysis.content",
+        issues: expect.arrayContaining([{ code: "custom", path: ["analysis", "chunks"] }]),
+      },
+    });
+  });
+
+  it("keeps rejecting grammatical dependency used as visual containment", async () => {
+    const deps = dependencies();
+    deps.provider.analyze = async () => ({
+      ...createAnalysisOutput(),
+      syntax: [
+        {
+          id: "parent",
+          ranges: [{ start: 4, end: 6 }],
+          parentId: null,
+          role: "verb",
+          label: "is",
+          explanation: "",
+        },
+        {
+          id: "child",
+          ranges: [{ start: 7, end: 15 }],
+          parentId: "parent",
+          role: "complement",
+          label: "a doctor",
+          explanation: "",
+        },
+      ],
+    });
+
+    await expect(analyzeGrammar(source, deps)).rejects.toMatchObject({
+      diagnostics: {
+        stage: "analysis.content",
+        issues: expect.arrayContaining([
+          { code: "custom", path: ["analysis", "syntax", 1, "parentId"] },
+        ]),
+      },
+    });
+  });
+
+  it("bounds diagnostics and excludes response values, messages and unknown keys from logs and UI", () => {
+    const issues = Array.from({ length: 30 }, () => ({
+      code: "unrecognized_keys",
+      path: [],
+      message: "private sentence",
+      keys: ["private field"],
+    }));
+    const error = invalidGrammarOutput("analysis.shape", issues);
+
+    expect(error).toBeInstanceOf(GrammarAnalysisError);
+    expect(error.diagnostics?.issues).toHaveLength(20);
+    expect(JSON.stringify(error.diagnostics)).not.toContain("private");
+    expect(grammarAnalysisFailure(error)).not.toHaveProperty("diagnostics");
   });
 });
