@@ -1,6 +1,7 @@
 "use server";
 
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { getAuthenticatedUser } from "@/shared/lib/supabase/getAuthenticatedUser";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import { GrammarAnalysisError, grammarAnalysisFailure } from "../../models/errors";
@@ -20,8 +21,10 @@ export async function requestGrammarAnalysis(input: unknown): Promise<GrammarAna
       execute: async () => {
         try {
           const supabase = await createSupabaseServerClient();
-          const { data, error } = await supabase.auth.getUser();
-          if (error || !data.user) throw new GrammarAnalysisError("UNAUTHORIZED");
+          const user = await getAuthenticatedUser(supabase);
+
+          if (!user) throw new GrammarAnalysisError("UNAUTHORIZED");
+
           return await analyzeGrammar(input, {
             provider: createOpenAIGrammarProvider(),
             consumeRequest: async () => {

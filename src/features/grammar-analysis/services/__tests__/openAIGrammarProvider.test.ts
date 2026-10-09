@@ -177,6 +177,34 @@ describe("OpenAI grammar response boundary", () => {
     expect(requests).toHaveLength(1);
   });
 
+  it.each([
+    { user: null, error: null },
+    { user: { id: "test-user" }, error: { message: "invalid token" } },
+  ])(
+    "blocks quota and AI requests when shared authentication rejects: %j",
+    async ({ user, error }) => {
+      // Given: 공용 인증 함수는 실제 구현을 사용하고 Supabase 경계만 대체한다.
+      const { requests } = await setup(output());
+      const { createSupabaseServerClient } = await import("@/shared/lib/supabase/server");
+      const rpc = jest.fn();
+      const getUser = jest.fn(async () => ({ data: { user }, error }));
+      jest.mocked(createSupabaseServerClient).mockResolvedValue({
+        auth: { getUser },
+        rpc,
+      } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
+      const { requestGrammarAnalysis } = await import("../actions/requestGrammarAnalysis");
+
+      // When
+      const result = await requestGrammarAnalysis(source);
+
+      // Then
+      expect(result).toMatchObject({ status: "error", code: "UNAUTHORIZED" });
+      expect(getUser).toHaveBeenCalledTimes(1);
+      expect(rpc).not.toHaveBeenCalled();
+      expect(requests).toHaveLength(0);
+    },
+  );
+
   it("records the validation stage on the same failed operation and returns only a safe UI error", async () => {
     await setup({
       status: "passed",
