@@ -17,6 +17,9 @@ export function RecordingPanel({
   durationLabel,
   message,
   saving = false,
+  busy = false,
+  timedOut = false,
+  notice,
   recordedAudio,
   actions,
 }: RecordingPanelProps) {
@@ -48,13 +51,23 @@ export function RecordingPanel({
             recorded ||
             phase === "completed" ||
             saving ||
+            busy ||
             (content.kind === "prompt" && content.unavailable === true)
           }
           onClick={actions.toggle}
         />
         <div className="flex flex-col items-center gap-[13px]">
           <TimerPill recording={recording}>{durationLabel}</TimerPill>
-          <p className="break-keep text-sm leading-6 text-white/70">{message}</p>
+          <p
+            role={timedOut ? "alert" : undefined}
+            className="break-keep text-sm leading-6 text-white/70"
+          >
+            {busy
+              ? recording
+                ? "녹음을 마무리하고 있습니다."
+                : "마이크 권한을 확인하고 있습니다."
+              : message}
+          </p>
           {(phase === "user-ready" || phase === "partner-speaking") &&
           content.kind === "partner" &&
           content.canReplay ? (
@@ -68,6 +81,21 @@ export function RecordingPanel({
           <RecordedAudioPlayer blob={recordedAudio.blob} />
         ) : null}
       </section>
+      {timedOut ? (
+        <div className="relative z-10 flex justify-center px-5 pb-6">
+          <GlassButton onClick={actions.toggle} disabled={busy}>
+            <RotateCcw />
+            다시 녹음
+          </GlassButton>
+        </div>
+      ) : null}
+      {notice ? (
+        <div className="relative z-10 mx-auto max-w-[640px] px-5 pb-6 text-center text-sm leading-6 text-white/70">
+          {notice.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+      ) : null}
       {recorded ? (
         <footer className="relative z-10 flex flex-wrap justify-center gap-2.5 px-5 pb-8">
           <GlassButton onClick={actions.retry} disabled={saving}>

@@ -226,3 +226,103 @@ describe("AudioCapture", () => {
     capture.cancel();
   });
 });
+
+describe("capture attempt boundaries", () => {
+  it("freezes duration at stop request even when the last chunk arrives after the deadline", async () => {
+    const { stream } = createStream();
+    const recorder = new FakeAudioRecorder();
+    recorder.stop.mockImplementation(() => {
+      recorder.state = "inactive";
+    });
+    let now = 0;
+    const capture = new AudioCapture({
+      getUserMedia: createGetUserMedia(stream),
+      createRecorder: () => recorder,
+      isTypeSupported: () => true,
+      clock: { now: () => now },
+    });
+    await capture.start();
+    now = 59_900;
+    const pending = capture.stop(60_000);
+    now = 61_000;
+    recorder.ondataavailable?.({ data: new Blob(["valid"]) } as BlobEvent);
+    recorder.onstop?.(new Event("stop"));
+    expect((await pending).durationMs).toBe(59_900);
+  });
+
+  it("rejects a stop exactly at the limit and releases the microphone", async () => {
+    const { stream, stopTrack } = createStream();
+    const recorder = new FakeAudioRecorder();
+    const capture = new AudioCapture({
+      getUserMedia: createGetUserMedia(stream),
+      createRecorder: () => recorder,
+      isTypeSupported: () => true,
+      clock: createClock(0, 60_000),
+    });
+    await capture.start();
+    await expect(capture.stop(60_000)).rejects.toMatchObject({ code: "duration-limit-exceeded" });
+    expect(stopTrack).toHaveBeenCalledTimes(1);
+    expect(capture.getStatus()).toBe("idle");
+  });
+
+  it("ignores canceled recorder chunks and completion while a new attempt is recording", async () => {
+    const old = new FakeAudioRecorder();
+    old.stop.mockImplementation(() => {
+      old.state = "inactive";
+    });
+    const next = new FakeAudioRecorder();
+    const firstStream = createStream();
+    const nextStream = createStream();
+    let attempt = 0;
+    let now = 0;
+    const capture = new AudioCapture({
+      getUserMedia: async () => (attempt === 0 ? firstStream.stream : nextStream.stream),
+      createRecorder: () => (attempt++ === 0 ? old : next),
+      isTypeSupported: () => true,
+      clock: { now: () => now },
+    });
+    await capture.start();
+    const lateData = old.ondataavailable;
+    now = 1000;
+    const pending = capture.stop();
+    capture.cancel();
+    await capture.start();
+    lateData?.({ data: new Blob(["stale"]) } as BlobEvent);
+    old.onstop?.(new Event("stop"));
+    await expect(pending).rejects.toMatchObject({ code: "recorder-stop-failed" });
+    expect(capture.getStatus()).toBe("recording");
+    expect(nextStream.stopTrack).not.toHaveBeenCalled();
+    now = 2000;
+    const audio = await capture.stop();
+    expect(audio.blob.size).toBe(new Blob(["audio-data"]).size);
+    expect(audio.durationMs).toBe(1000);
+  });
+});
+
+it("releases a late permission result without replacing the next capture", async () => {
+  let grantOld!: (stream: MediaStream) => void;
+  const oldStream = createStream();
+  const nextStream = createStream();
+  const recorder = new FakeAudioRecorder();
+  const getUserMedia = jest
+    .fn<GetUserMedia>()
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          grantOld = resolve;
+        }),
+    )
+    .mockResolvedValueOnce(nextStream.stream);
+  const createRecorder = jest.fn(() => recorder);
+  const capture = new AudioCapture({ getUserMedia, createRecorder, isTypeSupported: () => true });
+  const oldStart = capture.start();
+  capture.cancel();
+  await capture.start();
+  grantOld(oldStream.stream);
+  expect(await oldStart).toBeNull();
+  expect(oldStream.stopTrack).toHaveBeenCalledTimes(1);
+  expect(nextStream.stopTrack).not.toHaveBeenCalled();
+  expect(createRecorder).toHaveBeenCalledTimes(1);
+  expect(capture.getStatus()).toBe("recording");
+  capture.cancel();
+});

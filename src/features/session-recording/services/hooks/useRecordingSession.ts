@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 import { MIN_RECORDING_DURATION_MS } from "@/features/session-recording/config/const";
 import {
@@ -19,8 +19,6 @@ import type {
   UseRecordingSessionResult,
 } from "@/features/session-recording/models/interface";
 
-const defaultNow = () => performance.now();
-
 function getRecordingErrorCode(error: unknown): RecordingSessionErrorCode {
   return error instanceof AudioCaptureError ? error.code : "unknown";
 }
@@ -28,66 +26,102 @@ function getRecordingErrorCode(error: unknown): RecordingSessionErrorCode {
 export function useRecordingSession(
   options: UseRecordingSessionOptions = {},
 ): UseRecordingSessionResult {
-  const now = options.now ?? defaultNow;
   const recordEvent = options.recordEvent ?? recordBrowserOperationEvent;
   const captureId = useRef<string | null>(null);
   const recorderRef = useRef<AudioCapture | null>(null);
-  const activeStartTokenRef = useRef<symbol | null>(null);
+  const activeAttempt = useRef<symbol | null>(null);
   const [state, dispatch] = useReducer(recordingSessionReducer, { status: "idle" });
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const maxDurationMs = options.maxDurationMs;
 
-  const beginRecordingStart = useCallback(() => {
-    const token = Symbol("recording-start");
-    activeStartTokenRef.current = token;
-    return token;
+  const cancelCapture = useCallback(() => {
+    activeAttempt.current = null;
+    recorderRef.current?.cancel();
   }, []);
-  const invalidateRecordingStart = useCallback(() => {
-    activeStartTokenRef.current = null;
-  }, []);
-  const isCurrentRecordingStart = useCallback(
-    (token: symbol) => token === activeStartTokenRef.current,
-    [],
-  );
 
-  const getRecorder = useCallback(() => {
-    recorderRef.current ??= new AudioCapture(options.audioCaptureOptions);
-    return recorderRef.current;
-  }, [options.audioCaptureOptions]);
+  useEffect(() => cancelCapture, [cancelCapture]);
+
+  const expire = useCallback(() => {
+    const recorder = recorderRef.current;
+    if (!activeAttempt.current || recorder?.getStatus() !== "recording") return false;
+    const elapsed = recorder.getElapsedMs();
+    setElapsedMs(elapsed);
+    if (maxDurationMs === undefined || elapsed < maxDurationMs) return false;
+    cancelCapture();
+    dispatch({ type: "timeout" });
+    emitOperationEvent(recordEvent, {
+      operation: "recording.timeout",
+      phase: "canceled",
+      operationId: crypto.randomUUID(),
+      resourceId: captureId.current ?? "unstarted",
+    });
+    return true;
+  }, [cancelCapture, maxDurationMs, recordEvent]);
 
   useEffect(() => {
+    if (state.status !== "recording") return;
+    const timer = window.setInterval(expire, 250);
+    const deadline =
+      maxDurationMs === undefined
+        ? undefined
+        : window.setTimeout(
+            expire,
+            Math.max(0, maxDurationMs - (recorderRef.current?.getElapsedMs() ?? 0)),
+          );
+    document.addEventListener("visibilitychange", expire);
+    window.addEventListener("pageshow", expire);
     return () => {
-      invalidateRecordingStart();
-      recorderRef.current?.cancel();
+      window.clearInterval(timer);
+      window.clearTimeout(deadline);
+      document.removeEventListener("visibilitychange", expire);
+      window.removeEventListener("pageshow", expire);
     };
-  }, [invalidateRecordingStart]);
+  }, [expire, maxDurationMs, state.status]);
 
   const start = useCallback(async () => {
+    if (activeAttempt.current) return "canceled" as const;
+    const token = Symbol("recording-attempt");
+    activeAttempt.current = token;
     const operationId = crypto.randomUUID();
     captureId.current = operationId;
     const context = { operation: "recording.start", operationId, resourceId: operationId };
     emitOperationEvent(recordEvent, { ...context, phase: "started" });
-    const token = beginRecordingStart();
-    const recorder = getRecorder();
-
+    const recorder = new AudioCapture({
+      ...options.audioCaptureOptions,
+      ...(options.now ? { clock: { now: options.now } } : {}),
+    });
+    recorderRef.current = recorder;
+    setElapsedMs(0);
+    dispatch({ type: "preparing" });
     try {
-      dispatch(startRecording(now()));
-      await recorder.start();
-      if (!isCurrentRecordingStart(token)) {
-        recorder.cancel();
+      const startedAtMs = await recorder.start();
+      if (activeAttempt.current !== token || startedAtMs === null) {
         emitOperationEvent(recordEvent, { ...context, phase: "canceled" });
-        return;
+        return "canceled" as const;
       }
+      dispatch(startRecording(startedAtMs));
       emitOperationEvent(recordEvent, { ...context, phase: "succeeded" });
+      return "started" as const;
     } catch (error) {
-      if (isCurrentRecordingStart(token)) {
-        dispatch(failRecording(getRecordingErrorCode(error)));
-        emitOperationEvent(recordEvent, { ...context, phase: "failed" });
-      } else {
+      if (activeAttempt.current !== token) {
         emitOperationEvent(recordEvent, { ...context, phase: "canceled" });
+        return "canceled" as const;
       }
+      activeAttempt.current = null;
+      dispatch(failRecording(getRecordingErrorCode(error)));
+      emitOperationEvent(recordEvent, { ...context, phase: "failed" });
+      return "failed" as const;
     }
-  }, [beginRecordingStart, getRecorder, isCurrentRecordingStart, now, recordEvent]);
+  }, [options.audioCaptureOptions, options.now, recordEvent]);
 
   const stop = useCallback(async () => {
+    const token = activeAttempt.current;
+    const recorder = recorderRef.current;
+    if (!token || recorder?.getStatus() !== "recording") return "canceled" as const;
+    if (expire()) return "discarded" as const;
+    // stop() synchronously freezes capture duration before awaiting the final chunk.
+    const pendingAudio = recorder.stop(maxDurationMs);
+    dispatch({ type: "stopping" });
     const context = {
       operation: "recording.stop",
       operationId: crypto.randomUUID(),
@@ -95,21 +129,36 @@ export function useRecordingSession(
     };
     emitOperationEvent(recordEvent, { ...context, phase: "started" });
     try {
-      const audio = await getRecorder().stop();
+      const audio = await pendingAudio;
+      if (activeAttempt.current !== token) {
+        emitOperationEvent(recordEvent, { ...context, phase: "canceled" });
+        return "canceled" as const;
+      }
+      activeAttempt.current = null;
+      const tooShort = audio.durationMs < MIN_RECORDING_DURATION_MS;
       dispatch(recordAudio(audio));
-      emitOperationEvent(recordEvent, {
-        ...context,
-        phase: audio.durationMs >= MIN_RECORDING_DURATION_MS ? "succeeded" : "failed",
-      });
+      emitOperationEvent(recordEvent, { ...context, phase: tooShort ? "failed" : "succeeded" });
+      return tooShort ? ("discarded" as const) : ("recorded" as const);
     } catch (error) {
+      if (activeAttempt.current !== token) {
+        emitOperationEvent(recordEvent, { ...context, phase: "canceled" });
+        return "canceled" as const;
+      }
+      activeAttempt.current = null;
+      if (error instanceof AudioCaptureError && error.code === "duration-limit-exceeded") {
+        dispatch({ type: "timeout" });
+        emitOperationEvent(recordEvent, { ...context, phase: "canceled" });
+        return "discarded" as const;
+      }
       dispatch(failRecording(getRecordingErrorCode(error)));
       emitOperationEvent(recordEvent, { ...context, phase: "failed" });
+      return "failed" as const;
     }
-  }, [getRecorder, recordEvent]);
+  }, [expire, maxDurationMs, recordEvent]);
 
   const reset = useCallback(() => {
-    invalidateRecordingStart();
-    recorderRef.current?.cancel();
+    cancelCapture();
+    setElapsedMs(0);
     dispatch(resetRecording());
     if (captureId.current) {
       emitOperationEvent(recordEvent, {
@@ -120,19 +169,23 @@ export function useRecordingSession(
       });
       captureId.current = null;
     }
-  }, [invalidateRecordingStart, recordEvent]);
+  }, [cancelCapture, recordEvent]);
 
   return useMemo(
     () => ({
       state,
+      elapsedMs,
       minDurationMs: MIN_RECORDING_DURATION_MS,
       start,
       stop,
       cancel: reset,
       retry: reset,
-      fail: (errorCode: RecordingSessionErrorCode) => dispatch(failRecording(errorCode)),
+      fail: (errorCode: RecordingSessionErrorCode) => {
+        cancelCapture();
+        dispatch(failRecording(errorCode));
+      },
       recordedAudio: state.status === "recorded" ? state.audio : null,
     }),
-    [reset, start, state, stop],
+    [cancelCapture, elapsedMs, reset, start, state, stop],
   );
 }
