@@ -12,6 +12,7 @@ const RECORDING_ERROR_MESSAGES: Record<RecordingSessionErrorCode, string> = {
   "recorder-start-failed": "녹음을 시작하지 못했습니다. 다시 시도해주세요.",
   "recorder-stop-failed": "녹음을 종료하지 못했습니다. 다시 시도해주세요.",
   "empty-audio-data": "녹음된 음성이 없습니다. 다시 녹음해주세요.",
+  "duration-limit-exceeded": "녹음 제한시간을 초과했습니다. 다시 녹음해 주세요.",
   unknown: "녹음을 처리하지 못했습니다. 다시 시도해 주세요",
 };
 
@@ -22,6 +23,9 @@ export function getRecordingSessionHint(
   partnerPlaybackBlocked = false,
 ): string {
   if (saveFailed) return "저장하지 못했습니다. 다시 시도해주세요.";
+  if (recordingState.status === "discarded" && recordingState.reason === "timeout") {
+    return "녹음 제한시간 60초를 초과해 이번 녹음이 삭제되었습니다. 다시 녹음해 주세요.";
+  }
   if (recordingState.status === "discarded") return "녹음이 너무 짧습니다. 다시 녹음해 주세요";
   if (recordingState.status === "failed") return RECORDING_ERROR_MESSAGES[recordingState.errorCode];
 

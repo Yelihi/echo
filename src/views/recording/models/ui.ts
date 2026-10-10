@@ -28,6 +28,9 @@ export interface RecordingPanelProps {
   durationLabel: string;
   message: string;
   saving?: boolean;
+  busy?: boolean;
+  timedOut?: boolean;
+  notice?: readonly string[];
   recordedAudio?: CapturedAudio | null;
   actions: {
     toggle: () => void;
@@ -38,6 +41,8 @@ export interface RecordingPanelProps {
 export interface RecordingReadyPanelProps {
   content: RecordingSessionClientConfig["ready"];
   onStart: () => void;
+  durationLabel?: string;
+  notice?: readonly string[];
 }
 export interface RecordingSessionViewProps {
   pillar: RecordingPillar;

@@ -4,9 +4,14 @@ import type { RecordingReadyPanelProps } from "@/views/recording/models/ui";
 import { Play } from "lucide-react";
 import { RecordingPreviewDialog } from "./RecordingPreviewDialog";
 
-import { GlassButton } from "@/views/recording/ui/common/RecordingControls";
+import { GlassButton, TimerPill } from "@/views/recording/ui/common/RecordingControls";
 
-export function RecordingReadyPanel({ content, onStart }: RecordingReadyPanelProps) {
+export function RecordingReadyPanel({
+  content,
+  onStart,
+  notice,
+  durationLabel,
+}: RecordingReadyPanelProps) {
   const { label, title, description, meta } = content;
   return (
     <section className="relative flex min-h-[calc(100svh-5rem)] items-center justify-center px-page-gutter py-12 text-center">
@@ -37,6 +42,14 @@ export function RecordingReadyPanel({ content, onStart }: RecordingReadyPanelPro
             {content.startLabel ?? "시작하기"}
           </GlassButton>
         </div>
+        {durationLabel ? <TimerPill recording={false}>{durationLabel}</TimerPill> : null}
+        {notice ? (
+          <div className="text-sm leading-6 text-white/70">
+            {notice.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );
