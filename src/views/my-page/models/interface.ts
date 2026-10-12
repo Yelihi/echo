@@ -13,6 +13,10 @@ export interface PracticeCompletion {
   kind: MaterialKind | "grammar";
   completedAt: string;
 }
+export interface PracticeCompletionSource {
+  kind: PracticeCompletion["kind"];
+  table: "roleplay_sessions" | "memorization_sessions" | "grammar_sessions";
+}
 export interface PracticeStats {
   total: number;
   weeks: {

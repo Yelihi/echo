@@ -1,14 +1,18 @@
 import { describe, it, expect, jest, beforeAll } from "@jest/globals";
 import type { GrammarPracticeLauncherProps } from "@/features/grammar-practice";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { GrammarPracticeLauncher } from "@/features/grammar-practice";
 
 import { recallSession } from "@/_tests/features/grammar-recall/fixture";
+
+jest.mock("next/cache", () => ({ revalidateTag: jest.fn() }));
+
+let GrammarPracticeLauncher: typeof import("@/features/grammar-practice").GrammarPracticeLauncher;
 
 describe("grammar practice launch", () => {
   let sequence = 0;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    ({ GrammarPracticeLauncher } = await import("@/features/grammar-practice"));
     Object.defineProperty(crypto, "randomUUID", {
       value: () => `00000000-0000-4000-8000-${String(++sequence).padStart(12, "0")}`,
 

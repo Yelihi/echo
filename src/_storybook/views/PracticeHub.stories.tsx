@@ -383,8 +383,10 @@ export const Flow: Story = {
         name: "마이페이지",
       }),
     );
-    await expect(c.getByRole("heading", { name: "최근 학습 기록" })).toBeVisible();
-    await expect(c.queryByRole("complementary")).not.toBeInTheDocument();
+    await expect(c.getByRole("heading", { name: "연습 통계" })).toBeVisible();
+    await expect(
+      within(c.getByRole("complementary")).getByRole("link", { name: "마이페이지" }),
+    ).toHaveAttribute("aria-current", "page");
     await userEvent.click(c.getByRole("link", { name: "Echo 홈" }));
     await expect(c.getByRole("heading", { name: "오늘은 어떻게 연습할까요?" })).toBeVisible();
   },
@@ -483,7 +485,9 @@ export const HistoryReturn: Story = {
   render: () => <Walkthrough initialPath="/my-page" />,
   play: async ({ canvasElement }) => {
     const c = within(canvasElement);
-    await userEvent.click(c.getByRole("link", { name: "최근 학습 기록 전체 보기" }));
+    await userEvent.click(
+      within(c.getByRole("complementary")).getByRole("link", { name: "학습 기록" }),
+    );
     await expect(c.getByRole("link", { name: "뒤로가기" })).toHaveAttribute("href", "/my-page");
     await userEvent.click(c.getByRole("link", { name: "뒤로가기" }));
     await expect(c.getByRole("heading", { name: "마이페이지" })).toBeVisible();

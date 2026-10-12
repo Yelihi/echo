@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChartNoAxesCombined, ChevronRight, CircleAlert } from "lucide-react";
 
 import type {
   MyPageContentProps,
@@ -125,13 +125,33 @@ export function MyPageMaterialRows({ items }: MyPageMaterialRowsProps) {
 export function MyPageStatistics({ stats }: { stats: PracticeStats | null }) {
   if (!stats)
     return (
-      <p role="alert" className="mt-5 text-[14px] text-practice-error">
-        연습 통계를 불러오지 못했습니다. 잠시 후 다시 방문해 주세요.
-      </p>
+      <div
+        role="alert"
+        className="mt-5 flex items-start gap-3 rounded-xl border border-practice-line bg-practice-canvas px-5 py-6"
+      >
+        <CircleAlert size={20} className="shrink-0 text-practice-error" aria-hidden />
+        <div>
+          <p className="text-[15px] font-medium text-practice-ink">통계를 불러오지 못했어요</p>
+          <p className="mt-1 text-[13px] text-practice-subtle">잠시 후 다시 시도해 주세요.</p>
+        </div>
+      </div>
     );
   if (stats.total === 0)
     return (
-      <p className="mt-5 text-[14px] text-practice-subtle">최근 30일 동안 완료한 연습이 없어요.</p>
+      <div className="mt-5 flex items-start gap-3 rounded-xl border border-practice-line bg-practice-canvas px-5 py-6">
+        <ChartNoAxesCombined size={20} className="shrink-0 text-practice-accent" aria-hidden />
+        <div>
+          <p className="text-[15px] font-medium text-practice-ink">
+            최근 30일 동안 완료한 연습이 없어요
+          </p>
+          <Link
+            href="/home"
+            className="mt-2 inline-flex min-h-11 items-center gap-1 text-[13px] text-practice-accent hover:underline"
+          >
+            연습 시작하기 <ArrowRight size={14} aria-hidden />
+          </Link>
+        </div>
+      </div>
     );
 
   return (

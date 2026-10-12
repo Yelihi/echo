@@ -7,7 +7,9 @@ jest.mock("@/features/logout/ui/Profile", () => ({ Profile: () => null }));
 jest.mock("server-only", () => ({}));
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
 jest.mock("@supabase/supabase-js", () => ({ createClient: jest.fn() }));
-jest.mock("next/cache", () => ({ unstable_cache: (read: () => unknown) => read }));
+jest.mock("next/cache", () => ({
+  unstable_cache: jest.fn((read: () => unknown) => read),
+}));
 
 type Completion = {
   kind: "roleplay" | "memorization" | "grammar";
@@ -26,7 +28,7 @@ function summarize(completions: Completion[], now: Date) {
       completions: Completion[],
       now: Date,
     ) => { total: number; weeks: WeeklyCount[] };
-  }>("@/views/my-page/services/server/getPracticeStats");
+  }>("@/views/my-page/services/server/summarizePracticeStats");
   return stats.summarizePracticeStats(completions, now);
 }
 
@@ -73,6 +75,19 @@ describe("my-page practice statistics", () => {
     ).toBe(true);
   });
 
+  it("빈 통계에는 연습 시작 링크를, 조회 실패에는 알림을 보여준다", async () => {
+    const { MyPageStatistics } = await import("@/views/my-page/ui/MyPageContent");
+    const empty = renderToStaticMarkup(
+      createElement(MyPageStatistics, { stats: summarize([], now) }),
+    );
+    const failed = renderToStaticMarkup(createElement(MyPageStatistics, { stats: null }));
+
+    expect(empty).toContain('href="/home"');
+    expect(empty).toContain("최근 30일 동안 완료한 연습이 없어요");
+    expect(failed).toContain('role="alert"');
+    expect(failed).toContain("통계를 불러오지 못했어요");
+  });
+
   it("shows the sidebar and grammar entry on my-page without recent history", async () => {
     const { EditorialShell } = await import("@/widgets/app-shell/ui/EditorialShell");
     const { MyPageView } = await import("@/views/my-page/ui/MyPageView");
@@ -85,6 +100,7 @@ describe("my-page practice statistics", () => {
     const content = renderToStaticMarkup(createElement(MyPageView));
 
     expect(shell).toContain("<aside");
+    expect(shell.split("</aside>")[0]).toMatch(/aria-current="page" href="\/my-page"/);
     expect(shell).toContain('href="/grammar"');
     expect(content).toContain('href="/grammar"');
     expect(content).toContain("연습 통계");
@@ -96,28 +112,28 @@ describe("my-page statistics lookup", () => {
   async function setup(error: Error | null = null) {
     const { createClient } = await import("@supabase/supabase-js");
     const { createSupabaseServerClient } = await import("@/shared/lib/supabase/server");
-    const filters: [string, string][] = [];
+    const filters: { table: string; column: string; value: string }[] = [];
     const tables: string[] = [];
-    const query = {
-      select: () => query,
+    const query = (table: string) => ({
+      select: () => query(table),
       eq: (column: string, value: string) => {
-        filters.push([column, value]);
-        return query;
+        filters.push({ table, column, value });
+        return query(table);
       },
-      gte: () => query,
-      lte: () => query,
-      order: () => query,
+      gte: () => query(table),
+      lte: () => query(table),
+      order: () => query(table),
       range: async () => ({
         data: error
           ? null
           : [{ id: "record", completed_at: new Date(Date.now() - 1000).toISOString() }],
         error,
       }),
-    };
+    });
     const client = {
       from: (table: string) => {
         tables.push(table);
-        return query;
+        return query(table);
       },
     };
     jest.mocked(createClient).mockReturnValue(client as never);
@@ -143,10 +159,16 @@ describe("my-page statistics lookup", () => {
     expect(tables).toEqual(["roleplay_sessions", "memorization_sessions", "grammar_sessions"]);
     expect(filters).toEqual(
       expect.arrayContaining([
-        ["user_id", "owner"],
-        ["owner_id", "owner"],
-        ["status", "completed"],
+        { table: "roleplay_sessions", column: "user_id", value: "owner" },
+        { table: "memorization_sessions", column: "user_id", value: "owner" },
+        { table: "grammar_sessions", column: "owner_id", value: "owner" },
       ]),
+    );
+    const { unstable_cache } = await import("next/cache");
+    expect(unstable_cache).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.any(Array),
+      expect.objectContaining({ tags: ["my-page-practice-stats:owner"] }),
     );
     expect(createClient).toHaveBeenCalledWith(
       "https://example.supabase.co",
