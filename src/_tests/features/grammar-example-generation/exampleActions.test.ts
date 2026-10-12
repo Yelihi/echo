@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { GrammarNoteRepository } from "@/entities/grammar-note";
+import { UserProfileRepository } from "@/entities/user-profile";
 import type { createSupabaseServerClient as CreateClient } from "@/shared/lib/supabase/server";
 import type {
   GenerateExamplesCommand,
@@ -50,6 +51,7 @@ beforeEach(async () => {
   jest.restoreAllMocks();
   jest.clearAllMocks();
   rpc.mockResolvedValue({ data: "allowed", error: null });
+  jest.spyOn(UserProfileRepository.prototype, "findById").mockResolvedValue(null);
   jest.mocked(createSupabaseServerClient).mockResolvedValue({
     auth: { getUser: async () => ({ data: { user: { id: "owner" } }, error: null }) },
     rpc,
@@ -109,6 +111,56 @@ describe("예문 서버 액션 권한", () => {
         })
       ).ok,
     ).toBe(false);
+    expect(requestExampleOutput).not.toHaveBeenCalled();
+  });
+
+  it("프로필이 없으면 기본 난이도 2로 예문을 생성한다", async () => {
+    const note = createEditorNote();
+    jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
+    jest.mocked(requestExampleOutput).mockResolvedValue({
+      examples: createExampleCandidates().map(({ sentence, translation, targetExplanation }) => ({
+        sentence,
+        translation,
+        targetExplanation,
+      })),
+    });
+
+    const result = await requestGrammarExamples({ noteId: note.id, expectedVersion: 1, count: 3 });
+
+    expect(result.ok).toBe(true);
+    expect(requestExampleOutput).toHaveBeenCalledWith(note, 3, 2);
+  });
+
+  it("저장된 난이도를 읽어 AI에 전달하며 조회 실패 시 한도를 소비하지 않는다", async () => {
+    const note = createEditorNote();
+    jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
+    const profile = jest.spyOn(UserProfileRepository.prototype, "findById");
+    profile.mockResolvedValueOnce({
+      id: "owner",
+      displayName: "Yeli",
+      exampleDifficulty: 3,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as never);
+    jest.mocked(requestExampleOutput).mockResolvedValue({
+      examples: createExampleCandidates().map(({ sentence, translation, targetExplanation }) => ({
+        sentence,
+        translation,
+        targetExplanation,
+      })),
+    });
+
+    const result = await requestGrammarExamples({ noteId: note.id, expectedVersion: 1, count: 3 });
+    expect(result.ok).toBe(true);
+    expect(requestExampleOutput).toHaveBeenCalledWith(note, 3, 3);
+
+    rpc.mockClear();
+    jest.mocked(requestExampleOutput).mockClear();
+    profile.mockRejectedValueOnce(new Error("profile unavailable"));
+    expect(
+      (await requestGrammarExamples({ noteId: note.id, expectedVersion: 1, count: 3 })).ok,
+    ).toBe(false);
+    expect(rpc).not.toHaveBeenCalled();
     expect(requestExampleOutput).not.toHaveBeenCalled();
   });
 

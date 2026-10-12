@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { GrammarDifficulty } from "@/entities/user-profile/models/entity";
 
 export interface MyPageMaterialItem {
   id: string;
@@ -30,6 +31,15 @@ export interface MyPageContentProps {
   roleplay: ReactNode;
   memorization: ReactNode;
   statistics: ReactNode;
+  difficulty: ReactNode;
+}
+
+export type SaveGrammarDifficultyResult =
+  | { ok: true }
+  | { ok: false; code: "INVALID" | "UNAUTHORIZED" | "FAILED" };
+
+export interface GrammarDifficultySettingProps {
+  initialDifficulty: GrammarDifficulty;
 }
 export interface MyPageSectionHeadingProps {
   id: string;
