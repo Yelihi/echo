@@ -1,3 +1,3 @@
 import "server-only";
 
-export { requireUser } from "./services/requireUser";
+export { requireUser, requireUserOrRedirect } from "./services/requireUser";

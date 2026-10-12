@@ -6,6 +6,9 @@ jest.mock("next/navigation", () => ({
   notFound: () => {
     throw new Error("NEXT_NOT_FOUND");
   },
+  redirect: (url: string) => {
+    throw new Error(`NEXT_REDIRECT:${url}`);
+  },
 }));
 
 describe("공용 사용자 인증 확인", () => {
@@ -27,5 +30,28 @@ describe("공용 사용자 인증 확인", () => {
         auth: { getUser: async () => ({ data: { user: null }, error: null }) },
       } as never),
     ).rejects.toThrow("NEXT_NOT_FOUND");
+  });
+
+  it.each([
+    { user: null, error: null },
+    { user: { id: "owner" }, error: { message: "invalid token" } },
+  ])("새 로그인 가드는 인증 실패 시 /login으로 이동한다: $error", async ({ user, error }) => {
+    const { requireUserOrRedirect } = await import("@/features/login/server");
+    const getUser = jest.fn(async () => ({ data: { user }, error }));
+
+    await expect(requireUserOrRedirect({ auth: { getUser } } as never)).rejects.toThrow(
+      "NEXT_REDIRECT:/login",
+    );
+    expect(getUser).toHaveBeenCalledTimes(1);
+  });
+
+  it("새 로그인 가드는 인증된 사용자의 ID를 반환한다", async () => {
+    const { requireUserOrRedirect } = await import("@/features/login/server");
+    const getUser = jest.fn(async () => ({ data: { user: { id: "owner" } }, error: null }));
+
+    await expect(requireUserOrRedirect({ auth: { getUser } } as never)).resolves.toEqual({
+      id: "owner",
+    });
+    expect(getUser).toHaveBeenCalledTimes(1);
   });
 });

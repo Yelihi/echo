@@ -8,7 +8,7 @@ export function GrammarNoteList({ data, query }: GrammarNoteListProps) {
   const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
 
   return (
-    <section aria-label="어법 노트 목록" className="space-y-8">
+    <section aria-label="어법 노트 목록" className="mx-auto w-full max-w-4xl space-y-8">
       <p className="text-sm text-practice-secondary">{data.total}개의 어법 노트</p>
       {data.items.length === 0 ? (
         <div className="rounded-xl border border-practice-line bg-white p-12 text-center">
@@ -27,17 +27,9 @@ export function GrammarNoteList({ data, query }: GrammarNoteListProps) {
             <li key={note.id}>
               <Link
                 href={`/grammar/${note.id}?returnTo=${encodeURIComponent(returnTo)}`}
-                className="group block py-7 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-practice-focus"
+                className="block px-5 py-7 transition-[background-color,transform,box-shadow] duration-200 hover:bg-white hover:shadow-sm active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-practice-focus motion-reduce:transition-none motion-reduce:transform-none sm:px-8"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <h2 className="text-xl font-medium text-practice-ink">{note.title}</h2>
-                  <span
-                    aria-hidden
-                    className="text-practice-secondary transition-transform group-hover:translate-x-1 motion-reduce:transform-none"
-                  >
-                    →
-                  </span>
-                </div>
+                <h2 className="text-xl font-medium text-practice-ink">{note.title}</h2>
                 <p className="mt-2 text-base text-practice-body">{note.sentence}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {note.tags.map((tag) => (
