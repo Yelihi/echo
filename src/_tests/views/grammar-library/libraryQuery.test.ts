@@ -20,4 +20,10 @@ describe("grammar library URL", () => {
       page: 2,
       query: "verb",
     }));
+
+  it("keeps the search term in page links and starts a new search on page one", () => {
+    const query = parseGrammarLibraryQuery({ q: "  verb phrase  ", page: "2" });
+    expect(grammarLibraryHref(query)).toBe("/grammar?q=verb+phrase&page=2");
+    expect(grammarLibraryHref({ ...query, page: 1 })).toBe("/grammar?q=verb+phrase");
+  });
 });
