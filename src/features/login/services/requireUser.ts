@@ -1,5 +1,5 @@
 import { getAuthenticatedUser } from "@/shared/lib/supabase/getAuthenticatedUser";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 // shared
 import type { createSupabaseServerClient } from "@/shared/lib/supabase/server";
@@ -15,6 +15,16 @@ export const requireUser = async (
   if (!user) {
     notFound();
   }
+
+  return { id: user.id as UserId };
+};
+
+export const requireUserOrRedirect = async (
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+) => {
+  const user = await getAuthenticatedUser(supabase);
+
+  if (!user) redirect("/login");
 
   return { id: user.id as UserId };
 };

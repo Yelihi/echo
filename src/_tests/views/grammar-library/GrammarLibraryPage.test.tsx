@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import type { GrammarNoteRepository } from "@/entities/grammar-note";
 
+jest.mock("server-only", () => ({}));
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
 
 jest.mock("@/shared/lib/logging/pino", () => ({ recordOperationEvent: jest.fn() }));
@@ -23,6 +24,7 @@ describe("grammar list route", () => {
     const { createSupabaseServerClient } = await import("@/shared/lib/supabase/server");
 
     jest.spyOn(GrammarNoteRepository.prototype, "findMany").mockImplementation(findMany);
+    findMany.mockClear();
     jest.mocked(createSupabaseServerClient).mockResolvedValue({
       auth: { getUser: async () => ({ data: { user: { id: "owner" } }, error: null }) },
     } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
@@ -37,6 +39,51 @@ describe("grammar list route", () => {
       "redirect:/grammar?q=verb&page=5",
     );
     expect(findMany).toHaveBeenCalledWith({ page: 999, pageSize: 10, query: "verb" });
+  });
+
+  it("loads ten notes through the named server service", async () => {
+    const { getGrammarLibraryPage } =
+      await import("@/views/grammar-library/services/server/getGrammarLibraryPage");
+    const query = { page: 2, query: "verb" };
+    const notePage = { items: [], total: 11, page: 2, pageSize: 10 };
+    findMany.mockResolvedValueOnce(notePage);
+
+    await expect(getGrammarLibraryPage(query)).resolves.toEqual(notePage);
+    expect(findMany).toHaveBeenCalledWith({ ...query, pageSize: 10 });
+  });
+
+  it("returns a list error only when the authenticated lookup fails", async () => {
+    const { getGrammarLibraryPage } =
+      await import("@/views/grammar-library/services/server/getGrammarLibraryPage");
+    findMany.mockRejectedValueOnce(new Error("database unavailable"));
+
+    await expect(getGrammarLibraryPage({ page: 1, query: "verb" })).resolves.toBeNull();
+  });
+
+  it("keeps the retry UI inside the list when the lookup fails", async () => {
+    const { GrammarLibraryContent } =
+      await import("@/views/grammar-library/ui/GrammarLibraryContent");
+    findMany.mockRejectedValueOnce(new Error("database unavailable"));
+
+    const html = renderToStaticMarkup(
+      await GrammarLibraryContent({ query: { page: 1, query: "verb" } }),
+    );
+    expect(html).toContain("어법 노트를 불러오지 못했습니다");
+    expect(html).toContain('href="/grammar?q=verb"');
+  });
+
+  it("redirects an unauthenticated list visit before querying notes", async () => {
+    const { createSupabaseServerClient } = await import("@/shared/lib/supabase/server");
+    jest.mocked(createSupabaseServerClient).mockResolvedValueOnce({
+      auth: { getUser: async () => ({ data: { user: null }, error: null }) },
+    } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
+    const { GrammarLibraryContent } =
+      await import("@/views/grammar-library/ui/GrammarLibraryContent");
+
+    await expect(GrammarLibraryContent({ query: { page: 1, query: "" } })).rejects.toThrow(
+      "redirect:/login",
+    );
+    expect(findMany).not.toHaveBeenCalled();
   });
 
   it("renders the title and search before the note list resolves", async () => {
