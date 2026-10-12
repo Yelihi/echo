@@ -8,6 +8,7 @@ describe("mapUserProfileRowToEntity", () => {
     const row: UserProfileRow = {
       id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       display_name: "Yeli",
+      example_difficulty: 3,
       created_at: "2026-06-13T00:00:00.000Z",
       updated_at: "2026-06-13T00:10:00.000Z",
     };
@@ -17,6 +18,7 @@ describe("mapUserProfileRowToEntity", () => {
     expect(entity).toMatchObject({
       id: row.id,
       displayName: "Yeli",
+      exampleDifficulty: 3,
     });
     expect(entity.createdAt).toEqual(new Date(row.created_at));
     expect(entity.updatedAt).toEqual(new Date(row.updated_at));

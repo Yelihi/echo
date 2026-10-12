@@ -68,5 +68,7 @@ it("삭제 실패를 알리고 다시 시도할 수 있게 한다", async () => 
   fireEvent.click(screen.getByRole("button", { name: "failed.webm 삭제" }));
   fireEvent.click(screen.getByRole("button", { name: "삭제" }));
   expect(await screen.findByRole("alert")).toHaveTextContent("삭제하지 못했습니다.");
-  expect(screen.getByRole("button", { name: "failed.webm 삭제" })).toBeEnabled();
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "failed.webm 삭제" })).toBeEnabled(),
+  );
 });

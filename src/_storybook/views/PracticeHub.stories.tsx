@@ -19,6 +19,7 @@ import {
   MyPageMaterialRows,
   MyPageStatistics,
 } from "@/views/my-page/ui/MyPageContent";
+import { GrammarDifficultySetting } from "@/views/my-page/ui/GrammarDifficultySetting";
 import { RolePlayEditorClient } from "@/views/role-play/ui/editor/RolePlayEditorClient";
 import { MemorizationEditorClient } from "@/views/memorization/ui/editor/MemorizationEditorClient";
 import { MaterialLibraryHeader } from "@/widgets/material-library/ui/MaterialLibraryHeader";
@@ -169,6 +170,7 @@ function Walkthrough({
   else if (path === "/my-page")
     content = (
       <MyPageContent
+        difficulty={<GrammarDifficultySetting initialDifficulty={2} />}
         roleplay={<MyPageMaterialRows items={roleplay} />}
         memorization={<MyPageMaterialRows items={memorization} />}
         statistics={

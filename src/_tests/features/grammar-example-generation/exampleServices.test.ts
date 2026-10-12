@@ -29,12 +29,14 @@ function setup() {
   const consumeRequest = jest
     .fn<ExampleDependencies["consumeRequest"]>()
     .mockResolvedValue("allowed");
+  const loadDifficulty = jest.fn<() => Promise<1 | 2 | 3>>().mockResolvedValue(2);
 
   return {
     note,
     repository,
     generate,
     consumeRequest,
+    loadDifficulty,
     command: { noteId: note.id, expectedVersion: 1, count: 3 as const },
   };
 }
@@ -44,7 +46,7 @@ describe("저장 노트 기반 예문 생성 및 채택", () => {
     const deps = setup();
     const result = await generateExamples(deps.command, deps);
 
-    expect(deps.generate).toHaveBeenCalledWith(deps.note, 3);
+    expect(deps.generate).toHaveBeenCalledWith(deps.note, 3, 2);
     expect(result).toHaveLength(3);
     expect(result.every((example) => example.reviewStatus === "needs-review")).toBe(true);
     expect(new Set(result.map((example) => example.id)).size).toBe(3);
@@ -79,6 +81,24 @@ describe("저장 노트 기반 예문 생성 및 채택", () => {
 
     deps.consumeRequest.mockResolvedValue("rate_limited");
     await expect(generateExamples(deps.command, deps)).rejects.toThrow("rate_limited");
+    expect(deps.generate).not.toHaveBeenCalled();
+  });
+
+  it("저장된 난이도를 다음 예문 생성에 적용한다", async () => {
+    const deps = setup();
+    deps.loadDifficulty.mockResolvedValue(3);
+
+    await generateExamples(deps.command, deps);
+
+    expect(deps.generate).toHaveBeenCalledWith(deps.note, 3, 3);
+  });
+
+  it("난이도 조회 실패 시 요청 한도와 AI 비용을 소비하지 않는다", async () => {
+    const deps = setup();
+    deps.loadDifficulty.mockRejectedValue(new Error("profile unavailable"));
+
+    await expect(generateExamples(deps.command, deps)).rejects.toThrow("profile unavailable");
+    expect(deps.consumeRequest).not.toHaveBeenCalled();
     expect(deps.generate).not.toHaveBeenCalled();
   });
 
