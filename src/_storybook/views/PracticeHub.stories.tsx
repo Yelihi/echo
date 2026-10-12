@@ -17,7 +17,7 @@ import { HomeView } from "@/views/home/ui/HomeView";
 import {
   MyPageContent,
   MyPageMaterialRows,
-  MyPageHistoryRows,
+  MyPageStatistics,
 } from "@/views/my-page/ui/MyPageContent";
 import { RolePlayEditorClient } from "@/views/role-play/ui/editor/RolePlayEditorClient";
 import { MemorizationEditorClient } from "@/views/memorization/ui/editor/MemorizationEditorClient";
@@ -171,7 +171,14 @@ function Walkthrough({
       <MyPageContent
         roleplay={<MyPageMaterialRows items={roleplay} />}
         memorization={<MyPageMaterialRows items={memorization} />}
-        history={<MyPageHistoryRows sessions={sessions} />}
+        statistics={
+          <MyPageStatistics
+            stats={{
+              total: 2,
+              weeks: [{ startsOn: "2026-10-12", roleplay: 1, memorization: 0, grammar: 1 }],
+            }}
+          />
+        }
       />
     );
   else if (path === "/sessions")
