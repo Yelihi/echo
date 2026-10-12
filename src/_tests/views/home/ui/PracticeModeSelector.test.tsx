@@ -1,8 +1,27 @@
 import { describe, expect, it } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { practiceModes } from "@/views/home/config/const";
 import { PracticeModeSelector } from "@/views/home/ui/PracticeModeSelector";
 
 describe("practice mode selection", () => {
+  it("shows a distinct, available image with a relevant description for each mode", () => {
+    render(<PracticeModeSelector />);
+
+    const visibleImages = practiceModes.map((mode) => {
+      const image = screen.getByRole("img");
+      expect(image).toHaveAttribute("alt", mode.imageAlt);
+      expect(decodeURIComponent(image.getAttribute("src") ?? "")).toContain(mode.image);
+      expect(existsSync(join(process.cwd(), "public", mode.image))).toBe(true);
+      fireEvent.click(screen.getByRole("button", { name: "다음 연습 모드" }));
+      return image.getAttribute("src");
+    });
+
+    expect(new Set(visibleImages).size).toBe(practiceModes.length);
+    expect(practiceModes.find((mode) => mode.id === "grammar")?.imageAlt).toMatch(/어법|문법/);
+  });
+
   it("keeps the title, counter, active navigation and destination synchronized", () => {
     render(<PracticeModeSelector />);
     fireEvent.click(screen.getByRole("button", { name: "다음 연습 모드" }));
