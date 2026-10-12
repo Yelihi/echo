@@ -9,6 +9,7 @@ jest.mock("server-only", () => ({}));
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
 
 jest.mock("@/shared/lib/logging/pino", () => ({ recordOperationEvent: jest.fn() }));
+jest.mock("next/cache", () => ({ revalidateTag: jest.fn() }));
 
 let createSupabaseServerClient: typeof CreateClient;
 
@@ -38,5 +39,53 @@ describe("연습 액션 오류 계약", () => {
       .mocked(createSupabaseServerClient)
       .mockRejectedValue(new Error("secret connection details"));
     expect(await startGrammarSession({})).toEqual({ ok: false, code: "FAILED" });
+  });
+});
+
+describe("어법 연습 완료 후 통계 캐시", () => {
+  it("완료 성공일 때 현재 사용자 통계를 무효화한다", async () => {
+    const { completeGrammarSession } =
+      await import("@/features/grammar-practice/services/actions/grammarSessionActions");
+    const { revalidateTag } = await import("next/cache");
+    jest.mocked(createSupabaseServerClient).mockResolvedValue({
+      auth: { getUser: async () => ({ data: { user: { id: "owner" } }, error: null }) },
+    } as never);
+    const complete = jest
+      .spyOn(GrammarSessionRepository.prototype, "complete")
+      .mockResolvedValue({} as never);
+
+    expect(
+      (
+        await completeGrammarSession({
+          id: "00000000-0000-4000-8000-000000000001",
+          expectedVersion: 1,
+        })
+      ).ok,
+    ).toBe(true);
+    expect(revalidateTag).toHaveBeenCalledWith("my-page-practice-stats:owner", { expire: 0 });
+    complete.mockRestore();
+  });
+
+  it("완료 실패일 때 통계를 무효화하지 않는다", async () => {
+    const { completeGrammarSession } =
+      await import("@/features/grammar-practice/services/actions/grammarSessionActions");
+    const { revalidateTag } = await import("next/cache");
+    jest.mocked(createSupabaseServerClient).mockResolvedValue({
+      auth: { getUser: async () => ({ data: { user: { id: "owner" } }, error: null }) },
+    } as never);
+    const complete = jest
+      .spyOn(GrammarSessionRepository.prototype, "complete")
+      .mockRejectedValue(new Error("failed"));
+
+    expect(
+      (
+        await completeGrammarSession({
+          id: "00000000-0000-4000-8000-000000000001",
+          expectedVersion: 1,
+        })
+      ).ok,
+    ).toBe(false);
+    expect(revalidateTag).not.toHaveBeenCalled();
+    complete.mockRestore();
   });
 });

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
+import { invalidatePracticeStats } from "@/shared/lib/query/practiceStatsCache";
 import {
   GrammarSessionRepository,
   GrammarSessionError,
@@ -16,7 +17,7 @@ import type { GrammarSessionResult } from "../../models/interface";
 
 async function executeSessionAction(
   operation: string,
-  execute: (repository: GrammarSessionRepositoryPort) => Promise<GrammarSession>,
+  execute: (repository: GrammarSessionRepositoryPort, ownerId: string) => Promise<GrammarSession>,
 ): Promise<GrammarSessionResult> {
   try {
     return await observeOperation({
@@ -30,7 +31,10 @@ async function executeSessionAction(
 
         if (error || !data.user) throw new GrammarSessionError("UNAUTHORIZED");
 
-        return { ok: true as const, data: await execute(new GrammarSessionRepository(supabase)) };
+        return {
+          ok: true as const,
+          data: await execute(new GrammarSessionRepository(supabase), data.user.id),
+        };
       },
     });
   } catch (error) {
@@ -59,7 +63,9 @@ export async function saveGrammarSessionAnswers(input: unknown): Promise<Grammar
 }
 
 export async function completeGrammarSession(input: unknown): Promise<GrammarSessionResult> {
-  return executeSessionAction("grammar.session.complete", (repository) =>
-    repository.complete(completeGrammarSessionSchema.parse(input)),
-  );
+  return executeSessionAction("grammar.session.complete", async (repository, ownerId) => {
+    const session = await repository.complete(completeGrammarSessionSchema.parse(input));
+    invalidatePracticeStats(ownerId);
+    return session;
+  });
 }

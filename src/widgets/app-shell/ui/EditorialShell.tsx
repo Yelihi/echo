@@ -11,10 +11,14 @@ import { PracticeMobileMenu } from "./PracticeMobileMenu";
 
 export function EditorialShell({ children, initials, pathname }: EditorialShellProps) {
   const { inPractice, base, mode, page } = getShellRoute(pathname);
+  const isMyPage = pathname === "/my-page";
+  const showSidebar = inPractice || isMyPage;
+  const navigationBase = isMyPage ? "/grammar" : base;
+  const navigationMode = isMyPage ? "어법 연습" : mode;
   return (
     <div
       className="group/shell min-h-svh bg-white text-practice-ink data-practice:bg-practice-canvas [--color-brand:var(--color-practice-accent)] [--color-brand-hover:var(--color-practice-accent-hover)] [--color-control-line:var(--color-practice-input-line)] [--radius-control:8px] [--radius-card:14px] [--radius-panel:12px] [--text-display:clamp(2rem,3vw,2.75rem)] [--text-display--font-weight:500] [&_[data-slot=page-container]]:max-w-[1440px] [&_[data-slot=page-container]]:p-11 max-lg:[&_[data-slot=page-container]]:px-7 max-lg:[&_[data-slot=page-container]]:py-8 max-compact:[&_[data-slot=page-container]]:px-5 max-compact:[&_[data-slot=page-container]]:py-7 [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-practice-focus [&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-offset-4 [&_button:focus-visible]:outline-practice-focus"
-      data-practice={inPractice || undefined}
+      data-practice={showSidebar || undefined}
     >
       <a
         href="#main-content"
@@ -22,22 +26,22 @@ export function EditorialShell({ children, initials, pathname }: EditorialShellP
       >
         본문으로 이동
       </a>
-      {inPractice && (
+      {showSidebar && (
         <aside className="fixed inset-y-0 left-0 z-30 flex w-54 flex-col border-r border-practice-line bg-white px-6 py-9 max-lg:hidden">
-          <PracticeNavigation pathname={pathname} base={base} mode={mode} />
+          <PracticeNavigation pathname={pathname} base={navigationBase} mode={navigationMode} />
         </aside>
       )}
       <div className="lg:group-data-practice/shell:ml-54">
         <header
-          className={`flex items-center gap-8 max-compact:gap-4.5 ${inPractice ? "h-19 border-b border-practice-line bg-practice-canvas lg:px-11" : "h-25 bg-white lg:px-13"} max-lg:px-7 max-compact:h-19 max-compact:px-5`}
+          className={`flex items-center gap-8 max-compact:gap-4.5 ${showSidebar ? "h-19 border-b border-practice-line bg-practice-canvas lg:px-11" : "h-25 bg-white lg:px-13"} max-lg:px-7 max-compact:h-19 max-compact:px-5`}
         >
-          {inPractice ? (
+          {showSidebar ? (
             <>
-              <PracticeMobileMenu pathname={pathname} base={base} mode={mode} />
+              <PracticeMobileMenu pathname={pathname} base={navigationBase} mode={navigationMode} />
               <div className="flex items-center gap-3 text-[12px] text-practice-muted [&>span:last-child]:text-practice-body max-compact:hidden">
-                <span>{mode}</span>
+                <span>{navigationMode}</span>
                 <span aria-hidden>/</span>
-                <span>{page}</span>
+                <span>{isMyPage ? "마이페이지" : page}</span>
               </div>
             </>
           ) : (

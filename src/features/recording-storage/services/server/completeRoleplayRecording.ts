@@ -1,4 +1,5 @@
 import "server-only";
+import { invalidatePracticeStats } from "@/shared/lib/query/practiceStatsCache";
 import type { RoleplayRecordingContext } from "../../models/roleplayRecording";
 import { recordingRpcFailureResponse } from "./recordingRpcFailure";
 
@@ -11,5 +12,7 @@ export async function completeRoleplayRecording(
     p_user_id: userId,
     p_session_id: sessionId,
   });
-  return error ? recordingRpcFailureResponse(error) : Response.json({ completed: true });
+  if (error) return recordingRpcFailureResponse(error);
+  invalidatePracticeStats(userId);
+  return Response.json({ completed: true });
 }

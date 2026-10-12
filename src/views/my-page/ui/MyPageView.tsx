@@ -1,11 +1,11 @@
 import type { MaterialKind } from "../models/interface";
 import { Suspense } from "react";
 import { getMyPageMaterials } from "@/views/my-page/services/server/getMyPageMaterials";
-import { getLatestStudySessions } from "@/widgets/latest-sessions/services/server/getLatestStudySessions";
+import { getPracticeStats } from "@/views/my-page/services/server/getPracticeStats";
 import {
   MyPageContent,
   MyPageMaterialRows,
-  MyPageHistoryRows,
+  MyPageStatistics,
   MyPageRowsLoading,
 } from "./MyPageContent";
 
@@ -22,9 +22,9 @@ export function MyPageView() {
           <RecentMaterials type="memorization" />
         </Suspense>
       }
-      history={
+      statistics={
         <Suspense fallback={<MyPageRowsLoading />}>
-          <RecentHistory />
+          <PracticeStatistics />
         </Suspense>
       }
     />
@@ -33,6 +33,6 @@ export function MyPageView() {
 async function RecentMaterials({ type }: { type: MaterialKind }) {
   return <MyPageMaterialRows items={await getMyPageMaterials(type)} />;
 }
-async function RecentHistory() {
-  return <MyPageHistoryRows sessions={await getLatestStudySessions(5)} />;
+async function PracticeStatistics() {
+  return <MyPageStatistics stats={await getPracticeStats()} />;
 }

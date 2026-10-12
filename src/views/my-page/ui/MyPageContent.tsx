@@ -1,19 +1,16 @@
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChartNoAxesCombined, ChevronRight, CircleAlert } from "lucide-react";
 
 import type {
   MyPageContentProps,
   MyPageSectionHeadingProps,
   MyPageMaterialRowsProps,
-  MyPageHistoryRowsProps,
+  PracticeStats,
 } from "@/views/my-page/models/interface";
 
-const emptyClassName =
-  "flex min-h-41 items-center text-[14px] leading-[1.7] text-practice-subtle group-data-history:min-h-30";
-const historyRowClassName =
-  "group/history grid min-h-15 grid-cols-[16.5%_20%_1fr_178px_20px] items-center gap-0 border-b border-practice-line text-[16px] [&>svg]:text-practice-subtle max-md:grid-cols-[1fr_auto_18px] max-md:gap-x-2.5 max-md:gap-y-2 max-md:py-4 max-md:[&>svg]:col-start-3 max-md:[&>svg]:row-start-2";
+const emptyClassName = "flex min-h-41 items-center text-[14px] leading-[1.7] text-practice-subtle";
 
-export function MyPageContent({ roleplay, memorization, history }: MyPageContentProps) {
+export function MyPageContent({ roleplay, memorization, statistics }: MyPageContentProps) {
   return (
     <div className="mx-auto max-w-[1280px] px-13 pt-12 pb-16 max-md:px-5.5 max-md:pt-7 max-md:pb-12">
       <header className="relative border-b border-practice-line pb-9">
@@ -31,14 +28,14 @@ export function MyPageContent({ roleplay, memorization, history }: MyPageContent
           녹음 관리 <ArrowRight size={16} aria-hidden />
         </Link>
       </header>
-      <div className="grid grid-cols-2 border-b border-practice-line pt-7.75 pb-8 max-md:grid-cols-1 max-md:gap-6">
-        <section aria-labelledby="my-page-roleplay" className="min-w-0 pr-10.5 max-md:p-0">
+      <div className="grid grid-cols-3 border-b border-practice-line pt-7.75 pb-8 max-lg:grid-cols-1 max-lg:gap-6">
+        <section aria-labelledby="my-page-roleplay" className="min-w-0 pr-10.5 max-lg:pr-0">
           <SectionHeading id="my-page-roleplay" title="최근 롤플레잉 자료" href="/role-playing" />
           {roleplay}
         </section>
         <section
           aria-labelledby="my-page-memorization"
-          className="min-w-0 border-l border-practice-line pl-10.5 max-md:border-t max-md:border-l-0 max-md:pt-6 max-md:pl-0"
+          className="min-w-0 border-l border-practice-line px-10.5 max-lg:border-t max-lg:border-l-0 max-lg:px-0 max-lg:pt-6"
         >
           <SectionHeading
             id="my-page-memorization"
@@ -47,10 +44,22 @@ export function MyPageContent({ roleplay, memorization, history }: MyPageContent
           />
           {memorization}
         </section>
+        <section
+          aria-labelledby="my-page-grammar"
+          className="min-w-0 border-l border-practice-line pl-10.5 max-lg:border-t max-lg:border-l-0 max-lg:pl-0 max-lg:pt-6"
+        >
+          <SectionHeading id="my-page-grammar" title="어법 연습" href="/grammar" />
+          <p className={emptyClassName}>저장한 어법 노트를 살펴보고 연습을 시작해보세요.</p>
+        </section>
       </div>
-      <section data-history className="group pt-6" aria-labelledby="my-page-history">
-        <SectionHeading id="my-page-history" title="최근 학습 기록" href="/sessions" />
-        {history}
+      <section className="pt-7" aria-labelledby="my-page-statistics">
+        <h2
+          id="my-page-statistics"
+          className="text-[20px] font-medium tracking-[-0.65px] max-md:text-[16px]"
+        >
+          연습 통계
+        </h2>
+        {statistics}
       </section>
     </div>
   );
@@ -58,7 +67,7 @@ export function MyPageContent({ roleplay, memorization, history }: MyPageContent
 
 function SectionHeading({ id, title, href }: MyPageSectionHeadingProps) {
   return (
-    <div className="mb-1.75 flex min-h-8.5 items-center justify-between gap-4 group-data-history:mb-0.75">
+    <div className="mb-1.75 flex min-h-8.5 items-center justify-between gap-4">
       <h2
         id={id}
         className="text-[20px] leading-[1.5] font-medium tracking-[-0.65px] max-md:text-[16px]"
@@ -113,75 +122,77 @@ export function MyPageMaterialRows({ items }: MyPageMaterialRowsProps) {
   );
 }
 
-const states = {
-  completed: "분석 완료",
-  practicing: "진행 중",
-  failed: "분석 실패",
-  partial: "일부 실패",
-  inProgress: "분석 중",
-  pending: "분석 전",
-};
-export function MyPageHistoryRows({ sessions }: MyPageHistoryRowsProps) {
-  if (!sessions.length)
-    return <p className={emptyClassName}>아직 학습 기록이 없어요. 첫 연습을 시작해보세요.</p>;
+export function MyPageStatistics({ stats }: { stats: PracticeStats | null }) {
+  if (!stats)
+    return (
+      <div
+        role="alert"
+        className="mt-5 flex items-start gap-3 rounded-xl border border-practice-line bg-practice-canvas px-5 py-6"
+      >
+        <CircleAlert size={20} className="shrink-0 text-practice-error" aria-hidden />
+        <div>
+          <p className="text-[15px] font-medium text-practice-ink">통계를 불러오지 못했어요</p>
+          <p className="mt-1 text-[13px] text-practice-subtle">잠시 후 다시 시도해 주세요.</p>
+        </div>
+      </div>
+    );
+  if (stats.total === 0)
+    return (
+      <div className="mt-5 flex items-start gap-3 rounded-xl border border-practice-line bg-practice-canvas px-5 py-6">
+        <ChartNoAxesCombined size={20} className="shrink-0 text-practice-accent" aria-hidden />
+        <div>
+          <p className="text-[15px] font-medium text-practice-ink">
+            최근 30일 동안 완료한 연습이 없어요
+          </p>
+          <Link
+            href="/home"
+            className="mt-2 inline-flex min-h-11 items-center gap-1 text-[13px] text-practice-accent hover:underline"
+          >
+            연습 시작하기 <ArrowRight size={14} aria-hidden />
+          </Link>
+        </div>
+      </div>
+    );
+
   return (
-    <ul>
-      {sessions.map((session) => {
-        const content = (
-          <>
-            <time
-              className="text-practice-subtle max-md:col-start-1 max-md:text-[12px]"
-              dateTime={session.sessionDate.toISOString()}
-            >
-              {new Intl.DateTimeFormat("ko-KR", {
-                timeZone: "Asia/Seoul",
-                month: "2-digit",
-                day: "2-digit",
-              })
-                .format(session.sessionDate)
-                .replaceAll(" ", "")
-                .replace(/\.$/, "")}{" "}
-              (
-              {new Intl.DateTimeFormat("ko-KR", {
-                timeZone: "Asia/Seoul",
-                weekday: "short",
-              }).format(session.sessionDate)}
-              )
-            </time>
-            <p className="pr-4 [overflow-wrap:anywhere] group-hover/history:underline group-hover/history:underline-offset-4 max-md:col-start-1 max-md:row-start-2 max-md:p-0 max-md:text-[16px]">
-              {session.title}
-            </p>
-            <span className="text-practice-subtle max-md:col-start-1 max-md:row-start-3 max-md:text-[13px]">
-              {session.sessionType === "role-playing" ? "롤플레잉" : "문단 암기"}
-            </span>
-            <span
-              className="justify-self-start rounded-md bg-practice-neutral-surface px-3 py-1.5 text-[15px] text-practice-secondary data-[state=completed]:bg-practice-success-surface data-[state=completed]:text-practice-success data-[state=practicing]:bg-practice-pending-surface data-[state=practicing]:text-practice-pending data-[state=failed]:bg-practice-error-surface data-[state=failed]:text-practice-error data-[state=partial]:bg-practice-error-surface data-[state=partial]:text-practice-error max-md:col-start-2 max-md:row-start-2 max-md:text-[12px]"
-              data-state={session.sessionState}
-            >
-              {states[session.sessionState]}
-            </span>
-            {session.href && !session.disabled && <ChevronRight aria-hidden size={18} />}
-          </>
-        );
-        return (
-          <li key={session.id}>
-            {session.href && !session.disabled ? (
-              <Link
-                href={session.href}
-                className={historyRowClassName}
-                aria-label={`${session.title} · ${states[session.sessionState]} · ${session.actionLabel || "결과 보기"}`}
-              >
-                {content}
-              </Link>
-            ) : (
-              <div className={historyRowClassName} aria-disabled={session.disabled}>
-                {content}
-              </div>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+    <div className="mt-5">
+      <p className="text-[14px] text-practice-subtle">
+        최근 30일 완료 <strong className="text-practice-ink">{stats.total}회</strong>
+      </p>
+      <div className="mt-5 overflow-x-auto">
+        <table className="w-full min-w-100 border-collapse text-left text-[14px]">
+          <caption className="sr-only">최근 30일 주별 연습 완료 횟수</caption>
+          <thead className="border-b border-practice-line text-practice-subtle">
+            <tr>
+              <th scope="col" className="py-3 font-medium">
+                시작 주
+              </th>
+              <th scope="col" className="py-3 font-medium">
+                롤플레잉
+              </th>
+              <th scope="col" className="py-3 font-medium">
+                문장 암기
+              </th>
+              <th scope="col" className="py-3 font-medium">
+                어법 연습
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {stats.weeks.map((week) => (
+              <tr key={week.startsOn} className="border-b border-practice-line">
+                <th scope="row" className="py-3 font-medium">
+                  {week.startsOn}
+                </th>
+                <td className="py-3">{week.roleplay}</td>
+                <td className="py-3">{week.memorization}</td>
+                <td className="py-3">{week.grammar}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 

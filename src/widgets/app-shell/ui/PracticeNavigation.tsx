@@ -44,6 +44,7 @@ export function PracticeNavigation({ pathname, base, mode, onNavigate }: Practic
             key={href}
             href={href}
             className="relative flex min-h-11 items-center gap-2.75 px-3 text-[13px] text-practice-subtle hover:text-practice-ink aria-[current=page]:font-medium aria-[current=page]:text-practice-ink aria-[current=page]:after:absolute aria-[current=page]:after:right-1 aria-[current=page]:after:h-0.5 aria-[current=page]:after:w-4 aria-[current=page]:after:bg-practice-accent"
+            aria-current={pathname === href ? "page" : undefined}
             onClick={onNavigate}
           >
             <Icon size={17} strokeWidth={1.5} aria-hidden />
