@@ -9,6 +9,12 @@ export function recordingSessionReducer(
   action: RecordingSessionAction,
 ): RecordingSessionState {
   switch (action.type) {
+    case "preparing":
+      return { status: "starting" };
+    case "stopping":
+      return { status: "stopping" };
+    case "timeout":
+      return { status: "discarded", reason: "timeout" };
     case "start":
       return { status: "recording", startedAtMs: action.startedAtMs };
     case "record":

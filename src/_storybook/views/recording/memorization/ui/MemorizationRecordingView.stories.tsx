@@ -35,7 +35,21 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Ready: Story = {};
+export const Ready: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await waitFor(() =>
+      expect(
+        canvas.getByText(
+          "60초 안에 문단 녹음을 마쳐 주세요. 시간이 초과되면 녹음은 삭제되며 분석되지 않습니다.",
+        ),
+      ).toBeVisible(),
+    );
+    await expect(
+      canvas.getByText("문단 전체를 분석하므로 결과가 나오기까지 시간이 걸릴 수 있습니다."),
+    ).toBeVisible();
+  },
+};
 export const Preview: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole("button", { name: "단락 미리 보기" }));
@@ -46,6 +60,11 @@ export const Preview: Story = {
 
 export const UserReady: Story = {
   args: { initialPhase: "user-ready" },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await waitFor(() => expect(canvas.getByText("남은 시간 01:00")).toBeVisible());
+    await expect(canvas.getByRole("button", { name: "녹음 시작" })).toBeEnabled();
+  },
 };
 
 export const Recording: Story = {

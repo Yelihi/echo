@@ -42,6 +42,8 @@ export class AudioCapture {
   private format: AudioFormat | null = null;
   private startedAtMs = 0;
   private chunks: Blob[] = [];
+  private attempt: symbol | null = null;
+  private startedAtWallMs = 0;
 
   constructor(options: AudioCaptureOptions = {}) {
     const BrowserMediaRecorder = typeof MediaRecorder === "undefined" ? null : MediaRecorder;
@@ -67,7 +69,15 @@ export class AudioCapture {
     return this.status;
   }
 
-  async start(): Promise<void> {
+  getElapsedMs(): number {
+    return Math.max(
+      0,
+      this.clock.now() - this.startedAtMs,
+      this.clock === defaultClock ? Date.now() - this.startedAtWallMs : 0,
+    );
+  }
+
+  async start(): Promise<number | null> {
     if (this.status !== "idle") {
       throw new AudioCaptureError(
         "recorder-start-failed",
@@ -75,6 +85,8 @@ export class AudioCapture {
       );
     }
 
+    const attempt = Symbol("capture");
+    this.attempt = attempt;
     this.status = "starting";
     const format = chooseSupportedAudioFormat(this.isTypeSupported);
 
@@ -87,26 +99,34 @@ export class AudioCapture {
     }
 
     try {
-      this.stream = await this.getUserMedia({ audio: true });
+      const stream = await this.getUserMedia({ audio: true });
+      if (this.attempt !== attempt) {
+        stream.getTracks().forEach((track) => track.stop());
+        return null;
+      }
+      this.stream = stream;
       this.format = format;
       this.chunks = [];
-      this.startedAtMs = this.clock.now();
       this.recorder = this.createRecorder(this.stream, { mimeType: format.mimeType });
       this.recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
+        if (this.attempt === attempt && event.data.size > 0) {
           this.chunks.push(event.data);
         }
       };
       this.recorder.start();
+      this.startedAtMs = this.clock.now();
+      this.startedAtWallMs = Date.now();
       this.status = "recording";
+      return this.startedAtMs;
     } catch (cause) {
+      if (this.attempt !== attempt) return null;
       this.stopStreamTracks();
       this.reset();
       throw mapAudioCaptureStartError(cause);
     }
   }
 
-  async stop(): Promise<CapturedAudio> {
+  async stop(maxDurationMs?: number): Promise<CapturedAudio> {
     if (this.status !== "recording" || !this.recorder || !this.format) {
       throw new AudioCaptureError(
         "recorder-stop-failed",
@@ -117,11 +137,23 @@ export class AudioCapture {
     this.status = "stopping";
     const recorder = this.recorder;
     const format = this.format;
+    const attempt = this.attempt;
+    const chunks = this.chunks;
+    const durationMs = this.getElapsedMs();
+    if (maxDurationMs !== undefined && durationMs >= maxDurationMs) {
+      this.cancel();
+      throw new AudioCaptureError(
+        "duration-limit-exceeded",
+        "Audio recording exceeded its duration limit.",
+      );
+    }
 
     try {
       await this.stopRecorder(recorder);
-      const durationMs = this.clock.now() - this.startedAtMs;
-      const blob = new Blob(this.chunks, { type: format.mimeType });
+      if (this.attempt !== attempt) {
+        throw new AudioCaptureError("recorder-stop-failed", "Audio recording was canceled.");
+      }
+      const blob = new Blob(chunks, { type: format.mimeType });
 
       if (blob.size === 0) {
         throw new AudioCaptureError("empty-audio-data", "Audio recording did not produce data.");
@@ -136,16 +168,21 @@ export class AudioCapture {
     } catch (cause) {
       throw mapAudioCaptureStopError(cause);
     } finally {
-      this.stopStreamTracks();
-      this.reset();
+      if (this.attempt === attempt) {
+        this.stopStreamTracks();
+        this.reset();
+      }
     }
   }
 
   cancel(): void {
+    this.attempt = null;
     try {
       if (this.recorder?.state !== "inactive") {
         this.recorder?.stop();
       }
+    } catch {
+      // Cancellation still releases tracks when the browser recorder has already failed.
     } finally {
       this.stopStreamTracks();
       this.reset();
@@ -194,11 +231,14 @@ export class AudioCapture {
   }
 
   private reset(): void {
+    this.attempt = null;
+    if (this.recorder) this.recorder.ondataavailable = null;
     this.status = "idle";
     this.recorder = null;
     this.stream = null;
     this.format = null;
     this.startedAtMs = 0;
+    this.chunks.length = 0;
     this.chunks = [];
   }
 }
