@@ -11,11 +11,12 @@ export async function generateExamples(input: unknown, dependencies: ExampleDepe
     command.noteId,
     command.expectedVersion,
   );
+  const difficulty = await dependencies.loadDifficulty();
   const permission = await dependencies.consumeRequest();
 
   if (permission !== "allowed") throw new Error(permission);
 
-  const output = await dependencies.generate(note, command.count);
+  const output = await dependencies.generate(note, command.count, difficulty);
 
   return createValidatedCandidates(output, note, command.count);
 }

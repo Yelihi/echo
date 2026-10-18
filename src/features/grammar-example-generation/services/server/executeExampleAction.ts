@@ -1,5 +1,8 @@
 import "server-only";
 import { GrammarNotePersistenceError, GrammarNoteRepository } from "@/entities/grammar-note";
+import { UserProfileRepository } from "@/entities/user-profile";
+import { DEFAULT_GRAMMAR_DIFFICULTY } from "@/entities/user-profile/models/entity";
+import type { UserId } from "@/entities/value-object";
 import { getAuthenticatedUser } from "@/shared/lib/supabase/getAuthenticatedUser";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
@@ -27,6 +30,9 @@ export async function executeExampleAction<T>(
         return execute({
           repository: new GrammarNoteRepository(supabase),
           generate: requestExampleOutput,
+          loadDifficulty: async () =>
+            (await new UserProfileRepository(supabase).findById(user.id as UserId))
+              ?.exampleDifficulty ?? DEFAULT_GRAMMAR_DIFFICULTY,
 
           consumeRequest: async () => {
             const { data, error: quotaError } = await supabase.rpc("consume_ai_request", {

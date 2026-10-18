@@ -10,7 +10,12 @@ import type {
 
 const emptyClassName = "flex min-h-41 items-center text-[14px] leading-[1.7] text-practice-subtle";
 
-export function MyPageContent({ roleplay, memorization, statistics }: MyPageContentProps) {
+export function MyPageContent({
+  roleplay,
+  memorization,
+  statistics,
+  difficulty,
+}: MyPageContentProps) {
   return (
     <div className="mx-auto max-w-[1280px] px-13 pt-12 pb-16 max-md:px-5.5 max-md:pt-7 max-md:pb-12">
       <header className="relative border-b border-practice-line pb-9">
@@ -60,6 +65,9 @@ export function MyPageContent({ roleplay, memorization, statistics }: MyPageCont
           연습 통계
         </h2>
         {statistics}
+      </section>
+      <section className="pt-8" aria-label="개인 설정">
+        {difficulty}
       </section>
     </div>
   );

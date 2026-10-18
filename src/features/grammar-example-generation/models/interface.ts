@@ -1,4 +1,5 @@
 import type { ExampleErrorCode } from "./errors";
+import type { GrammarDifficulty } from "@/entities/user-profile/models/entity";
 import type {
   GrammarExample,
   GrammarNote,
@@ -21,7 +22,8 @@ export type ExampleResult<T> = { ok: true; data: T } | { ok: false; code: Exampl
 
 export interface ExampleDependencies {
   repository: GrammarNoteRepositoryPort;
-  generate: (note: GrammarNote, count: 1 | 3) => Promise<unknown>;
+  generate: (note: GrammarNote, count: 1 | 3, difficulty: GrammarDifficulty) => Promise<unknown>;
+  loadDifficulty: () => Promise<GrammarDifficulty>;
   consumeRequest: () => Promise<"allowed" | "not_invited" | "rate_limited">;
 }
 
