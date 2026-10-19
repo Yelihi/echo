@@ -9,7 +9,7 @@ jest.mock("server-only", () => ({}));
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
 
 jest.mock("@/shared/lib/logging/pino", () => ({ recordOperationEvent: jest.fn() }));
-jest.mock("next/cache", () => ({ revalidateTag: jest.fn() }));
+jest.mock("next/cache", () => ({ revalidateTag: jest.fn(), revalidatePath: jest.fn() }));
 
 let createSupabaseServerClient: typeof CreateClient;
 
@@ -52,7 +52,7 @@ describe("어법 연습 완료 후 통계 캐시", () => {
     } as never);
     const complete = jest
       .spyOn(GrammarSessionRepository.prototype, "complete")
-      .mockResolvedValue({} as never);
+      .mockResolvedValue({ noteId: "note-id" } as never);
 
     expect(
       (
@@ -63,6 +63,8 @@ describe("어법 연습 완료 후 통계 캐시", () => {
       ).ok,
     ).toBe(true);
     expect(revalidateTag).toHaveBeenCalledWith("my-page-practice-stats:owner", { expire: 0 });
+    const { revalidatePath } = await import("next/cache");
+    expect(revalidatePath).toHaveBeenCalledWith("/grammar/note-id");
     complete.mockRestore();
   });
 
@@ -86,6 +88,8 @@ describe("어법 연습 완료 후 통계 캐시", () => {
       ).ok,
     ).toBe(false);
     expect(revalidateTag).not.toHaveBeenCalled();
+    const { revalidatePath } = await import("next/cache");
+    expect(revalidatePath).not.toHaveBeenCalled();
     complete.mockRestore();
   });
 });

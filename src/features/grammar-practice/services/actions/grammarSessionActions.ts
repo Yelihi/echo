@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import { invalidatePracticeStats } from "@/shared/lib/query/practiceStatsCache";
+import { invalidateGrammarDetail } from "@/shared/lib/query/grammarDetailCache";
 import {
   GrammarSessionRepository,
   GrammarSessionError,
@@ -66,6 +67,7 @@ export async function completeGrammarSession(input: unknown): Promise<GrammarSes
   return executeSessionAction("grammar.session.complete", async (repository, ownerId) => {
     const session = await repository.complete(completeGrammarSessionSchema.parse(input));
     invalidatePracticeStats(ownerId);
+    invalidateGrammarDetail(session.noteId);
     return session;
   });
 }

@@ -4,6 +4,7 @@ import { GrammarNotePersistenceError, GrammarNoteRepository } from "@/entities/g
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
+import { invalidateGrammarDetail } from "@/shared/lib/query/grammarDetailCache";
 import { persistReviewedNote } from "../persistReviewedNote";
 import type { SaveNoteCommand, SaveNoteResult } from "../../models/interface";
 
@@ -26,6 +27,7 @@ export async function saveGrammarNote(command: SaveNoteCommand): Promise<SaveNot
       },
     });
 
+    invalidateGrammarDetail(note.id);
     return { ok: true, note };
   } catch (error) {
     const code = error instanceof GrammarNotePersistenceError ? error.code : "PERSISTENCE_FAILED";
