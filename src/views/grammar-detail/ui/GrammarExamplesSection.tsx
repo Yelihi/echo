@@ -1,14 +1,58 @@
+"use client";
+
+import { useState } from "react";
 import type { ReactNode } from "react";
-import type { GrammarNote } from "@/entities/grammar-note";
+import type { GrammarExample, GrammarNote } from "@/entities/grammar-note";
 import { GrammarAudioButton } from "@/features/grammar-audio";
-import { requestGrammarAudio } from "@/features/grammar-audio/services/actions/requestGrammarAudio";
+import type { GrammarAudioButtonProps } from "@/features/grammar-audio";
+
+function ExampleTranslation({ example }: { example: GrammarExample }) {
+  const [direct, setDirect] = useState(false);
+
+  if (!example.directReading) {
+    return <p className="text-sm leading-7 text-practice-secondary">{example.translation}</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <button
+        type="button"
+        aria-pressed={direct}
+        onClick={() => setDirect((value) => !value)}
+        className="min-h-11 rounded-md border border-practice-line px-3 text-sm text-practice-body hover:bg-practice-chip"
+      >
+        {direct ? "자연스러운 해석" : "직독직해"}
+      </button>
+      {direct ? (
+        <div className="space-y-2 rounded-xl bg-practice-canvas p-4">
+          {example.directReading.map((block) => (
+            <div key={`${block.start}-${block.end}`} className="text-sm leading-7">
+              <p lang="en" className="text-practice-ink">
+                {example.sentence.slice(block.start, block.end)}
+              </p>
+              <p lang="ko" className="text-practice-secondary">
+                {block.korean}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p lang="ko" className="text-sm leading-7 text-practice-secondary">
+          {example.translation}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export function GrammarExamplesSection({
   note,
   manageButton,
+  generateAudio,
 }: {
   note: GrammarNote;
   manageButton: ReactNode;
+  generateAudio: GrammarAudioButtonProps["generate"];
 }) {
   return (
     <section aria-label="저장한 예문" className="space-y-5">
@@ -31,11 +75,11 @@ export function GrammarExamplesSection({
               <p lang="en" className="break-words text-xl leading-8 text-practice-ink">
                 {example.sentence}
               </p>
-              <p className="text-sm leading-7 text-practice-secondary">{example.translation}</p>
+              <ExampleTranslation example={example} />
               <p className="text-sm leading-7 text-practice-muted">{example.targetExplanation}</p>
               <GrammarAudioButton
                 input={{ noteId: note.id, noteVersion: note.version, sentenceId: example.id }}
-                generate={requestGrammarAudio}
+                generate={generateAudio}
               />
             </li>
           ))}

@@ -3,6 +3,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createEditorNote } from "@/_tests/features/grammar-note-editor/fixtures";
 import { createExampleCandidates } from "@/_tests/features/grammar-example-generation/fixtures";
+import type { GrammarAudioButtonProps } from "@/features/grammar-audio";
+import { GrammarExamplesSection } from "@/views/grammar-detail/ui/GrammarExamplesSection";
 
 jest.mock("next/navigation", () => ({ useRouter: () => ({ refresh: jest.fn() }) }));
 
@@ -12,6 +14,35 @@ jest.mock("@/features/grammar-example-generation/services/actions/exampleActions
 }));
 
 describe("서버 상세 화면과 클라이언트 예문 편집 연결", () => {
+  it("저장된 예문의 자연 번역과 영한 직독직해 블록을 전환한다", async () => {
+    const sentence = "He is not a driver but a teacher.";
+    const example = {
+      ...createExampleCandidates()[0],
+      sentence,
+      directReading: [
+        { start: 0, end: 6, korean: "그는" },
+        { start: 6, end: sentence.length, korean: "운전사가 아니라 교사입니다" },
+      ],
+    };
+    const note = { ...createEditorNote(), examples: [example] };
+    render(
+      <GrammarExamplesSection
+        note={note}
+        manageButton={null}
+        generateAudio={jest.fn<GrammarAudioButtonProps["generate"]>()}
+      />,
+    );
+    const user = userEvent.setup();
+
+    expect(screen.getByText(example.translation)).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "직독직해" }));
+    expect(screen.getByText("He is")).toBeVisible();
+    expect(screen.getByText("그는")).toBeVisible();
+    expect(screen.getByText("not a driver but a teacher.")).toBeVisible();
+    expect(screen.getByText("운전사가 아니라 교사입니다")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "자연스러운 해석" }));
+    expect(screen.getByText(example.translation)).toBeVisible();
+  });
   it("상세 슬롯과 편집을 전환하되 이탈 확인을 취소하면 초안을 유지한다", async () => {
     const { GrammarDetailManager, GrammarManageExamplesButton } =
       await import("@/views/grammar-detail/ui/GrammarDetailManager");

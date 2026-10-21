@@ -11,6 +11,12 @@ function setup() {
     generate: jest
       .fn<GrammarExampleManagerProps["generate"]>()
       .mockResolvedValue({ ok: true, data: createExampleCandidates() }),
+    regenerateDirectReading: jest
+      .fn<GrammarExampleManagerProps["regenerateDirectReading"]>()
+      .mockImplementation(async ({ sentence }) => ({
+        ok: true,
+        data: [{ start: 0, end: sentence.length, korean: "수정한 문장입니다" }],
+      })),
     save: jest
       .fn<GrammarExampleManagerProps["save"]>()
       .mockResolvedValue({ ok: true, data: { ...note, version: 2 } }),
@@ -22,7 +28,7 @@ function setup() {
 }
 
 describe("예문 초안 이벤트", () => {
-  it("재생성 실패시 기존 예문 수정과 선택을 보존한다", async () => {
+  it("재생성 실패시 기존 예문 수정은 보존하고 블록 없는 후보의 선택은 막는다", async () => {
     const { store, generate } = setup();
 
     await store.getState().generate();
@@ -31,7 +37,7 @@ describe("예문 초안 이벤트", () => {
     generate.mockResolvedValue({ ok: false, code: "FAILED" });
     await store.getState().generate("candidate-1");
     expect(store.getState().candidates[0].sentence).toBe("Edited sentence");
-    expect(store.getState().selected).toEqual(["candidate-0"]);
+    expect(store.getState().selected).toEqual([]);
     expect(store.getState().error).toBe("FAILED");
   });
 

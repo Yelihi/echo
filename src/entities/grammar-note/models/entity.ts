@@ -39,6 +39,11 @@ export interface GrammarExample {
   readonly sentence: string;
   readonly translation: string;
   readonly targetExplanation: string;
+  readonly directReading?: readonly {
+    readonly start: number;
+    readonly end: number;
+    readonly korean: string;
+  }[];
   readonly reviewStatus: "needs-review" | "reviewed";
 }
 

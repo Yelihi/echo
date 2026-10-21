@@ -10,6 +10,7 @@ import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import type { ExampleDependencies, ExampleResult } from "../../models/interface";
 import { grammarExampleErrorCode } from "../../models/errors";
 import { requestExampleOutput } from "./requestExampleOutput";
+import { requestDirectReadingOutput } from "./requestDirectReadingOutput";
 
 export async function executeExampleAction<T>(
   operation: string,
@@ -30,6 +31,7 @@ export async function executeExampleAction<T>(
         return execute({
           repository: new GrammarNoteRepository(supabase),
           generate: requestExampleOutput,
+          generateDirectReading: requestDirectReadingOutput,
           loadDifficulty: async () =>
             (await new UserProfileRepository(supabase).findById(user.id as UserId))
               ?.exampleDifficulty ?? DEFAULT_GRAMMAR_DIFFICULTY,

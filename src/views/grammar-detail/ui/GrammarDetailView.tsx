@@ -32,7 +32,11 @@ export function GrammarDetailView({
           />
         }
         examples={
-          <GrammarExamplesSection note={note} manageButton={<GrammarManageExamplesButton />} />
+          <GrammarExamplesSection
+            note={note}
+            manageButton={<GrammarManageExamplesButton />}
+            generateAudio={requestGrammarAudio}
+          />
         }
         history={
           <GrammarDetailHistory

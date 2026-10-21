@@ -8,10 +8,12 @@ import type {
   SaveExamplesCommand,
 } from "@/features/grammar-example-generation";
 import type { requestExampleOutput as RequestOutput } from "@/features/grammar-example-generation/services/server/requestExampleOutput";
+import type { requestDirectReadingOutput as RequestDirectReadingOutput } from "@/features/grammar-example-generation/services/server/requestDirectReadingOutput";
 
 let createSupabaseServerClient: typeof CreateClient;
 
 let requestExampleOutput: typeof RequestOutput;
+let requestDirectReadingOutput: typeof RequestDirectReadingOutput;
 
 async function requestGrammarExamples(command: GenerateExamplesCommand) {
   const action =
@@ -27,6 +29,16 @@ async function saveGrammarExamples(command: SaveExamplesCommand) {
   return action.saveGrammarExamples(command);
 }
 
+async function regenerateGrammarDirectReading(command: {
+  noteId: string;
+  expectedVersion: number;
+  sentence: string;
+}) {
+  const action =
+    await import("@/features/grammar-example-generation/services/actions/exampleActions");
+  return action.regenerateGrammarDirectReading(command);
+}
+
 import { createEditorNote } from "../grammar-note-editor/fixtures";
 import { createExampleCandidates } from "./fixtures";
 
@@ -39,6 +51,12 @@ jest.mock("@/shared/lib/logging/pino", () => ({ recordOperationEvent: jest.fn() 
 jest.mock("@/features/grammar-example-generation/services/server/requestExampleOutput", () => ({
   requestExampleOutput: jest.fn(),
 }));
+jest.mock(
+  "@/features/grammar-example-generation/services/server/requestDirectReadingOutput",
+  () => ({
+    requestDirectReadingOutput: jest.fn(),
+  }),
+);
 
 Object.defineProperty(globalThis.crypto, "randomUUID", { value: randomUUID, configurable: true });
 
@@ -48,6 +66,8 @@ beforeEach(async () => {
   ({ createSupabaseServerClient } = await import("@/shared/lib/supabase/server"));
   ({ requestExampleOutput } =
     await import("@/features/grammar-example-generation/services/server/requestExampleOutput"));
+  ({ requestDirectReadingOutput } =
+    await import("@/features/grammar-example-generation/services/server/requestDirectReadingOutput"));
   jest.restoreAllMocks();
   jest.clearAllMocks();
   rpc.mockResolvedValue({ data: "allowed", error: null });
@@ -59,6 +79,53 @@ beforeEach(async () => {
 });
 
 describe("예문 서버 액션 권한", () => {
+  it("직독직해 재생성은 미인증 접근을 AI 요청 전에 막는다", async () => {
+    jest.mocked(createSupabaseServerClient).mockResolvedValue({
+      auth: { getUser: async () => ({ data: { user: null }, error: null }) },
+    } as never);
+    const note = createEditorNote();
+    const find = jest.spyOn(GrammarNoteRepository.prototype, "findById");
+    const result = await regenerateGrammarDirectReading({
+      noteId: note.id,
+      expectedVersion: note.version,
+      sentence: "My edited sentence.",
+    });
+
+    expect(result).toEqual({ ok: false, code: "UNAUTHORIZED" });
+    expect(find).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+    expect(requestDirectReadingOutput).not.toHaveBeenCalled();
+  });
+
+  it("직독직해 재생성은 소유 노트의 수정 문장만 AI에 보내고 한도를 적용한다", async () => {
+    const note = createEditorNote();
+    const sentence = "My edited sentence.";
+    const blocks = [{ start: 0, end: sentence.length, korean: "내가 수정한 문장입니다" }];
+    jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
+    jest.mocked(requestDirectReadingOutput).mockResolvedValue({ directReading: blocks });
+
+    expect(
+      await regenerateGrammarDirectReading({
+        noteId: note.id,
+        expectedVersion: note.version,
+        sentence,
+      }),
+    ).toEqual({ ok: true, data: blocks });
+    expect(requestDirectReadingOutput).toHaveBeenCalledWith(note, sentence);
+    expect(rpc).toHaveBeenCalledTimes(1);
+
+    jest.mocked(requestDirectReadingOutput).mockClear();
+    expect(
+      (
+        await regenerateGrammarDirectReading({
+          noteId: note.id,
+          expectedVersion: note.version + 1,
+          sentence,
+        })
+      ).ok,
+    ).toBe(false);
+    expect(requestDirectReadingOutput).not.toHaveBeenCalled();
+  });
   it("비로그인 생성과 저장은 조회나 유료 호출 전에 차단한다", async () => {
     jest.mocked(createSupabaseServerClient).mockResolvedValue({
       auth: { getUser: async () => ({ data: { user: null }, error: null }) },
@@ -118,11 +185,14 @@ describe("예문 서버 액션 권한", () => {
     const note = createEditorNote();
     jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
     jest.mocked(requestExampleOutput).mockResolvedValue({
-      examples: createExampleCandidates().map(({ sentence, translation, targetExplanation }) => ({
-        sentence,
-        translation,
-        targetExplanation,
-      })),
+      examples: createExampleCandidates().map(
+        ({ sentence, translation, targetExplanation, directReading }) => ({
+          sentence,
+          translation,
+          targetExplanation,
+          directReading,
+        }),
+      ),
     });
 
     const result = await requestGrammarExamples({ noteId: note.id, expectedVersion: 1, count: 3 });
@@ -143,11 +213,14 @@ describe("예문 서버 액션 권한", () => {
       updatedAt: new Date(),
     } as never);
     jest.mocked(requestExampleOutput).mockResolvedValue({
-      examples: createExampleCandidates().map(({ sentence, translation, targetExplanation }) => ({
-        sentence,
-        translation,
-        targetExplanation,
-      })),
+      examples: createExampleCandidates().map(
+        ({ sentence, translation, targetExplanation, directReading }) => ({
+          sentence,
+          translation,
+          targetExplanation,
+          directReading,
+        }),
+      ),
     });
 
     const result = await requestGrammarExamples({ noteId: note.id, expectedVersion: 1, count: 3 });

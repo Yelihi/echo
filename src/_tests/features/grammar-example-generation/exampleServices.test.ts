@@ -20,12 +20,16 @@ function setup() {
     findMany: jest.fn<GrammarNoteRepositoryPort["findMany"]>(),
   };
   const generate = jest.fn<ExampleDependencies["generate"]>().mockResolvedValue({
-    examples: createExampleCandidates().map(({ sentence, translation, targetExplanation }) => ({
-      sentence,
-      translation,
-      targetExplanation,
-    })),
+    examples: createExampleCandidates().map(
+      ({ sentence, translation, targetExplanation, directReading }) => ({
+        sentence,
+        translation,
+        targetExplanation,
+        directReading,
+      }),
+    ),
   });
+  const generateDirectReading = jest.fn<ExampleDependencies["generateDirectReading"]>();
   const consumeRequest = jest
     .fn<ExampleDependencies["consumeRequest"]>()
     .mockResolvedValue("allowed");
@@ -35,6 +39,7 @@ function setup() {
     note,
     repository,
     generate,
+    generateDirectReading,
     consumeRequest,
     loadDifficulty,
     command: { noteId: note.id, expectedVersion: 1, count: 3 as const },
@@ -42,6 +47,56 @@ function setup() {
 }
 
 describe("저장 노트 기반 예문 생성 및 채택", () => {
+  it.each([1, 2, 3] as const)(
+    "난이도 %i와 정렬된 직독직해 블록을 후보로 전달한다",
+    async (difficulty) => {
+      const deps = setup();
+      const sentence = "He is not a driver but a teacher.";
+      deps.loadDifficulty.mockResolvedValue(difficulty);
+      deps.generate.mockResolvedValue({
+        examples: [
+          {
+            sentence,
+            translation: "그는 운전사가 아니라 교사입니다.",
+            targetExplanation: "not A but B는 대조를 나타냅니다.",
+            directReading: [
+              { start: 0, end: 6, korean: "그는" },
+              { start: 6, end: sentence.length, korean: "운전사가 아니라 교사입니다" },
+            ],
+          },
+        ],
+      });
+
+      const result = await generateExamples({ ...deps.command, count: 1 }, deps);
+
+      expect(deps.generate).toHaveBeenCalledWith(deps.note, 1, difficulty);
+      expect(result[0].targetExplanation).toContain("대조");
+      expect(result[0].directReading).toEqual([
+        { start: 0, end: 6, korean: "그는" },
+        { start: 6, end: sentence.length, korean: "운전사가 아니라 교사입니다" },
+      ]);
+    },
+  );
+
+  it.each([
+    [{ start: 1, end: 5, korean: "그는" }],
+    [{ start: 0, end: 5, korean: "English only" }],
+    [{ start: 0, end: 50, korean: "그는" }],
+  ])("잘못된 span 또는 한국어 블록은 후보로 전달하지 않는다", async (directReading) => {
+    const deps = setup();
+    deps.generate.mockResolvedValue({
+      examples: [
+        {
+          sentence: "He is not a driver but a teacher.",
+          translation: "그는 운전사가 아니라 교사입니다.",
+          targetExplanation: "대조를 나타냅니다.",
+          directReading,
+        },
+      ],
+    });
+
+    await expect(generateExamples({ ...deps.command, count: 1 }, deps)).rejects.toThrow();
+  });
   it("서버가 읽은 어법을 전달하고 검증된 후보를 미검토 상태로 반환한다", async () => {
     const deps = setup();
     const result = await generateExamples(deps.command, deps);
@@ -157,6 +212,23 @@ describe("저장 노트 기반 예문 생성 및 채택", () => {
     expect(deps.repository.update).not.toHaveBeenCalled();
   });
 
+  it("직독직해가 없는 새 후보는 서버 저장을 거절한다", async () => {
+    const deps = setup();
+    const candidate = { ...createExampleCandidates()[0], directReading: undefined };
+
+    await expect(
+      saveExamples(
+        {
+          noteId: deps.note.id,
+          expectedVersion: deps.note.version,
+          candidates: [candidate],
+        },
+        deps.repository,
+      ),
+    ).rejects.toThrow();
+    expect(deps.repository.update).not.toHaveBeenCalled();
+  });
+
   it("saved candidate retry does not increment the version", async () => {
     const deps = setup();
     const candidates = createExampleCandidates().map((candidate) => ({
@@ -182,10 +254,11 @@ describe("생성·채택 정책 회귀", () => {
     deps.generate.mockResolvedValue({
       examples: createExampleCandidates()
         .slice(0, 2)
-        .map(({ sentence, translation, targetExplanation }) => ({
+        .map(({ sentence, translation, targetExplanation, directReading }) => ({
           sentence,
           translation,
           targetExplanation,
+          directReading,
         })),
     });
     await expect(generateExamples(deps.command, deps)).rejects.toThrow("INVALID_EXAMPLE_COUNT");
@@ -194,10 +267,11 @@ describe("생성·채택 정책 회귀", () => {
   it("공백·대소문자만 다른 생성 문장을 중복으로 검사한다", async () => {
     const deps = setup();
     const examples = createExampleCandidates().map(
-      ({ sentence, translation, targetExplanation }) => ({
+      ({ sentence, translation, targetExplanation, directReading }) => ({
         sentence,
         translation,
         targetExplanation,
+        directReading,
       }),
     );
     examples[1].sentence = ` ${examples[0].sentence.toUpperCase()} `;
@@ -208,10 +282,11 @@ describe("생성·채택 정책 회귀", () => {
   it.each(["source", "saved"])("%s 문장을 재사용한 생성 결과는 반환하지 않는다", async (kind) => {
     const deps = setup();
     const examples = createExampleCandidates().map(
-      ({ sentence, translation, targetExplanation }) => ({
+      ({ sentence, translation, targetExplanation, directReading }) => ({
         sentence,
         translation,
         targetExplanation,
+        directReading,
       }),
     );
     if (kind === "source") examples[0].sentence = ` ${deps.note.source.sentence.toUpperCase()} `;
@@ -234,12 +309,20 @@ describe("생성·채택 정책 회귀", () => {
         version: 2,
         examples: [{ ...candidate, reviewStatus: "reviewed" }],
       });
+      const changed =
+        field === "sentence"
+          ? {
+              ...candidate,
+              sentence: "Changed sentence.",
+              directReading: [{ start: 0, end: 17, korean: "바뀐 문장입니다" }],
+            }
+          : { ...candidate, [field]: "변경된 내용입니다." };
       await expect(
         saveExamples(
           {
             noteId: deps.note.id,
             expectedVersion: 1,
-            candidates: [{ ...candidate, [field]: "Changed content" }],
+            candidates: [changed],
           },
           deps.repository,
         ),
@@ -247,6 +330,39 @@ describe("생성·채택 정책 회귀", () => {
       expect(deps.repository.update).not.toHaveBeenCalled();
     },
   );
+
+  it("같은 후보 ID라도 직독직해 내용이 달라지면 중복 저장 성공으로 오인하지 않는다", async () => {
+    const deps = setup();
+    const candidate = createExampleCandidates()[0];
+    deps.repository.findById.mockResolvedValue({
+      ...deps.note,
+      version: 2,
+      examples: [{ ...candidate, reviewStatus: "reviewed" }],
+    });
+
+    await expect(
+      saveExamples(
+        {
+          noteId: deps.note.id,
+          expectedVersion: 1,
+          candidates: [
+            {
+              ...candidate,
+              directReading: [
+                {
+                  start: 0,
+                  end: candidate.sentence.length,
+                  korean: "다른 직독직해입니다",
+                },
+              ],
+            },
+          ],
+        },
+        deps.repository,
+      ),
+    ).rejects.toMatchObject({ code: "VERSION_CONFLICT" });
+    expect(deps.repository.update).not.toHaveBeenCalled();
+  });
 
   it("일부 ID만 이미 저장되었다면 새 후보를 중복 채택하지 않는다", async () => {
     const deps = setup();

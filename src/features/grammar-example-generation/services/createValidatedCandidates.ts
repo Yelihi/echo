@@ -11,17 +11,9 @@ export function createValidatedCandidates(
 
   if (response.examples.length !== expectedCount) throw new Error("INVALID_EXAMPLE_COUNT");
 
-  const candidates = response.examples.map((example) =>
-    grammarExampleSchema.parse({
-      ...example,
-      id: crypto.randomUUID(),
-      reviewStatus: "needs-review",
-    }),
-  );
-
   if (
-    new Set(candidates.map((candidate) => candidate.sentence.trim().toLowerCase())).size !==
-    candidates.length
+    new Set(response.examples.map((example) => example.sentence.trim().toLowerCase())).size !==
+    response.examples.length
   )
     throw new Error("DUPLICATE_EXAMPLES");
 
@@ -32,9 +24,17 @@ export function createValidatedCandidates(
   );
 
   if (
-    candidates.some((candidate) => existingSentences.has(candidate.sentence.trim().toLowerCase()))
+    response.examples.some((example) =>
+      existingSentences.has(example.sentence.trim().toLowerCase()),
+    )
   )
     throw new Error("REPEATED_EXAMPLES");
 
-  return candidates;
+  return response.examples.map((example) =>
+    grammarExampleSchema.parse({
+      ...example,
+      id: crypto.randomUUID(),
+      reviewStatus: "needs-review",
+    }),
+  );
 }

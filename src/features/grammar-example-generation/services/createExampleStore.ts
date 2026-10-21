@@ -30,7 +30,12 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       set((state) => ({
         candidates: state.candidates.map((candidate) =>
           candidate.id === id
-            ? { ...candidate, [field]: value, reviewStatus: "needs-review" }
+            ? {
+                ...candidate,
+                [field]: value,
+                ...(field === "sentence" ? { directReading: undefined } : {}),
+                reviewStatus: "needs-review",
+              }
             : candidate,
         ),
         selected: state.selected.filter((value) => value !== id),
@@ -42,7 +47,10 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
     select: (id, selected) =>
       set((state) => ({
         selected: selected
-          ? [...new Set([...state.selected, id])]
+          ? state.pending ||
+            !state.candidates.find((candidate) => candidate.id === id)?.directReading
+            ? state.selected
+            : [...new Set([...state.selected, id])]
           : state.selected.filter((value) => value !== id),
         dirty: true,
       })),
@@ -108,6 +116,34 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       }
     },
 
+    regenerateDirectReading: async (id) => {
+      const state = get();
+      const candidate = state.candidates.find((item) => item.id === id);
+      if (state.pending || !candidate) return;
+
+      const currentGeneration = ++generation;
+      set({ pending: `blocks:${id}`, error: null });
+      try {
+        const result = await dependencies.regenerateDirectReading({
+          noteId: state.note.id,
+          expectedVersion: state.note.version,
+          sentence: candidate.sentence,
+        });
+        if (currentGeneration !== generation) return;
+        if (!result.ok) {
+          set({ pending: null, error: result.code });
+          return;
+        }
+        const updated = grammarExampleSchema.parse({ ...candidate, directReading: result.data });
+        set((current) => ({
+          candidates: current.candidates.map((item) => (item.id === id ? updated : item)),
+          pending: null,
+        }));
+      } catch {
+        if (currentGeneration === generation) set({ pending: null, error: "GENERATION_FAILED" });
+      }
+    },
+
     save: async () => {
       const state = get();
 
@@ -119,7 +155,10 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
       if (
         !candidates.length ||
-        candidates.some((candidate) => !grammarExampleSchema.safeParse(candidate).success)
+        candidates.some(
+          (candidate) =>
+            !candidate.directReading || !grammarExampleSchema.safeParse(candidate).success,
+        )
       ) {
         set({ error: "INVALID_SELECTION" });
 

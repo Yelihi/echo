@@ -18,6 +18,12 @@ const meta = {
       ok: true,
       data: createExampleCandidates().slice(0, command.count),
     })),
+    regenerateDirectReading: fn<GrammarExampleManagerProps["regenerateDirectReading"]>(
+      async ({ sentence }) => ({
+        ok: true,
+        data: [{ start: 0, end: sentence.length, korean: "수정한 문장의 뜻입니다" }],
+      }),
+    ),
     save: fn<GrammarExampleManagerProps["save"]>(async () => ({
       ok: true,
       data: { ...note, version: 2 },
@@ -85,5 +91,21 @@ export const EditCandidate: Story = {
     await userEvent.clear(input);
     await userEvent.type(input, "그는 운전사가 아니라 교사입니다.");
     await expect(input).toHaveValue("그는 운전사가 아니라 교사입니다.");
+  },
+};
+
+export const EditEnglishAndRegenerate: Story = {
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
+    const english = canvas.getAllByLabelText("영어 예문")[0];
+    await userEvent.clear(english);
+    await userEvent.type(english, "My edited sentence.");
+    await expect(canvas.getAllByRole("checkbox")[0]).toBeDisabled();
+    await userEvent.click(canvas.getByRole("button", { name: "직독직해 다시 생성" }));
+    await expect(args.regenerateDirectReading).toHaveBeenCalledWith(
+      expect.objectContaining({ sentence: "My edited sentence." }),
+    );
+    await expect(canvas.getAllByRole("checkbox")[0]).toBeEnabled();
   },
 };

@@ -19,6 +19,7 @@ export function ExampleCandidateCard({ id, number }: { id: string; number: numbe
   const change = useExamples((s) => s.change);
   const select = useExamples((s) => s.select);
   const generate = useExamples((s) => s.generate);
+  const regenerateDirectReading = useExamples((s) => s.regenerateDirectReading);
 
   if (!candidate) return null;
 
@@ -30,7 +31,7 @@ export function ExampleCandidateCard({ id, number }: { id: string; number: numbe
           {pending === id ? "생성 중…" : "이 예문 다시 생성"}
         </Button>
       </header>
-      <fieldset disabled={pending === "save"} className="space-y-4">
+      <fieldset disabled={!!pending} className="space-y-4">
         {fields.map(({ field, label }) => (
           <div key={field} className="space-y-2">
             <label htmlFor={`${formId}-${field}`} className="text-sm text-gray-text">
@@ -42,14 +43,50 @@ export function ExampleCandidateCard({ id, number }: { id: string; number: numbe
               onChange={(e) => change(id, field, e.target.value)}
               required
               maxLength={4000}
-              className="min-h-20 border-card-line bg-white leading-relaxed"
+              aria-invalid={field === "sentence" && !candidate.directReading}
+              aria-describedby={
+                field === "sentence" && !candidate.directReading
+                  ? `${formId}-blocks-help`
+                  : undefined
+              }
+              className={
+                field === "sentence" && !candidate.directReading
+                  ? "min-h-20 border-destructive bg-white leading-relaxed ring-1 ring-destructive"
+                  : "min-h-20 border-card-line bg-white leading-relaxed"
+              }
             />
           </div>
         ))}
+        {!candidate.directReading && (
+          <div className="space-y-2">
+            <p id={`${formId}-blocks-help`} className="text-sm text-destructive">
+              수정한 문장의 직독직해를 다시 생성해야 저장할 수 있습니다.
+            </p>
+            <Button
+              variant="outline"
+              disabled={!!pending}
+              onClick={() => void regenerateDirectReading(id)}
+            >
+              {pending === `blocks:${id}` ? "직독직해 생성 중…" : "직독직해 다시 생성"}
+            </Button>
+          </div>
+        )}
+        {candidate.directReading && (
+          <div className="space-y-2 text-sm text-gray-text">
+            {candidate.directReading.map((block) => (
+              <p key={`${block.start}-${block.end}`}>
+                <span lang="en">{candidate.sentence.slice(block.start, block.end)}</span>
+                <span aria-hidden="true"> → </span>
+                <span lang="ko">{block.korean}</span>
+              </p>
+            ))}
+          </div>
+        )}
         <label className="flex items-start gap-3 text-sm">
           <input
             type="checkbox"
             checked={selected}
+            disabled={!candidate.directReading}
             onChange={(e) => select(id, e.target.checked)}
             className="mt-1 accent-black"
           />

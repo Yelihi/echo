@@ -37,7 +37,9 @@ export function ExampleActions() {
         <p role="status" className="text-sm text-gray-text">
           {pending === "save"
             ? "선택한 예문을 저장하고 있습니다."
-            : "같은 어법을 사용하는 새로운 예문을 만들고 있습니다."}
+            : pending.startsWith("blocks:")
+              ? "수정한 문장의 직독직해를 다시 만들고 있습니다."
+              : "같은 어법을 사용하는 새로운 예문을 만들고 있습니다."}
         </p>
       )}
     </div>

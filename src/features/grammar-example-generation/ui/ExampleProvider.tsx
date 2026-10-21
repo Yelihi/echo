@@ -19,21 +19,24 @@ export function ExampleProvider({
   children,
   note,
   generate,
+  regenerateDirectReading,
   save,
   onUpdated,
   onBack,
 }: GrammarExampleManagerProps & { children: ReactNode }) {
-  const latest = useRef({ generate, save, onUpdated });
+  const latest = useRef({ generate, regenerateDirectReading, save, onUpdated });
 
   useLayoutEffect(() => {
-    latest.current = { generate, save, onUpdated };
-  }, [generate, save, onUpdated]);
+    latest.current = { generate, regenerateDirectReading, save, onUpdated };
+  }, [generate, regenerateDirectReading, save, onUpdated]);
   const [store] = useState(() =>
     createExampleStore({
       note,
       onBack,
 
       generate: (command) => latest.current.generate(command),
+
+      regenerateDirectReading: (command) => latest.current.regenerateDirectReading(command),
 
       save: (command) => latest.current.save(command),
 
