@@ -50,10 +50,14 @@ export interface GrammarExampleManagerProps {
 export interface ExampleState {
   note: GrammarNote;
   candidates: readonly GrammarExample[];
+  editing: Readonly<Record<string, GrammarExample>>;
   selected: readonly string[];
   pending: string | null;
   error: ExampleErrorCode | null;
   dirty: boolean;
+  startEdit: (id: string) => void;
+  cancelEdit: (id: string) => void;
+  finishEdit: (id: string) => void;
   change: (
     id: string,
     field: "sentence" | "translation" | "targetExplanation",

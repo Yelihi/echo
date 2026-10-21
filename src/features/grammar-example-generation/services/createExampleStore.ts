@@ -1,6 +1,8 @@
 import { createStore } from "zustand/vanilla";
 import { grammarExampleSchema } from "@/entities/grammar-note";
 import type { ExampleState, GrammarExampleManagerProps } from "../models/interface";
+import { isBlockedExampleError } from "../models/errors";
+import { saveExamplesCommandSchema } from "../models/schema";
 
 export function createExampleStore(dependencies: GrammarExampleManagerProps) {
   // 재생성 중 사용자가 후보를 수정할 수 있으므로, 수정 이전에 시작한 응답은 적용하지 않는다.
@@ -9,6 +11,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
   return createStore<ExampleState>((set, get) => ({
     note: dependencies.note,
     candidates: [],
+    editing: {},
     selected: [],
     pending: null,
     error: null,
@@ -20,11 +23,54 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
     discard: () => {
       generation++;
-      set({ candidates: [], selected: [], pending: null, error: null, dirty: false });
+      set({ candidates: [], editing: {}, selected: [], pending: null, error: null, dirty: false });
     },
 
+    startEdit: (id) =>
+      set((state) => {
+        const candidate = state.candidates.find((item) => item.id === id);
+        if (!candidate || state.pending || state.editing[id]) return state;
+        return {
+          editing: { ...state.editing, [id]: candidate },
+          selected: state.selected.filter((value) => value !== id),
+        };
+      }),
+
+    cancelEdit: (id) => {
+      generation++;
+      set((state) => {
+        const original = state.editing[id];
+        if (!original || state.pending === "save") return state;
+        const editing = { ...state.editing };
+        delete editing[id];
+        return {
+          candidates: state.candidates.map((item) => (item.id === id ? original : item)),
+          editing,
+          pending: null,
+          error: isBlockedExampleError(state.error) ? state.error : null,
+        };
+      });
+    },
+
+    finishEdit: (id) =>
+      set((state) => {
+        const candidate = state.candidates.find((item) => item.id === id);
+        if (!state.editing[id] || state.pending || !candidate?.directReading) return state;
+        if (
+          !saveExamplesCommandSchema.safeParse({
+            noteId: state.note.id,
+            expectedVersion: state.note.version,
+            candidates: [candidate],
+          }).success
+        )
+          return { error: "INVALID_SELECTION" };
+        const editing = { ...state.editing };
+        delete editing[id];
+        return { editing, error: null };
+      }),
+
     change: (id, field, value) => {
-      if (get().pending === "save") return;
+      if (get().pending === "save" || !get().editing[id]) return;
 
       generation++;
       set((state) => ({
@@ -48,6 +94,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       set((state) => ({
         selected: selected
           ? state.pending ||
+            state.editing[id] ||
             !state.candidates.find((candidate) => candidate.id === id)?.directReading
             ? state.selected
             : [...new Set([...state.selected, id])]
@@ -104,6 +151,9 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
               )
             : candidates,
           selected: id ? current.selected.filter((value) => value !== id) : [],
+          editing: id
+            ? Object.fromEntries(Object.entries(current.editing).filter(([key]) => key !== id))
+            : {},
           pending: null,
           dirty: true,
         }));
@@ -137,6 +187,9 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         const updated = grammarExampleSchema.parse({ ...candidate, directReading: result.data });
         set((current) => ({
           candidates: current.candidates.map((item) => (item.id === id ? updated : item)),
+          editing: Object.fromEntries(
+            Object.entries(current.editing).filter(([key]) => key !== id),
+          ),
           pending: null,
         }));
       } catch {
@@ -154,11 +207,11 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       );
 
       if (
-        !candidates.length ||
-        candidates.some(
-          (candidate) =>
-            !candidate.directReading || !grammarExampleSchema.safeParse(candidate).success,
-        )
+        !saveExamplesCommandSchema.safeParse({
+          noteId: state.note.id,
+          expectedVersion: state.note.version,
+          candidates,
+        }).success
       ) {
         set({ error: "INVALID_SELECTION" });
 

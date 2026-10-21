@@ -86,6 +86,7 @@ export const EditCandidate: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
+    await userEvent.click(canvas.getAllByRole("button", { name: "이 예문 수정" })[0]);
     const input = (await canvas.findAllByLabelText("한국어 뜻"))[0];
 
     await userEvent.clear(input);
@@ -98,6 +99,7 @@ export const EditEnglishAndRegenerate: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
+    await userEvent.click(canvas.getAllByRole("button", { name: "이 예문 수정" })[0]);
     const english = canvas.getAllByLabelText("영어 예문")[0];
     await userEvent.clear(english);
     await userEvent.type(english, "My edited sentence.");
@@ -107,5 +109,36 @@ export const EditEnglishAndRegenerate: Story = {
       expect.objectContaining({ sentence: "My edited sentence." }),
     );
     await expect(canvas.getAllByRole("checkbox")[0]).toBeEnabled();
+  },
+};
+
+export const EditCancelAfterFailure: Story = {
+  play: async ({ canvasElement, args }) => {
+    args.regenerateDirectReading.mockResolvedValueOnce({ ok: false, code: "RATE_LIMITED" });
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
+    await userEvent.click(canvas.getAllByRole("button", { name: "이 예문 수정" })[0]);
+    const english = canvas.getAllByLabelText("영어 예문")[0];
+    const original = (english as HTMLTextAreaElement).value;
+    await userEvent.clear(english);
+    await userEvent.type(english, "My edited sentence.");
+    await userEvent.click(canvas.getByRole("button", { name: "직독직해 다시 생성" }));
+    await expect(await canvas.findByRole("alert")).toHaveTextContent("요청 한도");
+    await userEvent.click(canvas.getAllByRole("button", { name: "수정 취소" })[0]);
+    await expect(english).toHaveValue(original);
+    await expect(canvas.getAllByRole("checkbox")[0]).toBeEnabled();
+  },
+};
+
+export const LoginRequired: Story = {
+  play: async ({ canvasElement, args }) => {
+    args.generate.mockResolvedValueOnce({ ok: false, code: "UNAUTHORIZED" });
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "예문 3개 생성" }));
+    await expect(await canvas.findByRole("alert")).toHaveTextContent("로그인이 필요");
+    await expect(canvas.getByRole("link", { name: "로그인 페이지로 이동" })).toHaveAttribute(
+      "href",
+      "/login",
+    );
   },
 };

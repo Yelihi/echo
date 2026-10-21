@@ -10,6 +10,16 @@ export type ExampleErrorCode =
   | "SAVE_FAILED"
   | "INVALID_SELECTION";
 
+export function isBlockedExampleError(code: ExampleErrorCode | null) {
+  return (
+    code === "UNAUTHORIZED" ||
+    code === "NOT_FOUND" ||
+    code === "VERSION_CONFLICT" ||
+    code === "IDEMPOTENCY_CONFLICT" ||
+    code === "NOT_INVITED"
+  );
+}
+
 export function grammarExampleErrorCode(error: unknown): ExampleErrorCode {
   if (error instanceof GrammarNotePersistenceError) return error.code;
 

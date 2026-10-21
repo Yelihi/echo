@@ -58,6 +58,7 @@ describe("서버 상세 화면과 클라이언트 예문 편집 연결", () => {
     await user.click(screen.getByRole("button", { name: "예문 생성·검토" }));
     expect(screen.queryByRole("heading", { name: "서버에서 구성한 상세" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "예문 3개 생성" }));
+    await user.click(screen.getAllByRole("button", { name: "이 예문 수정" })[0]);
     fireEvent.change((await screen.findAllByLabelText("영어 예문"))[0], {
       target: { value: "My edited example." },
     });
