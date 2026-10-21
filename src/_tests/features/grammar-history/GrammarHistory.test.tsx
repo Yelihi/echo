@@ -44,7 +44,50 @@ describe("grammar history", () => {
     expect(load).toHaveBeenCalledTimes(2);
   });
 
-  it("refreshes the latest date and keeps it while paging older records", async () => {
+  it("reopens cached history without another request and accepts a newly completed record", async () => {
+    const user = userEvent.setup();
+    const data = { items: [], total: 0, page: 1, pageSize: 10 };
+    const load = jest
+      .fn<() => Promise<GrammarHistoryResult>>()
+      .mockResolvedValue({ ok: true, data });
+    const { rerender } = render(<GrammarHistory noteId="note" initialData={data} load={load} />);
+    const trigger = screen.getByRole("button", { name: "연습 기록 전체보기" });
+
+    await user.click(trigger);
+    expect(await screen.findByText("아직 완료한 연습이 없습니다.")).toBeVisible();
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await user.click(trigger);
+    expect(screen.getByText("아직 완료한 연습이 없습니다.")).toBeVisible();
+    expect(load).not.toHaveBeenCalled();
+
+    const completedAt = "2026-10-18T01:00:00Z";
+    rerender(
+      <GrammarHistory
+        noteId="note"
+        initialData={{
+          ...data,
+          total: 1,
+          items: [
+            {
+              id: "session",
+              noteId: "note",
+              title: "Grammar",
+              mode: "recall",
+              startedAt: completedAt,
+              completedAt,
+              questionCount: 1,
+            },
+          ],
+        }}
+        load={load}
+      />,
+    );
+    expect(screen.getByText("완료한 연습 1회")).toBeVisible();
+    expect(load).not.toHaveBeenCalled();
+  });
+
+  it("keeps the latest completed date while paging older records", async () => {
     const user = userEvent.setup();
     const oldDate = "2026-10-01T00:00:00Z";
     const latestDate = "2026-10-03T00:00:00Z";
@@ -57,13 +100,14 @@ describe("grammar history", () => {
       completedAt: oldDate,
       questionCount: 1,
     };
-    const initialData = { items: [item], total: 1, page: 1, pageSize: 10 };
+    const initialData = {
+      items: [{ ...item, completedAt: latestDate }],
+      total: 21,
+      page: 1,
+      pageSize: 10,
+    };
     const load = jest
       .fn<() => Promise<GrammarHistoryResult>>()
-      .mockResolvedValueOnce({
-        ok: true,
-        data: { ...initialData, total: 21, items: [{ ...item, completedAt: latestDate }] },
-      })
       .mockResolvedValueOnce({ ok: true, data: { ...initialData, total: 21, page: 2 } });
 
     render(

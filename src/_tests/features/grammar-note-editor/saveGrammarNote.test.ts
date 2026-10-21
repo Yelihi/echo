@@ -22,6 +22,7 @@ jest.mock("server-only", () => ({}));
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
 
 jest.mock("@/shared/lib/logging/pino", () => ({ recordOperationEvent: jest.fn() }));
+jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
 
 Object.defineProperty(globalThis.crypto, "randomUUID", { value: randomUUID, configurable: true });
 
@@ -74,12 +75,13 @@ describe("어법 저장 서버 경계", () => {
 
   it("정상 저장은 동일 요청 ID와 검토 내용을 저장소에 전달한다", async () => {
     const input = command();
-    const create = jest
-      .spyOn(GrammarNoteRepository.prototype, "create")
-      .mockResolvedValue(createEditorNote());
+    const note = createEditorNote();
+    const create = jest.spyOn(GrammarNoteRepository.prototype, "create").mockResolvedValue(note);
 
     expect((await saveGrammarNote(input)).ok).toBe(true);
     expect(create).toHaveBeenCalledWith(input);
+    const { revalidatePath } = await import("next/cache");
+    expect(revalidatePath).toHaveBeenCalledWith(`/grammar/${note.id}`);
   });
 
   it("수정 저장 응답을 잃은 재시도는 이미 저장한 동일 버전을 성공으로 돌려준다", async () => {
@@ -98,6 +100,8 @@ describe("어법 저장 서버 경계", () => {
 
     expect(result.ok).toBe(true);
     expect(update).toHaveBeenCalledTimes(1);
+    const { revalidatePath } = await import("next/cache");
+    expect(revalidatePath).toHaveBeenCalledWith(`/grammar/${note.id}`);
   });
 
   it("내용이 다른 버전 충돌을 성공으로 오인하지 않고 초안 재검토를 요청한다", async () => {
@@ -120,6 +124,8 @@ describe("어법 저장 서버 경계", () => {
       ok: false,
       code: "VERSION_CONFLICT",
     });
+    const { revalidatePath } = await import("next/cache");
+    expect(revalidatePath).not.toHaveBeenCalled();
   });
 
   it("실패는 내부 이벤트로 기록하고 원문과 내부 오류를 UI에 노출하지 않는다", async () => {

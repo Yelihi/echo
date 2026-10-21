@@ -29,7 +29,7 @@ function HistoryForNote(props: GrammarHistoryProps) {
   function changeOpen(next: boolean) {
     setOpen(next);
 
-    if (next) void refresh(1);
+    if (next && (!data || error)) void refresh(1);
   }
 
   return (
@@ -37,7 +37,7 @@ function HistoryForNote(props: GrammarHistoryProps) {
       <h2 className="text-lg font-medium text-practice-ink">나의 연습</h2>
       <p className="text-sm text-practice-secondary">
         {data ? `완료한 연습 ${total}회` : "완료한 연습 기록을 확인해보세요."}
-        {last && ` · 최근 ${formatGrammarPracticeDate(last)}`}
+        <span>{last && ` · 최근 ${formatGrammarPracticeDate(last)}`}</span>
       </p>
       <Dialog open={open} onOpenChange={changeOpen}>
         <DialogTrigger asChild>

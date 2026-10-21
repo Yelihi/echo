@@ -20,6 +20,14 @@ export function useGrammarHistory({ noteId, initialData, load }: GrammarHistoryP
     };
   }, []);
 
+  useEffect(() => {
+    generation.current++;
+    setData(initialData);
+    setLatestCompletedAt(initialData?.page === 1 ? initialData.items[0]?.completedAt : undefined);
+    setBusy(false);
+    setError(null);
+  }, [initialData]);
+
   async function refresh(page = 1) {
     const currentGeneration = ++generation.current;
 
