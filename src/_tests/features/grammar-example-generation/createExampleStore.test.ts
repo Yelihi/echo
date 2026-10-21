@@ -79,6 +79,71 @@ describe("예문 초안 이벤트", () => {
     expect(store.getState().selected).toEqual([original.id]);
   });
 
+  it("B의 블록 재생성 중 A를 취소해도 B 요청과 결과를 유지한다", async () => {
+    const { store, regenerateDirectReading } = setup();
+    await store.getState().generate();
+    const [originalA, originalB] = store.getState().candidates;
+    const editedB = "B's edited sentence.";
+    store.getState().startEdit(originalA.id);
+    store.getState().change(originalA.id, "sentence", "A's edited sentence.");
+    store.getState().startEdit(originalB.id);
+    store.getState().change(originalB.id, "sentence", editedB);
+
+    let resolve!: (
+      result: Awaited<ReturnType<GrammarExampleManagerProps["regenerateDirectReading"]>>,
+    ) => void;
+    regenerateDirectReading.mockImplementationOnce(
+      () =>
+        new Promise((done) => {
+          resolve = done;
+        }),
+    );
+    const pending = store.getState().regenerateDirectReading(originalB.id);
+    store.getState().cancelEdit(originalA.id);
+
+    expect(store.getState().candidates[0]).toEqual(originalA);
+    expect(store.getState().pending).toBe(`blocks:${originalB.id}`);
+
+    const blocks = [{ start: 0, end: editedB.length, korean: "수정한 B 문장" }];
+    resolve({ ok: true, data: blocks });
+    await pending;
+    expect(store.getState().candidates[1]).toEqual(
+      expect.objectContaining({ sentence: editedB, directReading: blocks }),
+    );
+    expect(regenerateDirectReading).toHaveBeenCalledTimes(1);
+  });
+
+  it("B 자신의 블록 재생성 중 수정을 취소하면 원문을 복원하고 늦은 응답을 버린다", async () => {
+    const { store, regenerateDirectReading } = setup();
+    await store.getState().generate();
+    const originalB = store.getState().candidates[1];
+    store.getState().startEdit(originalB.id);
+    store.getState().change(originalB.id, "sentence", "B's edited sentence.");
+
+    let resolve!: (
+      result: Awaited<ReturnType<GrammarExampleManagerProps["regenerateDirectReading"]>>,
+    ) => void;
+    regenerateDirectReading.mockImplementationOnce(
+      () =>
+        new Promise((done) => {
+          resolve = done;
+        }),
+    );
+    const pending = store.getState().regenerateDirectReading(originalB.id);
+    store.getState().cancelEdit(originalB.id);
+
+    expect(store.getState().candidates[1]).toEqual(originalB);
+    expect(store.getState().pending).toBeNull();
+
+    resolve({
+      ok: true,
+      data: [{ start: 0, end: "B's edited sentence.".length, korean: "늦은 응답" }],
+    });
+    await pending;
+    expect(store.getState().candidates[1]).toEqual(originalB);
+    expect(regenerateDirectReading).toHaveBeenCalledTimes(1);
+  });
+
   it("재생성 실패시 기존 예문 수정은 보존하고 블록 없는 후보의 선택은 막는다", async () => {
     const { store, generate } = setup();
 

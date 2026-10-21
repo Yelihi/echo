@@ -50,18 +50,18 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       }),
 
     cancelEdit: (id) => {
-      generation++;
-      set((state) => {
-        const original = state.editing[id];
-        if (!original || state.pending === "save") return state;
-        const editing = { ...state.editing };
-        delete editing[id];
-        return {
-          candidates: state.candidates.map((item) => (item.id === id ? original : item)),
-          editing,
-          pending: null,
-          error: isBlockedExampleError(state.error) ? state.error : null,
-        };
+      const state = get();
+      const original = state.editing[id];
+      if (!original || state.pending === "save") return;
+      const ownsPending = state.pending === id || state.pending === `blocks:${id}`;
+      if (ownsPending) generation++;
+      const editing = { ...state.editing };
+      delete editing[id];
+      set({
+        candidates: state.candidates.map((item) => (item.id === id ? original : item)),
+        editing,
+        pending: ownsPending ? null : state.pending,
+        error: isBlockedExampleError(state.error) ? state.error : null,
       });
     },
 
