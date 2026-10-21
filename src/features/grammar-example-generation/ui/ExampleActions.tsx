@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/shared/components/atomics/button/Button";
-import { isBlockedExampleError } from "../models/errors";
-import { exampleErrorMessage } from "./errorMessage";
+import { exampleErrorMessage, isBlockedExampleError } from "../models/errors";
 import { useExamples } from "./ExampleProvider";
 
 export function ExampleActions() {

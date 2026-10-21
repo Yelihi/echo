@@ -1,5 +1,6 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { createExampleStore } from "@/features/grammar-example-generation/services/createExampleStore";
+import { errorPopupManager, useErrorPopupStore } from "@/shared/lib/error-popup";
 import type { GrammarExampleManagerProps } from "@/features/grammar-example-generation";
 import { createEditorNote } from "../grammar-note-editor/fixtures";
 import { createExampleCandidates } from "./fixtures";
@@ -28,6 +29,41 @@ function setup() {
 }
 
 describe("예문 초안 이벤트", () => {
+  afterEach(() => errorPopupManager.close());
+
+  it("생성·재생성·저장 실패와 입력 검증 오류를 전역 알림으로 전달한다", async () => {
+    const { store, generate, regenerateDirectReading, save } = setup();
+    generate.mockResolvedValueOnce({ ok: false, code: "RATE_LIMITED" });
+    await store.getState().generate();
+    expect(useErrorPopupStore.getState().popup).toEqual(
+      expect.objectContaining({ code: "RATE_LIMITED" }),
+    );
+    errorPopupManager.close();
+
+    generate.mockResolvedValueOnce({ ok: true, data: createExampleCandidates() });
+    await store.getState().generate();
+    expect(useErrorPopupStore.getState().popup).toBeNull();
+
+    const candidate = store.getState().candidates[0];
+    store.getState().startEdit(candidate.id);
+    store.getState().change(candidate.id, "sentence", "Updated sentence.");
+    regenerateDirectReading.mockResolvedValueOnce({ ok: false, code: "GENERATION_FAILED" });
+    await store.getState().regenerateDirectReading(candidate.id);
+    expect(useErrorPopupStore.getState().popup?.code).toBe("GENERATION_FAILED");
+    errorPopupManager.close();
+
+    store.getState().cancelEdit(candidate.id);
+    store.getState().select(candidate.id, true);
+    save.mockResolvedValueOnce({ ok: false, code: "VERSION_CONFLICT" });
+    await store.getState().save();
+    expect(useErrorPopupStore.getState().popup?.code).toBe("VERSION_CONFLICT");
+    errorPopupManager.close();
+
+    store.getState().startEdit(candidate.id);
+    store.getState().change(candidate.id, "translation", "English only");
+    store.getState().finishEdit(candidate.id);
+    expect(useErrorPopupStore.getState().popup?.code).toBe("INVALID_SELECTION");
+  });
   it("권한 거부 후 수정을 취소해도 거부 사유를 유지하고 원문을 복원한다", async () => {
     const { store, regenerateDirectReading } = setup();
     await store.getState().generate();
@@ -109,6 +145,22 @@ describe("예문 초안 이벤트", () => {
     resolve({ ok: true, data: createExampleCandidates() });
     await pending;
     expect(store.getState().candidates).toEqual([]);
+  });
+
+  it("돌아간 뒤 늦게 도착한 생성 오류는 전역 알림을 열지 않는다", async () => {
+    const { store, generate } = setup();
+    let resolve!: (value: Awaited<ReturnType<GrammarExampleManagerProps["generate"]>>) => void;
+    generate.mockImplementation(
+      () =>
+        new Promise((done) => {
+          resolve = done;
+        }),
+    );
+    const pending = store.getState().generate();
+    store.getState().discard();
+    resolve({ ok: false, code: "GENERATION_FAILED" });
+    await pending;
+    expect(useErrorPopupStore.getState().popup).toBeNull();
   });
 
   it("검토한 선택 예문만 저장하고 선택하지 않은 후보는 유지한다", async () => {

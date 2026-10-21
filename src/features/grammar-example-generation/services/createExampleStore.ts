@@ -1,8 +1,21 @@
 import { createStore } from "zustand/vanilla";
 import { grammarExampleSchema } from "@/entities/grammar-note";
+import { errorPopupManager } from "@/shared/lib/error-popup";
 import type { ExampleState, GrammarExampleManagerProps } from "../models/interface";
-import { isBlockedExampleError } from "../models/errors";
+import {
+  exampleErrorMessage,
+  isBlockedExampleError,
+  type ExampleErrorCode,
+} from "../models/errors";
 import { saveExamplesCommandSchema } from "../models/schema";
+
+function showExampleError(code: ExampleErrorCode) {
+  errorPopupManager.open({
+    title: "예문 작업을 완료하지 못했습니다",
+    message: exampleErrorMessage(code),
+    code,
+  });
+}
 
 export function createExampleStore(dependencies: GrammarExampleManagerProps) {
   // 재생성 중 사용자가 후보를 수정할 수 있으므로, 수정 이전에 시작한 응답은 적용하지 않는다.
@@ -52,22 +65,27 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
       });
     },
 
-    finishEdit: (id) =>
-      set((state) => {
-        const candidate = state.candidates.find((item) => item.id === id);
-        if (!state.editing[id] || state.pending || !candidate?.directReading) return state;
-        if (
-          !saveExamplesCommandSchema.safeParse({
-            noteId: state.note.id,
-            expectedVersion: state.note.version,
-            candidates: [candidate],
-          }).success
-        )
-          return { error: "INVALID_SELECTION" };
-        const editing = { ...state.editing };
+    finishEdit: (id) => {
+      const state = get();
+      const candidate = state.candidates.find((item) => item.id === id);
+      if (!state.editing[id] || state.pending || !candidate?.directReading) return;
+      if (
+        !saveExamplesCommandSchema.safeParse({
+          noteId: state.note.id,
+          expectedVersion: state.note.version,
+          candidates: [candidate],
+        }).success
+      ) {
+        set({ error: "INVALID_SELECTION" });
+        showExampleError("INVALID_SELECTION");
+        return;
+      }
+      set((current) => {
+        const editing = { ...current.editing };
         delete editing[id];
         return { editing, error: null };
-      }),
+      });
+    },
 
     change: (id, field, value) => {
       if (get().pending === "save" || !get().editing[id]) return;
@@ -124,6 +142,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
         if (!result.ok) {
           set({ pending: null, error: result.code });
+          showExampleError(result.code);
 
           return;
         }
@@ -158,11 +177,13 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           dirty: true,
         }));
       } catch {
-        if (currentGeneration === generation)
+        if (currentGeneration === generation) {
           set({
             pending: null,
             error: "GENERATION_FAILED",
           });
+          showExampleError("GENERATION_FAILED");
+        }
       }
     },
 
@@ -182,6 +203,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         if (currentGeneration !== generation) return;
         if (!result.ok) {
           set({ pending: null, error: result.code });
+          showExampleError(result.code);
           return;
         }
         const updated = grammarExampleSchema.parse({ ...candidate, directReading: result.data });
@@ -193,7 +215,10 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           pending: null,
         }));
       } catch {
-        if (currentGeneration === generation) set({ pending: null, error: "GENERATION_FAILED" });
+        if (currentGeneration === generation) {
+          set({ pending: null, error: "GENERATION_FAILED" });
+          showExampleError("GENERATION_FAILED");
+        }
       }
     },
 
@@ -214,6 +239,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         }).success
       ) {
         set({ error: "INVALID_SELECTION" });
+        showExampleError("INVALID_SELECTION");
 
         return;
       }
@@ -229,6 +255,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
         if (!result.ok) {
           set({ pending: null, error: result.code });
+          showExampleError(result.code);
 
           return;
         }
@@ -248,6 +275,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           pending: null,
           error: "SAVE_FAILED",
         });
+        showExampleError("SAVE_FAILED");
       }
     },
   }));

@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -6,10 +6,43 @@ import {
   type GrammarExampleManagerProps,
 } from "@/features/grammar-example-generation";
 import type { ExampleErrorCode } from "@/features/grammar-example-generation/models/errors";
+import { ErrorPopupProvider, errorPopupManager } from "@/shared/lib/error-popup";
 import { createEditorNote } from "../grammar-note-editor/fixtures";
 import { createExampleCandidates } from "./fixtures";
 
 describe("예문 편집 세션", () => {
+  afterEach(() => errorPopupManager.close());
+
+  it("업무 오류를 전역 AlertDialog로 알리고 닫은 뒤 복구 동선을 남긴다", async () => {
+    const generate = jest
+      .fn<GrammarExampleManagerProps["generate"]>()
+      .mockResolvedValue({ ok: false, code: "NOT_INVITED" });
+    render(
+      <>
+        <ErrorPopupProvider />
+        <GrammarExampleManager
+          note={createEditorNote()}
+          generate={generate}
+          regenerateDirectReading={jest.fn<GrammarExampleManagerProps["regenerateDirectReading"]>()}
+          save={jest.fn<GrammarExampleManagerProps["save"]>()}
+          onUpdated={jest.fn()}
+        />
+      </>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "예문 3개 생성" }));
+    const dialog = await screen.findByRole("alertdialog", {
+      name: "예문 작업을 완료하지 못했습니다",
+    });
+    expect(dialog).toHaveTextContent("권한이 없습니다");
+    expect(dialog).toHaveTextContent("노트 목록으로 돌아가");
+    await user.click(screen.getByRole("button", { name: "확인" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "노트 목록으로 이동" })).toHaveAttribute(
+      "href",
+      "/grammar",
+    );
+  });
   it("개별 재생성 중 입력과 선택을 잠그고 실패하면 기존 한영 후보를 보존한다", async () => {
     const note = createEditorNote();
     const original = createExampleCandidates();
