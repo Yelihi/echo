@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "영어 대본·문단 저장",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      480
+    ]
+  },
+  "participants": [
+    {
+      "id": "editor",
+      "type": "frontend",
+      "label": "편집 화면",
+      "sublabel": "로컬 초안"
+    },
+    {
+      "id": "action",
+      "type": "backend",
+      "label": "Server Action",
+      "sublabel": "인증 · 입력 검증"
+    },
+    {
+      "id": "repo",
+      "type": "backend",
+      "label": "Repository",
+      "sublabel": "도메인 저장 계약"
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "사용자별 학습 자료"
+    }
+  ],
+  "messages": [
+    {
+      "id": "material-save-1",
+      "from": "editor",
+      "to": "action",
+      "y": 160,
+      "label": "저장 · 초안 + 수정 대상 ID",
+      "variant": "emphasis"
+    },
+    {
+      "id": "material-save-3",
+      "from": "action",
+      "to": "repo",
+      "y": 196,
+      "label": "인증·스키마 검증 후 저장 요청",
+      "variant": "default"
+    },
+    {
+      "id": "material-save-4",
+      "from": "repo",
+      "to": "db",
+      "y": 232,
+      "label": "새 자료 생성 / 기존 자료 갱신",
+      "variant": "default"
+    },
+    {
+      "id": "material-save-5",
+      "from": "db",
+      "to": "repo",
+      "y": 268,
+      "label": "저장 결과",
+      "variant": "return"
+    },
+    {
+      "id": "material-save-6",
+      "from": "repo",
+      "to": "action",
+      "y": 304,
+      "label": "저장된 자료 ID",
+      "variant": "return"
+    },
+    {
+      "id": "material-save-8",
+      "from": "action",
+      "to": "editor",
+      "y": 340,
+      "label": "경로 갱신 후 성공 ID / 오류 반환",
+      "variant": "return",
+      "note": "revalidatePath: 자료 목록 · 마이페이지"
+    }
+  ]
+}
