@@ -290,6 +290,7 @@ describe("GrammarNoteRepository", () => {
           sentence: "He is a nurse.",
           translation: "그는 간호사이다.",
           targetExplanation: "주격 보어",
+          directReading: [{ start: 0, end: 14, korean: "그는 간호사이다" }],
           reviewStatus: "reviewed",
         },
       ],
@@ -297,6 +298,9 @@ describe("GrammarNoteRepository", () => {
     const serialized = mapGrammarNoteContentToJson(note);
     expect(serialized).toEqual(note);
     expect(serialized).not.toBe(note);
+    expect(
+      (serialized as { examples: { directReading: unknown[] }[] }).examples[0].directReading,
+    ).not.toBe(note.examples[0].directReading);
     expect(note.source.sentence).toBe("She is a doctor.");
   });
 });

@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { GrammarDetail } from "@/views/grammar-detail/ui/GrammarDetail";
 import { GrammarAnalysisReader } from "@/features/grammar-analysis-edit";
 import { createEditorNote } from "@/_tests/features/grammar-note-editor/fixtures";
+import { createExampleCandidates } from "@/_tests/features/grammar-example-generation/fixtures";
+import { GrammarExamplesSection } from "@/views/grammar-detail/ui/GrammarExamplesSection";
 
 const note = createEditorNote();
 
@@ -43,5 +45,26 @@ export const Reading: Story = {
       "href",
       `/grammar/${note.id}/practice?returnTo=%2Fgrammar%3Fq%3Dcontrast%26page%3D2`,
     );
+  },
+};
+
+export const DirectReading: Story = {
+  args: {
+    examples: (
+      <GrammarExamplesSection
+        note={{ ...note, examples: [createExampleCandidates()[0]] }}
+        manageButton={null}
+        generateAudio={fn()}
+      />
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("그는 운전사가 아니라 교사입니다.")).toBeVisible();
+    await userEvent.click(canvas.getByRole("button", { name: "직독직해" }));
+    await expect(canvas.getByText("그는 운전사가 아니라 교사입니다")).toBeVisible();
+    await expect(canvas.queryByText("그는 운전사가 아니라 교사입니다.")).not.toBeInTheDocument();
+    await userEvent.click(canvas.getByRole("button", { name: "자연스러운 해석" }));
+    await expect(canvas.getByText("그는 운전사가 아니라 교사입니다.")).toBeVisible();
   },
 };

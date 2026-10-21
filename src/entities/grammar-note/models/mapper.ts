@@ -58,6 +58,12 @@ export function mapGrammarNoteContentToJson(content: GrammarNoteContent): Json {
         ranges: item.ranges.map((range) => ({ ...range })),
       })),
     },
-    examples: content.examples.map((example) => ({ ...example })),
+    examples: content.examples.map((example) => {
+      const { directReading, ...fields } = example;
+      return {
+        ...fields,
+        ...(directReading ? { directReading: directReading.map((block) => ({ ...block })) } : {}),
+      };
+    }),
   };
 }

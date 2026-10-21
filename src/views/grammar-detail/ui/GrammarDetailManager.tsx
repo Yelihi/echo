@@ -6,6 +6,7 @@ import type { GrammarNote } from "@/entities/grammar-note";
 import { GrammarExampleManager } from "@/features/grammar-example-generation";
 import {
   requestGrammarExamples,
+  regenerateGrammarDirectReading,
   saveGrammarExamples,
 } from "@/features/grammar-example-generation/services/actions/exampleActions";
 
@@ -29,6 +30,7 @@ export function GrammarDetailManager({
             <GrammarExampleManager
               note={note}
               generate={requestGrammarExamples}
+              regenerateDirectReading={regenerateGrammarDirectReading}
               save={saveGrammarExamples}
               onUpdated={() => router.refresh()}
               onBack={() => setManaging(false)}

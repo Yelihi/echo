@@ -21,6 +21,7 @@ export function getExampleAdoptionStatus(
         saved.sentence === candidate.sentence &&
         saved.translation === candidate.translation &&
         saved.targetExplanation === candidate.targetExplanation &&
+        JSON.stringify(saved.directReading) === JSON.stringify(candidate.directReading) &&
         saved.reviewStatus === "reviewed",
     ),
   );

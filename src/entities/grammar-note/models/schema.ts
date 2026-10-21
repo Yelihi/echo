@@ -84,15 +84,49 @@ export const sentenceAnalysisSchema: z.ZodType<SentenceAnalysis> = z
     }
   });
 
+export const grammarDirectReadingSchema = z
+  .array(z.object({ start: revision, end: revision, korean: requiredText }).strict())
+  .min(1)
+  .max(50);
+
+export function validDirectReading(
+  sentence: string,
+  blocks: readonly { start: number; end: number; korean: string }[],
+) {
+  let cursor = 0;
+  for (const block of blocks) {
+    if (
+      block.start !== cursor ||
+      block.end <= block.start ||
+      block.end > sentence.length ||
+      !sentence.slice(block.start, block.end).trim() ||
+      !/\p{Script=Hangul}/u.test(block.korean)
+    )
+      return false;
+    cursor = block.end;
+  }
+  return cursor === sentence.length;
+}
+
 export const grammarExampleSchema = z
   .object({
     id,
     sentence: requiredText,
     translation: requiredText,
     targetExplanation: requiredText,
+    directReading: grammarDirectReadingSchema.optional(),
     reviewStatus: z.enum(["needs-review", "reviewed"]),
   })
-  .strict();
+  .strict()
+  .superRefine((example, ctx) => {
+    if (example.directReading && !validDirectReading(example.sentence, example.directReading)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["directReading"],
+        message: "직독직해 블록이 문장과 맞지 않습니다.",
+      });
+    }
+  });
 
 export const grammarNoteContentSchema: z.ZodType<GrammarNoteContent> = z
   .object({
