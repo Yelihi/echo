@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "세션 시작 전 · 목소리 확인과 대본 확정",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      500
+    ]
+  },
+  "participants": [
+    {
+      "id": "screen",
+      "type": "frontend",
+      "label": "준비·연습 화면",
+      "sublabel": "역할 · 목소리 · 차례"
+    },
+    {
+      "id": "server",
+      "type": "backend",
+      "label": "Server Action",
+      "sublabel": "세션 생성 · TTS"
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "대본 스냅샷 · 이용량"
+    },
+    {
+      "id": "tts",
+      "type": "external",
+      "label": "OpenAI TTS",
+      "sublabel": "샘플 / 상대방 대사"
+    }
+  ],
+  "messages": [
+    {
+      "id": "conversation-1",
+      "from": "screen",
+      "to": "server",
+      "y": 160,
+      "label": "시작 전 · 목소리 샘플 요청",
+      "variant": "default"
+    },
+    {
+      "id": "conversation-2",
+      "from": "server",
+      "to": "tts",
+      "y": 196,
+      "label": "인증·이용량 확인 후 샘플 생성",
+      "variant": "default"
+    },
+    {
+      "id": "conversation-3",
+      "from": "tts",
+      "to": "server",
+      "y": 232,
+      "label": "샘플 음성 반환",
+      "variant": "return"
+    },
+    {
+      "id": "preview-response",
+      "from": "server",
+      "to": "screen",
+      "y": 268,
+      "label": "샘플 미리듣기",
+      "variant": "return"
+    },
+    {
+      "id": "conversation-4",
+      "from": "screen",
+      "to": "server",
+      "y": 304,
+      "label": "연습 시작 · 역할 / 목소리 / 평가 모드",
+      "variant": "emphasis"
+    },
+    {
+      "id": "conversation-5",
+      "from": "server",
+      "to": "db",
+      "y": 340,
+      "label": "소유 대본 조회 · 세션 스냅샷 저장",
+      "variant": "default"
+    },
+    {
+      "id": "conversation-6",
+      "from": "server",
+      "to": "screen",
+      "y": 376,
+      "label": "sessionId 반환 · 연습 경로 이동",
+      "variant": "return"
+    }
+  ]
+}

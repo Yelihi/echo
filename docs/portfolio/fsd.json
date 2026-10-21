@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Echo의 FSD 계층 · 상위에서 하위로 의존",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      540
+    ]
+  },
+  "components": [
+    {
+      "id": "app",
+      "type": "frontend",
+      "label": "app · 라우트와 진입점",
+      "sublabel": "page / layout / Route Handler",
+      "pos": [
+        290,
+        20
+      ],
+      "size": [
+        500,
+        54
+      ]
+    },
+    {
+      "id": "views",
+      "type": "frontend",
+      "label": "views · 화면별 조합과 진행",
+      "sublabel": "화면 상태 / 이벤트 조정 / ViewModel",
+      "pos": [
+        290,
+        105
+      ],
+      "size": [
+        500,
+        54
+      ]
+    },
+    {
+      "id": "widgets",
+      "type": "frontend",
+      "label": "widgets · 여러 화면의 공통 조합",
+      "sublabel": "앱 셸 / 내비게이션",
+      "pos": [
+        290,
+        190
+      ],
+      "size": [
+        500,
+        54
+      ]
+    },
+    {
+      "id": "features",
+      "type": "backend",
+      "label": "features · 사용자 기능",
+      "sublabel": "TXT 불러오기 / 녹음 저장 / 음성 요청",
+      "pos": [
+        290,
+        275
+      ],
+      "size": [
+        500,
+        54
+      ]
+    },
+    {
+      "id": "entities",
+      "type": "backend",
+      "label": "entities · 도메인 계약과 규칙",
+      "sublabel": "세션 / 녹음 / repository",
+      "pos": [
+        290,
+        360
+      ],
+      "size": [
+        500,
+        54
+      ]
+    },
+    {
+      "id": "shared",
+      "type": "backend",
+      "label": "shared · 공용 기반",
+      "sublabel": "UI / AudioCapture / 외부 클라이언트",
+      "pos": [
+        290,
+        445
+      ],
+      "size": [
+        500,
+        54
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "depends-app",
+      "from": "app",
+      "to": "views",
+      "label": "하위 계층 사용",
+      "labelAt": [
+        540,
+        89.5
+      ]
+    },
+    {
+      "id": "depends-views",
+      "from": "views",
+      "to": "widgets",
+      "label": "하위 계층 사용",
+      "labelAt": [
+        540,
+        174.5
+      ]
+    },
+    {
+      "id": "depends-widgets",
+      "from": "widgets",
+      "to": "features",
+      "label": "하위 계층 사용",
+      "labelAt": [
+        540,
+        259.5
+      ]
+    },
+    {
+      "id": "depends-features",
+      "from": "features",
+      "to": "entities",
+      "label": "하위 계층 사용",
+      "labelAt": [
+        540,
+        344.5
+      ]
+    },
+    {
+      "id": "depends-entities",
+      "from": "entities",
+      "to": "shared",
+      "label": "하위 계층 사용",
+      "labelAt": [
+        540,
+        429.5
+      ]
+    }
+  ]
+}

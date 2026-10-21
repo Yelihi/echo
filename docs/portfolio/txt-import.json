@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TXT 대화 검증과 역할 분리",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      480
+    ]
+  },
+  "participants": [
+    {
+      "id": "upload",
+      "type": "frontend",
+      "label": "파일 선택",
+      "sublabel": "TXT · 한 파일"
+    },
+    {
+      "id": "action",
+      "type": "backend",
+      "label": "Server Action",
+      "sublabel": "transferTextFile"
+    },
+    {
+      "id": "parser",
+      "type": "backend",
+      "label": "서버 파서",
+      "sublabel": "입출력 검증"
+    },
+    {
+      "id": "ai",
+      "type": "external",
+      "label": "OpenAI",
+      "sublabel": "대화 판별 · 역할 추출"
+    }
+  ],
+  "messages": [
+    {
+      "id": "txt-import-1",
+      "from": "upload",
+      "to": "action",
+      "y": 160,
+      "label": "TXT File 전달",
+      "variant": "emphasis"
+    },
+    {
+      "id": "txt-import-2",
+      "from": "action",
+      "to": "parser",
+      "y": 196,
+      "label": "로그인 확인 후 파싱 요청",
+      "variant": "security"
+    },
+    {
+      "id": "txt-import-4",
+      "from": "parser",
+      "to": "ai",
+      "y": 232,
+      "label": "TXT 검사 후 2인 대화·역할 판별",
+      "variant": "default"
+    },
+    {
+      "id": "txt-import-5",
+      "from": "ai",
+      "to": "parser",
+      "y": 268,
+      "label": "두 화자 · partner/me · 대사 반환",
+      "variant": "return"
+    },
+    {
+      "id": "txt-import-7",
+      "from": "parser",
+      "to": "action",
+      "y": 304,
+      "label": "스키마·화자 참조 검증 후 초안 반환",
+      "variant": "return"
+    },
+    {
+      "id": "txt-import-8",
+      "from": "action",
+      "to": "upload",
+      "y": 340,
+      "label": "역할별 편집 초안 반영 · 직접 검토",
+      "variant": "return"
+    }
+  ]
+}
