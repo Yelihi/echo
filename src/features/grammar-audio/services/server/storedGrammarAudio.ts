@@ -1,5 +1,5 @@
 import "server-only";
-import { GrammarAudioJobRepository } from "@/entities/grammar-audio/infrastructure/GrammarAudioJobRepository";
+import { GrammarAudioJobRepository } from "@/entities/grammar-audio/server";
 import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
 import type { AudioPreparationResult } from "@/entities/grammar-audio";
 import { exampleAudioAction } from "./exampleAudioAction";

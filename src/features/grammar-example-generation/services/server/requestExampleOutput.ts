@@ -1,7 +1,7 @@
 import "server-only";
 import { zodTextFormat } from "openai/helpers/zod";
 import type { GrammarNote } from "@/entities/grammar-note";
-import type { GrammarDifficulty } from "@/entities/user-profile/models/entity";
+import type { GrammarDifficulty } from "@/entities/user-profile";
 import { getOpenAIEvaluationModel, getOpenAIServerClient } from "@/shared/lib/openai/server";
 import { generatedExamplesSchema, resolveGeneratedReading } from "../../models/generationOutput";
 

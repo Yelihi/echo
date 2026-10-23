@@ -1,9 +1,10 @@
 import "server-only";
-import { prepareExampleAudio } from "@/entities/grammar-audio/infrastructure/prepareExampleAudio";
+import { GrammarAudioJobRepository, prepareExampleAudio } from "@/entities/grammar-audio/server";
+import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
+import { getOpenAITTSModel } from "@/shared/lib/openai/server";
 import type { AudioPreparation, ExampleAudioCommand } from "@/entities/grammar-audio";
 import { GrammarNotePersistenceError, GrammarNoteRepository } from "@/entities/grammar-note";
-import { UserProfileRepository } from "@/entities/user-profile";
-import { DEFAULT_GRAMMAR_DIFFICULTY } from "@/entities/user-profile/models/entity";
+import { UserProfileRepository, DEFAULT_GRAMMAR_DIFFICULTY } from "@/entities/user-profile";
 import type { UserId } from "@/entities/value-object";
 import { getAuthenticatedUser } from "@/shared/lib/supabase/getAuthenticatedUser";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
@@ -55,7 +56,17 @@ export async function executeExampleAction<T>(
             update: (input) => atStage("note.save", () => repository.update(input)),
             findMany: (input) => atStage("note.load", () => repository.findMany(input)),
           },
-          prepareAcceptedExampleAudio: (command) => prepareExampleAudio(user.id, command),
+          prepareAcceptedExampleAudio: (command) =>
+            prepareExampleAudio(command, {
+              createRepository: () =>
+                new GrammarAudioJobRepository(
+                  getSupabaseServiceRoleClient(),
+                  user.id,
+                  getOpenAITTSModel(),
+                  process.env.PROCESS_GRAMMAR_AUDIO_SECRET,
+                ),
+              recordEvent: recordOperationEvent,
+            }),
           generate: (...args) => atStage("ai.generate", () => requestExampleOutput(...args)),
           generateDirectReading: (...args) =>
             atStage("ai.direct-reading", () => requestDirectReadingOutput(...args)),

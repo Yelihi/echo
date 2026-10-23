@@ -10,6 +10,7 @@ export type {
   PrecheckResult,
 } from "./models/entity";
 export {
+  validDirectReading,
   grammarSourceSchema,
   grammarMetadataSchema,
   sentenceAnalysisSchema,

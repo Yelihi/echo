@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { GrammarNotePersistenceError } from "@/entities/grammar-note";
-import { validDirectReading } from "@/entities/grammar-note/models/schema";
+import { validDirectReading } from "@/entities/grammar-note";
 import { exampleOutputSchema } from "./schema";
 
 const textBlocks = z

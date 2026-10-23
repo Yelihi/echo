@@ -22,7 +22,18 @@ export class GrammarAudioJobRepository implements GrammarAudioJobRepositoryPort 
     private readonly client: SupabaseClient<Database>,
     private readonly ownerId: string,
     private readonly model: string,
+    private readonly processorSecret?: string,
   ) {}
+
+  async requestProcessing(): Promise<void> {
+    if (!this.processorSecret) throw new Error("AUDIO_PROCESSOR_UNAVAILABLE");
+    const { error } = await this.client.functions.invoke("process-grammar-audio-job", {
+      headers: { Authorization: `Bearer ${this.processorSecret}` },
+      body: {},
+      timeout: 3000,
+    });
+    if (error) throw error;
+  }
 
   private async query(
     command: ExampleAudioCommand,

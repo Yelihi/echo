@@ -1,14 +1,17 @@
-import "server-only";
-import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
-import { getOpenAITTSModel } from "@/shared/lib/openai/server";
 import { observeOperation } from "@/shared/lib/logging/observeOperation";
-import { recordOperationEvent } from "@/shared/lib/logging/pino";
-import type { AudioPreparation, ExampleAudioCommand } from "../models/repository";
-import { GrammarAudioJobRepository } from "./GrammarAudioJobRepository";
+import type { RecordOperationEvent } from "@/shared/lib/logging/models";
+import type {
+  AudioPreparation,
+  ExampleAudioCommand,
+  GrammarAudioJobRepositoryPort,
+} from "../models/repository";
 
 export async function prepareExampleAudio(
-  ownerId: string,
   command: ExampleAudioCommand,
+  dependencies: {
+    createRepository: () => GrammarAudioJobRepositoryPort;
+    recordEvent: RecordOperationEvent;
+  },
   retry = false,
 ): Promise<readonly AudioPreparation[]> {
   const operationId = crypto.randomUUID();
@@ -20,22 +23,13 @@ export async function prepareExampleAudio(
       resourceId: command.noteId,
       operationId,
       getStage: () => stage,
-      recordEvent: recordOperationEvent,
+      recordEvent: dependencies.recordEvent,
       execute: async () => {
-        const client = getSupabaseServiceRoleClient();
-        const repository = new GrammarAudioJobRepository(client, ownerId, getOpenAITTSModel());
+        const repository = dependencies.createRepository();
         registered = await repository.enqueueExampleAudio(command, retry);
         if (registered.some((item) => item.status === "queued")) {
           stage = "worker.invoke";
-          const secret = process.env.PROCESS_GRAMMAR_AUDIO_SECRET;
-          if (!secret) throw new Error("AUDIO_PROCESSOR_UNAVAILABLE");
-          const { error } = await client.functions.invoke("process-grammar-audio-job", {
-            headers: { Authorization: `Bearer ${secret}` },
-            body: {},
-            timeout: 3000,
-          });
-          // Invocation failure does not undo a durable job; cron can still process it.
-          if (error) throw error;
+          await repository.requestProcessing();
         }
         return registered;
       },

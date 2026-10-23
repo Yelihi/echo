@@ -3,6 +3,14 @@ import { expect, jest, test } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Button } from "@/shared/components/atomics/button/Button";
 
+const unsupportedLoadingLink = (
+  // @ts-expect-error A slotted link cannot provide the native loading/disabled contract.
+  <Button asChild loading>
+    <Link href="/grammar">노트로</Link>
+  </Button>
+);
+void unsupportedLoadingLink;
+
 test("loading keeps the action name, prevents duplicate clicks, and releases after completion", () => {
   const onClick = jest.fn();
   const { rerender } = render(

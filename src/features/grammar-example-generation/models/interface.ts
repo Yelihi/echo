@@ -4,7 +4,7 @@ import type {
   ExampleAudioCommand,
 } from "@/entities/grammar-audio";
 import type { ExampleErrorCode } from "./errors";
-import type { GrammarDifficulty } from "@/entities/user-profile/models/entity";
+import type { GrammarDifficulty } from "@/entities/user-profile";
 import type {
   GrammarExample,
   GrammarNote,

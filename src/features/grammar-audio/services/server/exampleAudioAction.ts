@@ -3,7 +3,7 @@ import { observeOperation } from "@/shared/lib/logging/observeOperation";
 import { recordOperationEvent } from "@/shared/lib/logging/pino";
 import { z } from "zod";
 import { GrammarNoteRepository, GrammarNotePersistenceError } from "@/entities/grammar-note";
-import { GrammarAudioJobRepository } from "@/entities/grammar-audio/infrastructure/GrammarAudioJobRepository";
+import { GrammarAudioJobRepository } from "@/entities/grammar-audio/server";
 import type { AudioPreparationResult } from "@/entities/grammar-audio";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
 import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";

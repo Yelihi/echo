@@ -50,10 +50,8 @@ function Button({
   children,
   ...props
 }: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-    loading?: boolean;
-  }) {
+  VariantProps<typeof buttonVariants> &
+  ({ asChild?: false; loading?: boolean } | { asChild: true; loading?: never })) {
   const Comp = asChild ? Slot.Root : "button";
 
   return (

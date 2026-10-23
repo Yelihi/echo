@@ -63,6 +63,23 @@ export const Ready: Story = {
   },
 };
 
+export const QuotaLimited: Story = {
+  args: {
+    read: fn<Action>(async () => ({
+      ok: true,
+      data: [{ sentenceId: "example", status: "retryable", code: "RATE_LIMITED" }],
+    })),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByText("음성 생성 요청 한도에 도달했어요. 잠시 후 다시 시도해 주세요."),
+    ).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "음성 준비 재시도" })).toBeEnabled();
+    await expect(args.retry).not.toHaveBeenCalled();
+  },
+};
+
 export const StatusReadFailure: Story = {
   args: {
     read: fn<Action>(async () => ({ ok: false, code: "FAILED", operationId: "audio-read-test" })),

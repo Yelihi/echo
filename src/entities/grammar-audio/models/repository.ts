@@ -17,6 +17,7 @@ export type AudioPreparationResult =
   | { ok: false; code: "INVALID_INPUT" | "UNAUTHORIZED" | "FAILED"; operationId?: string };
 
 export interface GrammarAudioJobRepositoryPort {
+  requestProcessing(): Promise<void>;
   enqueueExampleAudio(
     command: ExampleAudioCommand,
     retry?: boolean,
