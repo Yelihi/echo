@@ -15,47 +15,44 @@ export function useRecordingTurn({
   totalSteps,
   nextPhase,
   saveRecording,
+  maxDurationMs,
 }: UseRecordingTurnInput) {
   const {
     phase: storedPhase,
-    elapsedMs,
     recordingStarted,
     recordingStopped,
     saveStarted,
     saveSucceeded,
     saveFailure,
     retryRecording,
-    setElapsedMs,
   } = store;
-  const recording = useRecordingSession();
+  const recording = useRecordingSession({ maxDurationMs });
   const {
     state: recordingState,
+    elapsedMs,
     recordedAudio: audio,
     start,
     stop,
     retry: resetRecording,
   } = recording;
-  const startedAtRef = React.useRef<number | null>(null);
   const operationInProgress = React.useRef(false);
   const recorderFailed =
     recordingState.status === "failed" || recordingState.status === "discarded";
   const phase: RecordingPhase = recorderFailed ? "failed" : storedPhase;
-  const durationLabel = formatRecordingDuration(
-    phase === "recording" ? elapsedMs : (audio?.durationMs ?? demoDurationMs),
-  );
-
-  React.useEffect(() => {
-    if (phase !== "recording") return;
-    const id = window.setInterval(() => {
-      setElapsedMs(Date.now() - (startedAtRef.current ?? Date.now()));
-    }, 250);
-    return () => window.clearInterval(id);
-  }, [phase, setElapsedMs]);
+  const timedOut = recordingState.status === "discarded" && recordingState.reason === "timeout";
+  const busy = recordingState.status === "starting" || recordingState.status === "stopping";
+  const showRemaining = maxDurationMs !== undefined && !audio;
+  const remainingMs = Math.max(0, (maxDurationMs ?? 0) - elapsedMs);
+  const remainingSeconds = timedOut ? 0 : Math.ceil(remainingMs / 1000);
+  const durationLabel = showRemaining
+    ? `남은 시간 ${formatRecordingDuration(remainingSeconds * 1000)}`
+    : formatRecordingDuration(
+        phase === "recording" ? elapsedMs : (audio?.durationMs ?? demoDurationMs),
+      );
 
   const retry = React.useCallback(() => {
     if (operationInProgress.current) return;
     resetRecording();
-    startedAtRef.current = null;
     retryRecording();
   }, [resetRecording, retryRecording]);
 
@@ -65,16 +62,13 @@ export function useRecordingTurn({
     operationInProgress.current = true;
     try {
       if (phase === "recording") {
-        await stop();
-        recordingStopped();
+        if ((await stop()) === "recorded") recordingStopped();
         return;
       }
       if (phase !== "user-ready" && phase !== "failed") return;
 
       if (phase === "failed") resetRecording();
-      startedAtRef.current = Date.now();
-      await start();
-      recordingStarted();
+      if ((await start()) === "started") recordingStarted();
     } finally {
       operationInProgress.current = false;
     }
@@ -88,7 +82,6 @@ export function useRecordingTurn({
       if (!saveRecording) throw new RecordingRequestError("RECORDING_SERVER_NOT_READY");
       await saveRecording(audio);
       resetRecording();
-      startedAtRef.current = null;
       saveSucceeded(totalSteps, nextPhase);
     } catch (error) {
       saveFailure();
@@ -107,5 +100,15 @@ export function useRecordingTurn({
     totalSteps,
   ]);
 
-  return { phase, durationLabel, recordingState, recordedAudio: audio, retry, toggle, save };
+  return {
+    phase,
+    durationLabel,
+    recordingState,
+    recordedAudio: audio,
+    busy,
+    timedOut,
+    retry,
+    toggle,
+    save,
+  };
 }

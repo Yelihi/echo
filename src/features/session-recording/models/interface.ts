@@ -7,14 +7,16 @@ export type RecordingSessionErrorCode = AudioCaptureErrorCode | "unknown";
 export interface UseRecordingSessionOptions {
   readonly audioCaptureOptions?: AudioCaptureOptions;
   readonly now?: () => number;
+  readonly maxDurationMs?: number;
   readonly recordEvent?: RecordOperationEvent;
 }
 
 export interface UseRecordingSessionResult {
   readonly state: RecordingSessionState;
   readonly minDurationMs: number;
-  readonly start: () => Promise<void>;
-  readonly stop: () => Promise<void>;
+  readonly start: () => Promise<"started" | "failed" | "canceled">;
+  readonly stop: () => Promise<"recorded" | "discarded" | "failed" | "canceled">;
+  readonly elapsedMs: number;
   readonly cancel: () => void;
   readonly retry: () => void;
   readonly fail: (errorCode: RecordingSessionErrorCode) => void;

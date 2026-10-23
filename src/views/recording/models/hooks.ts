@@ -13,6 +13,7 @@ export interface UsePartnerAudioPlaybackInput {
 export interface UseRecordingTurnInput {
   store: RecordingSessionBaseStore;
   demoDurationMs: number;
+  maxDurationMs?: number;
   totalSteps: number;
   nextPhase: RecordingPhase;
   saveRecording?: (audio: CapturedAudio) => Promise<void>;

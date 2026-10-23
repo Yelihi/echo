@@ -1,6 +1,11 @@
 "use client";
 import type { MemorizationRecordingClientProps } from "@/views/recording/models/ui";
 
+import {
+  MEMORIZATION_RECORDING_LIMIT_MS,
+  MEMORIZATION_RECORDING_NOTICE,
+} from "@/features/memorization-sessions/config/recording";
+
 import { getMemorizationPrompt } from "../../models/memorizationPrompt";
 import * as React from "react";
 import { useStore } from "zustand";
@@ -28,6 +33,7 @@ export function MemorizationRecordingClient({
     totalSteps: config.initial.totalSteps,
     nextPhase: "user-ready",
     saveRecording,
+    maxDurationMs: MEMORIZATION_RECORDING_LIMIT_MS,
   });
   const beginTurn = React.useCallback(() => {
     startTurn(config.initial.totalSteps, "user-ready");
@@ -44,7 +50,12 @@ export function MemorizationRecordingClient({
         saving={session.saving}
       />
       {turn.phase === "ready" ? (
-        <RecordingReadyPanel content={config.ready} onStart={beginTurn} />
+        <RecordingReadyPanel
+          content={config.ready}
+          onStart={beginTurn}
+          notice={MEMORIZATION_RECORDING_NOTICE}
+          durationLabel={turn.durationLabel}
+        />
       ) : turn.phase === "completed" ? (
         <RecordingCompletionPanel />
       ) : (
@@ -58,6 +69,9 @@ export function MemorizationRecordingClient({
           durationLabel={turn.durationLabel}
           message={getRecordingSessionHint(turn.phase, turn.recordingState, session.saveFailed)}
           saving={session.saving}
+          busy={turn.busy}
+          timedOut={turn.timedOut}
+          notice={MEMORIZATION_RECORDING_NOTICE}
           recordedAudio={turn.recordedAudio}
           actions={{ toggle: turn.toggle, retry: turn.retry, save: turn.save }}
         />

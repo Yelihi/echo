@@ -60,6 +60,7 @@ export function RolePlayRecordingClient(props: RolePlayRecordingClientProps) {
             session.partnerPlaybackBlocked,
           )}
           saving={session.saving}
+          busy={turn.busy}
           recordedAudio={turn.recordedAudio}
           actions={{ toggle: turn.toggle, retry: turn.retry, save: turn.save }}
         />

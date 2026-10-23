@@ -3,12 +3,17 @@ import type { RecordingSessionErrorCode } from "@/features/session-recording/mod
 
 export type RecordingSessionState =
   | { readonly status: "idle" }
+  | { readonly status: "starting" }
+  | { readonly status: "stopping" }
   | { readonly status: "recording"; readonly startedAtMs: number }
   | { readonly status: "recorded"; readonly audio: CapturedAudio }
-  | { readonly status: "discarded"; readonly reason: "too-short" }
+  | { readonly status: "discarded"; readonly reason: "too-short" | "timeout" }
   | { readonly status: "failed"; readonly errorCode: RecordingSessionErrorCode };
 
 export type RecordingSessionAction =
+  | { readonly type: "preparing" }
+  | { readonly type: "stopping" }
+  | { readonly type: "timeout" }
   | { readonly type: "start"; readonly startedAtMs: number }
   | { readonly type: "record"; readonly audio: CapturedAudio }
   | { readonly type: "discard-too-short" }

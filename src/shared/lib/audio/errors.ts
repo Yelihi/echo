@@ -18,7 +18,8 @@ export type AudioCaptureErrorCode =
   /** Recorder stop, stop event handling, or recorder error handling failed. */
   | "recorder-stop-failed"
   /** Stop completed, but no audio bytes were emitted. */
-  | "empty-audio-data";
+  | "empty-audio-data"
+  | "duration-limit-exceeded";
 
 export interface AudioCaptureErrorOptions {
   readonly cause?: unknown;
