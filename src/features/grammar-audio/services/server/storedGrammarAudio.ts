@@ -2,7 +2,6 @@ import "server-only";
 import { GrammarAudioJobRepository } from "@/entities/grammar-audio/infrastructure/GrammarAudioJobRepository";
 import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
 import type { AudioPreparationResult } from "@/entities/grammar-audio";
-import { exampleAudioCacheKey } from "../audioCache";
 import { exampleAudioAction } from "./exampleAudioAction";
 import type { GrammarAudioResult } from "../../models/interface";
 
@@ -18,6 +17,7 @@ export async function readStoredGrammarAudio(
     ownerId,
     model,
   ).readStoredAudio({ noteId, sentenceIds: [sentenceId] }, text);
+  const { exampleAudioCacheKey } = await import("../audioCache");
   return asset
     ? {
         ok: true,
