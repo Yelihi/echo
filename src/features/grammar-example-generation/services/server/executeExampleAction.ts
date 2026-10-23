@@ -99,16 +99,16 @@ export async function executeExampleAction<T>(
     return { ok: true, data };
   } catch (error) {
     const known = grammarExampleErrorCode(error);
-    const code =
-      known !== "FAILED"
-        ? known
-        : stage.startsWith("ai.")
-          ? "GENERATION_FAILED"
-          : stage === "output.validate"
-            ? "INVALID_RESPONSE"
-            : stage === "input.validate"
-              ? "INVALID_INPUT"
-              : "PERSISTENCE_FAILED";
+    const stageErrors = {
+      "output.validate": "INVALID_RESPONSE",
+      "input.validate": "INVALID_INPUT",
+    } as const;
+    let code = known;
+    if (known === "FAILED") {
+      if (stage.startsWith("ai.")) code = "GENERATION_FAILED";
+      else if (stage === "output.validate" || stage === "input.validate") code = stageErrors[stage];
+      else code = "PERSISTENCE_FAILED";
+    }
     return known !== "FAILED" && known !== "INVALID_RESPONSE"
       ? { ok: false, code }
       : { ok: false, code, operationId };

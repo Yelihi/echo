@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
 import type { GrammarExampleManagerProps } from "../models/interface";
 import { ExampleProvider, useExamples } from "./ExampleProvider";
 import { ExampleCandidates } from "./ExampleCandidates";
+import { ExampleAudioPreparationGroup } from "./ExampleAudioPreparationGroup";
 import { ExampleAudioPreparation } from "./ExampleAudioPreparation";
 import { ExampleActions } from "./ExampleActions";
 
@@ -48,24 +49,33 @@ function SavedAudio({
 }: Pick<GrammarExampleManagerProps, "readAudioPreparation" | "retryAudioPreparation">) {
   const note = useExamples((s) => s.note);
   const preparations = useExamples((s) => s.audioPreparation);
-  if (!read || !retry) return null;
+  if (!read || !retry || preparations.length === 0) return null;
   return (
-    <div className="space-y-3">
-      {preparations.map((item) => (
-        <div key={`${note.id}:${item.sentenceId}:${item.status}`} className="space-y-2">
-          <p lang="en" className="text-sm text-practice-ink">
-            {note.examples.find((example) => example.id === item.sentenceId)?.sentence}
-          </p>
-          <ExampleAudioPreparation
-            noteId={note.id}
-            sentenceId={item.sentenceId}
-            initial={item}
-            read={read}
-            retry={retry}
-          />
-        </div>
-      ))}
-    </div>
+    <ExampleAudioPreparationGroup
+      key={`${note.id}:${note.version}`}
+      noteId={note.id}
+      sentenceIds={preparations.map((item) => item.sentenceId)}
+      initial={preparations}
+      read={read}
+      retry={retry}
+    >
+      <div className="space-y-3">
+        {preparations.map((item) => (
+          <div key={`${note.id}:${item.sentenceId}:${item.status}`} className="space-y-2">
+            <p lang="en" className="text-sm text-practice-ink">
+              {note.examples.find((example) => example.id === item.sentenceId)?.sentence}
+            </p>
+            <ExampleAudioPreparation
+              noteId={note.id}
+              sentenceId={item.sentenceId}
+              initial={item}
+              read={read}
+              retry={retry}
+            />
+          </div>
+        ))}
+      </div>
+    </ExampleAudioPreparationGroup>
   );
 }
 

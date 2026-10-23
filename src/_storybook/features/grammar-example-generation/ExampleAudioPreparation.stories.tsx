@@ -1,3 +1,4 @@
+import { QueryProvider } from "@/app/providers/QueryProvider";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, mocked, userEvent, waitFor, within } from "storybook/test";
 import { GrammarAudioButton } from "@/features/grammar-audio";
@@ -6,6 +7,13 @@ import type { AudioPreparationResult, ExampleAudioCommand } from "@/entities/gra
 import { ErrorPopupProvider, errorPopupManager } from "@/shared/lib/error-popup";
 type Action = (input: ExampleAudioCommand) => Promise<AudioPreparationResult>;
 const meta = {
+  decorators: [
+    (Story) => (
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    ),
+  ],
   title: "features/grammar-example-generation/ExampleAudioPreparation",
   component: ExampleAudioPreparation,
   args: {

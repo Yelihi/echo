@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useContext } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AudioPreparation } from "@/entities/grammar-audio";
 import { errorPopupManager } from "@/shared/lib/error-popup";
 import type {
   ExampleAudioPreparationProps,
@@ -9,7 +11,16 @@ import {
   audioPreparationFailureMessage,
   isAudioPreparationActive,
 } from "../models/audioPreparationMessage";
+import {
+  AudioPreparationContext,
+  AudioPreparationError,
+  audioPreparationQuery,
+  unwrapPreparation,
+} from "./audioPreparationQuery";
 
+function failure(error: unknown): AudioPreparationFailure {
+  return error instanceof AudioPreparationError ? error : { code: "FAILED" };
+}
 function showFailure(title: string, error: AudioPreparationFailure) {
   errorPopupManager.open({
     title,
@@ -21,104 +32,76 @@ function showFailure(title: string, error: AudioPreparationFailure) {
 }
 
 export function useExampleAudioPreparation({
-  noteId,
   sentenceId,
-  initial,
-  read,
-  retry,
-}: ExampleAudioPreparationProps) {
-  const [preparation, setPreparation] = useState(initial);
-  const [error, setError] = useState<AudioPreparationFailure | null>(null);
-  const [retrying, setRetrying] = useState(false);
-  const [checking, setChecking] = useState(false);
-  const generation = useRef(0);
-  const manualRead = useRef(false);
-  const [refresh, setRefresh] = useState(0);
+}: Pick<ExampleAudioPreparationProps, "sentenceId">) {
+  const scope = useContext(AudioPreparationContext);
+  if (!scope) throw new Error("ExampleAudioPreparationGroup is required");
+  const client = useQueryClient();
+  const options = audioPreparationQuery(scope, client);
+  const select = useCallback(
+    (items: readonly AudioPreparation[]) => items.find((item) => item.sentenceId === sentenceId),
+    [sentenceId],
+  );
+  const query = useQuery({ ...options, enabled: false, refetchInterval: false, select });
+  const retryKey = [...options.queryKey, sentenceId, "retry"] as const;
+  const retry = useMutation({
+    mutationKey: retryKey,
+    retry: false,
+    mutationFn: async () => {
+      await client.cancelQueries({ queryKey: options.queryKey, exact: true });
+      const result = await scope.retry({ noteId: scope.noteId, sentenceIds: [sentenceId] });
+      await client.cancelQueries({ queryKey: options.queryKey, exact: true });
+      return unwrapPreparation(result, [sentenceId]).find(
+        (item) => item.sentenceId === sentenceId,
+      )!;
+    },
+  });
+  const check = useMutation({
+    retry: false,
+    mutationFn: async () => {
+      const result = await query.refetch();
+      if (result.error) throw result.error;
+    },
+  });
 
-  useEffect(() => {
-    const lifetime = generation;
-    const current = ++lifetime.current;
-    let notify = manualRead.current;
-    manualRead.current = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    function failed(failure: AudioPreparationFailure) {
-      setError(failure);
-      if (notify) showFailure("음성 상태를 확인하지 못했습니다", failure);
-    }
-    async function poll() {
-      try {
-        const result = await read({ noteId, sentenceIds: [sentenceId] });
-        if (generation.current !== current) return;
-        const next = result.ok
-          ? result.data.find((item) => item.sentenceId === sentenceId)
-          : undefined;
-        if (!next) {
-          failed(result.ok ? { code: "FAILED" } : result);
-          return;
-        }
-        setPreparation(next);
-        setError(null);
-        if (isAudioPreparationActive(next.status)) timer = setTimeout(poll, 3000);
-      } catch {
-        if (generation.current === current) failed({ code: "FAILED" });
-      } finally {
-        notify = false;
-        if (generation.current === current) setChecking(false);
-      }
-    }
-    void poll();
-    return () => {
-      lifetime.current++;
-      clearTimeout(timer);
-    };
-  }, [noteId, sentenceId, read, refresh]);
-
-  async function requestRetry() {
-    if (retrying) return;
-    const current = ++generation.current;
-    setRetrying(true);
-    try {
-      const result = await retry({ noteId, sentenceIds: [sentenceId] });
-      if (current !== generation.current) return;
-      const next = result.ok
-        ? result.data.find((item) => item.sentenceId === sentenceId)
-        : undefined;
-      if (!next) {
-        const failure = result.ok ? { code: "FAILED" } : result;
-        setError(failure);
-        showFailure("음성 준비를 요청하지 못했습니다", failure);
-      } else {
-        setError(null);
-        setPreparation(next);
-        if (next.status === "retryable" || next.code) {
+  function requestRetry() {
+    if (client.isMutating({ mutationKey: retryKey, exact: true })) return;
+    // per-call 콜백은 구독 해제 후 실행되지 않는다. 서버 작업은 취소하지 않는다.
+    retry.mutate(undefined, {
+      onSuccess(next) {
+        client.setQueryData<readonly AudioPreparation[]>(options.queryKey, (previous = []) => {
+          if (!previous.some((item) => item.sentenceId === sentenceId)) return [...previous, next];
+          return previous.map((item) => (item.sentenceId === sentenceId ? next : item));
+        });
+        if (next.status === "retryable" || next.code)
           showFailure("음성 준비를 요청하지 못했습니다", {
             code: next.code ?? "FAILED",
             operationId: next.operationId,
           });
-        }
-        setRetrying(false);
-        setRefresh((value) => value + 1);
-      }
-    } catch {
-      if (current === generation.current) {
-        setError({ code: "FAILED" });
-        showFailure("음성 준비를 요청하지 못했습니다", { code: "FAILED" });
-      }
-    } finally {
-      if (current === generation.current) setRetrying(false);
-    }
+      },
+      onError(error) {
+        showFailure("음성 준비를 요청하지 못했습니다", failure(error));
+      },
+    });
   }
-
+  function recheck() {
+    if (check.isPending) return;
+    retry.reset();
+    check.mutate(undefined, {
+      onError(error) {
+        showFailure("음성 상태를 확인하지 못했습니다", failure(error));
+      },
+    });
+  }
+  const preparation = query.data;
+  const requestError = retry.error;
+  const error = query.error || requestError ? failure(query.error ?? requestError) : null;
+  const checking = check.isPending;
+  const retrying = retry.isPending;
   const ready = !error && preparation?.status === "ready";
   const preparing =
     checking ||
     retrying ||
     (!error && (!preparation || isAudioPreparationActive(preparation.status)));
-
-  function recheck() {
-    manualRead.current = true;
-    setChecking(true);
-    setRefresh((value) => value + 1);
-  }
   return { preparation, error, retrying, checking, ready, preparing, requestRetry, recheck };
 }

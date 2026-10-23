@@ -262,3 +262,35 @@ describe("예문 초안 이벤트", () => {
     expect(save).not.toHaveBeenCalled();
   });
 });
+
+describe("save-lifetime", () => {
+  afterEach(() => errorPopupManager.close());
+  it.each(["success", "failure", "throw"] as const)(
+    "ignores %s after leaving without cancelling the server save",
+    async (outcome) => {
+      const { store, save, note, onUpdated } = setup();
+      await store.getState().generate();
+      store.getState().select(store.getState().candidates[0].id, true);
+      let finish!: () => void;
+      save.mockImplementationOnce(
+        () =>
+          new Promise((resolve, reject) => {
+            finish = () => {
+              if (outcome === "throw") reject(new Error("offline"));
+              else if (outcome === "failure") resolve({ ok: false, code: "PERSISTENCE_FAILED" });
+              else resolve({ ok: true, data: { ...note, version: 2 }, audioPreparation: [] });
+            };
+          }),
+      );
+      const pending = store.getState().save();
+      store.getState().cancel();
+      const detached = store.getState();
+      finish();
+      await pending;
+      expect(save).toHaveBeenCalledTimes(1);
+      expect(store.getState()).toBe(detached);
+      expect(onUpdated).not.toHaveBeenCalled();
+      expect(useErrorPopupStore.getState().popup).toBeNull();
+    },
+  );
+});

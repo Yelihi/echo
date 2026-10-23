@@ -1,5 +1,7 @@
+import { useState, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, jest } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render as renderUI, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createEditorNote } from "@/_tests/features/grammar-note-editor/fixtures";
 import { createExampleCandidates } from "@/_tests/features/grammar-example-generation/fixtures";
@@ -70,3 +72,9 @@ describe("서버 상세 화면과 클라이언트 예문 편집 연결", () => {
     expect(screen.getByRole("heading", { name: "서버에서 구성한 상세" })).toBeVisible();
   });
 });
+
+function QueryWrapper({ children }: { children: ReactNode }) {
+  const [client] = useState(() => new QueryClient());
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+}
+const render = (ui: ReactNode) => renderUI(ui, { wrapper: QueryWrapper });

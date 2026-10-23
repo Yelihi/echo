@@ -245,6 +245,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         return;
       }
 
+      const currentGeneration = generation;
       set({ pending: "save", error: null });
 
       try {
@@ -253,6 +254,9 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           expectedVersion: state.note.version,
           candidates,
         });
+
+        // 화면 이탈은 서버 저장을 취소하지 않고 이전 화면의 후속 UI만 무시한다.
+        if (currentGeneration !== generation) return;
 
         if (!result.ok) {
           set({ pending: null, error: result.code });
@@ -273,6 +277,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         }));
         dependencies.onUpdated(result.data);
       } catch {
+        if (currentGeneration !== generation) return;
         set({
           pending: null,
           error: "SAVE_FAILED",
