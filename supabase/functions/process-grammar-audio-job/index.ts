@@ -1,3 +1,4 @@
+import { safeErrorDetails } from "../../../src/shared/lib/logging/safeErrorDetails.ts";
 // Supabase runtime global, absent from standalone Deno types.
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void };
 import { authorize } from "./http.ts";
@@ -9,8 +10,10 @@ Deno.serve((request: Request) => {
   if (!authorize(request, Deno.env.get("PROCESS_GRAMMAR_AUDIO_SECRET")))
     return new Response("Unauthorized", { status: 401 });
   EdgeRuntime.waitUntil(
-    processAudioQueue(createAudioRepository(), speak).catch(() => {
-      console.error("Grammar audio worker failed; pending claims recover through cron");
+    processAudioQueue(createAudioRepository(), speak).catch((error) => {
+      console.error(
+        JSON.stringify({ operation: "grammar.audio.queue", error: safeErrorDetails(error) }),
+      );
     }),
   );
   return Response.json({ accepted: true }, { status: 202 });

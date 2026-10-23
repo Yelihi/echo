@@ -47,7 +47,7 @@ export function GrammarExamPreparation({
         기존 문장과 함께 연습할 새로운 작문 문제를 준비합니다. 생성이 중단되었다면 같은 세션에서
         다시 시도할 수 있어요.
       </p>
-      <Button disabled={pending} onClick={retryPreparation}>
+      <Button loading={pending} onClick={retryPreparation}>
         {pending ? "문제 준비 중…" : "문제 생성 다시 시도"}
       </Button>
       {error && (

@@ -1,3 +1,4 @@
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 import Link from "next/link";
 import { ArrowRight, ChartNoAxesCombined, ChevronRight, CircleAlert } from "lucide-react";
 
@@ -217,7 +218,13 @@ function formatDate(date: Date) {
 }
 export function MyPageRowsLoading() {
   return (
-    <div className={emptyClassName} role="status">
+    <div className={`${emptyClassName} gap-2`} role="status">
+      <Spinner
+        className="size-4 text-current"
+        aria-hidden="true"
+        role={undefined}
+        aria-label={undefined}
+      />
       불러오는 중이에요…
     </div>
   );

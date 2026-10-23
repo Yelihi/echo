@@ -1,7 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
-
 // shared
 import { Button } from "@/shared/components";
 
@@ -13,8 +11,8 @@ export function LogoutButton({ children }: LogoutButtonProps) {
   const { isPending, requestLogout } = useLogout();
 
   return (
-    <Button size="lg" className="w-full" disabled={isPending} onClick={requestLogout}>
-      {isPending ? <Loader2 className="size-20 animate-spin" /> : children}
+    <Button size="lg" className="w-full" loading={isPending} onClick={requestLogout}>
+      {isPending ? "로그아웃 중…" : children}
     </Button>
   );
 }

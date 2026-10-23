@@ -9,10 +9,10 @@ import {
 } from "../models/errors";
 import { saveExamplesCommandSchema } from "../models/schema";
 
-function showExampleError(code: ExampleErrorCode) {
+function showExampleError(code: ExampleErrorCode, operationId?: string) {
   errorPopupManager.open({
     title: "예문 작업을 완료하지 못했습니다",
-    message: exampleErrorMessage(code),
+    message: exampleErrorMessage(code) + (operationId ? `\n문의 번호: ${operationId}` : ""),
     code,
   });
 }
@@ -143,7 +143,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
         if (!result.ok) {
           set({ pending: null, error: result.code });
-          showExampleError(result.code);
+          showExampleError(result.code, result.operationId);
 
           return;
         }
@@ -204,7 +204,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         if (currentGeneration !== generation) return;
         if (!result.ok) {
           set({ pending: null, error: result.code });
-          showExampleError(result.code);
+          showExampleError(result.code, result.operationId);
           return;
         }
         const updated = grammarExampleSchema.parse({ ...candidate, directReading: result.data });
@@ -256,7 +256,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
         if (!result.ok) {
           set({ pending: null, error: result.code });
-          showExampleError(result.code);
+          showExampleError(result.code, result.operationId);
 
           return;
         }

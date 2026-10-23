@@ -87,7 +87,13 @@ export function GrammarDifficultySetting({ initialDifficulty }: GrammarDifficult
           disabled={pending}
           className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-practice-accent px-5 text-[13px] font-medium text-white transition-colors hover:bg-practice-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {pending && <LoaderCircle size={16} className="animate-spin" aria-hidden />}
+          {pending && (
+            <LoaderCircle
+              size={16}
+              className="animate-spin motion-reduce:animate-none"
+              aria-hidden
+            />
+          )}
           {pending ? "저장 중" : "설정 저장"}
         </button>
         {message && (

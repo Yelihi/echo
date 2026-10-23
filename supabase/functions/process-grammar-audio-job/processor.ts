@@ -1,3 +1,4 @@
+import { safeErrorDetails } from "../../../src/shared/lib/logging/safeErrorDetails.ts";
 export interface AudioJob {
   id: string;
   owner_id: string;
@@ -19,6 +20,7 @@ export async function processExampleAudioJob(
   repository: AudioWorkerRepository,
   speak: (job: AudioJob) => Promise<Uint8Array>,
 ) {
+  let stage = "quota.check";
   try {
     const permission = await repository.consume(job.owner_id);
     if (permission !== "allowed") {
@@ -32,10 +34,21 @@ export async function processExampleAudioJob(
       );
       return;
     }
+    stage = "tts.generate";
     const audio = await speak(job);
+    stage = "storage.upload";
     await repository.upload(job, audio);
+    stage = "job.finish";
     await repository.finish(job);
-  } catch {
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        operation: "grammar.audio.worker",
+        jobId: job.id,
+        stage,
+        error: safeErrorDetails(error),
+      }),
+    );
     // A lost acknowledgement may already be ready; the RPC preserves that successful claim.
     await repository.finish(job, "GENERATION_FAILED");
   }

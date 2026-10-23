@@ -4,6 +4,7 @@ export interface AudioPreparation {
   revision?: string;
   status: "missing" | "queued" | "processing" | "ready" | "retryable";
   code?: string;
+  operationId?: string;
 }
 
 export interface ExampleAudioCommand {
@@ -13,7 +14,7 @@ export interface ExampleAudioCommand {
 
 export type AudioPreparationResult =
   | { ok: true; data: readonly AudioPreparation[] }
-  | { ok: false; code: "INVALID_INPUT" | "UNAUTHORIZED" | "FAILED" };
+  | { ok: false; code: "INVALID_INPUT" | "UNAUTHORIZED" | "FAILED"; operationId?: string };
 
 export interface GrammarAudioJobRepositoryPort {
   enqueueExampleAudio(

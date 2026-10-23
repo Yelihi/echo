@@ -19,6 +19,8 @@ export const recordOperationEvent = (
     operationId: event.operationId,
     resourceId: event.resourceId,
     durationMs: event.durationMs,
+    stage: event.stage,
+    error: event.error,
     ...(diagnostics ? { diagnostics } : {}),
   };
   if (event.phase === "failed") logger.error(fields, `${event.operation}.${event.phase}`);

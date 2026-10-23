@@ -31,11 +31,13 @@ export interface RegenerateDirectReadingCommand {
 
 export type DirectReading = NonNullable<GrammarExample["directReading"]>;
 
-export type ExampleResult<T> = { ok: true; data: T } | { ok: false; code: ExampleErrorCode };
+export type ExampleResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; code: ExampleErrorCode; operationId?: string };
 
 export type SaveExamplesResult =
   | { ok: true; data: GrammarNote; audioPreparation: readonly AudioPreparation[] }
-  | { ok: false; code: ExampleErrorCode };
+  | { ok: false; code: ExampleErrorCode; operationId?: string };
 
 export interface ExampleDependencies {
   repository: GrammarNoteRepositoryPort;

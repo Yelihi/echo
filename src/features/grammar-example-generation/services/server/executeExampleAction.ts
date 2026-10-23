@@ -24,9 +24,19 @@ export async function executeExampleAction<T>(
     },
   ) => Promise<T>,
 ): Promise<ExampleResult<T>> {
+  const operationId = crypto.randomUUID();
+  let stage = "auth";
+  async function atStage<T>(name: string, run: () => Promise<T>) {
+    stage = name;
+    const result = await run();
+    stage = "output.validate";
+    return result;
+  }
   try {
     const data = await observeOperation({
       operation,
+      operationId,
+      getStage: () => stage,
       resourceId: "grammar-note",
       recordEvent: recordOperationEvent,
 
@@ -36,34 +46,60 @@ export async function executeExampleAction<T>(
 
         if (!user) throw new GrammarNotePersistenceError("UNAUTHORIZED");
 
+        const repository = new GrammarNoteRepository(supabase);
+        stage = "input.validate";
         return execute({
-          repository: new GrammarNoteRepository(supabase),
-          prepareAcceptedExampleAudio: (command) => prepareExampleAudio(user.id, command),
-          generate: requestExampleOutput,
-          generateDirectReading: requestDirectReadingOutput,
-          loadDifficulty: async () =>
-            (await new UserProfileRepository(supabase).findById(user.id as UserId))
-              ?.exampleDifficulty ?? DEFAULT_GRAMMAR_DIFFICULTY,
-
-          consumeRequest: async () => {
-            const { data, error: quotaError } = await supabase.rpc("consume_ai_request", {
-              p_operation: "analysis",
-            });
-
-            if (
-              quotaError ||
-              (data !== "allowed" && data !== "not_invited" && data !== "rate_limited")
-            )
-              throw new Error("QUOTA_FAILED");
-
-            return data;
+          repository: {
+            findById: (id) => atStage("note.load", () => repository.findById(id)),
+            create: (input) => atStage("note.save", () => repository.create(input)),
+            update: (input) => atStage("note.save", () => repository.update(input)),
+            findMany: (input) => atStage("note.load", () => repository.findMany(input)),
           },
+          prepareAcceptedExampleAudio: (command) => prepareExampleAudio(user.id, command),
+          generate: (...args) => atStage("ai.generate", () => requestExampleOutput(...args)),
+          generateDirectReading: (...args) =>
+            atStage("ai.direct-reading", () => requestDirectReadingOutput(...args)),
+          loadDifficulty: () =>
+            atStage(
+              "profile.load",
+              async () =>
+                (await new UserProfileRepository(supabase).findById(user.id as UserId))
+                  ?.exampleDifficulty ?? DEFAULT_GRAMMAR_DIFFICULTY,
+            ),
+
+          consumeRequest: () =>
+            atStage("quota.check", async () => {
+              const { data, error: quotaError } = await supabase.rpc("consume_ai_request", {
+                p_operation: "analysis",
+              });
+
+              if (
+                quotaError ||
+                (data !== "allowed" && data !== "not_invited" && data !== "rate_limited")
+              )
+                throw new Error("QUOTA_FAILED", { cause: quotaError ?? undefined });
+
+              return data;
+            }),
         });
       },
     });
 
     return { ok: true, data };
   } catch (error) {
-    return { ok: false, code: grammarExampleErrorCode(error) };
+    const known = grammarExampleErrorCode(error);
+    const code =
+      known !== "FAILED"
+        ? known
+        : stage.startsWith("ai.")
+          ? "GENERATION_FAILED"
+          : stage === "output.validate"
+            ? "INVALID_RESPONSE"
+            : stage === "input.validate"
+              ? "INVALID_INPUT"
+              : "PERSISTENCE_FAILED";
+    return known !== "FAILED" && known !== "INVALID_RESPONSE"
+      ? { ok: false, code }
+      : { ok: false, code, operationId };
   }
 }

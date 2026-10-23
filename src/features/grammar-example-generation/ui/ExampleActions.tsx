@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 
 import Link from "next/link";
 import { Button } from "@/shared/components/atomics/button/Button";
@@ -19,6 +20,7 @@ export function ExampleActions() {
       <div className="flex flex-wrap gap-3">
         <Button
           variant="outline"
+          loading={pending === "all"}
           onClick={() => void generate()}
           disabled={!!pending || editing || isBlockedExampleError(error)}
         >
@@ -30,6 +32,7 @@ export function ExampleActions() {
         </Button>
         {count > 0 && (
           <Button
+            loading={pending === "save"}
             onClick={() => void save()}
             disabled={
               !!pending ||
@@ -70,7 +73,13 @@ export function ExampleActions() {
         </div>
       )}
       {pending && (
-        <p role="status" className="text-sm text-gray-text">
+        <p role="status" className="flex items-center gap-2 text-sm text-gray-text">
+          <Spinner
+            className="size-4 text-current"
+            aria-hidden="true"
+            role={undefined}
+            aria-label={undefined}
+          />
           {pending === "save"
             ? "선택한 예문을 저장하고 있습니다."
             : pending.startsWith("blocks:")

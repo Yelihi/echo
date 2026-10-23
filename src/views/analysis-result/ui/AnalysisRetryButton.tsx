@@ -17,7 +17,7 @@ export function AnalysisRetryButton({ retryAction }: Pick<AnalysisResultViewProp
     <form action={submit}>
       <Button disabled={pending} className="bg-accent-600 text-white hover:bg-accent-700">
         {pending ? (
-          <LoaderCircle className="size-4 animate-spin" />
+          <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" />
         ) : (
           <RefreshCcw className="size-4" />
         )}

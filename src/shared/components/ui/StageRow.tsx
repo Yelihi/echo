@@ -1,3 +1,4 @@
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, Clock } from "lucide-react";
@@ -40,7 +41,14 @@ export type StageRowState = NonNullable<VariantProps<typeof stageRowVariants>["s
 
 const stateIcons: Record<StageRowState, React.ReactNode> = {
   pending: <Clock />,
-  active: <Clock />,
+  active: (
+    <Spinner
+      className="size-4 text-current"
+      aria-hidden="true"
+      role={undefined}
+      aria-label={undefined}
+    />
+  ),
   done: <Check />,
 };
 

@@ -1,3 +1,4 @@
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 import { cva } from "class-variance-authority";
 import { cn } from "@/shared/utils/cn";
 
@@ -33,6 +34,14 @@ const sessionStateBadgeGroupVariant = cva(
 export const SessionStateBadge = ({ state }: SessionStateBadgeProps) => {
   return (
     <div className={cn(sessionStateBadgeGroupVariant({ state }))}>
+      {state === "inProgress" && (
+        <Spinner
+          className="size-4 text-current"
+          aria-hidden="true"
+          role={undefined}
+          aria-label={undefined}
+        />
+      )}
       <p className="text-body-1 font-bold">{mappedLabel[state]}</p>
     </div>
   );

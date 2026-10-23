@@ -158,7 +158,7 @@ describe("예문 서버 액션 권한", () => {
   it.each([
     ["not_invited", "NOT_INVITED"],
     ["rate_limited", "RATE_LIMITED"],
-    ["unexpected", "FAILED"],
+    ["unexpected", "PERSISTENCE_FAILED"],
   ])("권한 %s이면 AI를 실행하지 않는다", async (permission, code) => {
     jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(createEditorNote());
     rpc.mockResolvedValue({ data: permission, error: null });
@@ -168,7 +168,11 @@ describe("예문 서버 액션 권한", () => {
       count: 3,
     });
 
-    expect(result).toEqual({ ok: false, code });
+    expect(result).toEqual({
+      ok: false,
+      code,
+      ...(permission === "unexpected" ? { operationId: expect.any(String) } : {}),
+    });
     expect(requestExampleOutput).not.toHaveBeenCalled();
   });
 
@@ -280,6 +284,7 @@ describe("예문 서버 액션 권한", () => {
         sentenceId: e.id,
         status: "retryable",
         code: "REGISTRATION_FAILED",
+        operationId: expect.any(String),
       })),
     });
   });
@@ -317,4 +322,48 @@ describe("예문 서버 액션 권한", () => {
     );
     expect(rpc).not.toHaveBeenCalled();
   });
+});
+
+it("AI 오류는 생성 실패로 구분하고 안전한 원인과 문의 번호를 연결한다", async () => {
+  const note = createEditorNote();
+  jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
+  jest.mocked(requestExampleOutput).mockRejectedValue(
+    Object.assign(new Error("private provider message"), {
+      status: 400,
+      code: "invalid_json_schema",
+      request_id: "req_test123",
+    }),
+  );
+  const result = await requestGrammarExamples({ noteId: note.id, expectedVersion: 1, count: 3 });
+  expect(result).toEqual({ ok: false, code: "GENERATION_FAILED", operationId: expect.any(String) });
+  const { recordOperationEvent } = await import("@/shared/lib/logging/pino");
+  expect(recordOperationEvent).toHaveBeenCalledWith(
+    expect.objectContaining({
+      operationId: !result.ok ? result.operationId : undefined,
+      phase: "failed",
+      stage: "ai.generate",
+      error: { code: "invalid_json_schema", status: 400, requestId: "req_test123" },
+    }),
+  );
+  expect(JSON.stringify(jest.mocked(recordOperationEvent).mock.calls)).not.toContain(
+    "private provider message",
+  );
+});
+it("AI가 응답해도 잘못된 직독직해 결과는 생성 성공으로 처리하지 않는다", async () => {
+  const note = createEditorNote();
+  jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
+  jest.mocked(requestExampleOutput).mockResolvedValue({
+    examples: createExampleCandidates().map(({ sentence, translation, targetExplanation }) => ({
+      sentence,
+      translation,
+      targetExplanation,
+      directReading: [{ start: 1, end: sentence.length, korean: "뜻" }],
+    })),
+  });
+  const result = await requestGrammarExamples({ noteId: note.id, expectedVersion: 1, count: 3 });
+  expect(result).toEqual({ ok: false, code: "INVALID_RESPONSE", operationId: expect.any(String) });
+  const { recordOperationEvent } = await import("@/shared/lib/logging/pino");
+  expect(recordOperationEvent).toHaveBeenCalledWith(
+    expect.objectContaining({ phase: "failed", stage: "output.validate" }),
+  );
 });

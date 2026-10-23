@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 import type { SessionTopBarProps } from "@/views/recording/models/ui";
 import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
 import { useRecordingExit } from "../../services/hooks/useRecordingExit";
@@ -42,7 +43,18 @@ export function SessionTopBar({
         </p>
       </header>
       {(saving || exit.blocked) && (
-        <p role="status" className="relative z-10 px-6 text-center text-body-3 text-white/75">
+        <p
+          role="status"
+          className="relative z-10 flex items-center justify-center gap-2 px-6 text-center text-body-3 text-white/75"
+        >
+          {saving && (
+            <Spinner
+              className="size-4 text-current"
+              aria-hidden="true"
+              role={undefined}
+              aria-label={undefined}
+            />
+          )}
           {saving
             ? "저장 중입니다. 완료 후 나갈 수 있습니다."
             : "저장이 끝났습니다. 다시 나가기를 선택해 주세요."}

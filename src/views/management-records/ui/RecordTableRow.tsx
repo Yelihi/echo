@@ -101,12 +101,13 @@ export function RecordTableRow({ record, first, last, pending, onDelete }: Recor
       <div className="w-fit">
         <Button
           variant="outline"
+          loading={pending}
           disabled={record.status === "connected" || pending || !onDelete}
           onClick={onDelete}
           aria-label={`${record.name} ${record.status === "connected" ? "보호됨" : "삭제"}`}
           className="border-gray-border text-black-primary"
         >
-          {record.status === "connected" ? (
+          {pending ? null : record.status === "connected" ? (
             <LockIcon aria-hidden className="size-3.5" />
           ) : record.status === "delete-failed" ? (
             <Repeat aria-hidden className="size-3.5" />

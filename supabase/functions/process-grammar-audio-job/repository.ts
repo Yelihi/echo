@@ -64,6 +64,10 @@ export async function speak(job: AudioJob): Promise<Uint8Array> {
       response_format: "mp3",
     }),
   });
-  if (!response.ok) throw new Error("TTS_FAILED");
+  if (!response.ok)
+    throw Object.assign(new Error("TTS_FAILED"), {
+      status: response.status,
+      request_id: response.headers.get("x-request-id"),
+    });
   return new Uint8Array(await response.arrayBuffer());
 }

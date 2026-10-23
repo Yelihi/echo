@@ -11,7 +11,7 @@ Node 서버는 Pino JSON을 stdout으로 출력한다. 업무 서비스는 `Reco
 TEST_LOGS=1 npm test -- observeOperation --runInBand
 ```
 
-시작과 종료 이벤트는 같은 operationId를 가진다. 실패 이벤트에는 오류 전문을 넣지 않는다.
+시작과 종료 이벤트는 같은 operationId를 가진다. 실패 이벤트에는 오류 전문을 넣지 않는다. 허용된 오류 코드·HTTP 상태·OpenAI request ID·검증 필드 경로만 `error`에 기록한다.
 로그 수집 실패는 업무 결과를 변경하지 않는다. 로그는 감사 원장이나 DB 정합성의 근거가 아니다.
 DB 상태와 실제 저장 횟수는 통합 테스트에서 별도로 검증해야 한다.
 
@@ -52,3 +52,13 @@ operationId로 개별 실행을 구분한다. 클라이언트는 `recording.star
 `recording.reset`을 브라우저 콘솔에 JSON으로 출력한다. 녹음 시작 취소는 `canceled`로
 기록한다. 브라우저 로그의 서버 전송 및 SigNoz 연결은 아직 구현하지 않았다.
 음성, 전사 전문, 사용자 토큰, 서명 URL은 로그에 포함하지 않는다.
+
+## 예문·음성 오류 추적
+
+- 브라우저 POST 200은 Server Action의 전송 완료다. 업무 성공은 반환값의 `ok`로 판단한다.
+- 화면의 **문의 번호**를 서버 JSON 로그의 `operationId`와 대조한다.
+- `grammar.examples.generate` / `grammar.examples.direct-reading`: `stage`가 `note.load`, `profile.load`, `quota.check`, `ai.generate`, `ai.direct-reading`, `output.validate` 중 실패 위치를 나타낸다.
+- `grammar.audio.status` / `grammar.audio.retry` / `grammar.audio.prepare`: RPC 오류와 worker 실행 요청 오류를 기록한다. worker는 Edge Function 로그의 `jobId`, `stage`로 추적한다.
+- Supabase Logs에서 같은 시각의 API Gateway/PostgREST·Storage·Edge Function 로그를 선택한다. `PGRST202`는 RPC 조회 실패, `PGRST205`는 테이블 조회 실패 여부를 먼저 확인한다.
+- `npm run dev 2>&1 | tee /tmp/echo-server.log`로 실행한 뒤 `rg '<문의 번호>' /tmp/echo-server.log`로 검색한다. 기존 실행 중인 서버는 종료한 후 이 명령으로 다시 실행한다.
+- 원문·AI 응답 전문·토큰·Storage 경로는 로그나 오류 팝업에 넣지 않는다. 자동 상태 조회는 인라인 안내만, 수동 재조회 실패는 팝업과 문의 번호를 표시한다.

@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 
 import { useRef, useState } from "react";
 
@@ -239,7 +240,19 @@ export function TestAnalysisView() {
           />
         </label>
 
-        {message ? <p className="text-body-4 text-blue-focus-title">{message}</p> : null}
+        {isBusy || message ? (
+          <p role="status" className="flex items-center gap-2 text-body-4 text-blue-focus-title">
+            {isBusy && (
+              <Spinner
+                className="size-4 text-current"
+                aria-hidden="true"
+                role={undefined}
+                aria-label={undefined}
+              />
+            )}
+            {message || "처리 중…"}
+          </p>
+        ) : null}
 
         <pre className="min-h-64 overflow-auto rounded-lg border border-gray-border bg-white p-4 text-body-2">
           {payload ? JSON.stringify(payload, null, 2) : "No payload"}

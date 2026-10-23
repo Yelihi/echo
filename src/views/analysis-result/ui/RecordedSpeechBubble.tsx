@@ -1,3 +1,4 @@
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 import { TriangleAlert } from "lucide-react";
 import { ChatBubble } from "@/shared/components/ui";
 import { cn } from "@/shared/lib/tailwind/utils";
@@ -19,7 +20,15 @@ export function RecordedSpeechBubble({ item }: AnalysisItemProps) {
         )}
       >
         {pending ? (
-          "녹음한 발화를 분석하고 있습니다."
+          <span role="status" className="flex items-center gap-2">
+            <Spinner
+              className="size-4 text-current"
+              aria-hidden="true"
+              role={undefined}
+              aria-label={undefined}
+            />
+            녹음한 발화를 분석하고 있습니다.
+          </span>
         ) : unavailable ? (
           <span className="flex items-start gap-2">
             <TriangleAlert className="mt-1 size-4 shrink-0" aria-hidden="true" />

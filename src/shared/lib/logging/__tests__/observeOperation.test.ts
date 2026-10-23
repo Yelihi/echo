@@ -46,3 +46,49 @@ describe("업무 이벤트 기록", () => {
     ).resolves.toBe("accepted");
   });
 });
+
+it("실패 로그에는 원인 코드만 남기고 비밀 값과 원문은 남기지 않는다", async () => {
+  const recorder = createOperationEventRecorder();
+  const error = Object.assign(new Error("private sentence and secret"), {
+    code: "PGRST202",
+    details: "secret",
+    hint: "private",
+  });
+  await expect(
+    observeOperation({
+      operation: "grammar.audio.status",
+      resourceId: "grammar-audio",
+      recordEvent: recorder.recordEvent,
+      execute: async () => {
+        throw error;
+      },
+    }),
+  ).rejects.toBe(error);
+  expect(recorder.events[1]).toEqual(
+    expect.objectContaining({ error: expect.objectContaining({ code: "PGRST202" }) }),
+  );
+  expect(JSON.stringify(recorder.events)).not.toMatch(/private|secret/);
+});
+
+it("Supabase 함수 HTTP 오류의 status만 기록하며 응답 본문을 노출하지 않는다", async () => {
+  const { FunctionsHttpError } = await import("@supabase/supabase-js");
+  const recorder = createOperationEventRecorder();
+  await expect(
+    observeOperation({
+      operation: "grammar.audio.prepare",
+      resourceId: "note",
+      getStage: () => "worker.invoke",
+      recordEvent: recorder.recordEvent,
+      execute: async () => {
+        throw new FunctionsHttpError(new Response("private token", { status: 401 }));
+      },
+    }),
+  ).rejects.toThrow();
+  expect(recorder.events[1]).toEqual(
+    expect.objectContaining({
+      stage: "worker.invoke",
+      error: { code: "FUNCTION_HTTP_ERROR", status: 401 },
+    }),
+  );
+  expect(JSON.stringify(recorder.events)).not.toContain("private token");
+});

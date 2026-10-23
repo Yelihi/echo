@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, mocked, userEvent, waitFor, within } from "storybook/test";
+import { GrammarAudioButton } from "@/features/grammar-audio";
 import { ExampleAudioPreparation } from "@/features/grammar-example-generation/ui/ExampleAudioPreparation";
 import type { AudioPreparationResult, ExampleAudioCommand } from "@/entities/grammar-audio";
+import { ErrorPopupProvider, errorPopupManager } from "@/shared/lib/error-popup";
 type Action = (input: ExampleAudioCommand) => Promise<AudioPreparationResult>;
 const meta = {
   title: "features/grammar-example-generation/ExampleAudioPreparation",
@@ -58,5 +60,62 @@ export const Ready: Story = {
       await within(canvasElement).findByRole("button", { name: "음성 재생" }),
     ).toBeVisible();
     await expect(args.retry).not.toHaveBeenCalled();
+  },
+};
+
+export const StatusReadFailure: Story = {
+  args: {
+    read: fn<Action>(async () => ({ ok: false, code: "FAILED", operationId: "audio-read-test" })),
+  },
+  decorators: [
+    (Story) => (
+      <>
+        <Story />
+        <ErrorPopupProvider />
+      </>
+    ),
+  ],
+  beforeEach: () => {
+    errorPopupManager.close();
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const button = await canvas.findByRole("button", { name: "상태 다시 확인" });
+    await expect(body.queryByRole("alertdialog")).not.toBeInTheDocument();
+    let complete!: (value: AudioPreparationResult) => void;
+    mocked(args.read).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          complete = resolve;
+        }),
+    );
+    await userEvent.click(button);
+    await expect(canvas.getByRole("button", { name: "확인 중…" })).toBeDisabled();
+    complete({ ok: false, code: "FAILED", operationId: "audio-read-test" });
+    const dialog = await body.findByRole("alertdialog");
+    await waitFor(() =>
+      expect(within(dialog).getByText("음성 상태를 확인하지 못했습니다")).toBeVisible(),
+    );
+    await expect(within(dialog).getByText(/문의 번호: audio-read-test/)).toBeVisible();
+    await userEvent.click(within(dialog).getByRole("button", { name: "확인" }));
+    await expect(await canvas.findByRole("button", { name: "상태 다시 확인" })).toBeEnabled();
+    await expect(args.retry).not.toHaveBeenCalled();
+  },
+};
+
+export const ReadyPlayer: Story = {
+  args: {
+    initial: { sentenceId: "example", status: "ready" },
+    read: fn<Action>(async () => ({
+      ok: true,
+      data: [{ sentenceId: "example", status: "ready" }],
+    })),
+    children: (
+      <GrammarAudioButton
+        input={{ noteId: "note", sentenceId: "example", noteVersion: 1 }}
+        generate={fn(async () => ({ ok: false as const, code: "GENERATION_FAILED" as const }))}
+      />
+    ),
   },
 };

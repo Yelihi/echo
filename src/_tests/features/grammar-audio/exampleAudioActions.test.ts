@@ -87,8 +87,49 @@ describe("stored IDs only audio actions", () => {
     expect(await retryExampleAudioPreparation(input)).toEqual({
       ok: true,
       data: [
-        { sentenceId: input.sentenceIds[0], status: "retryable", code: "REGISTRATION_FAILED" },
+        {
+          sentenceId: input.sentenceIds[0],
+          status: "retryable",
+          code: "REGISTRATION_FAILED",
+          operationId: expect.any(String),
+        },
       ],
     });
   });
+});
+
+it("DB 함수 누락은 추적 번호를 반환하고 원문은 노출하지 않는다", async () => {
+  rpc.mockResolvedValue({
+    data: null,
+    error: { code: "PGRST202", message: "private schema data" },
+  });
+  const result = await getExampleAudioPreparation(input);
+  expect(result).toEqual({ ok: false, code: "FAILED", operationId: expect.any(String) });
+  expect(JSON.stringify(result)).not.toContain("private");
+});
+it("worker 호출이 error 반환값으로 실패해도 작업을 보존하고 실행 실패를 알린다", async () => {
+  const previous = process.env.PROCESS_GRAMMAR_AUDIO_SECRET;
+  process.env.PROCESS_GRAMMAR_AUDIO_SECRET = "test-only";
+  try {
+    rpc.mockResolvedValue({
+      data: [{ sentenceId: input.sentenceIds[0], status: "queued" }],
+      error: null,
+    });
+    invoke.mockResolvedValue({ data: null, error: new Error("worker unavailable") });
+    expect(await retryExampleAudioPreparation(input)).toEqual({
+      ok: true,
+      data: [
+        {
+          sentenceId: input.sentenceIds[0],
+          status: "queued",
+          code: "PROCESSOR_UNAVAILABLE",
+          operationId: expect.any(String),
+        },
+      ],
+    });
+    expect(rpc).toHaveBeenCalledTimes(1);
+  } finally {
+    if (previous === undefined) delete process.env.PROCESS_GRAMMAR_AUDIO_SECRET;
+    else process.env.PROCESS_GRAMMAR_AUDIO_SECRET = previous;
+  }
 });

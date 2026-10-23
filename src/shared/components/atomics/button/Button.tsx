@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 
 import { cn } from "@/shared/lib/tailwind/utils";
+import { Spinner } from "../spinner/Spinner";
 
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-pill border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-colors motion-reduce:transition-none outline-none select-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2  disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-red-primary aria-invalid:ring-3 aria-invalid:ring-red-primary/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -44,10 +45,14 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  loading = false,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    loading?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : "button";
 
@@ -58,7 +63,19 @@ function Button({
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+      disabled={disabled || loading}
+      aria-busy={loading || props["aria-busy"]}
+    >
+      {loading && (
+        <Spinner
+          className="size-4 text-current"
+          aria-hidden="true"
+          role={undefined}
+          aria-label={undefined}
+        />
+      )}
+      <Slot.Slottable>{children}</Slot.Slottable>
+    </Comp>
   );
 }
 

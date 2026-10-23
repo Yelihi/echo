@@ -124,3 +124,7 @@ export const AllSizes: Story = {
     </div>
   ),
 };
+
+export const Loading: Story = {
+  args: { loading: true, children: "저장 중…" },
+};

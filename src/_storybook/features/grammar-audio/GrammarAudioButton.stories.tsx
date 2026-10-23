@@ -36,3 +36,15 @@ export const StoredReadFailure: Story = {
     await expect(args.generate).toHaveBeenCalledTimes(2);
   },
 };
+
+export const Loading: Story = {
+  args: {
+    input: { noteId: "note", sentenceId: "example", noteVersion: 1 },
+    generate: fn(() => new Promise(() => {})),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "문장 듣기" }));
+    await expect(canvas.getByRole("button", { name: "음성 불러오는 중…" })).toBeDisabled();
+  },
+};

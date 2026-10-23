@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/shared/components/atomics/button/Button";
 
 import { useState, useId, useEffect } from "react";
 import type { GrammarSessionQuestion } from "@/entities/grammar-session";
@@ -80,13 +81,15 @@ export function GrammarExamQuestion({ question, initialAnswer, busy, last, onSav
         >
           임시 저장
         </button>
-        <button
+        <Button
+          loading={busy}
+          variant="default"
           type="submit"
           disabled={busy || !answer.trim()}
           className="rounded-lg bg-practice-ink px-5 py-3 text-sm text-white disabled:opacity-50"
         >
           {busy ? "저장 중…" : last ? "시험 완료" : "다음 문항"}
-        </button>
+        </Button>
       </div>
     </form>
   );

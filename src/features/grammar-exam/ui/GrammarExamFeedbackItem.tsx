@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/shared/components/atomics/button/Button";
 
 import { grammarExamErrorMessage } from "./errorMessage";
 import { useRef, useState } from "react";
@@ -88,14 +89,16 @@ export function GrammarExamFeedbackItem({
           </dl>
         </div>
       ) : (
-        <button
+        <Button
+          loading={busy || autoPending}
+          variant="outline"
           type="button"
           disabled={busy || autoPending}
           onClick={() => void request()}
           className="rounded-lg border border-practice-input-line px-4 py-2 text-sm disabled:opacity-50"
         >
           {busy || autoPending ? "피드백 작성 중…" : error ? "피드백 다시 받기" : "피드백 받기"}
-        </button>
+        </Button>
       )}
       {error && !feedback && !busy && (
         <p role="alert" className="text-sm text-practice-accent">
