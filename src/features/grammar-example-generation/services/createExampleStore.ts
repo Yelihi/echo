@@ -23,6 +23,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
   return createStore<ExampleState>((set, get) => ({
     note: dependencies.note,
+    audioPreparation: [],
     candidates: [],
     editing: {},
     selected: [],
@@ -262,6 +263,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
         set((current) => ({
           note: result.data,
+          audioPreparation: result.audioPreparation,
           candidates: current.candidates.filter(
             (candidate) => !state.selected.includes(candidate.id),
           ),

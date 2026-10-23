@@ -27,6 +27,7 @@ const meta = {
     save: fn<GrammarExampleManagerProps["save"]>(async () => ({
       ok: true,
       data: { ...note, version: 2 },
+      audioPreparation: [],
     })),
     onUpdated: fn(),
     onBack: fn(),

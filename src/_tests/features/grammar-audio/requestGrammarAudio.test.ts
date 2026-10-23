@@ -6,6 +6,9 @@ import { recallSession } from "@/_tests/features/grammar-recall/fixture";
 import { createGrammarAnalysis } from "@/_tests/fixtures/grammarAnalysis";
 
 jest.mock("server-only", () => ({}));
+jest.mock("@/shared/lib/supabase/service-role", () => ({
+  getSupabaseServiceRoleClient: jest.fn(),
+}));
 
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
 
@@ -51,6 +54,12 @@ async function dependencies() {
   const { GrammarNoteRepository } = await import("@/entities/grammar-note");
   const { GrammarSessionRepository } = await import("@/entities/grammar-session");
   const { OpenAITTSProvider } = await import("@/shared/lib/tts/server");
+  const { getSupabaseServiceRoleClient } = await import("@/shared/lib/supabase/service-role");
+  const assetRpc = jest.fn(async () => ({ data: [], error: null }));
+  const download = jest.fn(async () => ({ data: new Blob([new Uint8Array([7, 8])]), error: null }));
+  jest
+    .mocked(getSupabaseServiceRoleClient)
+    .mockReturnValue({ rpc: assetRpc, storage: { from: () => ({ download }) } } as never);
   const { requestGrammarAudio } =
     await import("@/features/grammar-audio/services/actions/requestGrammarAudio");
   const getUser = jest.fn(async () => ({ data: { user: { id: "audio-owner" } }, error: null }));
@@ -66,7 +75,16 @@ async function dependencies() {
     .spyOn(GrammarSessionRepository.prototype, "findById")
     .mockResolvedValue(recallSession());
 
-  return { requestGrammarAudio, getUser, rpc, findById, findSession, OpenAITTSProvider };
+  return {
+    assetRpc,
+    download,
+    requestGrammarAudio,
+    getUser,
+    rpc,
+    findById,
+    findSession,
+    OpenAITTSProvider,
+  };
 }
 
 describe("authenticated saved sentence audio action", () => {
@@ -186,5 +204,102 @@ describe("authenticated saved sentence audio action", () => {
     );
     expect(deps.rpc).not.toHaveBeenCalled();
     expect(deps.OpenAITTSProvider).not.toHaveBeenCalled();
+  });
+  it("a2: ready example bytes survive a note-version change without quota or provider", async () => {
+    const d = await dependencies();
+    d.findById.mockResolvedValue({
+      ...note,
+      version: 2,
+      examples: [
+        {
+          id: "ex",
+          sentence: "Saved",
+          translation: "뜻",
+          targetExplanation: "설명",
+          reviewStatus: "reviewed",
+        },
+      ],
+    });
+    d.assetRpc.mockResolvedValue({
+      data: [
+        {
+          sentenceId: "ex",
+          status: "ready",
+          jobId: "job",
+          revision: "rev",
+          objectPath: "owner/private.mp3",
+        },
+      ],
+      error: null,
+    } as never);
+    const audio = await d.requestGrammarAudio({ ...input, sentenceId: "ex", noteVersion: 2 });
+    expect(audio).toEqual({
+      ok: true,
+      audioBase64: "Bwg=",
+      mimeType: "audio/mpeg",
+      cacheKey: expect.any(String),
+    });
+    expect(d.download).toHaveBeenCalledWith("owner/private.mp3");
+    expect(d.rpc).not.toHaveBeenCalled();
+    expect(d.OpenAITTSProvider).not.toHaveBeenCalled();
+  });
+  it("a2-denied: stale or unowned example cannot read private storage", async () => {
+    const d = await dependencies();
+    d.findById.mockResolvedValue(null);
+    expect((await d.requestGrammarAudio({ ...input, sentenceId: "ex" })).ok).toBe(false);
+    expect(d.assetRpc).not.toHaveBeenCalled();
+    expect(d.download).not.toHaveBeenCalled();
+  });
+  it("missing example audio is read-only; it never starts direct TTS", async () => {
+    const d = await dependencies();
+    d.findById.mockResolvedValue({
+      ...note,
+      examples: [
+        {
+          id: "ex",
+          sentence: "Saved",
+          translation: "뜻",
+          targetExplanation: "설명",
+          reviewStatus: "reviewed",
+        },
+      ],
+    });
+    expect((await d.requestGrammarAudio({ ...input, sentenceId: "ex" })).ok).toBe(false);
+    expect(d.rpc).not.toHaveBeenCalled();
+    expect(d.OpenAITTSProvider).not.toHaveBeenCalled();
+  });
+  it("a2-recall: live matching asset is queried with the frozen sentence and reused", async () => {
+    const d = await dependencies();
+    const session = recallSession();
+    d.findSession.mockResolvedValue({
+      ...session,
+      questions: [{ ...session.questions[0], id: "example:ex", sentence: "Frozen." }],
+    });
+    d.assetRpc.mockResolvedValue({
+      data: [
+        {
+          sentenceId: "ex",
+          status: "ready",
+          jobId: "job",
+          revision: "rev",
+          objectPath: "private.mp3",
+        },
+      ],
+      error: null,
+    } as never);
+    expect(
+      (await d.requestGrammarAudio({ sessionId: session.id, questionId: "example:ex" })).ok,
+    ).toBe(true);
+    expect(d.assetRpc).toHaveBeenCalledWith(
+      "example_audio_preparation",
+      expect.objectContaining({
+        p_exact_sentence: "Frozen.",
+        p_enqueue: false,
+        p_note_id: session.noteId,
+      }),
+    );
+    expect(d.findById).not.toHaveBeenCalled();
+    expect(d.rpc).not.toHaveBeenCalled();
+    expect(d.OpenAITTSProvider).not.toHaveBeenCalled();
   });
 });

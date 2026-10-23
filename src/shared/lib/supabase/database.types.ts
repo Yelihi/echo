@@ -1121,6 +1121,19 @@ export type Database = {
       };
     };
     Functions: {
+      example_audio_preparation: {
+        Args: {
+          p_owner_id: string;
+          p_note_id: string;
+          p_example_ids: string[];
+          p_model: string;
+          p_enqueue?: boolean;
+          p_retry?: boolean;
+          p_exact_sentence?: string;
+        };
+        Returns: Json;
+      };
+
       save_grammar_exam_feedback: {
         Args: { p_session_id: string; p_question_id: string; p_answer: string; p_feedback: Json };
         Returns: Json;

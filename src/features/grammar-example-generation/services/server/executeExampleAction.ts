@@ -1,4 +1,6 @@
 import "server-only";
+import { prepareExampleAudio } from "@/entities/grammar-audio/infrastructure/prepareExampleAudio";
+import type { AudioPreparation, ExampleAudioCommand } from "@/entities/grammar-audio";
 import { GrammarNotePersistenceError, GrammarNoteRepository } from "@/entities/grammar-note";
 import { UserProfileRepository } from "@/entities/user-profile";
 import { DEFAULT_GRAMMAR_DIFFICULTY } from "@/entities/user-profile/models/entity";
@@ -14,7 +16,13 @@ import { requestDirectReadingOutput } from "./requestDirectReadingOutput";
 
 export async function executeExampleAction<T>(
   operation: string,
-  execute: (dependencies: ExampleDependencies) => Promise<T>,
+  execute: (
+    dependencies: ExampleDependencies & {
+      prepareAcceptedExampleAudio: (
+        command: ExampleAudioCommand,
+      ) => Promise<readonly AudioPreparation[]>;
+    },
+  ) => Promise<T>,
 ): Promise<ExampleResult<T>> {
   try {
     const data = await observeOperation({
@@ -30,6 +38,7 @@ export async function executeExampleAction<T>(
 
         return execute({
           repository: new GrammarNoteRepository(supabase),
+          prepareAcceptedExampleAudio: (command) => prepareExampleAudio(user.id, command),
           generate: requestExampleOutput,
           generateDirectReading: requestDirectReadingOutput,
           loadDifficulty: async () =>

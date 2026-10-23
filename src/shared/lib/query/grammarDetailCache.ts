@@ -34,6 +34,7 @@ export async function getPrivateGrammarCacheClient() {
 export function invalidateGrammarDetail(noteId: string) {
   try {
     revalidatePath(`/grammar/${noteId}`);
+    revalidatePath("/grammar");
   } catch (error) {
     console.error("어법 상세 캐시 무효화 실패", error);
   }

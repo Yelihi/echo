@@ -2,9 +2,14 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
+import type { AudioPreparationResult, ExampleAudioCommand } from "@/entities/grammar-audio";
 import type { GrammarExample, GrammarNote } from "@/entities/grammar-note";
 import { GrammarAudioButton } from "@/features/grammar-audio";
 import type { GrammarAudioButtonProps } from "@/features/grammar-audio";
+
+import { ExampleAudioPreparation } from "@/features/grammar-example-generation/ui/ExampleAudioPreparation";
+import { getExampleAudioPreparation } from "@/features/grammar-audio/services/actions/getExampleAudioPreparation";
+import { retryExampleAudioPreparation } from "@/features/grammar-audio/services/actions/retryExampleAudioPreparation";
 
 function ExampleTranslation({ example }: { example: GrammarExample }) {
   const [direct, setDirect] = useState(false);
@@ -49,10 +54,14 @@ export function GrammarExamplesSection({
   note,
   manageButton,
   generateAudio,
+  readAudioPreparation = getExampleAudioPreparation,
+  retryAudioPreparation = retryExampleAudioPreparation,
 }: {
   note: GrammarNote;
   manageButton: ReactNode;
   generateAudio: GrammarAudioButtonProps["generate"];
+  readAudioPreparation?: (command: ExampleAudioCommand) => Promise<AudioPreparationResult>;
+  retryAudioPreparation?: (command: ExampleAudioCommand) => Promise<AudioPreparationResult>;
 }) {
   return (
     <section aria-label="저장한 예문" className="space-y-5">
@@ -77,10 +86,18 @@ export function GrammarExamplesSection({
               </p>
               <ExampleTranslation example={example} />
               <p className="text-sm leading-7 text-practice-muted">{example.targetExplanation}</p>
-              <GrammarAudioButton
-                input={{ noteId: note.id, noteVersion: note.version, sentenceId: example.id }}
-                generate={generateAudio}
-              />
+              <ExampleAudioPreparation
+                key={`${note.id}:${example.id}`}
+                noteId={note.id}
+                sentenceId={example.id}
+                read={readAudioPreparation}
+                retry={retryAudioPreparation}
+              >
+                <GrammarAudioButton
+                  input={{ noteId: note.id, noteVersion: note.version, sentenceId: example.id }}
+                  generate={generateAudio}
+                />
+              </ExampleAudioPreparation>
             </li>
           ))}
         </ul>

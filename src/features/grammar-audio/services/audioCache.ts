@@ -38,3 +38,14 @@ export async function cachedGrammarAudio(
     throw error;
   }
 }
+
+export function exampleAudioCacheKey(input: {
+  ownerId: string;
+  noteId: string;
+  exampleId: string;
+  audioRevision: string;
+}): string {
+  return createHash("sha256")
+    .update(JSON.stringify([input.ownerId, input.noteId, input.exampleId, input.audioRevision]))
+    .digest("hex");
+}

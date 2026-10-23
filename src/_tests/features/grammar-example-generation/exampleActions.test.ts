@@ -43,6 +43,12 @@ import { createEditorNote } from "../grammar-note-editor/fixtures";
 import { createExampleCandidates } from "./fixtures";
 
 jest.mock("server-only", () => ({}));
+jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
+jest.mock("@/shared/lib/supabase/service-role", () => ({
+  getSupabaseServiceRoleClient: jest.fn(() => {
+    throw new Error("registration unavailable");
+  }),
+}));
 
 jest.mock("@/shared/lib/supabase/server", () => ({ createSupabaseServerClient: jest.fn() }));
 
@@ -255,5 +261,60 @@ describe("예문 서버 액션 권한", () => {
     ).toBe(true);
     expect(rpc).not.toHaveBeenCalled();
     expect(requestExampleOutput).not.toHaveBeenCalled();
+  });
+  it("a1-register: 음성 등록 실패에도 저장 결과와 명시적 재시도 대상을 보존한다", async () => {
+    const note = createEditorNote();
+    const candidates = createExampleCandidates();
+    const saved = {
+      ...note,
+      version: 2,
+      examples: candidates.map((e) => ({ ...e, reviewStatus: "reviewed" as const })),
+    };
+    jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
+    jest.spyOn(GrammarNoteRepository.prototype, "update").mockResolvedValue(saved);
+    const result = await saveGrammarExamples({ noteId: note.id, expectedVersion: 1, candidates });
+    expect(result).toEqual({
+      ok: true,
+      data: saved,
+      audioPreparation: candidates.map((e) => ({
+        sentenceId: e.id,
+        status: "retryable",
+        code: "REGISTRATION_FAILED",
+      })),
+    });
+  });
+
+  it("a1-cache: 저장 실패 시 등록·무효화 없이 끝나고 성공 이후에만 준비한다", async () => {
+    const { revalidatePath } = await import("next/cache");
+    const { getSupabaseServiceRoleClient } = await import("@/shared/lib/supabase/service-role");
+    const note = createEditorNote();
+    jest.spyOn(GrammarNoteRepository.prototype, "findById").mockResolvedValue(note);
+    const update = jest
+      .spyOn(GrammarNoteRepository.prototype, "update")
+      .mockRejectedValueOnce(new Error("DB failed"));
+    const command = { noteId: note.id, expectedVersion: 1, candidates: createExampleCandidates() };
+    expect((await saveGrammarExamples(command)).ok).toBe(false);
+    expect(revalidatePath).not.toHaveBeenCalled();
+    expect(getSupabaseServiceRoleClient).not.toHaveBeenCalled();
+    update.mockResolvedValueOnce({ ...note, version: 2 });
+    const audioRpc = jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({
+      data: command.candidates.map((e) => ({ sentenceId: e.id, status: "ready" })),
+      error: null,
+    });
+    jest.mocked(getSupabaseServiceRoleClient).mockReturnValueOnce({ rpc: audioRpc } as never);
+    const result = await saveGrammarExamples(command);
+    expect(result.ok).toBe(true);
+    expect(revalidatePath).toHaveBeenCalledWith(`/grammar/${note.id}`);
+    expect(revalidatePath).toHaveBeenCalledWith("/grammar");
+    expect(audioRpc).toHaveBeenCalledWith(
+      "example_audio_preparation",
+      expect.objectContaining({
+        p_note_id: note.id,
+        p_example_ids: command.candidates.map((e) => e.id),
+        p_enqueue: true,
+        p_retry: false,
+      }),
+    );
+    expect(rpc).not.toHaveBeenCalled();
   });
 });

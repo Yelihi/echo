@@ -98,7 +98,7 @@ describe("예문 편집 세션", () => {
       });
     const save = jest
       .fn<GrammarExampleManagerProps["save"]>()
-      .mockResolvedValue({ ok: true, data: { ...note, version: 2 } });
+      .mockResolvedValue({ ok: true, data: { ...note, version: 2 }, audioPreparation: [] });
     render(
       <GrammarExampleManager
         note={note}
@@ -181,7 +181,7 @@ describe("예문 편집 세션", () => {
       .mockResolvedValue({ ok: false, code: "RATE_LIMITED" });
     const save = jest
       .fn<GrammarExampleManagerProps["save"]>()
-      .mockResolvedValue({ ok: true, data: { ...note, version: 2 } });
+      .mockResolvedValue({ ok: true, data: { ...note, version: 2 }, audioPreparation: [] });
     render(
       <GrammarExampleManager
         note={note}

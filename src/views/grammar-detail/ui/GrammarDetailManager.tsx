@@ -10,6 +10,9 @@ import {
   saveGrammarExamples,
 } from "@/features/grammar-example-generation/services/actions/exampleActions";
 
+import { getExampleAudioPreparation } from "@/features/grammar-audio/services/actions/getExampleAudioPreparation";
+import { retryExampleAudioPreparation } from "@/features/grammar-audio/services/actions/retryExampleAudioPreparation";
+
 const ManageContext = createContext<(() => void) | null>(null);
 
 export function GrammarDetailManager({
@@ -32,6 +35,8 @@ export function GrammarDetailManager({
               generate={requestGrammarExamples}
               regenerateDirectReading={regenerateGrammarDirectReading}
               save={saveGrammarExamples}
+              readAudioPreparation={getExampleAudioPreparation}
+              retryAudioPreparation={retryExampleAudioPreparation}
               onUpdated={() => router.refresh()}
               onBack={() => setManaging(false)}
             />

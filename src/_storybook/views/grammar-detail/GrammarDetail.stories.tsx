@@ -55,6 +55,10 @@ export const DirectReading: Story = {
         note={{ ...note, examples: [createExampleCandidates()[0]] }}
         manageButton={null}
         generateAudio={fn()}
+        readAudioPreparation={async ({ sentenceIds }) => ({
+          ok: true,
+          data: sentenceIds.map((sentenceId) => ({ sentenceId, status: "ready" })),
+        })}
       />
     ),
   },

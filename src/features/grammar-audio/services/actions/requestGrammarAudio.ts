@@ -1,5 +1,6 @@
 "use server";
 
+import { readStoredGrammarAudio } from "../server/storedGrammarAudio";
 import { z } from "zod";
 import { GrammarSessionRepository } from "@/entities/grammar-session";
 import { GrammarNoteRepository } from "@/entities/grammar-note";
@@ -42,18 +43,37 @@ export async function requestGrammarAudio(input: unknown): Promise<GrammarAudioR
         if (error || !data.user) return { ok: false as const, code: "UNAUTHORIZED" as const };
 
         const source = parsed.data;
-        const text =
-          "sessionId" in source
-            ? resolveGrammarSessionAudioText(
-                await new GrammarSessionRepository(supabase).findById(source.sessionId),
-                source,
-              )
-            : resolveGrammarAudioText(
-                await new GrammarNoteRepository(supabase).findById(source.noteId),
-                source,
-              );
-
         const model = getOpenAITTSModel();
+        let text: string;
+        if ("sessionId" in source) {
+          const session = await new GrammarSessionRepository(supabase).findById(source.sessionId);
+          text = resolveGrammarSessionAudioText(session, source);
+          if (session && source.questionId.startsWith("example:")) {
+            // A frozen snapshot stays playable after its live example changes or disappears.
+            const stored = await readStoredGrammarAudio(
+              data.user.id,
+              session.noteId,
+              source.questionId.slice(8),
+              text,
+              model,
+            );
+            if (stored) return stored;
+          }
+        } else {
+          const note = await new GrammarNoteRepository(supabase).findById(source.noteId);
+          text = resolveGrammarAudioText(note, source);
+          if (source.sentenceId !== "source") {
+            return (
+              (await readStoredGrammarAudio(
+                data.user.id,
+                source.noteId,
+                source.sentenceId,
+                text,
+                model,
+              )) ?? { ok: false as const, code: "GENERATION_FAILED" as const }
+            );
+          }
+        }
         const key = grammarAudioCacheKey(data.user.id, text, model);
 
         return cachedGrammarAudio(key, async () => {

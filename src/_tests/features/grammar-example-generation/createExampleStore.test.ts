@@ -20,7 +20,7 @@ function setup() {
       })),
     save: jest
       .fn<GrammarExampleManagerProps["save"]>()
-      .mockResolvedValue({ ok: true, data: { ...note, version: 2 } }),
+      .mockResolvedValue({ ok: true, data: { ...note, version: 2 }, audioPreparation: [] }),
     onUpdated: jest.fn<GrammarExampleManagerProps["onUpdated"]>(),
   };
   const store = createExampleStore(dependencies);

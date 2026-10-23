@@ -66,7 +66,9 @@ export const SaveFailure: Story = {
 
     await userEvent.type(canvas.getByLabelText("영어로 작성해 주세요"), "My draft");
     await userEvent.click(canvas.getByRole("button", { name: "임시 저장" }));
-    await expect(canvas.getByText("저장하지 못했습니다. 다시 시도해 주세요.")).toBeVisible();
+    await expect(
+      canvas.getByText("시험을 처리하지 못했습니다. 입력을 유지한 채 다시 시도해 주세요."),
+    ).toBeVisible();
     await expect(canvas.getByLabelText("영어로 작성해 주세요")).toHaveValue("My draft");
   },
 };
