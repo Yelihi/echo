@@ -57,6 +57,7 @@ export function ExampleCandidateCard({ id, number }: { id: string; number: numbe
           <Button
             variant="ghost"
             disabled={!!pending || editing || isBlockedExampleError(error)}
+            loading={pending === id}
             onClick={() => void generate(id)}
           >
             {pending === id ? "생성 중…" : "이 예문 다시 생성"}
@@ -98,6 +99,7 @@ export function ExampleCandidateCard({ id, number }: { id: string; number: numbe
             <Button
               variant="outline"
               disabled={!!pending || isBlockedExampleError(error)}
+              loading={pending === `blocks:${id}`}
               onClick={() => void regenerateDirectReading(id)}
             >
               {pending === `blocks:${id}` ? "직독직해 생성 중…" : "직독직해 다시 생성"}

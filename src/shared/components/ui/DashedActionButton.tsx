@@ -46,8 +46,14 @@ export const DashedActionButton = ({
       data-size={size ?? "md"}
       className={cn(dashedActionButtonVariants({ size }), className)}
       {...props}
+      disabled={props.disabled || pending}
+      aria-busy={pending || props["aria-busy"]}
     >
-      {pending ? <Loader2 className="size-4 animate-spin" /> : icon}
+      {pending ? (
+        <Loader2 aria-hidden="true" className="size-4 animate-spin motion-reduce:animate-none" />
+      ) : (
+        icon
+      )}
       {pending ? "변환중입니다!" : children}
     </button>
   );

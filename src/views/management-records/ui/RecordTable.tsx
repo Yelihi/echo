@@ -16,6 +16,7 @@ interface RecordTableProps {
 export function RecordTable({ records }: RecordTableProps) {
   const router = useRouter();
   const [selected, setSelected] = useState<RecordUIPresentation | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
@@ -23,6 +24,7 @@ export function RecordTable({ records }: RecordTableProps) {
   function removeSelected() {
     if (!selected || pending) return;
     const record = selected;
+    setDeletingId(record.id);
     startTransition(async () => {
       setMessage("");
       try {
@@ -54,8 +56,8 @@ export function RecordTable({ records }: RecordTableProps) {
             record={record}
             first={index === 0}
             last={index === records.length - 1}
-            pending={pending}
-            onDelete={() => setSelected(record)}
+            pending={pending && deletingId === record.id}
+            onDelete={pending ? undefined : () => setSelected(record)}
           />
         ))}
       </div>

@@ -1,4 +1,6 @@
 "use client";
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
+
 import { ArrowDownWideNarrow, ListFilter } from "lucide-react";
 import { historyStatusOptions } from "@/widgets/latest-sessions/models/history";
 import type { HistoryFilterControlsProps, HistoryFiltersProps } from "../models/interface";
@@ -48,6 +50,17 @@ export function HistoryFilterControls({ query, pending, onChange }: HistoryFilte
         disabled={pending}
         onValueChange={(value) => onChange({ sort: value === "oldest" ? "oldest" : "newest" })}
       />
+      {pending && (
+        <span role="status" className="inline-flex items-center gap-2 px-2 text-xs text-gray-text">
+          <Spinner
+            className="size-4 text-current"
+            aria-hidden="true"
+            role={undefined}
+            aria-label={undefined}
+          />
+          목록 업데이트 중
+        </span>
+      )}
     </div>
   );
 }

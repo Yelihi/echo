@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/shared/components/atomics/button/Button";
 
 import { grammarSessionErrorMessage } from "@/entities/grammar-session";
 import { useRef, useState } from "react";
@@ -89,14 +90,16 @@ export function GrammarPracticeLauncher({
                   {title} 이어하기
                 </button>
               )}
-              <button
+              <Button
+                loading={pending === mode}
+                variant="outline"
                 type="button"
                 disabled={pending !== null}
                 onClick={() => start(mode)}
                 className="min-h-11 rounded-md border border-practice-input-line px-4 text-sm text-practice-ink transition-shadow hover:shadow-emphasize disabled:opacity-50 motion-reduce:transition-none"
               >
                 {pending === mode ? "준비 중…" : `${title} 새로 시작`}
-              </button>
+              </Button>
             </div>
           </article>
         ))}

@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/shared/components/atomics/button/Button";
 
 import { GRAMMAR_ANSWER_MAX_LENGTH } from "@/entities/grammar-session";
 import { useState } from "react";
@@ -135,7 +136,9 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
           >
             이전
           </button>
-          <button
+          <Button
+            loading={busy}
+            variant="default"
             type="button"
             disabled={busy || !filled || !revealed || !draft.assessment}
             onClick={() => onMove(draft, "next")}
@@ -146,7 +149,7 @@ export function RecallQuestion({ session, busy, error, onMove, audio }: RecallQu
               : !partial && session.questionIndex === session.questions.length - 1
                 ? "연습 완료"
                 : "다음"}
-          </button>
+          </Button>
         </div>
       </div>
     </section>

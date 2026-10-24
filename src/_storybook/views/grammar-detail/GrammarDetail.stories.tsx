@@ -1,3 +1,4 @@
+import { QueryProvider } from "@/app/providers/QueryProvider";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { GrammarDetail } from "@/views/grammar-detail/ui/GrammarDetail";
@@ -9,6 +10,13 @@ import { GrammarExamplesSection } from "@/views/grammar-detail/ui/GrammarExample
 const note = createEditorNote();
 
 const meta = {
+  decorators: [
+    (Story) => (
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    ),
+  ],
   title: "views/grammar/NoteDetail",
   component: GrammarDetail,
   args: {
@@ -55,6 +63,10 @@ export const DirectReading: Story = {
         note={{ ...note, examples: [createExampleCandidates()[0]] }}
         manageButton={null}
         generateAudio={fn()}
+        readAudioPreparation={async ({ sentenceIds }) => ({
+          ok: true,
+          data: sentenceIds.map((sentenceId) => ({ sentenceId, status: "ready" })),
+        })}
       />
     ),
   },

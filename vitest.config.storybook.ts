@@ -22,6 +22,8 @@ export default defineConfig({
           },
           setupFiles: [".storybook/vitest.setup.ts"],
         },
+        // 검사 도중 Query 의존성을 발견해 페이지 전체가 다시 로드되는 것을 방지한다.
+        optimizeDeps: { include: ["@tanstack/react-query", "@tanstack/react-query-devtools"] },
         resolve: {
           alias: {
             "@": path.resolve(__dirname, "./src"),

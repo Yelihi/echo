@@ -29,4 +29,18 @@ describe("grammar audio content cache", () => {
     await cachedGrammarAudio("unique", generate);
     expect(generate).toHaveBeenCalledTimes(2);
   });
+  it("a2: persistent identity includes owner/note/example/revision but no note edit version", async () => {
+    const { exampleAudioCacheKey: key } =
+      await import("@/features/grammar-audio/services/audioCache");
+    const input = {
+      ownerId: "owner",
+      noteId: "note",
+      exampleId: "example",
+      audioRevision: "revision",
+    };
+    expect(key({ ...input })).toBe(key(input));
+    for (const field of ["ownerId", "noteId", "exampleId", "audioRevision"] as const) {
+      expect(key({ ...input, [field]: "changed" })).not.toBe(key(input));
+    }
+  });
 });

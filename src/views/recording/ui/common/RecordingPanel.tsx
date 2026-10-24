@@ -74,8 +74,18 @@ export function RecordingPanel({
             <RotateCcw />
             다시 녹음
           </GlassButton>
-          <GlassButton emphasis="primary" onClick={actions.save} disabled={saving}>
-            {saving ? <LoaderCircle className="animate-spin" /> : null}
+          <GlassButton
+            emphasis="primary"
+            onClick={actions.save}
+            disabled={saving}
+            aria-busy={saving}
+          >
+            {saving ? (
+              <LoaderCircle
+                aria-hidden="true"
+                className="animate-spin motion-reduce:animate-none"
+              />
+            ) : null}
             {saving ? "저장 중" : "저장하기"}
           </GlassButton>
         </footer>

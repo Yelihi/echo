@@ -1,4 +1,5 @@
 "use client";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 // shared
@@ -8,9 +9,10 @@ import type { LoginButtonProps } from "@/features/login/models/interface";
 
 export function LoginButton({ children, provider }: LoginButtonProps) {
   const router = useRouter();
+  const [pending, startTransition] = useTransition();
 
   const requestLogin = () => {
-    router.push(`/callback?provider=${provider}&next=/home`);
+    startTransition(() => router.push(`/callback?provider=${provider}&next=/home`));
   };
 
   return (
@@ -18,6 +20,7 @@ export function LoginButton({ children, provider }: LoginButtonProps) {
       size="lg"
       className="w-full min-h-12 px-5 text-body-4 font-semibold"
       variant="outline"
+      loading={pending}
       onClick={requestLogin}
     >
       {children}

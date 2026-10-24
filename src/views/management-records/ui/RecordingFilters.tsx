@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -52,6 +53,17 @@ export function RecordingFilters({ query }: { query: RecordingManagementQuery })
         disabled={pending}
         onValueChange={(value) => change({ sort: value === "oldest" ? "oldest" : "newest" })}
       />
+      {pending && (
+        <span role="status" className="inline-flex items-center gap-2 px-2 text-xs text-gray-text">
+          <Spinner
+            className="size-4 text-current"
+            aria-hidden="true"
+            role={undefined}
+            aria-label={undefined}
+          />
+          목록 업데이트 중
+        </span>
+      )}
     </div>
   );
 }

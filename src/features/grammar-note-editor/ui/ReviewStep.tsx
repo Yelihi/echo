@@ -56,7 +56,11 @@ export function ReviewStep({ AnalysisEditor }: Pick<GrammarNoteEditorProps, "Ana
         >
           이전 · 입력 수정
         </Button>
-        <Button onClick={() => void save()} disabled={!reviewed || saving || analysisDirty}>
+        <Button
+          loading={saving}
+          onClick={() => void save()}
+          disabled={!reviewed || saving || analysisDirty}
+        >
           {saving ? "저장 중…" : "검토 완료 · 노트 저장"}
         </Button>
       </div>

@@ -9,10 +9,10 @@ import {
 } from "../models/errors";
 import { saveExamplesCommandSchema } from "../models/schema";
 
-function showExampleError(code: ExampleErrorCode) {
+function showExampleError(code: ExampleErrorCode, operationId?: string) {
   errorPopupManager.open({
     title: "예문 작업을 완료하지 못했습니다",
-    message: exampleErrorMessage(code),
+    message: exampleErrorMessage(code) + (operationId ? `\n문의 번호: ${operationId}` : ""),
     code,
   });
 }
@@ -23,6 +23,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
   return createStore<ExampleState>((set, get) => ({
     note: dependencies.note,
+    audioPreparation: [],
     candidates: [],
     editing: {},
     selected: [],
@@ -142,7 +143,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
 
         if (!result.ok) {
           set({ pending: null, error: result.code });
-          showExampleError(result.code);
+          showExampleError(result.code, result.operationId);
 
           return;
         }
@@ -203,7 +204,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         if (currentGeneration !== generation) return;
         if (!result.ok) {
           set({ pending: null, error: result.code });
-          showExampleError(result.code);
+          showExampleError(result.code, result.operationId);
           return;
         }
         const updated = grammarExampleSchema.parse({ ...candidate, directReading: result.data });
@@ -244,6 +245,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         return;
       }
 
+      const currentGeneration = generation;
       set({ pending: "save", error: null });
 
       try {
@@ -253,15 +255,19 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
           candidates,
         });
 
+        // 화면 이탈은 서버 저장을 취소하지 않고 이전 화면의 후속 UI만 무시한다.
+        if (currentGeneration !== generation) return;
+
         if (!result.ok) {
           set({ pending: null, error: result.code });
-          showExampleError(result.code);
+          showExampleError(result.code, result.operationId);
 
           return;
         }
 
         set((current) => ({
           note: result.data,
+          audioPreparation: result.audioPreparation,
           candidates: current.candidates.filter(
             (candidate) => !state.selected.includes(candidate.id),
           ),
@@ -271,6 +277,7 @@ export function createExampleStore(dependencies: GrammarExampleManagerProps) {
         }));
         dependencies.onUpdated(result.data);
       } catch {
+        if (currentGeneration !== generation) return;
         set({
           pending: null,
           error: "SAVE_FAILED",

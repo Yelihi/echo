@@ -1,3 +1,4 @@
+import { safeErrorDetails } from "./safeErrorDetails";
 import type { RecordOperationEvent, ObserveOperationInput } from "./models";
 
 export async function observeOperation<Result>(
@@ -6,7 +7,7 @@ export async function observeOperation<Result>(
   const context = {
     operation: input.operation,
     resourceId: input.resourceId,
-    operationId: crypto.randomUUID(),
+    operationId: input.operationId ?? crypto.randomUUID(),
   };
   const startedAt = performance.now();
   const emit: RecordOperationEvent = (event) => {
@@ -22,7 +23,13 @@ export async function observeOperation<Result>(
     emit({ ...context, phase: "succeeded", durationMs: performance.now() - startedAt });
     return result;
   } catch (error) {
-    emit({ ...context, phase: "failed", durationMs: performance.now() - startedAt });
+    emit({
+      ...context,
+      phase: "failed",
+      durationMs: performance.now() - startedAt,
+      stage: input.getStage?.(),
+      error: safeErrorDetails(error),
+    });
     throw error;
   }
 }

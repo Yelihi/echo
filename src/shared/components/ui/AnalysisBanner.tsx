@@ -1,6 +1,7 @@
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { AudioLines, CircleCheck, Clock, TriangleAlert } from "lucide-react";
+import { CircleCheck, Clock, TriangleAlert } from "lucide-react";
 
 import { cn } from "@/shared/lib/tailwind/utils";
 
@@ -47,7 +48,14 @@ export type AnalysisBannerState = NonNullable<VariantProps<typeof analysisBanner
  */
 const stateIcons: Record<AnalysisBannerState, React.ReactNode> = {
   pending: <Clock />,
-  analyzing: <AudioLines />,
+  analyzing: (
+    <Spinner
+      className="size-4 text-current"
+      aria-hidden="true"
+      role={undefined}
+      aria-label={undefined}
+    />
+  ),
   done: <CircleCheck />,
   partial: <TriangleAlert />,
   failed: <TriangleAlert />,

@@ -1,5 +1,10 @@
+import type {
+  AudioPreparation,
+  AudioPreparationResult,
+  ExampleAudioCommand,
+} from "@/entities/grammar-audio";
 import type { ExampleErrorCode } from "./errors";
-import type { GrammarDifficulty } from "@/entities/user-profile/models/entity";
+import type { GrammarDifficulty } from "@/entities/user-profile";
 import type {
   GrammarExample,
   GrammarNote,
@@ -26,7 +31,13 @@ export interface RegenerateDirectReadingCommand {
 
 export type DirectReading = NonNullable<GrammarExample["directReading"]>;
 
-export type ExampleResult<T> = { ok: true; data: T } | { ok: false; code: ExampleErrorCode };
+export type ExampleResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; code: ExampleErrorCode; operationId?: string };
+
+export type SaveExamplesResult =
+  | { ok: true; data: GrammarNote; audioPreparation: readonly AudioPreparation[] }
+  | { ok: false; code: ExampleErrorCode; operationId?: string };
 
 export interface ExampleDependencies {
   repository: GrammarNoteRepositoryPort;
@@ -42,12 +53,15 @@ export interface GrammarExampleManagerProps {
   regenerateDirectReading: (
     command: RegenerateDirectReadingCommand,
   ) => Promise<ExampleResult<DirectReading>>;
-  save: (command: SaveExamplesCommand) => Promise<ExampleResult<GrammarNote>>;
+  save: (command: SaveExamplesCommand) => Promise<SaveExamplesResult>;
+  readAudioPreparation?: (command: ExampleAudioCommand) => Promise<AudioPreparationResult>;
+  retryAudioPreparation?: (command: ExampleAudioCommand) => Promise<AudioPreparationResult>;
   onUpdated: (note: GrammarNote) => void;
   onBack?: () => void;
 }
 
 export interface ExampleState {
+  audioPreparation: readonly AudioPreparation[];
   note: GrammarNote;
   candidates: readonly GrammarExample[];
   editing: Readonly<Record<string, GrammarExample>>;

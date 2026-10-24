@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/shared/components/atomics/spinner/Spinner";
 
 import { useState, useTransition } from "react";
 import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
@@ -61,6 +62,17 @@ export const SourceCardsWrapper = ({ cards }: SourceCardsWrapperProps) => {
         cancelLabel="취소"
         onConfirm={confirmDelete}
       />
+      {isDeleting && (
+        <p role="status" className="mb-3 flex items-center gap-2 text-sm text-gray-text">
+          <Spinner
+            className="size-4 text-current"
+            aria-hidden="true"
+            role={undefined}
+            aria-label={undefined}
+          />
+          자료를 삭제하고 있어요.
+        </p>
+      )}
       <section
         aria-busy={isDeleting}
         inert={isDeleting}

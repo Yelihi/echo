@@ -42,7 +42,7 @@ export function SourceStep() {
         </section>
       )}
       <div className="flex flex-wrap gap-3">
-        <Button type="submit" disabled={!!pending}>
+        <Button type="submit" disabled={!!pending} loading={pending === "analysis"}>
           {pending === "analysis" ? "문장과 어법 분석 중…" : "문장 분석하기"}
         </Button>
         {pending === "analysis" && (

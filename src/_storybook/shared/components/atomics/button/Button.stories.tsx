@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { ComponentProps } from "react";
 
 import { Button } from "@/shared/components/atomics/button/Button";
+
+type NativeButtonProps = Extract<ComponentProps<typeof Button>, { asChild?: false }>;
 
 const meta = {
   title: "shared/components/atomics/button/Button",
@@ -25,11 +28,11 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Button>;
+} satisfies Meta<NativeButtonProps>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<NativeButtonProps>;
 
 export const Default: Story = {
   args: {
@@ -123,4 +126,8 @@ export const AllSizes: Story = {
       </Button>
     </div>
   ),
+};
+
+export const Loading: Story = {
+  args: { loading: true, children: "저장 중…" },
 };

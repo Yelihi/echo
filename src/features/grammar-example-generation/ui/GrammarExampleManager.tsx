@@ -6,6 +6,8 @@ import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
 import type { GrammarExampleManagerProps } from "../models/interface";
 import { ExampleProvider, useExamples } from "./ExampleProvider";
 import { ExampleCandidates } from "./ExampleCandidates";
+import { ExampleAudioPreparationGroup } from "./ExampleAudioPreparationGroup";
+import { ExampleAudioPreparation } from "./ExampleAudioPreparation";
 import { ExampleActions } from "./ExampleActions";
 
 function ExampleBack({ onBack }: { onBack?: () => void }) {
@@ -41,6 +43,42 @@ function ExampleBack({ onBack }: { onBack?: () => void }) {
   );
 }
 
+function SavedAudio({
+  readAudioPreparation: read,
+  retryAudioPreparation: retry,
+}: Pick<GrammarExampleManagerProps, "readAudioPreparation" | "retryAudioPreparation">) {
+  const note = useExamples((s) => s.note);
+  const preparations = useExamples((s) => s.audioPreparation);
+  if (!read || !retry || preparations.length === 0) return null;
+  return (
+    <ExampleAudioPreparationGroup
+      key={`${note.id}:${note.version}`}
+      noteId={note.id}
+      sentenceIds={preparations.map((item) => item.sentenceId)}
+      initial={preparations}
+      read={read}
+      retry={retry}
+    >
+      <div className="space-y-3">
+        {preparations.map((item) => (
+          <div key={`${note.id}:${item.sentenceId}:${item.status}`} className="space-y-2">
+            <p lang="en" className="text-sm text-practice-ink">
+              {note.examples.find((example) => example.id === item.sentenceId)?.sentence}
+            </p>
+            <ExampleAudioPreparation
+              noteId={note.id}
+              sentenceId={item.sentenceId}
+              initial={item}
+              read={read}
+              retry={retry}
+            />
+          </div>
+        ))}
+      </div>
+    </ExampleAudioPreparationGroup>
+  );
+}
+
 /** 노트 ID로 생명주기를 구분한다. 선택 저장 후 남은 후보 보존을 위해 버전 변경으로 재마운트하지 않는다. */
 export function GrammarExampleManager({ onBack, ...props }: GrammarExampleManagerProps) {
   return (
@@ -59,6 +97,10 @@ export function GrammarExampleManager({ onBack, ...props }: GrammarExampleManage
         </header>
         <ExampleActions />
         <ExampleCandidates />
+        <SavedAudio
+          readAudioPreparation={props.readAudioPreparation}
+          retryAudioPreparation={props.retryAudioPreparation}
+        />
       </section>
     </ExampleProvider>
   );

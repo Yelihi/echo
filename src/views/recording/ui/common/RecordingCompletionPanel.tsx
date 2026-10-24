@@ -42,8 +42,15 @@ export function RecordingCompletionPanel({
         </Link>
       ) : (
         onRetry && (
-          <GlassButton onClick={onRetry} disabled={busy} emphasis="primary">
-            {busy ? <LoaderCircle className="animate-spin" /> : <RotateCcw />}
+          <GlassButton onClick={onRetry} disabled={busy} aria-busy={busy} emphasis="primary">
+            {busy ? (
+              <LoaderCircle
+                aria-hidden="true"
+                className="animate-spin motion-reduce:animate-none"
+              />
+            ) : (
+              <RotateCcw />
+            )}
             {busy ? "완료 처리 중" : failed ? "완료 다시 시도" : "연습 완료하고 분석하기"}
           </GlassButton>
         )

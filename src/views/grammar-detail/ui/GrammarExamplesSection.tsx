@@ -1,58 +1,29 @@
-"use client";
-
-import { useState } from "react";
+import { ExampleTranslation } from "./ExampleTranslation";
+import {
+  ExampleAudioPreparation,
+  ExampleAudioPreparationGroup,
+} from "@/features/grammar-example-generation";
 import type { ReactNode } from "react";
-import type { GrammarExample, GrammarNote } from "@/entities/grammar-note";
+import type { AudioPreparationResult, ExampleAudioCommand } from "@/entities/grammar-audio";
+import type { GrammarNote } from "@/entities/grammar-note";
 import { GrammarAudioButton } from "@/features/grammar-audio";
 import type { GrammarAudioButtonProps } from "@/features/grammar-audio";
 
-function ExampleTranslation({ example }: { example: GrammarExample }) {
-  const [direct, setDirect] = useState(false);
-
-  if (!example.directReading) {
-    return <p className="text-sm leading-7 text-practice-secondary">{example.translation}</p>;
-  }
-
-  return (
-    <div className="space-y-3">
-      <button
-        type="button"
-        aria-pressed={direct}
-        onClick={() => setDirect((value) => !value)}
-        className="min-h-11 rounded-md border border-practice-line px-3 text-sm text-practice-body hover:bg-practice-chip"
-      >
-        {direct ? "자연스러운 해석" : "직독직해"}
-      </button>
-      {direct ? (
-        <div className="space-y-2 rounded-xl bg-practice-canvas p-4">
-          {example.directReading.map((block) => (
-            <div key={`${block.start}-${block.end}`} className="text-sm leading-7">
-              <p lang="en" className="text-practice-ink">
-                {example.sentence.slice(block.start, block.end)}
-              </p>
-              <p lang="ko" className="text-practice-secondary">
-                {block.korean}
-              </p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p lang="ko" className="text-sm leading-7 text-practice-secondary">
-          {example.translation}
-        </p>
-      )}
-    </div>
-  );
-}
+import { getExampleAudioPreparation } from "@/features/grammar-audio/services/actions/getExampleAudioPreparation";
+import { retryExampleAudioPreparation } from "@/features/grammar-audio/services/actions/retryExampleAudioPreparation";
 
 export function GrammarExamplesSection({
   note,
   manageButton,
   generateAudio,
+  readAudioPreparation = getExampleAudioPreparation,
+  retryAudioPreparation = retryExampleAudioPreparation,
 }: {
   note: GrammarNote;
   manageButton: ReactNode;
   generateAudio: GrammarAudioButtonProps["generate"];
+  readAudioPreparation?: (command: ExampleAudioCommand) => Promise<AudioPreparationResult>;
+  retryAudioPreparation?: (command: ExampleAudioCommand) => Promise<AudioPreparationResult>;
 }) {
   return (
     <section aria-label="저장한 예문" className="space-y-5">
@@ -69,21 +40,37 @@ export function GrammarExamplesSection({
           있어요.
         </p>
       ) : (
-        <ul className="divide-y divide-practice-line">
-          {note.examples.map((example) => (
-            <li key={example.id} className="space-y-3 py-5">
-              <p lang="en" className="break-words text-xl leading-8 text-practice-ink">
-                {example.sentence}
-              </p>
-              <ExampleTranslation example={example} />
-              <p className="text-sm leading-7 text-practice-muted">{example.targetExplanation}</p>
-              <GrammarAudioButton
-                input={{ noteId: note.id, noteVersion: note.version, sentenceId: example.id }}
-                generate={generateAudio}
-              />
-            </li>
-          ))}
-        </ul>
+        <ExampleAudioPreparationGroup
+          key={`${note.id}:${note.version}`}
+          noteId={note.id}
+          sentenceIds={note.examples.map((example) => example.id)}
+          read={readAudioPreparation}
+          retry={retryAudioPreparation}
+        >
+          <ul className="divide-y divide-practice-line">
+            {note.examples.map((example) => (
+              <li key={example.id} className="space-y-3 py-5">
+                <p lang="en" className="break-words text-xl leading-8 text-practice-ink">
+                  {example.sentence}
+                </p>
+                <ExampleTranslation example={example} />
+                <p className="text-sm leading-7 text-practice-muted">{example.targetExplanation}</p>
+                <ExampleAudioPreparation
+                  key={`${note.id}:${example.id}`}
+                  noteId={note.id}
+                  sentenceId={example.id}
+                  read={readAudioPreparation}
+                  retry={retryAudioPreparation}
+                >
+                  <GrammarAudioButton
+                    input={{ noteId: note.id, noteVersion: note.version, sentenceId: example.id }}
+                    generate={generateAudio}
+                  />
+                </ExampleAudioPreparation>
+              </li>
+            ))}
+          </ul>
+        </ExampleAudioPreparationGroup>
       )}
     </section>
   );

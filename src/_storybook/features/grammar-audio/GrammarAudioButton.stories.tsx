@@ -20,8 +20,31 @@ export const GenerateFailure: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.click(canvas.getByRole("button", { name: "문장 듣기" }));
-    await expect(canvas.getByRole("alert")).toHaveTextContent("음성 생성에 실패");
+    await expect(canvas.getByRole("alert")).toHaveTextContent("음성을 생성하지 못했습니다.");
     await userEvent.click(canvas.getByRole("button", { name: "음성 다시 생성" }));
     await expect(args.generate).toHaveBeenCalledTimes(2);
+  },
+};
+
+export const StoredReadFailure: Story = {
+  args: { input: { noteId: "note", sentenceId: "example", noteVersion: 1 } },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "문장 듣기" }));
+    await expect(canvas.getByRole("alert")).toHaveTextContent("준비된 음성을 불러오지 못했습니다");
+    await userEvent.click(canvas.getByRole("button", { name: "음성 다시 불러오기" }));
+    await expect(args.generate).toHaveBeenCalledTimes(2);
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    input: { noteId: "note", sentenceId: "example", noteVersion: 1 },
+    generate: fn(() => new Promise(() => {})),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "문장 듣기" }));
+    await expect(canvas.getByRole("button", { name: "음성 불러오는 중…" })).toBeDisabled();
   },
 };

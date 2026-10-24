@@ -1,7 +1,10 @@
 import "server-only";
+import { GrammarAudioJobRepository, prepareExampleAudio } from "@/entities/grammar-audio/server";
+import { getSupabaseServiceRoleClient } from "@/shared/lib/supabase/service-role";
+import { getOpenAITTSModel } from "@/shared/lib/openai/server";
+import type { AudioPreparation, ExampleAudioCommand } from "@/entities/grammar-audio";
 import { GrammarNotePersistenceError, GrammarNoteRepository } from "@/entities/grammar-note";
-import { UserProfileRepository } from "@/entities/user-profile";
-import { DEFAULT_GRAMMAR_DIFFICULTY } from "@/entities/user-profile/models/entity";
+import { UserProfileRepository, DEFAULT_GRAMMAR_DIFFICULTY } from "@/entities/user-profile";
 import type { UserId } from "@/entities/value-object";
 import { getAuthenticatedUser } from "@/shared/lib/supabase/getAuthenticatedUser";
 import { createSupabaseServerClient } from "@/shared/lib/supabase/server";
@@ -14,11 +17,27 @@ import { requestDirectReadingOutput } from "./requestDirectReadingOutput";
 
 export async function executeExampleAction<T>(
   operation: string,
-  execute: (dependencies: ExampleDependencies) => Promise<T>,
+  execute: (
+    dependencies: ExampleDependencies & {
+      prepareAcceptedExampleAudio: (
+        command: ExampleAudioCommand,
+      ) => Promise<readonly AudioPreparation[]>;
+    },
+  ) => Promise<T>,
 ): Promise<ExampleResult<T>> {
+  const operationId = crypto.randomUUID();
+  let stage = "auth";
+  async function atStage<T>(name: string, run: () => Promise<T>) {
+    stage = name;
+    const result = await run();
+    stage = "output.validate";
+    return result;
+  }
   try {
     const data = await observeOperation({
       operation,
+      operationId,
+      getStage: () => stage,
       resourceId: "grammar-note",
       recordEvent: recordOperationEvent,
 
@@ -28,33 +47,70 @@ export async function executeExampleAction<T>(
 
         if (!user) throw new GrammarNotePersistenceError("UNAUTHORIZED");
 
+        const repository = new GrammarNoteRepository(supabase);
+        stage = "input.validate";
         return execute({
-          repository: new GrammarNoteRepository(supabase),
-          generate: requestExampleOutput,
-          generateDirectReading: requestDirectReadingOutput,
-          loadDifficulty: async () =>
-            (await new UserProfileRepository(supabase).findById(user.id as UserId))
-              ?.exampleDifficulty ?? DEFAULT_GRAMMAR_DIFFICULTY,
-
-          consumeRequest: async () => {
-            const { data, error: quotaError } = await supabase.rpc("consume_ai_request", {
-              p_operation: "analysis",
-            });
-
-            if (
-              quotaError ||
-              (data !== "allowed" && data !== "not_invited" && data !== "rate_limited")
-            )
-              throw new Error("QUOTA_FAILED");
-
-            return data;
+          repository: {
+            findById: (id) => atStage("note.load", () => repository.findById(id)),
+            create: (input) => atStage("note.save", () => repository.create(input)),
+            update: (input) => atStage("note.save", () => repository.update(input)),
+            findMany: (input) => atStage("note.load", () => repository.findMany(input)),
           },
+          prepareAcceptedExampleAudio: (command) =>
+            prepareExampleAudio(command, {
+              createRepository: () =>
+                new GrammarAudioJobRepository(
+                  getSupabaseServiceRoleClient(),
+                  user.id,
+                  getOpenAITTSModel(),
+                  process.env.PROCESS_GRAMMAR_AUDIO_SECRET,
+                ),
+              recordEvent: recordOperationEvent,
+            }),
+          generate: (...args) => atStage("ai.generate", () => requestExampleOutput(...args)),
+          generateDirectReading: (...args) =>
+            atStage("ai.direct-reading", () => requestDirectReadingOutput(...args)),
+          loadDifficulty: () =>
+            atStage(
+              "profile.load",
+              async () =>
+                (await new UserProfileRepository(supabase).findById(user.id as UserId))
+                  ?.exampleDifficulty ?? DEFAULT_GRAMMAR_DIFFICULTY,
+            ),
+
+          consumeRequest: () =>
+            atStage("quota.check", async () => {
+              const { data, error: quotaError } = await supabase.rpc("consume_ai_request", {
+                p_operation: "analysis",
+              });
+
+              if (
+                quotaError ||
+                (data !== "allowed" && data !== "not_invited" && data !== "rate_limited")
+              )
+                throw new Error("QUOTA_FAILED", { cause: quotaError ?? undefined });
+
+              return data;
+            }),
         });
       },
     });
 
     return { ok: true, data };
   } catch (error) {
-    return { ok: false, code: grammarExampleErrorCode(error) };
+    const known = grammarExampleErrorCode(error);
+    const stageErrors = {
+      "output.validate": "INVALID_RESPONSE",
+      "input.validate": "INVALID_INPUT",
+    } as const;
+    let code = known;
+    if (known === "FAILED") {
+      if (stage.startsWith("ai.")) code = "GENERATION_FAILED";
+      else if (stage === "output.validate" || stage === "input.validate") code = stageErrors[stage];
+      else code = "PERSISTENCE_FAILED";
+    }
+    return known !== "FAILED" && known !== "INVALID_RESPONSE"
+      ? { ok: false, code }
+      : { ok: false, code, operationId };
   }
 }
