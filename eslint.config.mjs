@@ -98,4 +98,8 @@ export default tseslint.config(
     },
   },
   eslintConfigPrettier,
+  {
+    files: ["src/shared/lib/logging/**/*.{ts,tsx}"],
+    rules: { "no-nested-ternary": "error" },
+  },
 );

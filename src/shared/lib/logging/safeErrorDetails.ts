@@ -25,6 +25,13 @@ const knownCodes = new Set([
   "P0001",
 ]);
 
+const codesByErrorName = new Map([
+  ["ZodError", "INVALID_RESPONSE"],
+  ["APIConnectionTimeoutError", "TIMEOUT"],
+  ["FunctionsHttpError", "FUNCTION_HTTP_ERROR"],
+  ["FunctionsFetchError", "FUNCTION_NETWORK_ERROR"],
+]);
+
 /** Only identifiers and schema paths: never log provider messages, request bodies or credentials. */
 export function safeErrorDetails(
   error: unknown,
@@ -39,26 +46,22 @@ export function safeErrorDetails(
   const value = error as Record<string, unknown>;
   if (value.cause && depth < 3) return safeErrorDetails(value.cause, depth + 1);
   const raw = typeof value.code === "string" ? value.code : value.message;
-  const code =
+  let code = "UNKNOWN";
+  if (
     typeof raw === "string" &&
     (knownCodes.has(raw) || /^PGRST\d{3}$/.test(raw) || /^[0-9][A-Z0-9]{4}$/.test(raw))
-      ? raw
-      : value.name === "ZodError"
-        ? "INVALID_RESPONSE"
-        : value.name === "APIConnectionTimeoutError"
-          ? "TIMEOUT"
-          : value.name === "FunctionsHttpError"
-            ? "FUNCTION_HTTP_ERROR"
-            : value.name === "FunctionsFetchError"
-              ? "FUNCTION_NETWORK_ERROR"
-              : "UNKNOWN";
+  ) {
+    code = raw;
+  } else if (typeof value.name === "string") {
+    code = codesByErrorName.get(value.name) ?? "UNKNOWN";
+  }
   const requestId = value.request_id;
-  const status =
-    typeof value.status === "number"
-      ? value.status
-      : typeof Response !== "undefined" && value.context instanceof Response
-        ? value.context.status
-        : undefined;
+  let status: number | undefined;
+  if (typeof value.status === "number") {
+    status = value.status;
+  } else if (typeof Response !== "undefined" && value.context instanceof Response) {
+    status = value.context.status;
+  }
   return {
     code,
     ...(status !== undefined ? { status } : {}),
