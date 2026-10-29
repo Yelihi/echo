@@ -49,22 +49,30 @@ describe("AI 직독직해 텍스트를 원문 범위로 변환", () => {
     expect(JSON.stringify(request.text.format.schema)).not.toContain('"start"');
   });
   it("반복 구절과 이모지가 있어도 UTF-16 범위를 맞춘다", async () => {
-    const { resolveGeneratedReading } = await import("@/features/grammar-example-generation/models/generationOutput");
-    expect(resolveGeneratedReading("I see 😀. I see you.", [
-      { text: "I see 😀.", korean: "이모지를 봐" },
-      { text: "I see you.", korean: "너를 봐" },
-    ])).toEqual([
+    const { resolveGeneratedReading } =
+      await import("@/features/grammar-example-generation/models/generationOutput");
+    expect(
+      resolveGeneratedReading("I see 😀. I see you.", [
+        { text: "I see 😀.", korean: "이모지를 봐" },
+        { text: "I see you.", korean: "너를 봐" },
+      ]),
+    ).toEqual([
       { start: 0, end: 9, korean: "이모지를 봐" },
       { start: 9, end: 20, korean: "너를 봐" },
     ]);
   });
   it("누락되거나 원문과 다른 구절을 거절한다", async () => {
-    const { resolveGeneratedReading } = await import("@/features/grammar-example-generation/models/generationOutput");
+    const { resolveGeneratedReading } =
+      await import("@/features/grammar-example-generation/models/generationOutput");
     for (const blocks of [
       [{ text: "I see", korean: "본다" }],
-      [{ text: "I", korean: "나는" }, { text: "him.", korean: "그를" }],
+      [
+        { text: "I", korean: "나는" },
+        { text: "him.", korean: "그를" },
+      ],
       [{ text: "I see her.", korean: "그녀를 본다" }],
-    ]) expect(() => resolveGeneratedReading("I see him.", blocks)).toThrow();
+    ])
+      expect(() => resolveGeneratedReading("I see him.", blocks)).toThrow();
   });
   it("출력이 잘린 응답을 정상 예문으로 처리하지 않는다", async () => {
     parse.mockResolvedValue({ status: "incomplete", output_parsed: null });
